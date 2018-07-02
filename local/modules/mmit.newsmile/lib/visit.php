@@ -41,17 +41,6 @@ class VisitTable extends Entity\DataManager
             new Entity\DatetimeField('TIME_END', array(
                 'title' => 'Время окончания'
             )),
-            new Entity\StringField('NAME', array(
-                'title' => 'Название',
-                'default_value' => function () {
-                    return 'Без названия';
-                },
-                'validation' => function () {
-                    return array(
-                        new Entity\Validator\Length(null, 255),
-                    );
-                },
-            )),
             new Entity\IntegerField('PATIENT_ID', array(
                 'title' => 'PATIENT_ID',
             )),
