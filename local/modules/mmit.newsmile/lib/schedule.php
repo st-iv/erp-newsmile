@@ -106,6 +106,9 @@ class ScheduleTable extends Entity\DataManager
         if (date('N', strtotime($dateStart)) != 1) {
             $dateStart = date('Y-m-d', strtotime('monday this week', strtotime($dateStart)));
         }
+        if (date('W', strtotime($dateStart)) % 2 == 0) {
+            $dateStart = date('Y-m-d', strtotime('monday last week', strtotime($dateStart)));
+        }
 
         $differenceTime = strtotime($dateStart) - strtotime(ScheduleTemplateTable::DEFAULT_START_DATE);
         $rsScheduleTemplate = ScheduleTemplateTable::getList(array(
