@@ -10,6 +10,7 @@ namespace Mmit\NewSmile;
 use Bitrix\Main\Entity;
 use Bitrix\Main\Localization\Loc;
 use Bitrix\Main\Type\DateTime;
+use Bitrix\Main\Config\Option;
 
 Loc::loadMessages(__FILE__);
 
@@ -110,12 +111,16 @@ class ScheduleTemplateTable extends Entity\DataManager
             strtotime('sunday next week', $date),
         );
         $arTimes = array();
-        for ($h=0; $h < 24; $h++)
+        $arTimeStart = explode(':', Option::get('mmit.newsmile', "start_time_schedule", '00:00'));
+        $arTimeEnd = explode(':', Option::get('mmit.newsmile', "end_time_schedule", '00:00'));
+
+        $timeStart = mktime($arTimeStart[0],$arTimeStart[1],0,0,0,0);
+        $timeEnd = mktime($arTimeEnd[0],$arTimeEnd[1],0,0,0,0);
+        while ($timeStart < $timeEnd)
         {
-            for ($i=0; $i < 60; $i += 15)
-            {
-                $arTimes[] = str_pad($h, 2, "0", STR_PAD_LEFT) . ":" . str_pad($i, 2, "0", STR_PAD_LEFT);
-            }
+            $arTimes[] = date('H:i', $timeStart);
+
+            $timeStart += ScheduleTable::TIME_15_MINUTES;
         }
         foreach ($arDays as $day)
         {
@@ -123,13 +128,10 @@ class ScheduleTemplateTable extends Entity\DataManager
             {
                 foreach ($arResult['WORK_CHAIR'] as $arWorkChair)
                 {
-                    for ($i = 1; $i < 20; $i++)
-                    {
-                        self::add(array(
-                            'TIME' => new DateTime(date('Y-m-d', $day) . " " . $time, 'Y-m-d H:i'),
-                            'WORK_CHAIR_ID' => $arWorkChair['ID'],
-                        ));
-                    }
+                    self::add(array(
+                        'TIME' => new DateTime(date('Y-m-d', $day) . " " . $time, 'Y-m-d H:i'),
+                        'WORK_CHAIR_ID' => $arWorkChair['ID'],
+                    ));
                 }
             }
         }
