@@ -1,0 +1,12 @@
+.nav div {
+display:inline-block;
+padding-bottom: 5px;
+padding-top: 10px;
+}
+
+.nav div a {
+  max-width: 8em;
+  min-height: 2em;
+  margin-left: auto;
+  margin-right: 2.2em;
+}

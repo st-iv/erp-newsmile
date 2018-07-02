@@ -1,0 +1,8 @@
+.idea/
+*.log
+google*.html
+yandex_*.html
+sitemap*.xml
+/bitrix/
+/webstat/
+/upload/

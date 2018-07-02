@@ -1,0 +1,33 @@
+aside {
+    padding-top: 50px;
+    width: 200px;
+    float: left;
+   }
+
+article {
+    display:inline-block;
+    margin: 20px 20px 20px 20px;
+    padding: 20px 0px 20px 20px; 
+}
+
+#calendar-day table{
+    border: none;
+    border-collapse: collapse;
+}
+#calendar-day table td {
+    position: relative;
+}
+
+.ui-selected {
+    outline: auto;
+}
+
+.visit-block{
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    z-index: 1;
+    width: 100%;
+    height: 100%;
+    background-color: #fffe00;
+}
