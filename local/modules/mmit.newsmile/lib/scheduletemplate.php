@@ -188,7 +188,7 @@ class ScheduleTemplateTable extends Entity\DataManager
                     'CLINIC_ID' => $clinicID,
                 ));
             }
-            $timeIndex += self::TIME_15_MINUTES;
+            $timeIndex += ScheduleTable::TIME_15_MINUTES;
         }
         return true;
     }
