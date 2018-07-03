@@ -11,100 +11,124 @@ use Bitrix\Main\Loader,
 
 class CalendarDayComponent extends \CBitrixComponent
 {
+    protected $thisDate = '';
 	
 	/**
 	 * получение результатов
 	 */
 	protected function getResult()
 	{
-        $this->arResult['DOCTOR_ID'] = array();
-        $this->arResult['DOCTOR_ID'] = array();
-	    $this->arResult['THIS_DATE'] = date('Y-m-d');
+        $this->thisDate = date('Y-m-d');
 	    if (!empty($this->request['THIS_DATE'])) {
-            $this->arResult['THIS_DATE'] = $this->request['THIS_DATE'];
+            $this->thisDate = $this->request['THIS_DATE'];
         }
-        $this->getWorkChair();
-        $this->getVisit($this->arResult['THIS_DATE']);
-        $this->getSchedule($this->arResult['THIS_DATE']);
-        $this->getDoctor();
+        $this->arResult['THIS_DATE'] = $this->thisDate;
+
+        $isNext = $this->getWorkChair();
+        $isNext = $isNext && $this->getSchedule();
+        $isNext = $isNext && $this->getVisit();
+//        $isNext = $isNext && $this->getDoctor();
 	}
 
-	protected function getVisit($date)
+    protected function getSchedule()
     {
-        $arTimeStart = explode(':', Option::get('mmit.newsmile', "start_time_schedule", '00:00'));
-        $arTimeEnd = explode(':', Option::get('mmit.newsmile', "end_time_schedule", '00:00'));
-
-        $timeStart = mktime($arTimeStart[0],$arTimeStart[1],0,0,0,0);
-        $timeEnd = mktime($arTimeEnd[0],$arTimeEnd[1],0,0,0,0);
-
-        $arKeyTime = array();
-        $arResult = array();
-
-        while ($timeStart < $timeEnd) {
-            $arKeyTime[] = date('H:i', $timeStart);
-            $arResult[] = array(
-                'NAME' => date('H:i', $timeStart),
-                'WORK_CHAIR' => $this->arResult['WORK_CHAIR']
-            );
-            $timeStart += 900;
-        }
-
-        $rsVisit = VisitTable::getList(array(
+        $isResult = false;
+        $rsSchedule = ScheduleTable::getList(array(
+            'order' => array(
+                'TIME' => 'ASC'
+            ),
             'filter' => array(
-                'DATE_START' => new Date($date, 'Y-m-d')
+                '>=TIME' => new Date($this->thisDate, 'Y-m-d'),
+                '<=TIME' => new Date(date('Y-m-d', strtotime('tomorrow', strtotime($this->thisDate))), 'Y-m-d'),
+                'CLINIC_ID' => 1
             ),
             'select' => array(
-                '*',
-                'UF_PATIENT_' => 'PATIENT'
-            )
-        ));
-        while ($arVisit = $rsVisit->Fetch())
-        {
-            if (($key = array_search($arVisit['TIME_START']->format('H:i'), $arKeyTime)) !== false) {
-                $arResult[$key]['WORK_CHAIR'][$arVisit['WORK_CHAIR_ID']] = $arVisit;
-            }
-            //$this->arResult['VISIT'][] = $arVisit;
-        }
-        $this->arResult['VISIT'] = $arResult;
-//        echo '<pre>';
-//        print_r($arResult);
-//        echo '</pre>';
-    }
-
-    protected function getSchedule($date)
-    {
-        $rsSchedule = ScheduleTable::getList(array(
-            'filter' => array(
-                '>=TIME' => new Date($date, 'Y-m-d'),
-                '<=TIME' => new Date(date('Y-m-d', strtotime($date) + 86400), 'Y-m-d')
+                'ID',
+                'TIME',
+                'UF_DOCTOR_' => 'DOCTOR',
+                'UF_MAIN_DOCTOR_' => 'MAIN_DOCTOR',
+                'WORK_CHAIR_ID',
+                'CLINIC_ID',
+                'ENGAGED'
             )
         ));
         while ($arSchedule = $rsSchedule->fetch())
         {
-            $this->arResult['SCHEDULE'][$arSchedule['TIME']->format('H:i')][$arSchedule['WORK_CHAIR_ID']] = array(
-                'ID' => $arSchedule['ID'],
-                'DOCTOR_ID' => $arSchedule['DOCTOR_ID'],
-                'MAIN_DOCTOR_ID' => $arSchedule['MAIN_DOCTOR_ID'],
-                'ENGAGED' => $arSchedule['ENGAGED']
-            );
-            if ($arSchedule['DOCTOR_ID']) {
-                $this->arResult['DOCTOR_ID'][$arSchedule['DOCTOR_ID']] = $arSchedule['DOCTOR_ID'];
-                $this->arResult['WORK_CHAIR'][$arSchedule['WORK_CHAIR_ID']]['DOCTOR'][$arSchedule['DOCTOR_ID']] = $arSchedule['DOCTOR_ID'];
+            $this->arResult['WORK_CHAIR'][$arSchedule['WORK_CHAIR_ID']]['SCHEDULES'][] = $arSchedule;
+            if (empty($this->arResult['WORK_CHAIR'][$arSchedule['WORK_CHAIR_ID']]['DOCTORS'][$arSchedule['UF_DOCTOR_ID']])) {
+                $this->arResult['WORK_CHAIR'][$arSchedule['WORK_CHAIR_ID']]['DOCTORS'][$arSchedule['UF_DOCTOR_ID']] = array(
+                    'NAME' => $arSchedule['DOCTOR_NAME']
+                );
             }
-            if ($arSchedule['MAIN_DOCTOR_ID']) {
-                $this->arResult['MAIN_DOCTOR_ID'][$arSchedule['MAIN_DOCTOR_ID']] = $arSchedule['MAIN_DOCTOR_ID'];
-                $this->arResult['WORK_CHAIR'][$arSchedule['WORK_CHAIR_ID']]['MAIN_DOCTOR'][$arSchedule['MAIN_DOCTOR_ID']] = $arSchedule['MAIN_DOCTOR_ID'];
+
+            if ($arSchedule['TIME']->getTimestamp() < strtotime($arSchedule['TIME']->format('Y-m-d 15:00'))) {
+                $time = $arSchedule['TIME']->format('Y-m-d 9:00');
+            } else {
+                $time = $arSchedule['TIME']->format('Y-m-d 15:00');
             }
+            if (!empty($arSchedule['UF_MAIN_DOCTOR_ID'])) {
+                $tempField = array(
+                    'ID' => $arSchedule['UF_MAIN_DOCTOR_ID'],
+                    'NAME' => $arSchedule['UF_MAIN_DOCTOR_NAME'],
+                    'TIME' => $time
+                );
+                if (array_search($tempField,$this->arResult['WORK_CHAIR'][$arSchedule['WORK_CHAIR_ID']]['MAIN_DOCTORS']) === null ||
+                    array_search($tempField,$this->arResult['WORK_CHAIR'][$arSchedule['WORK_CHAIR_ID']]['MAIN_DOCTORS']) === false) {
+                    $this->arResult['WORK_CHAIR'][$arSchedule['WORK_CHAIR_ID']]['MAIN_DOCTORS'][] = $tempField;
+                }
+            } else {
+                $tempField = array(
+                    'ID' => 0,
+                    'TIME' => $time
+                );
+                if (array_search($tempField,$this->arResult['WORK_CHAIR'][$arSchedule['WORK_CHAIR_ID']]['MAIN_DOCTORS']) === null ||
+                    array_search($tempField,$this->arResult['WORK_CHAIR'][$arSchedule['WORK_CHAIR_ID']]['MAIN_DOCTORS']) === false) {
+                    $this->arResult['WORK_CHAIR'][$arSchedule['WORK_CHAIR_ID']]['MAIN_DOCTORS'][] = $tempField;
+                }
+            }
+
+            $isResult = true;
         }
+        return $isResult;
+    }
+
+	protected function getVisit()
+    {
+        $isResult = false;
+        $rsVisit = VisitTable::getList(array(
+            'order' => array(
+                'TIME_START' => 'ASC'
+            ),
+            'filter' => array(
+                'DATE_START' => new Date($this->thisDate, 'Y-m-d')
+            ),
+            'select' => array(
+                'ID',
+                'TIME_START',
+                'TIME_END',
+                'UF_PATIENT_' => 'PATIENT',
+                'UF_DOCTOR_' => 'DOCTOR',
+                'WORK_CHAIR_ID',
+            )
+        ));
+        while ($arVisit = $rsVisit->Fetch())
+        {
+            $this->arResult['WORK_CHAIR'][$arVisit['WORK_CHAIR_ID']]['VISITS'][] = $arVisit;
+            $isResult = true;
+        }
+        return $isResult;
     }
 
     protected function getWorkChair()
     {
+        $isResult = false;
         $rsWorkChair = WorkChairTable::getList();
         while ($arWorkChair = $rsWorkChair->Fetch())
         {
             $this->arResult['WORK_CHAIR'][$arWorkChair['ID']] = $arWorkChair;
+            $isResult = true;
         }
+        return $isResult;
     }
 
     protected function getDoctor()
@@ -134,9 +158,6 @@ class CalendarDayComponent extends \CBitrixComponent
 		{
             if (!Loader::includeModule('mmit.newSmile')) die();
 			$this->getResult();
-//            echo '<pre>';
-//            print_r($this->arResult);
-//            echo '</pre>';
 			$this->includeComponentTemplate();
 		}
 		catch (Exception $e)

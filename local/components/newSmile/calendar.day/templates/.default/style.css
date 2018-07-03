@@ -1,0 +1,79 @@
+#calendar-day{
+    position: relative;
+}
+.calendar-bottom {
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: column;
+}
+.calendar-bottom-header{
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: row;
+}
+.calendar-bottom-body {
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: row;
+}
+.calendar-bottom-time {
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: column;
+    width: 50px;
+    margin: 0 2px 0 2px;
+}
+.calendar-bottom-work_chair {
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: column;
+    width: 100px;
+    margin: 0 2px 0 2px;
+}
+.calendar-bottom-item {
+    height: 25px;
+    border-radius: 3px;
+    box-shadow: 1px 1px 2px 0 #000;
+    margin: 2px 0 2px 0;
+}
+.calendar-top {
+    position: absolute;
+    top: 0;
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: column;
+}
+.calendar-top-header{
+    height: 58px;
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: row;
+}
+.calendar-top-body {
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: row;
+}
+.calendar-top-time {
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: column;
+    width: 50px;
+    margin: 0 2px 0 2px;
+}
+.calendar-top-work_chair {
+    position: relative;
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: column;
+    width: 100px;
+    margin: 0 2px 0 2px;
+}
+.calendar-top-item {
+    position: absolute;
+    top: 0;
+    height: 25px;
+    border-radius: 3px;
+    box-shadow: 1px 1px 2px 0 #000;
+    margin: 2px 0 2px 0;
+}

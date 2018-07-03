@@ -3,8 +3,8 @@
 
         addSelectable();
 
-        $('.visit-block').draggable({
-            snap: "#calendar-day table tr td",
+        $('#calendar-day .calendar-visit').draggable({
+            snap: "#calendar-day .calendar-bottom-work_chair .calendar-bottom-item",
             snapMode: 'inner',
             grid: [103, 21],
             revert: "invalid",
@@ -19,7 +19,10 @@
             }
         });
 
-        $( "#calendar-day table tr td" ).droppable({
+        // $( "#calendar-day .calendar-top-work_chair" ).sortable({
+        // }).disableSelection();
+
+        $( "#calendar-day .calendar-bottom-work_chair .calendar-bottom-item" ).droppable({
             tolerance: 'pointer',
             drop: function( event, ui ) {
                 console.log(ui.helper);
@@ -30,12 +33,12 @@
     });
 
     function addSelectable() {
-        $('#calendar-day table').selectable({
-            filter: "tr td",
+        $('#calendar-day .calendar-bottom-work_chair').selectable({
+            filter: ".calendar-bottom-item",
             stop: function () {
                 $.contextMenu({
                     // define which elements trigger this menu
-                    selector: "#calendar-day .visit",
+                    selector: "#calendar-day .calendar-bottom-item",
                     // define the elements of the menu
                     items: {
                         foo: {name: "Заменить врача",
@@ -64,13 +67,13 @@
         console.log($(this));
         var id = [];
         var newSchedule = [];
-        if ($('.ui-selected').parent().is('[data-start-time]')) {
+        if ($('.ui-selected').is('[data-start-time]')) {
             $.post(
                 '/local/components/newSmile/calendar.day/ajax.php',
                 {
                     action: 'selectDoctorDay',
-                    time: $('.ui-selected').parent().data('start-time'),
-                    work_chair: $('.ui-selected').data('work-chair'),
+                    time: $('.ui-selected').data('start-time'),
+                    work_chair: $('.ui-selected').parent().data('work-chair'),
                     doctor_id: key
                 },
                 function () {
@@ -111,11 +114,11 @@
             '/local/components/newSmile/calendar.day/ajax.php',
             {
                 action: 'addVisit',
-                TIME_START: $('.ui-selected').first().parent().data('time-visit'),
-                TIME_END: $('.ui-selected').last().parent().data('time-visit'),
+                TIME_START: $('.ui-selected').first().data('schedule-time'),
+                TIME_END: $('.ui-selected').last().data('schedule-time'),
                 PATIENT_ID: key,
                 DOCTOR_ID: $('.ui-selected').first().data('doctor-id'),
-                WORK_CHAIR_ID: $('.ui-selected').first().data('work-chair')
+                WORK_CHAIR_ID: $('.ui-selected').first().parent().data('work-chair')
             },
             function () {
                 location.reload();
