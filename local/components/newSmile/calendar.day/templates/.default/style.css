@@ -35,6 +35,7 @@
     border-radius: 3px;
     box-shadow: 1px 1px 2px 0 #000;
     margin: 2px 0 2px 0;
+    z-index: 1;
 }
 .calendar-top {
     position: absolute;
@@ -68,12 +69,17 @@
     flex-direction: column;
     width: 100px;
     margin: 0 2px 0 2px;
+    /*z-index: -1;*/
 }
 .calendar-top-item {
-    position: absolute;
+    position: relative;
+    z-index: 1;
     top: 0;
     height: 25px;
     border-radius: 3px;
     box-shadow: 1px 1px 2px 0 #000;
     margin: 2px 0 2px 0;
+}
+.ui-state-highlight {
+    border: double 1px;
 }

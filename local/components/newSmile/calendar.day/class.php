@@ -3,6 +3,7 @@ if(!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED !== true) die();
 
 use Bitrix\Main\Loader,
     Bitrix\Main\Type\Date,
+    Bitrix\Main\Type\DateTime,
     Bitrix\Main\Config\Option,
     Mmit\NewSmile\VisitTable,
     Mmit\NewSmile\ScheduleTable,
@@ -95,6 +96,7 @@ class CalendarDayComponent extends \CBitrixComponent
 	protected function getVisit()
     {
         $isResult = false;
+        $arResult = array();
         $rsVisit = VisitTable::getList(array(
             'order' => array(
                 'TIME_START' => 'ASC'
@@ -113,9 +115,34 @@ class CalendarDayComponent extends \CBitrixComponent
         ));
         while ($arVisit = $rsVisit->Fetch())
         {
-            $this->arResult['WORK_CHAIR'][$arVisit['WORK_CHAIR_ID']]['VISITS'][] = $arVisit;
+            $arResult[] = $arVisit;
             $isResult = true;
         }
+
+        $timeStart = strtotime($this->thisDate . ' ' . Option::get('mmit.newsmile', "start_time_schedule", '00:00'));
+        $timeEnd = strtotime($this->thisDate . ' ' . Option::get('mmit.newsmile', "end_time_schedule", '00:00'));
+        foreach ($arResult as $arVisit)
+        {
+            while ($timeStart < $arVisit['TIME_START']->getTimestamp())
+            {
+                $this->arResult['WORK_CHAIR'][$arVisit['WORK_CHAIR_ID']]['VISITS'][] = array(
+                    'TIME_START' => new DateTime(date('Y-m-d H:i',$timeStart), 'Y-m-d H:i'),
+                    'TIME_END' => new DateTime(date('Y-m-d H:i',$timeStart + ScheduleTable::TIME_15_MINUTES), 'Y-m-d H:i'),
+                );
+                $timeStart += ScheduleTable::TIME_15_MINUTES;
+            }
+            $this->arResult['WORK_CHAIR'][$arVisit['WORK_CHAIR_ID']]['VISITS'][] = $arVisit;
+            $timeStart = $arVisit['TIME_END']->getTimestamp();
+        }
+        while ($timeStart < $timeEnd)
+        {
+            $this->arResult['WORK_CHAIR'][$arVisit['WORK_CHAIR_ID']]['VISITS'][] = array(
+                'TIME_START' => new DateTime(date('Y-m-d H:i',$timeStart), 'Y-m-d H:i'),
+                'TIME_END' => new DateTime(date('Y-m-d H:i',$timeStart + ScheduleTable::TIME_15_MINUTES), 'Y-m-d H:i'),
+            );
+            $timeStart += ScheduleTable::TIME_15_MINUTES;
+        }
+//        $this->arResult['WORK_CHAIR'][$arVisit['WORK_CHAIR_ID']]['VISITS'] = $arResult;
         return $isResult;
     }
 

@@ -46,7 +46,7 @@ if(!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED !== true) die();
                         <?
                         $background = (!empty($arSchedule['UF_DOCTOR_COLOR']))? 'background-color: ' . $arSchedule['UF_DOCTOR_COLOR'] . ';' : '';
                         ?>
-                        <div class="calendar-bottom-item"
+                        <div class="calendar-bottom-item <?if($arSchedule['ENGAGED'] == 'N'):?>active<?endif;?>"
                              data-schedule-id="<?=$arSchedule['ID']?>"
                              data-schedule-time="<?=$arSchedule['TIME']->format('Y-m-d H:i')?>"
                              data-doctor-id="<?=$arSchedule['UF_DOCTOR_ID']?>"
@@ -73,12 +73,18 @@ if(!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED !== true) die();
                         $background = (!empty($arVisit['UF_DOCTOR_COLOR']))? 'background-color: ' . $arVisit['UF_DOCTOR_COLOR'] . ';' : '';
                         $height = $arVisit['TIME_END']->getTimestamp() - $arVisit['TIME_START']->getTimestamp();
                         $height = intval($height / 900);
-                        $height = 'height: ' . $height * 28 . 'px;';
+                        $height = 'height: ' . ($height * 25 + ($height - 1) * 4) . 'px;';
                         ?>
-                        <div class="calendar-top-item calendar-visit"
-                             style="<?=$background?> <?=$height?>">
-                            <?=$arVisit['UF_PATIENT_NAME']?>
-                        </div>
+                        <?if($arVisit['ID']):?>
+                            <div class="calendar-top-item calendar-visit"
+                                 style="<?=$background?> <?=$height?>">
+                                <?=$arVisit['UF_PATIENT_NAME']?>
+                            </div>
+                        <?else:?>
+                            <div class="calendar-top-item calendar-visit"
+                                 style="<?=$background?> <?=$height?> width: 0;">
+                            </div>
+                        <?endif;?>
                     <?endforeach;?>
                 </div>
             <?endforeach;?>

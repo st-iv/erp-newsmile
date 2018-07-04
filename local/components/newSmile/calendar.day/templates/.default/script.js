@@ -3,38 +3,43 @@
 
         addSelectable();
 
-        $('#calendar-day .calendar-visit').draggable({
-            snap: "#calendar-day .calendar-bottom-work_chair .calendar-bottom-item",
-            snapMode: 'inner',
-            grid: [103, 21],
-            revert: "invalid",
-            // snapTolerance: 10,
-            // axis: "y",
-            cursor: "move",
-            cursorAt: { top: 0 },
-            zIndex: 10,
-            stop: function( event, ui ) {
-                //console.log(event, ui);
+        // $('#calendar-day .calendar-visit').draggable({
+        //     snap: "#calendar-day .calendar-bottom-work_chair .calendar-bottom-item",
+        //     snapMode: 'inner',
+        //     grid: [103, 21],
+        //     revert: "invalid",
+        //     // snapTolerance: 10,
+        //     // axis: "y",
+        //     cursor: "move",
+        //     cursorAt: { top: 0 },
+        //     zIndex: 10,
+        //     stop: function( event, ui ) {
+        //         //console.log(event, ui);
+        //
+        //     }
+        // });
 
+        $( "#calendar-day .calendar-top-work_chair" ).sortable({
+            connectWith: "#calendar-day .calendar-top-work_chair",
+            placeholder: "ui-state-highlight",
+            sort: function( event, ui ) {
+                $('.ui-sortable-placeholder').height($('.ui-sortable-helper').height());
             }
-        });
+        }).disableSelection();
 
-        // $( "#calendar-day .calendar-top-work_chair" ).sortable({
-        // }).disableSelection();
-
-        $( "#calendar-day .calendar-bottom-work_chair .calendar-bottom-item" ).droppable({
-            tolerance: 'pointer',
-            drop: function( event, ui ) {
-                console.log(ui.helper);
-                console.log($(this));
-            }
-        });
+        // $( "#calendar-day .calendar-bottom-work_chair .calendar-bottom-item" ).droppable({
+        //     tolerance: 'pointer',
+        //     drop: function( event, ui ) {
+        //         console.log(ui.helper);
+        //         console.log($(this));
+        //     }
+        // });
 
     });
 
     function addSelectable() {
         $('#calendar-day .calendar-bottom-work_chair').selectable({
-            filter: ".calendar-bottom-item",
+            filter: ".calendar-bottom-item.active",
             stop: function () {
                 $.contextMenu({
                     // define which elements trigger this menu
