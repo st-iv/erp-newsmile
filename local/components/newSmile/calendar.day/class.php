@@ -8,6 +8,7 @@ use Bitrix\Main\Loader,
     Mmit\NewSmile\VisitTable,
     Mmit\NewSmile\ScheduleTable,
     Mmit\NewSmile\DoctorTable,
+    Mmit\NewSmile\PatientCardTable,
     Mmit\NewSmile\WorkChairTable;
 
 class CalendarDayComponent extends \CBitrixComponent
@@ -28,7 +29,8 @@ class CalendarDayComponent extends \CBitrixComponent
         $isNext = $this->getWorkChair();
         $isNext = $isNext && $this->getSchedule();
         $isNext = $isNext && $this->getVisit();
-//        $isNext = $isNext && $this->getDoctor();
+        $this->getDoctors();
+        $this->getPatients();
 	}
 
     protected function getSchedule()
@@ -158,21 +160,29 @@ class CalendarDayComponent extends \CBitrixComponent
         return $isResult;
     }
 
-    protected function getDoctor()
+    protected function getDoctors()
     {
         $rsDoctor = DoctorTable::getList(array(
-            'filter' => array(
-                'ID' => array_merge($this->arResult['DOCTOR_ID'], $this->arResult['MAIN_DOCTOR_ID'])
+            'select' => array(
+                'ID', 'NAME'
             )
         ));
         while ($arDoctor = $rsDoctor->fetch())
         {
-            if (array_search($arDoctor['ID'], $this->arResult['DOCTOR_ID'])) {
-                $this->arResult['DOCTOR_ID'][$arDoctor['ID']] = $arDoctor;
-            }
-            if (array_search($arDoctor['ID'], $this->arResult['MAIN_DOCTOR_ID'])) {
-                $this->arResult['MAIN_DOCTOR_ID'][$arDoctor['ID']] = $arDoctor;
-            }
+            $this->arResult['DOCTORS'][$arDoctor['ID']] = $arDoctor['NAME'];
+        }
+    }
+
+    protected function getPatients()
+    {
+        $rsPatient = PatientCardTable::getList(array(
+            'select' => array(
+                'ID', 'NAME'
+            )
+        ));
+        while ($arPatient = $rsPatient->fetch())
+        {
+            $this->arResult['PATIENTS'][$arPatient['ID']] = $arPatient['NAME'];
         }
     }
 	

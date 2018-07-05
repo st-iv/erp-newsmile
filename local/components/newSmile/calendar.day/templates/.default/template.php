@@ -17,7 +17,7 @@ if(!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED !== true) die();
                 <div class="calendar-bottom-work_chair"
                      data-work-chair="<?=$arWorkChair['ID'];?>">
                     <?foreach ($arWorkChair['MAIN_DOCTORS'] as $arDoctor):?>
-                        <div class="calendar-bottom-item"
+                        <div class="calendar-bottom-item active"
                              data-start-time="<?=$arDoctor['TIME'];?>">
                             <?=$arDoctor['NAME']?>
                         </div>
@@ -91,3 +91,13 @@ if(!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED !== true) die();
         </div>
     </div>
 </div>
+
+<script>
+    BX.ready(function(){
+        params = <?=CUtil::PhpToJSObject(array(
+            'doctors' => $arResult['DOCTORS'],
+            'patients' => $arResult['PATIENTS'],
+        ));?>;
+        window.calendarDay = new window.calendarDay(params);
+    });
+</script>
