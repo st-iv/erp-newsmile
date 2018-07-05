@@ -1,0 +1,8 @@
+.patient-edit {
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: row;
+}
+.patient-edit table {
+    border: 1px solid;
+}
