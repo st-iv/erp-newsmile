@@ -79,15 +79,53 @@ class mmit_newsmile extends CModule
     }
     public function testInstallDB()
     {
-        for ($i = 1; $i < 4; $i++) {
+        $arWorkChairs = array(
+            'Кресло 1',
+            'Кресло 2',
+            'Кресло 3',
+        );
+        foreach ($arWorkChairs as $workChair)
+        {
             NewSmile\WorkChairTable::add(array(
-                "NAME" => 'Chair ' . $i
+                "NAME" => $workChair
             ));
+        }
+        $arDoctors = array(
+            'Васильева Е.В.',
+            'Виноградова И.Б.',
+            'Груничев В.А.',
+            'Иванова В.В.',
+            'Столяров И.П.',
+        );
+        foreach ($arDoctors as $doctors)
+        {
             NewSmile\DoctorTable::add(array(
-                "NAME" => 'Doctor ' . $i
+                "NAME" => $doctors
             ));
+        }
+        $arPatient = array(
+            'Калинина А.И',
+            'Сергеева И.Г',
+            'Горохов Ф.А',
+            'Акилов Г.Р',
+            'Полумиленко Л.П',
+            'Авганец В.В',
+        );
+        foreach ($arPatient as $patient)
+        {
             NewSmile\PatientCardTable::add(array(
-                "NAME" => 'Patient ' . $i
+                "NAME" => $patient
+            ));
+        }
+        $arStatusPatient = array(
+            'Первичный',
+            'Отконсультирован',
+            'Повторный',
+        );
+        foreach ($arStatusPatient as $statusPatient)
+        {
+            NewSmile\StatusPatientTable::add(array(
+                "NAME" => $statusPatient
             ));
         }
     }
