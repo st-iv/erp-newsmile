@@ -112,3 +112,11 @@ if(!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED !== true) die();
         </td>
     </tr>
 </table>
+<script>
+    BX.ready(function(){
+        params = <?=CUtil::PhpToJSObject(array(
+            'doctors' => $arResult['DOCTORS']
+        ));?>;
+        window.scheduleSettings = new window.scheduleSettings(params);
+    });
+</script>

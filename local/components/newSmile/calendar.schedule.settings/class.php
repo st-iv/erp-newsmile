@@ -27,6 +27,8 @@ class CalendarScheduleSettingsComponent extends \CBitrixComponent
         $this->getVisit($this->arResult['THIS_DATE']);
         $this->getSchedule($this->arResult['THIS_DATE']);
         $this->getDoctor();
+        $this->getAllDoctor();
+
 	}
 
 	protected function getVisit($date)
@@ -122,6 +124,18 @@ class CalendarScheduleSettingsComponent extends \CBitrixComponent
             if (array_search($arDoctor['ID'], $this->arResult['MAIN_DOCTOR_ID'])) {
                 $this->arResult['MAIN_DOCTOR_ID'][$arDoctor['ID']] = $arDoctor;
             }
+        }
+    }
+    protected function getAllDoctor()
+    {
+        $rsDoctor = DoctorTable::getList(array(
+            'select' => array(
+                'ID', 'NAME'
+            )
+        ));
+        while ($arDoctor = $rsDoctor->fetch())
+        {
+            $this->arResult['DOCTORS'][$arDoctor['ID']] = $arDoctor['NAME'];
         }
     }
 	
