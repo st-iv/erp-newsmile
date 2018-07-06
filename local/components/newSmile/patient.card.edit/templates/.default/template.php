@@ -8,7 +8,7 @@
 if(!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED !== true) die();
 
 ?>
-<form action="" class="patient-edit">
+<form action="" class="patient-edit" method="post">
     <table>
         <tr>
             <td>
