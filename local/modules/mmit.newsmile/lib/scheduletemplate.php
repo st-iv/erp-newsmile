@@ -84,7 +84,7 @@ class ScheduleTemplateTable extends Entity\DataManager
 
         );
     }
-    public function addWeekSchedule($dateStart = self::DEFAULT_START_DATE)
+    public static function addWeekSchedule($dateStart = self::DEFAULT_START_DATE)
     {
 
         $arResult = array();
