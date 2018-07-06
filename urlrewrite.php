@@ -48,4 +48,12 @@ $arUrlRewrite=array (
     'PATH' => '/bitrix/services/rest/index.php',
     'SORT' => 100,
   ),
+  6 =>
+  array (
+    'CONDITION' => '#^/patientcard/#',
+    'RULE' => '',
+    'ID' => 'newSmile:patient.card',
+    'PATH' => '/patientcard/index.php',
+    'SORT' => 100,
+  ),
 );
