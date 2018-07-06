@@ -10,17 +10,6 @@ use Bitrix\Main\Loader,
 
 class CalendarComponent extends \CBitrixComponent
 {
-    private $patientCardID;
-    public function __construct($component = null)
-    {
-        parent::__construct($component);
-
-        if (!empty($this->request['ID']) && intval($this->request['ID'])) {
-            $this->patientCardID = intval($this->request['ID']);
-        }else{
-            die();
-        }
-    }
 
     protected function requestResult($request)
     {
@@ -96,13 +85,13 @@ class CalendarComponent extends \CBitrixComponent
             if (!empty($arFields['USER']['PERSONAL_BIRTHDAY'])) {
                 $arFields['USER']['PERSONAL_BIRTHDAY'] = new Date($arFields['USER']['PERSONAL_BIRTHDAY'], 'Y-m-d');
             }
-            $userID = PatientCardTable::getUserIDByID($this->patientCardID);
+            $userID = PatientCardTable::getUserIDByID($this->arParams['ID']);
             $user = new CUser();
             $user->Update($userID, $arFields['USER']);
             unset($arFields['USER']);
         }
         if (!empty($arFields)) {
-            PatientCardTable::update($this->patientCardID, $arFields);
+            PatientCardTable::update($this->arParams['ID'], $arFields);
         }
     }
 
