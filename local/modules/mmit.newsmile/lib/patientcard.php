@@ -29,15 +29,12 @@ class PatientCardTable extends Entity\DataManager
                 'title' => 'ID',
             )),
             new Entity\DatetimeField('TIMESTAMP_X', array(
-                'title' => Loc::getMessage('MMIT_VISIT_TIMESTAMP_X'),
-                'default_value' => 'Дата создания'
+                'title' => 'Дата создания',
+                'default_value' => DateTime::createFromTimestamp(time())
             )),
             new Entity\StringField('NAME', array(
                 'required' => true,
                 'title' => 'ФИО',
-                'default_value' => function () {
-                    return Loc::getMessage('MMIT_VISIT_NAME_DEFAULT_VALUE');
-                },
                 'validation' => function () {
                     return array(
                         new Entity\Validator\Length(null, 255),
@@ -46,6 +43,7 @@ class PatientCardTable extends Entity\DataManager
             )),
             new Entity\IntegerField('USER_ID', array(
                 'title' => 'Пользователь',
+                'default_value' => 0
             )),
             new Entity\ReferenceField('USER',
                 'Bitrix\Main\User',
@@ -56,7 +54,8 @@ class PatientCardTable extends Entity\DataManager
             ),
             new Entity\IntegerField('STATUS_ID',
                 array(
-                    'title' => 'Статус пациента'
+                    'title' => 'Статус пациента',
+                    'default_value' => 0
                 )
             ),
             new Entity\ReferenceField('STATUS',
@@ -68,42 +67,50 @@ class PatientCardTable extends Entity\DataManager
             ),
             new Entity\StringField('NUMBER',
                 array(
-                    'title' => 'Номер карты'
+                    'title' => 'Номер карты',
+                    'default_value' => ''
                 )
             ),
             new Entity\StringField('FIRST_PRICE',
                 array(
-                    'title' => 'Начальная сумма лечения'
+                    'title' => 'Начальная сумма лечения',
+                    'default_value' => ''
                 )
             ),
             new Entity\DatetimeField('FIRST_VISIT',
                 array(
-                    'title' => 'Первый прием'
+                    'title' => 'Первый прием',
+                    'default_value' => DateTime::createFromTimestamp(0)
                 )
             ),
             new Entity\StringField('REPRESENTATIVE',
                 array(
-                    'title' => 'Представитель'
+                    'title' => 'Представитель',
+                    'default_value' => ''
                 )
             ),
             new Entity\StringField('PARENTS',
                 array(
-                    'title' => 'Родитель'
+                    'title' => 'Родитель',
+                    'default_value' => ''
                 )
             ),
             new Entity\BooleanField('SMS_NOTICE',
                 array(
-                    'title' => 'СМС рассылка'
+                    'title' => 'СМС рассылка',
+                    'default_value' => 0
                 )
             ),
             new Entity\TextField('COMMENT',
                 array(
-                    'title' => 'Комментарий'
+                    'title' => 'Комментарий',
+                    'default_value' => ''
                 )
             ),
             new Entity\IntegerField('DOCTORS_ID',
                 array(
                     'title' => 'Лечащие врачи',
+                    'default_value' => 0,
                     'serialized' => true,
                     'save_data_modification' => function(){
                         return [
@@ -127,42 +134,56 @@ class PatientCardTable extends Entity\DataManager
             ),
             new Entity\BooleanField('NEED_CHECK',
                 array(
-                    'title' => 'Нужен чек'
+                    'title' => 'Нужен чек',
+                    'default_value' => 0
                 )
             ),
             new Entity\StringField('PASSPORT_SN',
                 array(
-                    'title' => 'Серия и номер'
+                    'title' => 'Серия и номер',
+                    'default_value' => ''
                 )
             ),
             new Entity\StringField('PASSPORT_ISSUED_BY',
                 array(
-                    'title' => 'Кем выдан'
+                    'title' => 'Кем выдан',
+                    'default_value' => ''
                 )
             ),
             new Entity\DateField('PASSPORT_ISSUED_DATE',
                 array(
-                    'title' => 'Дата выдачи'
+                    'title' => 'Дата выдачи',
+                    'default_value' => DateTime::createFromTimestamp(0)
+                )
+            ),
+            new Entity\StringField('PASSPORT_PLACE_BIRTH',
+                array(
+                    'title' => 'Место рождения',
+                    'default_value' => ''
                 )
             ),
             new Entity\StringField('PASSPORT_ADDRESS',
                 array(
-                    'title' => 'Адрес регистрации'
+                    'title' => 'Адрес регистрации',
+                    'default_value' => ''
                 )
             ),
             new Entity\DateField('PASSPORT_ADDRESS_DATE',
                 array(
-                    'title' => 'Дата регистрации'
+                    'title' => 'Дата регистрации',
+                    'default_value' => DateTime::createFromTimestamp(0)
                 )
             ),
             new Entity\TextField('PASSPORT_OTHER',
                 array(
-                    'title' => 'Другой документ'
+                    'title' => 'Другой документ',
+                    'default_value' => ''
                 )
             ),
             new Entity\StringField('SOURCE',
                 array(
-                    'title' => 'Источник'
+                    'title' => 'Источник',
+                    'default_value' => ''
                 )
             ),
             new Entity\EnumField('ARCHIVE',
@@ -175,6 +196,7 @@ class PatientCardTable extends Entity\DataManager
             new Entity\IntegerField('FAMILY_ID',
                 array(
                     'title' => 'Члены семьи',
+                    'default_value' => 0,
                     'serialized' => true,
                     'save_data_modification' => function(){
                         return [
@@ -196,11 +218,69 @@ class PatientCardTable extends Entity\DataManager
                     'title' => 'Лечащие врачи'
                 )
             ),
-            new Entity\EnumField('JOINT_ACCOUNT', array(
-                    'title' => 'Общий счет'
+            new Entity\BooleanField('JOINT_ACCOUNT', array(
+                    'title' => 'Общий счет',
+                    'default_value' => 0
                 )
             )
 
         );
+    }
+
+    /**
+     * Метод вовращает массив с информацией о карте клиента, включая информацию пользователя
+     *
+     * @param $id
+     */
+    public static function getArrayById($id)
+    {
+        $rsResult = self::getList(array(
+            'select' => array(
+                '*',
+                'USER_LAST_NAME' => 'USER.LAST_NAME',
+                'USER_NAME' => 'USER.NAME',
+                'USER_SECOND_NAME' => 'USER.SECOND_NAME',
+                'USER_PERSONAL_BIRTHDAY' => 'USER.PERSONAL_BIRTHDAY',
+                'USER_PERSONAL_GENDER' => 'USER.PERSONAL_GENDER',
+                'USER_PERSONAL_PHONE' => 'USER.PERSONAL_PHONE',
+                'USER_PERSONAL_MOBILE' => 'USER.PERSONAL_MOBILE',
+                'USER_EMAIL' => 'USER.EMAIL',
+                'USER_PERSONAL_CITY' => 'USER.PERSONAL_CITY',
+                'USER_PERSONAL_ZIP' => 'USER.PERSONAL_ZIP',
+                'USER_PERSONAL_STREET' => 'USER.PERSONAL_STREET',
+                'USER_PERSONAL_NOTES' => 'USER.PERSONAL_NOTES',
+                'USER_WORK_COMPANY' => 'USER.WORK_COMPANY',
+                'USER_WORK_POSITION' => 'USER.WORK_POSITION',
+            ),
+            'filter' => array(
+                'ID' => $id
+            )
+        ));
+        if ($arResult = $rsResult->fetch()) {
+            return $arResult;
+        }
+        return false;
+    }
+
+    /**
+     * Метод возвращает ID пользователя привязаного к карточке поциента
+     *
+     * @param $id
+     * @return int
+     */
+    public static function getUserIDByID($id)
+    {
+        $rsResult = self::getList(array(
+            'select' => array(
+                'USER_ID'
+            ),
+            'filter' => array(
+                'ID' => $id
+            )
+        ));
+        if ($arResult = $rsResult->fetch()) {
+            return $arResult['USER_ID'];
+        }
+        return 0;
     }
 }
