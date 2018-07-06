@@ -8,7 +8,7 @@ use Bitrix\Main\Loader,
     Mmit\NewSmile\PatientCardTable,
     Mmit\NewSmile\DoctorTable;
 
-class CalendarComponent extends \CBitrixComponent
+class PatientCardEditComponent extends \CBitrixComponent
 {
 
     protected function requestResult($request)
