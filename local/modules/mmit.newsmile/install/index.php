@@ -53,11 +53,13 @@ class mmit_newsmile extends CModule
             NewSmile\ClinicTable::getEntity()->createDbTable();
             NewSmile\DoctorTable::getEntity()->createDbTable();
             NewSmile\PatientCardTable::getEntity()->createDbTable();
+            NewSmile\StatusPatientTable::getEntity()->createDbTable();
             NewSmile\ScheduleTable::getEntity()->createDbTable();
             NewSmile\ScheduleTemplateTable::getEntity()->createDbTable();
             NewSmile\WorkChairTable::getEntity()->createDbTable();
             NewSmile\WaitingListTable::getEntity()->createDbTable();
 
+            NewSmile\ScheduleTemplateTable::addWeekSchedule();
             $this->testInstallDB();
         }
     }
@@ -71,6 +73,7 @@ class mmit_newsmile extends CModule
             $connection->dropTable(NewSmile\ClinicTable::getTableName());
             $connection->dropTable(NewSmile\DoctorTable::getTableName());
             $connection->dropTable(NewSmile\PatientCardTable::getTableName());
+            $connection->dropTable(NewSmile\StatusPatientTable::getTableName());
             $connection->dropTable(NewSmile\ScheduleTable::getTableName());
             $connection->dropTable(NewSmile\ScheduleTemplateTable::getTableName());
             $connection->dropTable(NewSmile\WorkChairTable::getTableName());
@@ -91,16 +94,32 @@ class mmit_newsmile extends CModule
             ));
         }
         $arDoctors = array(
-            'Васильева Е.В.',
-            'Виноградова И.Б.',
-            'Груничев В.А.',
-            'Иванова В.В.',
-            'Столяров И.П.',
+            array(
+                'NAME' => 'Васильева Е.В.',
+                'COLOR' => '#FF9E55'
+            ),
+            array(
+                'NAME' => 'Виноградова И.Б.',
+                'COLOR' => '#FFFD64'
+            ),
+            array(
+                'NAME' => 'Груничев В.А.',
+                'COLOR' => '#D8FF5C'
+            ),
+            array(
+                'NAME' => 'Иванова В.В.',
+                'COLOR' => '#9BFF55'
+            ),
+            array(
+                'NAME' => 'Столяров И.П.',
+                'COLOR' => '#5EFF77'
+            ),
         );
-        foreach ($arDoctors as $doctors)
+        foreach ($arDoctors as $arDoctor)
         {
             NewSmile\DoctorTable::add(array(
-                "NAME" => $doctors
+                "NAME" => $arDoctor['NAME'],
+                "COLOR" => $arDoctor['COLOR']
             ));
         }
         $arPatient = array(
