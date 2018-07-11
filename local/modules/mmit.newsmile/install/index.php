@@ -54,6 +54,8 @@ class mmit_newsmile extends CModule
             NewSmile\DoctorTable::getEntity()->createDbTable();
             NewSmile\PatientCardTable::getEntity()->createDbTable();
             NewSmile\StatusPatientTable::getEntity()->createDbTable();
+            NewSmile\TreatmentPlanTable::getEntity()->createDbTable();
+            NewSmile\TreatmentPlanItemTable::getEntity()->createDbTable();
             NewSmile\ScheduleTable::getEntity()->createDbTable();
             NewSmile\ScheduleTemplateTable::getEntity()->createDbTable();
             NewSmile\WorkChairTable::getEntity()->createDbTable();
@@ -74,6 +76,8 @@ class mmit_newsmile extends CModule
             $connection->dropTable(NewSmile\DoctorTable::getTableName());
             $connection->dropTable(NewSmile\PatientCardTable::getTableName());
             $connection->dropTable(NewSmile\StatusPatientTable::getTableName());
+            $connection->dropTable(NewSmile\TreatmentPlanTable::getTableName());
+            $connection->dropTable(NewSmile\TreatmentPlanItemTable::getTableName());
             $connection->dropTable(NewSmile\ScheduleTable::getTableName());
             $connection->dropTable(NewSmile\ScheduleTemplateTable::getTableName());
             $connection->dropTable(NewSmile\WorkChairTable::getTableName());
