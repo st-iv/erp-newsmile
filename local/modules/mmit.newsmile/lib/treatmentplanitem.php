@@ -8,7 +8,6 @@
 namespace Mmit\NewSmile;
 
 use Bitrix\Main\Entity;
-use Bitrix\Main\Loader;
 use Bitrix\Main\Localization\Loc;
 use Bitrix\Main\Type\DateTime;
 use Bitrix\Seo\Engine\Bitrix;
@@ -17,31 +16,6 @@ Loc::loadMessages(__FILE__);
 
 class TreatmentPlanItemTable extends Entity\DataManager
 {
-
-    const CODE_IBLOCK_SERVICES = 'services';
-
-    /**
-     * Возвращает id инфоблока с Услугами
-     *
-     * @return int
-     */
-    public static function getIDIblockServices()
-    {
-        if (Loader::includeModule('iblock')) {
-
-            $rsIBlock = \CIBlock::GetList(
-                array(),
-                array(
-                    'CODE' => self::CODE_IBLOCK_SERVICES
-                )
-            );
-
-            if ($arIBlock = $rsIBlock->Fetch()) {
-                return $arIBlock['ID'];
-            }
-        }
-        return 0;
-    }
 
     public static function getTableName()
     {
