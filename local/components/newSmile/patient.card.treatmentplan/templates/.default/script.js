@@ -1,0 +1,61 @@
+;(function () {
+    window.treatmentPlan = function (params) {
+        this.params = params;
+        this.init();
+    };
+    window.treatmentPlan.prototype.init = function () {
+        this.loadElement();
+        this.addElement();
+
+        $('.claw-list').selectable({
+            filter: "td[data-measure-id]",
+            stop: function () {
+
+            }
+        });
+    };
+
+    window.treatmentPlan.prototype.loadElement = function () {
+        $('.section-service').on('click', function () {
+            var sectionId = $(this).data('section-id');
+            var planId = $(this).parents('table').data('plan-id');
+            $.post(
+                '',
+                {
+                    LOAD_ELEMENTS: 'Y',
+                    SECTION_ID: sectionId
+                },
+                function (data) {
+                    $('#plan-elements-' + planId).html(data)
+                },
+                'html'
+            )
+        });
+    };
+
+    window.treatmentPlan.prototype.addElement = function () {
+        $('.element-service').on('click', function () {
+            var elementId = $(this).data('element-id');
+            var planId = $(this).parents('table').data('plan-id');
+            var arMeasure = [];
+            $(this).parents('.treatment-plan').find('.claw-list td.ui-selected').each(function () {
+                arMeasure.push($(this).data('measure-id'))
+            });
+            $.post(
+                '',
+                {
+                    LOAD_ITEMS: 'Y',
+                    ADD_ELEMENTS: 'Y',
+                    ELEMENT_ID: elementId,
+                    MEASURE: arMeasure,
+                    PLAN_ID: planId
+                },
+                function (data) {
+                    $('#plan-items-' + planId).html(data)
+                },
+                'html'
+            )
+        });
+    };
+
+})();
