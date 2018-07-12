@@ -42,6 +42,48 @@ class TreatmentPlanTable extends Entity\DataManager
         return 0;
     }
 
+    public static function addItemToTreatmentPlan($ID, $elementID, $measure)
+    {
+        $arFields = array();
+        if (intval($ID)) {
+            $arFields['PLAN_ID'] = intval($ID);
+        }
+        if (intval($elementID)) {
+            $arFields['PRODUCT_ID'] = intval($elementID);
+        }
+        $arFields['QUANTITY'] = 1;
+        $arFields['MEASURE'] = $measure;
+        /*
+         * сделать проверку на единицу измерения
+         */
+        $arFields['MIN_PRICE'] = 0;
+        $arFields['MAX_PRICE'] = 0;
+        $arFields['MIN_SUM'] = 0;
+        $arFields['MAX_SUM'] = 0;
+        if (Loader::includeModule('iblock')) {
+            $rsResult = \CIBlockElement::GetList(
+                array(),
+                array(
+                    'ID' => $arFields['PRODUCT_ID']
+                ),
+                false,
+                false,
+                array(
+                    'ID',
+                    'PROPERTY_MINIMUM_PRICE',
+                    'PROPERTY_MAXIMUM_PRICE'
+                )
+            );
+            if ($arResult = $rsResult->Fetch()) {
+                $arFields['MIN_PRICE'] = $arResult['PROPERTY_MINIMUM_PRICE_VALUE'];
+                $arFields['MAX_PRICE'] = $arResult['PROPERTY_MAXIMUM_PRICE_VALUE'];
+                $arFields['MIN_SUM'] = $arFields['MIN_PRICE'] * $arFields['QUANTITY'];
+                $arFields['MAX_SUM'] = $arFields['MAX_PRICE'] * $arFields['QUANTITY'];
+            }
+        }
+        TreatmentPlanItemTable::add($arFields);
+    }
+
     public static function getTableName()
     {
         return 'm_newsmile_treatmentplan';
