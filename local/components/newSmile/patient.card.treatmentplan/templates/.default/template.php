@@ -22,51 +22,12 @@ if(!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED !== true) die();
         </tr>
         <tr>
             <td colspan="2">
-                <table class="claw-list">
-                    <tr>
-                        <td>В</td>
-                        <td data-measure-id="в.ч.">в.ч.</td>
-                        <td data-measure-id="18">18</td>
-                        <td data-measure-id="17">17</td>
-                        <td data-measure-id="16">16</td>
-                        <td data-measure-id="15">15</td>
-                        <td data-measure-id="14">14</td>
-                        <td data-measure-id="13">13</td>
-                        <td data-measure-id="12">12</td>
-                        <td data-measure-id="11">11</td>
-                        <td data-measure-id="21">21</td>
-                        <td data-measure-id="22">22</td>
-                        <td data-measure-id="23">23</td>
-                        <td data-measure-id="24">24</td>
-                        <td data-measure-id="25">25</td>
-                        <td data-measure-id="26">26</td>
-                        <td data-measure-id="27">27</td>
-                        <td data-measure-id="28">28</td>
-                        <td rowspan="2">Очистить</td>
-                        <td>З</td>
-                    </tr>
-                    <tr>
-                        <td>Д</td>
-                        <td data-measure-id="н.ч.">н.ч.</td>
-                        <td data-measure-id="48">48</td>
-                        <td data-measure-id="47">47</td>
-                        <td data-measure-id="46">46</td>
-                        <td data-measure-id="45">45</td>
-                        <td data-measure-id="44">44</td>
-                        <td data-measure-id="43">43</td>
-                        <td data-measure-id="42">42</td>
-                        <td data-measure-id="41">41</td>
-                        <td data-measure-id="31">31</td>
-                        <td data-measure-id="32">32</td>
-                        <td data-measure-id="33">33</td>
-                        <td data-measure-id="34">34</td>
-                        <td data-measure-id="35">35</td>
-                        <td data-measure-id="36">36</td>
-                        <td data-measure-id="37">37</td>
-                        <td data-measure-id="38">38</td>
-                        <td>К</td>
-                    </tr>
-                </table>
+                <?$APPLICATION->IncludeComponent(
+                    "newSmile:tooth.list",
+                    "",
+                    Array(
+                    )
+                );?>
             </td>
         </tr>
         <tr>

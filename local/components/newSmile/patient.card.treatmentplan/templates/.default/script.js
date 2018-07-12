@@ -7,12 +7,6 @@
         this.loadElement();
         this.addElement();
 
-        $('.claw-list').selectable({
-            filter: "td[data-measure-id]",
-            stop: function () {
-
-            }
-        });
     };
 
     window.treatmentPlan.prototype.loadElement = function () {
@@ -47,7 +41,7 @@
                     LOAD_ITEMS: 'Y',
                     ADD_ELEMENTS: 'Y',
                     ELEMENT_ID: elementId,
-                    MEASURE: arMeasure,
+                    MEASURE: window.arToothSelect,
                     PLAN_ID: planId
                 },
                 function (data) {
