@@ -36,7 +36,10 @@ class TreatmentPlanItemTable extends Entity\DataManager
             )),
             new Entity\IntegerField('USER_CREATE_ID', array(
                 'title' => 'Кто создал',
-                'default_value' => 0
+                'default_value' => function () {
+                    global $USER;
+                    return $USER->GetID();
+                }
             )),
             new Entity\ReferenceField('USER_CREATE',
                 'Bitrix\Main\User',
@@ -51,7 +54,10 @@ class TreatmentPlanItemTable extends Entity\DataManager
             )),
             new Entity\IntegerField('USER_UPDATE_ID', array(
                 'title' => 'Кто изменил',
-                'default_value' => 0
+                'default_value' => function () {
+                    global $USER;
+                    return $USER->GetID();
+                }
             )),
             new Entity\ReferenceField('USER_UPDATE',
                 'Bitrix\Main\User',
@@ -86,11 +92,17 @@ class TreatmentPlanItemTable extends Entity\DataManager
             new Entity\StringField('MEASURE', array(
                 'title' => 'Единица'
             )),
-            new Entity\FloatField('PRICE', array(
-                'title' => 'Цена'
+            new Entity\FloatField('MIN_PRICE', array(
+                'title' => 'Минимальная цена'
             )),
-            new Entity\FloatField('SUM', array(
-                'title' => 'Сумма'
+            new Entity\FloatField('MAX_PRICE', array(
+                'title' => 'Максимальная цена'
+            )),
+            new Entity\FloatField('MIN_SUM', array(
+                'title' => 'Минимальная сумма'
+            )),
+            new Entity\FloatField('MAX_SUM', array(
+                'title' => 'Максимальная сумма'
             )),
         );
     }
