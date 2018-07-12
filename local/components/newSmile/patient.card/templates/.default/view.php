@@ -7,3 +7,11 @@
         'ID' => $arResult['VARIABLES']['ELEMENT_ID']
     )
 );?>
+
+<?$APPLICATION->IncludeComponent(
+    "newSmile:patient.card.treatmentplan",
+    "",
+    Array(
+        'PATIENT_ID' => $arResult['VARIABLES']['ELEMENT_ID'],
+    )
+);?>
