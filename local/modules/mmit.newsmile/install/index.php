@@ -50,6 +50,7 @@ class mmit_newsmile extends CModule
         if (Loader::includeModule($this->MODULE_ID))
         {
             NewSmile\VisitTable::getEntity()->createDbTable();
+            NewSmile\StatusVisitTable::getEntity()->createDbTable();
             NewSmile\ClinicTable::getEntity()->createDbTable();
             NewSmile\DoctorTable::getEntity()->createDbTable();
             NewSmile\PatientCardTable::getEntity()->createDbTable();
@@ -62,6 +63,7 @@ class mmit_newsmile extends CModule
             NewSmile\WaitingListTable::getEntity()->createDbTable();
 
             NewSmile\ScheduleTemplateTable::addWeekSchedule();
+            NewSmile\VisitTable::createStatus();
             $this->testInstallDB();
         }
     }
@@ -72,6 +74,7 @@ class mmit_newsmile extends CModule
         {
             $connection = Application::getInstance()->getConnection();
             $connection->dropTable(NewSmile\VisitTable::getTableName());
+            $connection->dropTable(NewSmile\StatusVisitTable::getTableName());
             $connection->dropTable(NewSmile\ClinicTable::getTableName());
             $connection->dropTable(NewSmile\DoctorTable::getTableName());
             $connection->dropTable(NewSmile\PatientCardTable::getTableName());

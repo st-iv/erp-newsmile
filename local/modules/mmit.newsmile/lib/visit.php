@@ -15,6 +15,13 @@ Loc::loadMessages(__FILE__);
 
 class VisitTable extends Entity\DataManager
 {
+    const STATUS_VISIT = 1;
+    const STATUS_START = 2;
+    const STATUS_PAYMENT = 3;
+    const STATUS_CARD = 4;
+    const STATUS_END = 5;
+    const STATUS_CANCEL = 6;
+
     public static function getTableName()
     {
         return 'm_newsmile_visit';
@@ -32,6 +39,17 @@ class VisitTable extends Entity\DataManager
                 'title' => 'Дата создания',
                 'default_value' => Date::createFromTimestamp(time())
             )),
+            new Entity\IntegerField('STATUS_ID', array(
+                'title' => 'STATUS_ID',
+                'default_value' => 0
+            )),
+            new Entity\ReferenceField('STATUS',
+                'Mmit\NewSmile\StatusVisit',
+                array('=this.STATUS_ID' => 'ref.ID'),
+                array(
+                    'title' => 'Статус приема'
+                )
+            ),
             new Entity\DateField('DATE_START', array(
                 'title' => 'Дата'
             )),
@@ -115,5 +133,32 @@ class VisitTable extends Entity\DataManager
             $strSqlGroup
         );
         return $result;
+    }
+
+    public static function createStatus()
+    {
+        $arFields = [
+            [
+                'NAME' => 'Пациент ожидает'
+            ],
+            [
+                'NAME' => 'Выполняется'
+            ],
+            [
+                'NAME' => 'Оплата'
+            ],
+            [
+                'NAME' => 'Заполнение истории болезни'
+            ],
+            [
+                'NAME' => 'Завершен'
+            ],
+            [
+                'NAME' => 'Отменен'
+            ],
+        ];
+        foreach ($arFields as $item) {
+            StatusVisitTable::add($item);
+        }
     }
 }
