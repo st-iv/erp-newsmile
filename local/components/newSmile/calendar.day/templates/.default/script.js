@@ -42,6 +42,16 @@
                 }
             }).disableSelection();
 
+            $.contextMenu({
+                selector: '#calendar-day .calendar-visit',
+                items: {
+                    start: {
+                        name: 'Начать прием',
+                        callback: startVisit
+                    }
+                }
+            });
+
             // $( "#calendar-day .calendar-bottom-work_chair .calendar-bottom-item" ).droppable({
             //     tolerance: 'pointer',
             //     drop: function( event, ui ) {
@@ -51,6 +61,26 @@
             // });
 
         });
+
+        function startVisit(key, opt) {
+            var id = $(this).data('visit-id');
+
+
+            $.post(
+                '/local/components/newSmile/calendar.day/ajax.php',
+                {
+                    action: 'updateStatusVisit',
+                    id: id,
+                    status: key,
+                },
+                function () {
+                    location.reload();
+                },
+                'json'
+            ).fail(function (data) {
+                console.log(data);
+            });
+        }
 
         function addSelectable() {
             $('#calendar-day .calendar-bottom-work_chair').selectable({

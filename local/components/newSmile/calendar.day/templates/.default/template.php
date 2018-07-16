@@ -77,12 +77,14 @@ if(!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED !== true) die();
                         ?>
                         <?if($arVisit['ID']):?>
                             <div class="calendar-top-item calendar-visit"
-                                 style="<?=$background?> <?=$height?>">
-                                <?=$arVisit['UF_PATIENT_NAME']?>
+                                 style="<?=$background?> <?=$height?>"
+                                 data-visit-id="<?=$arVisit['ID']?>">
+                                <?=$arVisit['UF_PATIENT_NAME']?><br>
+                                <?=$arVisit['STATUS_NAME']?>
                             </div>
                         <?else:?>
                             <div class="calendar-top-item calendar-visit"
-                                 style="<?=$background?> <?=$height?> width: 0;">
+                                 style="<?=$background?> <?=$height?> width: 1px;">
                             </div>
                         <?endif;?>
                     <?endforeach;?>

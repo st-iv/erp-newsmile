@@ -112,6 +112,8 @@ class CalendarDayComponent extends \CBitrixComponent
                 'TIME_END',
                 'UF_PATIENT_' => 'PATIENT',
                 'UF_DOCTOR_' => 'DOCTOR',
+                'STATUS_ID',
+                'STATUS_NAME' => 'STATUS.NAME',
                 'WORK_CHAIR_ID',
             )
         ));

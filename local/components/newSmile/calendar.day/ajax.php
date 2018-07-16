@@ -120,5 +120,17 @@ if (isset($_REQUEST['action'])) {
                 }
             }
             break;
+        case 'updateStatusVisit':
+            $arFiled = [];
+            switch ($_REQUEST['status'])
+            {
+                case 'start':
+                    $arFiled['STATUS_ID'] = VisitTable::STATUS_START;
+                    break;
+            }
+            if (!empty($arFiled)) {
+                VisitTable::update($_REQUEST['id'], $arFiled);
+            }
+            break;
     }
 }
