@@ -62,7 +62,6 @@ class mmit_newsmile extends CModule
             NewSmile\WorkChairTable::getEntity()->createDbTable();
             NewSmile\WaitingListTable::getEntity()->createDbTable();
 
-            NewSmile\ScheduleTemplateTable::addWeekSchedule();
             NewSmile\VisitTable::createStatus();
             $this->testInstallDB();
         }
@@ -89,70 +88,51 @@ class mmit_newsmile extends CModule
     }
     public function testInstallDB()
     {
-        $arWorkChairs = array(
-            'Кресло 1',
-            'Кресло 2',
-            'Кресло 3',
-        );
-        foreach ($arWorkChairs as $workChair)
+        $xmlClinic = simplexml_load_file(__DIR__ . '/xml/clinic.xml');
+        foreach ($xmlClinic->Value as $value)
         {
-            NewSmile\WorkChairTable::add(array(
-                "NAME" => $workChair
-            ));
+            NewSmile\ClinicTable::add([
+                'NAME' => $value->NAME
+            ]);
         }
-        $arDoctors = array(
-            array(
-                'NAME' => 'Васильева Е.В.',
-                'COLOR' => '#FF9E55'
-            ),
-            array(
-                'NAME' => 'Виноградова И.Б.',
-                'COLOR' => '#FFFD64'
-            ),
-            array(
-                'NAME' => 'Груничев В.А.',
-                'COLOR' => '#D8FF5C'
-            ),
-            array(
-                'NAME' => 'Иванова В.В.',
-                'COLOR' => '#9BFF55'
-            ),
-            array(
-                'NAME' => 'Столяров И.П.',
-                'COLOR' => '#5EFF77'
-            ),
-        );
-        foreach ($arDoctors as $arDoctor)
+        $xmlDoctor = simplexml_load_file(__DIR__ . '/xml/doctor.xml');
+        foreach ($xmlDoctor->Value as $value)
         {
-            NewSmile\DoctorTable::add(array(
-                "NAME" => $arDoctor['NAME'],
-                "COLOR" => $arDoctor['COLOR']
-            ));
+            NewSmile\DoctorTable::add([
+                'NAME' => $value->NAME,
+                'COLOR' => $value->COLOR,
+                'USER_ID' => $value->USER_ID,
+                'CLINIC_ID' => $value->CLINIC_ID
+            ]);
         }
-        $arPatient = array(
-            'Калинина А.И',
-            'Сергеева И.Г',
-            'Горохов Ф.А',
-            'Акилов Г.Р',
-            'Полумиленко Л.П',
-            'Авганец В.В',
-        );
-        foreach ($arPatient as $patient)
+        $xmlStatusPatient = simplexml_load_file(__DIR__ . '/xml/statuspatient.xml');
+        foreach ($xmlStatusPatient->Value as $value)
         {
-            NewSmile\PatientCardTable::add(array(
-                "NAME" => $patient
-            ));
+            NewSmile\StatusPatientTable::add([
+                'NAME' => $value->NAME
+            ]);
         }
-        $arStatusPatient = array(
-            'Первичный',
-            'Отконсультирован',
-            'Повторный',
-        );
-        foreach ($arStatusPatient as $statusPatient)
+        $xmlPatient = simplexml_load_file(__DIR__ . '/xml/patientcard.xml');
+        foreach ($xmlPatient->Value as $value)
         {
-            NewSmile\StatusPatientTable::add(array(
-                "NAME" => $statusPatient
-            ));
+            NewSmile\PatientCardTable::add([
+                'NAME' => $value->NAME,
+                'STATUS_ID' => $value->STATUS_ID,
+                'USER_ID' => $value->USER_ID,
+            ]);
         }
+        $xmlWorkChair = simplexml_load_file(__DIR__ . '/xml/workchair.xml');
+        foreach ($xmlWorkChair->Value as $value)
+        {
+            NewSmile\WorkChairTable::add([
+                'NAME' => $value->NAME,
+                'CLINIC_ID' => $value->CLINIC_ID,
+            ]);
+        }
+
+        NewSmile\ScheduleTemplateTable::addWeekSchedule(1);
+        NewSmile\ScheduleTable::addWeekSchedule(date('Y-m-d'), 1);
+
+
     }
 }
