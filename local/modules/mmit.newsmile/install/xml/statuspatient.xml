@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Values>
+    <Value>
+        <ID>1</ID>
+        <NAME>Первичный</NAME>
+    </Value>
+    <Value>
+        <ID>1</ID>
+        <NAME>Отконсультирован</NAME>
+    </Value>
+    <Value>
+        <ID>1</ID>
+        <NAME>Повторный</NAME>
+    </Value>
+</Values>

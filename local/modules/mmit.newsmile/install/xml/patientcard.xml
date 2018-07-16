@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Values>
+    <Value>
+        <ID>1</ID>
+        <NAME>Калинина А.И</NAME>
+        <USER_ID>1</USER_ID>
+        <STATUS_ID>1</STATUS_ID>
+        <CLINIC_ID>1</CLINIC_ID>
+    </Value>
+    <Value>
+        <ID>2</ID>
+        <NAME>Сергеева И.Г</NAME>
+        <USER_ID>1</USER_ID>
+        <STATUS_ID>1</STATUS_ID>
+        <CLINIC_ID>1</CLINIC_ID>
+    </Value>
+    <Value>
+        <ID>3</ID>
+        <NAME>Горохов Ф.А</NAME>
+        <USER_ID>1</USER_ID>
+        <STATUS_ID>1</STATUS_ID>
+        <CLINIC_ID>1</CLINIC_ID>
+    </Value>
+    <Value>
+        <ID>4</ID>
+        <NAME>Акилов Г.Р</NAME>
+        <USER_ID>1</USER_ID>
+        <STATUS_ID>1</STATUS_ID>
+        <CLINIC_ID>1</CLINIC_ID>
+    </Value>
+    <Value>
+        <ID>5</ID>
+        <NAME>Полумиленко Л.П</NAME>
+        <USER_ID>1</USER_ID>
+        <STATUS_ID>1</STATUS_ID>
+        <CLINIC_ID>1</CLINIC_ID>
+    </Value>
+    <Value>
+        <ID>6</ID>
+        <NAME>Авганец В.В</NAME>
+        <USER_ID>1</USER_ID>
+        <STATUS_ID>1</STATUS_ID>
+        <CLINIC_ID>1</CLINIC_ID>
+    </Value>
+</Values>

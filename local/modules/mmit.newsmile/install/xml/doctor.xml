@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Values>
+    <Value>
+        <ID>1</ID>
+        <NAME>Васильева Е.В.</NAME>
+        <COLOR>#FF9E55</COLOR>
+        <USER_ID>1</USER_ID>
+        <CLINIC_ID>1</CLINIC_ID>
+    </Value>
+    <Value>
+        <ID>2</ID>
+        <NAME>Виноградова И.Б.</NAME>
+        <COLOR>#FFFD64</COLOR>
+        <USER_ID>1</USER_ID>
+        <CLINIC_ID>1</CLINIC_ID>
+    </Value>
+    <Value>
+        <ID>3</ID>
+        <NAME>Груничев В.А.</NAME>
+        <COLOR>#D8FF5C</COLOR>
+        <USER_ID>1</USER_ID>
+        <CLINIC_ID>1</CLINIC_ID>
+    </Value>
+    <Value>
+        <ID>4</ID>
+        <NAME>Иванова В.В.</NAME>
+        <COLOR>#9BFF55</COLOR>
+        <USER_ID>1</USER_ID>
+        <CLINIC_ID>1</CLINIC_ID>
+    </Value>
+    <Value>
+        <ID>5</ID>
+        <NAME>Столяров И.П.</NAME>
+        <COLOR>#5EFF77</COLOR>
+        <USER_ID>1</USER_ID>
+        <CLINIC_ID>1</CLINIC_ID>
+    </Value>
+</Values>
