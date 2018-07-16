@@ -127,6 +127,9 @@ if (isset($_REQUEST['action'])) {
                 case 'start':
                     $arFiled['STATUS_ID'] = VisitTable::STATUS_START;
                     break;
+                case 'end':
+                    $arFiled['STATUS_ID'] = VisitTable::STATUS_END;
+                    break;
             }
             if (!empty($arFiled)) {
                 VisitTable::update($_REQUEST['id'], $arFiled);
