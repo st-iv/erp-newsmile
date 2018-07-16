@@ -44,6 +44,10 @@ class WorkChairTable extends Entity\DataManager
                     );
                 },
             )),
+            new Entity\IntegerField('CLINIC_ID', array(
+                'title' => 'Клиника',
+                'default_value' => 1
+            )),
             new Entity\ReferenceField('CLINIC',
                 'Mmit\NewSmile\Clinic',
                 array('=this.CLINIC_ID' => 'ref.ID'),

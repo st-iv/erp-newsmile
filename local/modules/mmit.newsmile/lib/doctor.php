@@ -50,6 +50,10 @@ class DoctorTable extends Entity\DataManager
                     return '#fff';
                 }
             )),
+            new Entity\IntegerField('USER_ID', array(
+                'title' => 'Пользователь',
+                'default_value' => 0
+            )),
             new Entity\ReferenceField('USER',
                 'Bitrix\Main\User',
                 array('=this.USER_ID' => 'ref.ID'),
@@ -57,6 +61,10 @@ class DoctorTable extends Entity\DataManager
                     'title' => 'Пользователь'
                 )
             ),
+            new Entity\IntegerField('CLINIC_ID', array(
+                'title' => 'Клиника',
+                'default_value' => 1
+            )),
             new Entity\ReferenceField('CLINIC',
                 'Mmit\NewSmile\Clinic',
                 array('=this.CLINIC_ID' => 'ref.ID'),

@@ -84,8 +84,9 @@ class ScheduleTemplateTable extends Entity\DataManager
 
         );
     }
-    public static function addWeekSchedule($dateStart = self::DEFAULT_START_DATE)
+    public static function addWeekSchedule($clinicID = 1)
     {
+        $dateStart = self::DEFAULT_START_DATE;
 
         $arResult = array();
         $rsWorkChair = WorkChairTable::getList();
@@ -131,6 +132,7 @@ class ScheduleTemplateTable extends Entity\DataManager
                     self::add(array(
                         'TIME' => new DateTime(date('Y-m-d', $day) . " " . $time, 'Y-m-d H:i'),
                         'WORK_CHAIR_ID' => $arWorkChair['ID'],
+                        'CLINIC_ID' => $clinicID
                     ));
                 }
             }

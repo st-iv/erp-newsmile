@@ -101,7 +101,7 @@ class ScheduleTable extends Entity\DataManager
      *
      * @param $dateStart - формат 'Y-m-d'
      */
-    public function addWeekSchedule($dateStart)
+    public static function addWeekSchedule($dateStart, $clinicID = 1)
     {
         if (date('N', strtotime($dateStart)) != 1) {
             $dateStart = date('Y-m-d', strtotime('monday this week', strtotime($dateStart)));
@@ -113,7 +113,7 @@ class ScheduleTable extends Entity\DataManager
         $differenceTime = strtotime($dateStart) - strtotime(ScheduleTemplateTable::DEFAULT_START_DATE);
         $rsScheduleTemplate = ScheduleTemplateTable::getList(array(
             'filter' => array(
-                'CLINIC_ID' => 1
+                'CLINIC_ID' => $clinicID
             )
         ));
         while ($arScheduleTemplate = $rsScheduleTemplate->fetch())
