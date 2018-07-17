@@ -52,11 +52,11 @@ class mmit_newsmile extends CModule
             NewSmile\VisitTable::getEntity()->createDbTable();
             NewSmile\InvoiceTable::getEntity()->createDbTable();
             NewSmile\InvoiceItemTable::getEntity()->createDbTable();
-            NewSmile\StatusVisitTable::getEntity()->createDbTable();
+            NewSmile\Status\VisitTable::getEntity()->createDbTable();
             NewSmile\ClinicTable::getEntity()->createDbTable();
             NewSmile\DoctorTable::getEntity()->createDbTable();
             NewSmile\PatientCardTable::getEntity()->createDbTable();
-            NewSmile\StatusPatientTable::getEntity()->createDbTable();
+            NewSmile\Status\PatientTable::getEntity()->createDbTable();
             NewSmile\TreatmentPlanTable::getEntity()->createDbTable();
             NewSmile\TreatmentPlanItemTable::getEntity()->createDbTable();
             NewSmile\ScheduleTable::getEntity()->createDbTable();
@@ -77,11 +77,11 @@ class mmit_newsmile extends CModule
             $connection->dropTable(NewSmile\VisitTable::getTableName());
             $connection->dropTable(NewSmile\InvoiceTable::getTableName());
             $connection->dropTable(NewSmile\InvoiceItemTable::getTableName());
-            $connection->dropTable(NewSmile\StatusVisitTable::getTableName());
+            $connection->dropTable(NewSmile\Status\VisitTable::getTableName());
             $connection->dropTable(NewSmile\ClinicTable::getTableName());
             $connection->dropTable(NewSmile\DoctorTable::getTableName());
             $connection->dropTable(NewSmile\PatientCardTable::getTableName());
-            $connection->dropTable(NewSmile\StatusPatientTable::getTableName());
+            $connection->dropTable(NewSmile\Status\PatientTable::getTableName());
             $connection->dropTable(NewSmile\TreatmentPlanTable::getTableName());
             $connection->dropTable(NewSmile\TreatmentPlanItemTable::getTableName());
             $connection->dropTable(NewSmile\ScheduleTable::getTableName());
@@ -112,7 +112,7 @@ class mmit_newsmile extends CModule
         $xmlStatusPatient = simplexml_load_file(__DIR__ . '/xml/statuspatient.xml');
         foreach ($xmlStatusPatient->Value as $value)
         {
-            NewSmile\StatusPatientTable::add([
+            NewSmile\Status\PatientTable::add([
                 'NAME' => $value->NAME
             ]);
         }

@@ -59,7 +59,7 @@ class PatientCardTable extends Entity\DataManager
                 )
             ),
             new Entity\ReferenceField('STATUS',
-                'Mmit\NewSmile\StatusPatient',
+                'Mmit\NewSmile\Status\Patient',
                 array('=this.STATUS_ID' => 'ref.ID'),
                 array(
                     'title' => 'Пользователь'

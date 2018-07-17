@@ -44,7 +44,7 @@ class VisitTable extends Entity\DataManager
                 'default_value' => 0
             )),
             new Entity\ReferenceField('STATUS',
-                'Mmit\NewSmile\StatusVisit',
+                'Mmit\NewSmile\Status\Visit',
                 array('=this.STATUS_ID' => 'ref.ID'),
                 array(
                     'title' => 'Статус приема'
@@ -158,7 +158,7 @@ class VisitTable extends Entity\DataManager
             ],
         ];
         foreach ($arFields as $item) {
-            StatusVisitTable::add($item);
+            Status\VisitTable::add($item);
         }
     }
 }

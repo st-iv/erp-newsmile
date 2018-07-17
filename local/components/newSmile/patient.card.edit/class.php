@@ -4,7 +4,7 @@ if(!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED !== true) die();
 use Bitrix\Main\Loader,
     Bitrix\Main\Type\Date,
     Bitrix\Main\Type\DateTime,
-    Mmit\NewSmile\StatusPatientTable,
+    Mmit\NewSmile\Status,
     Mmit\NewSmile\PatientCardTable,
     Mmit\NewSmile\DoctorTable;
 
@@ -120,7 +120,7 @@ class PatientCardEditComponent extends \CBitrixComponent
 
 	protected function getStatusPatient()
     {
-        $rsStatusPatient = StatusPatientTable::getList(array(
+        $rsStatusPatient = Status\PatientTable::getList(array(
             'select' => array('ID', 'NAME')
         ));
         while ($arStatusPatient = $rsStatusPatient->fetch())
