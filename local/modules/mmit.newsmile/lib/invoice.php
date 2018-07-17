@@ -22,7 +22,7 @@ class InvoiceTable extends Entity\DataManager
     {
         $arFields = array();
         if (intval($ID)) {
-            $arFields['PLAN_ID'] = intval($ID);
+            $arFields['INVOICE_ID'] = intval($ID);
         }
         if (intval($elementID)) {
             $arFields['PRODUCT_ID'] = intval($elementID);
@@ -45,7 +45,7 @@ class InvoiceTable extends Entity\DataManager
                 $arFields['SUM'] = $arFields['PRICE'] * $arFields['QUANTITY'];
             }
         }
-        TreatmentPlanItemTable::add($arFields);
+        InvoiceItemTable::add($arFields);
     }
 
     public static function getTableName()
