@@ -67,7 +67,10 @@ class InvoiceTable extends Entity\DataManager
             )),
             new Entity\IntegerField('USER_CREATE_ID', array(
                 'title' => 'Кто создал',
-                'default_value' => 0
+                'default_value' => function () {
+                    global $USER;
+                    return $USER->GetID();
+                }
             )),
             new Entity\ReferenceField('USER_CREATE',
                 'Bitrix\Main\User',
@@ -82,7 +85,10 @@ class InvoiceTable extends Entity\DataManager
             )),
             new Entity\IntegerField('USER_UPDATE_ID', array(
                 'title' => 'Кто изменил',
-                'default_value' => 0
+                'default_value' => function () {
+                    global $USER;
+                    return $USER->GetID();
+                }
             )),
             new Entity\ReferenceField('USER_UPDATE',
                 'Bitrix\Main\User',
