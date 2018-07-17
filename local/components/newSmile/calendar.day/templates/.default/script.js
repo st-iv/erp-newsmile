@@ -46,16 +46,18 @@
         function endVisit(key, opt) {
             var id = $(this).data('visit-id');
 
-            window.calendarDay.sendPost(
-                {
-                    id: id,
-                    status: key,
-                },
-                'updateStatusVisit',
-                function () {
-                    location.reload();
-                }
-            );
+            location.href = '/invoice/?CREATE_INVOICE=Y&VISIT_ID=' + id;
+
+            // window.calendarDay.sendPost(
+            //     {
+            //         id: id,
+            //         status: key,
+            //     },
+            //     'updateStatusVisit',
+            //     function () {
+            //         location.reload();
+            //     }
+            // );
         }
     };
 
