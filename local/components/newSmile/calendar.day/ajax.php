@@ -126,9 +126,8 @@ if (isset($_REQUEST['action'])) {
             {
                 case 'start':
                     $arFiled['STATUS_ID'] = VisitTable::STATUS_START;
-                    break;
-                case 'end':
-                    $arFiled['STATUS_ID'] = VisitTable::STATUS_END;
+                    /*TODO доработать учет времени*/
+                    //$arFiled['TIME_START'] = new DateTime();
                     break;
             }
             if (!empty($arFiled)) {
