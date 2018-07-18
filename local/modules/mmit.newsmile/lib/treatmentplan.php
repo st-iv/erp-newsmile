@@ -42,7 +42,7 @@ class TreatmentPlanTable extends Entity\DataManager
         return 0;
     }
 
-    public static function addItemToTreatmentPlan($ID, $elementID, $measure)
+    public static function addItemToTreatmentPlan($ID, $elementID, $arMeasure)
     {
         $arFields = array();
         if (intval($ID)) {
@@ -52,9 +52,43 @@ class TreatmentPlanTable extends Entity\DataManager
             $arFields['PRODUCT_ID'] = intval($elementID);
         }
         $arFields['QUANTITY'] = 1;
-        $arFields['MEASURE'] = $measure;
+        $arMeasureTemp = [];
         /*
          * сделать проверку на единицу измерения
+         */
+        if (Loader::includeModule('catalog')) {
+            $rsProduct = \Bitrix\Catalog\ProductTable::getList([
+                'filter' => [
+                    'ID' => $arFields['PRODUCT_ID']
+                ]
+            ]);
+            if ($arProduct = $rsProduct->fetch()) {
+                if ($arProduct['MEASURE'] == 7) {
+                    foreach ($arMeasure as $measure)
+                    {
+                        $measure = intval($measure);
+                        if (($measure > 10 && $measure < 29) || ($measure > 50 && $measure < 66)) {
+                            if (!in_array('в.ч.', $arMeasureTemp))
+                                $arMeasureTemp[] = 'в.ч.';
+                        }
+                        if (($measure > 30 && $measure < 49) || ($measure > 70 && $measure < 86)) {
+                            if (!in_array('н.ч.', $arMeasureTemp))
+                                $arMeasureTemp[] = 'н.ч.';
+                        }
+                    }
+                } elseif ($arProduct['MEASURE'] == 6) {
+                    foreach ($arMeasure as $measure)
+                    {
+                        $arMeasureTemp[] = $measure;
+                    }
+                }
+            }
+            if (empty($arMeasureTemp)){
+                return;
+            }
+        }
+        /*
+         *
          */
         $arFields['MIN_PRICE'] = 0;
         $arFields['MAX_PRICE'] = 0;
@@ -81,7 +115,11 @@ class TreatmentPlanTable extends Entity\DataManager
                 $arFields['MAX_SUM'] = $arFields['MAX_PRICE'] * $arFields['QUANTITY'];
             }
         }
-        TreatmentPlanItemTable::add($arFields);
+        foreach ($arMeasureTemp as $measure)
+        {
+            $arFields['MEASURE'] = $measure;
+            TreatmentPlanItemTable::add($arFields);
+        }
     }
 
     public static function getTableName()
