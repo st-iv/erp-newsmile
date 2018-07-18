@@ -48,10 +48,6 @@
         $('.element-service').on('click', function () {
             var elementId = $(this).data('element-id');
             var invoiceId = $(this).parents('table').data('invoice-id');
-            var arMeasure = [];
-            $(this).parents('.treatment-invoice').find('.claw-list td.ui-selected').each(function () {
-                arMeasure.push($(this).data('measure-id'))
-            });
             $.post(
                 '',
                 {

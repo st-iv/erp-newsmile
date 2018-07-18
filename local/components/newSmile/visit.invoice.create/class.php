@@ -1,6 +1,7 @@
 <?
 if(!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED !== true) die();
 
+use Bitrix\Main\Config\Option;
 use Bitrix\Main\Loader,
     Bitrix\Main\Type\Date,
     Bitrix\Catalog\PriceTable,
@@ -20,7 +21,7 @@ class VisitInvoiceCreateComponent extends \CBitrixComponent
 	 */
 	protected function getResult()
 	{
-        $this->IblockID = TreatmentPlanTable::getIDIblockServices();
+        $this->IblockID = Option::get('mmit.newsmile', 'iblock_services');
         $this->getSectionServices();
         $this->getElementServices($this->request['SECTION_ID']);
         $this->getInvoice();
@@ -175,10 +176,7 @@ class VisitInvoiceCreateComponent extends \CBitrixComponent
             }
         }
         if (isset($request['ADD_ELEMENTS'])) {
-            foreach ($request['MEASURE'] as $measure)
-            {
-                InvoiceTable::addItemToInvoice($request['INVOICE_ID'], $request['ELEMENT_ID'], $measure);
-            }
+            InvoiceTable::addItemToInvoice($request['INVOICE_ID'], $request['ELEMENT_ID'], $request['MEASURE']);
         }
         if (isset($request['CLOSE_VISIT'])) {
             $arFiled['STATUS_ID'] = VisitTable::STATUS_END;
