@@ -134,11 +134,8 @@ class PatientCardTreatmentPlanComponent extends \CBitrixComponent
             }
             $this->createTreatmentPlan(intval($this->arParams['PATIENT_ID']), $arField);
         }
-        if (isset($request['ADD_ELEMENTS'])) {
-            foreach ($request['MEASURE'] as $measure)
-            {
-                TreatmentPlanTable::addItemToTreatmentPlan($request['PLAN_ID'], $request['ELEMENT_ID'], $measure);
-            }
+        if (isset($request['ADD_ELEMENTS']) && !empty($request['MEASURE'])) {
+            TreatmentPlanTable::addItemToTreatmentPlan($request['PLAN_ID'], $request['ELEMENT_ID'], $request['MEASURE']);
         }
     }
 

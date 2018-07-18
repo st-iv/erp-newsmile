@@ -13,7 +13,12 @@ if(!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED !== true) die();
     <input type="text" name="NAME">
     <input type="submit" value="Добавить">
 </form>
-
+<?$APPLICATION->IncludeComponent(
+    "newSmile:tooth.list",
+    "",
+    Array(
+    )
+);?>
 <?foreach ($arResult['TREATMENT_PLAN'] as $arPlan):?>
     <table border="1" cellspacing="0" cellpadding="2" class="treatment-plan" data-plan-id="<?=$arPlan['ID']?>">
         <tr>
@@ -22,12 +27,7 @@ if(!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED !== true) die();
         </tr>
         <tr>
             <td colspan="2">
-                <?$APPLICATION->IncludeComponent(
-                    "newSmile:tooth.list",
-                    "",
-                    Array(
-                    )
-                );?>
+
             </td>
         </tr>
         <tr>
@@ -60,7 +60,7 @@ if(!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED !== true) die();
         </tr>
         <tr>
             <td colspan="2">
-                <? if (isset($_REQUEST['LOAD_ITEMS'])) { $APPLICATION->RestartBuffer(); } ?>
+                <? if (isset($_REQUEST['LOAD_ITEMS']) && $arPlan['ID'] == $_REQUEST['PLAN_ID']) { $APPLICATION->RestartBuffer(); } ?>
                 <table id="plan-items-<?=$arPlan['ID']?>">
                     <tr>
                         <th>ИД</th>
@@ -81,7 +81,7 @@ if(!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED !== true) die();
                         </tr>
                     <?endforeach;?>
                 </table>
-                <? if (isset($_REQUEST['LOAD_ITEMS'])) { die(); } ?>
+                <? if (isset($_REQUEST['LOAD_ITEMS']) && $arPlan['ID'] == $_REQUEST['PLAN_ID']) { die(); } ?>
             </td>
         </tr>
     </table>

@@ -31,10 +31,6 @@
         $('.element-service').on('click', function () {
             var elementId = $(this).data('element-id');
             var planId = $(this).parents('table').data('plan-id');
-            var arMeasure = [];
-            $(this).parents('.treatment-plan').find('.claw-list td.ui-selected').each(function () {
-                arMeasure.push($(this).data('measure-id'))
-            });
             $.post(
                 '',
                 {
