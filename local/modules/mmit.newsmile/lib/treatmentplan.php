@@ -7,6 +7,7 @@
  */
 namespace Mmit\NewSmile;
 
+use Bitrix\Main\Config\Option;
 use Bitrix\Main\Entity;
 use Bitrix\Main\Loader;
 use Bitrix\Main\Localization\Loc;
@@ -63,7 +64,7 @@ class TreatmentPlanTable extends Entity\DataManager
                 ]
             ]);
             if ($arProduct = $rsProduct->fetch()) {
-                if ($arProduct['MEASURE'] == 7) {
+                if ($arProduct['MEASURE'] == Option::get('mmit.newsmile', 'id_measure_jowl')) {
                     foreach ($arMeasure as $measure)
                     {
                         $measure = intval($measure);
@@ -76,7 +77,7 @@ class TreatmentPlanTable extends Entity\DataManager
                                 $arMeasureTemp[] = 'н.ч.';
                         }
                     }
-                } elseif ($arProduct['MEASURE'] == 6) {
+                } elseif ($arProduct['MEASURE'] == Option::get('mmit.newsmile', 'id_measure_tooth')) {
                     foreach ($arMeasure as $measure)
                     {
                         $arMeasureTemp[] = $measure;

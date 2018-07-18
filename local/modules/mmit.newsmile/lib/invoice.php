@@ -7,6 +7,7 @@
  */
 namespace Mmit\NewSmile;
 
+use Bitrix\Main\Config\Option;
 use Bitrix\Main\Entity;
 use Bitrix\Main\Loader;
 use Bitrix\Main\Localization\Loc;
@@ -18,7 +19,7 @@ Loc::loadMessages(__FILE__);
 class InvoiceTable extends Entity\DataManager
 {
 
-    public static function addItemToInvoice($ID, $elementID, $measure)
+    public static function addItemToInvoice($ID, $elementID, $arMeasure)
     {
         $arFields = array();
         if (intval($ID)) {
@@ -28,10 +29,7 @@ class InvoiceTable extends Entity\DataManager
             $arFields['PRODUCT_ID'] = intval($elementID);
         }
         $arFields['QUANTITY'] = 1;
-        $arFields['MEASURE'] = $measure;
-        /*
-         * TODO сделать проверку на единицу измерения
-         */
+        $arMeasureTemp = [];
         $arFields['PRICE'] = 0;
         $arFields['SUM'] = 0;
         if (Loader::includeModule('catalog')) {
@@ -44,8 +42,41 @@ class InvoiceTable extends Entity\DataManager
                 $arFields['PRICE'] = $arResult['PRICE'];
                 $arFields['SUM'] = $arFields['PRICE'] * $arFields['QUANTITY'];
             }
+            $rsProduct = \Bitrix\Catalog\ProductTable::getList([
+                'filter' => [
+                    'ID' => $arFields['PRODUCT_ID']
+                ]
+            ]);
+            if ($arProduct = $rsProduct->fetch()) {
+                if ($arProduct['MEASURE'] == Option::get('mmit.newsmile', 'id_measure_jowl')) {
+                    foreach ($arMeasure as $measure)
+                    {
+                        $measure = intval($measure);
+                        if (($measure > 10 && $measure < 29) || ($measure > 50 && $measure < 66)) {
+                            if (!in_array('в.ч.', $arMeasureTemp))
+                                $arMeasureTemp[] = 'в.ч.';
+                        }
+                        if (($measure > 30 && $measure < 49) || ($measure > 70 && $measure < 86)) {
+                            if (!in_array('н.ч.', $arMeasureTemp))
+                                $arMeasureTemp[] = 'н.ч.';
+                        }
+                    }
+                } elseif ($arProduct['MEASURE'] == Option::get('mmit.newsmile', 'id_measure_tooth')) {
+                    foreach ($arMeasure as $measure)
+                    {
+                        $arMeasureTemp[] = $measure;
+                    }
+                }
+            }
+            if (empty($arMeasureTemp)){
+                return;
+            }
         }
-        InvoiceItemTable::add($arFields);
+        foreach ($arMeasureTemp as $measure)
+        {
+            $arFields['MEASURE'] = $measure;
+            InvoiceItemTable::add($arFields);
+        }
     }
 
     public static function getTableName()

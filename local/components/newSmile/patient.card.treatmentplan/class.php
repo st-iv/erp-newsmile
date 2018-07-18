@@ -1,6 +1,7 @@
 <?
 if(!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED !== true) die();
 
+use Bitrix\Main\Config\Option;
 use Bitrix\Main\Loader,
     Bitrix\Main\Type\Date,
     Bitrix\Main\Type\DateTime,
@@ -44,7 +45,7 @@ class PatientCardTreatmentPlanComponent extends \CBitrixComponent
         }
         $this->getElementServiceFromPlan($arTreatmentItemPlanProductID);
 
-        $this->IblockID = TreatmentPlanTable::getIDIblockServices();
+        $this->IblockID = Option::get('mmit.newsmile', 'iblock_services');
         $this->getSectionServices();
         $this->getElementServices($this->request['SECTION_ID']);
 	}
