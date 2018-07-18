@@ -44,6 +44,21 @@ if ((!empty($save) || !empty($restore)) && $request->isPost() && check_bitrix_se
             "end_time_schedule",
             $request->getPost('end_time_schedule')
         );
+        Option::set(
+            ADMIN_MODULE_NAME,
+            "iblock_services",
+            $request->getPost('iblock_services')
+        );
+        Option::set(
+            ADMIN_MODULE_NAME,
+            "id_measure_tooth",
+            $request->getPost('id_measure_tooth')
+        );
+        Option::set(
+            ADMIN_MODULE_NAME,
+            "id_measure_jowl",
+            $request->getPost('id_measure_jowl')
+        );
         CAdminMessage::showMessage(array(
             "MESSAGE" => Loc::getMessage("REFERENCES_OPTIONS_SAVED"),
             "TYPE" => "OK",
@@ -74,6 +89,36 @@ $tabControl->begin();
                    name="end_time_schedule"
                    value="<?=String::htmlEncode(Option::get(ADMIN_MODULE_NAME, "end_time_schedule", '23:59'));?>"
                    />
+        </td>
+    </tr>
+    <tr>
+        <td width="40%">
+            <label for="iblock_services">Инфоблок Прейскурант</label>
+        </td>
+        <td width="60%">
+            <input type="text"
+                   name="iblock_services"
+                   value="<?=String::htmlEncode(Option::get(ADMIN_MODULE_NAME, "iblock_services", '0'));?>">
+        </td>
+    </tr>
+    <tr>
+        <td width="40%">
+            <label for="id_measure_tooth">ИД ед.из. Зуб</label>
+        </td>
+        <td width="60%">
+            <input type="text"
+                   name="id_measure_tooth"
+                   value="<?=String::htmlEncode(Option::get(ADMIN_MODULE_NAME, "id_measure_tooth", '0'));?>">
+        </td>
+    </tr>
+    <tr>
+        <td width="40%">
+            <label for="id_measure_jowl">ИД ед.из. Челюсть</label>
+        </td>
+        <td width="60%">
+            <input type="text"
+                   name="id_measure_jowl"
+                   value="<?=String::htmlEncode(Option::get(ADMIN_MODULE_NAME, "id_measure_jowl", '0'));?>">
         </td>
     </tr>
 
