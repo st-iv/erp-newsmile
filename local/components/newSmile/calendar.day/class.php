@@ -43,7 +43,7 @@ class CalendarDayComponent extends \CBitrixComponent
             'filter' => array(
                 '>=TIME' => new Date($this->thisDate, 'Y-m-d'),
                 '<=TIME' => new Date(date('Y-m-d', strtotime('tomorrow', strtotime($this->thisDate))), 'Y-m-d'),
-                'CLINIC_ID' => 1
+                'CLINIC_ID' => $_SESSION['CLINIC_ID']
             ),
             'select' => array(
                 'ID',
@@ -104,7 +104,8 @@ class CalendarDayComponent extends \CBitrixComponent
                 'TIME_START' => 'ASC'
             ),
             'filter' => array(
-                'DATE_START' => new Date($this->thisDate, 'Y-m-d')
+                'DATE_START' => new Date($this->thisDate, 'Y-m-d'),
+                'CLINIC_ID' => $_SESSION['CLINIC_ID']
             ),
             'select' => array(
                 'ID',
@@ -153,7 +154,11 @@ class CalendarDayComponent extends \CBitrixComponent
     protected function getWorkChair()
     {
         $isResult = false;
-        $rsWorkChair = WorkChairTable::getList();
+        $rsWorkChair = WorkChairTable::getList([
+            'filter' => [
+                'CLINIC_ID' => $_SESSION['CLINIC_ID']
+            ]
+        ]);
         while ($arWorkChair = $rsWorkChair->Fetch())
         {
             $this->arResult['WORK_CHAIR'][$arWorkChair['ID']] = $arWorkChair;
@@ -167,7 +172,10 @@ class CalendarDayComponent extends \CBitrixComponent
         $rsDoctor = DoctorTable::getList(array(
             'select' => array(
                 'ID', 'NAME'
-            )
+            ),
+            'filter' => [
+                'CLINIC_ID' => $_SESSION['CLINIC_ID']
+            ]
         ));
         while ($arDoctor = $rsDoctor->fetch())
         {

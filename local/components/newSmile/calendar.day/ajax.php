@@ -56,7 +56,7 @@ if (isset($_REQUEST['action'])) {
                 && isset($_REQUEST['doctor_id'])
                 && isset($_REQUEST['work_chair'])) {
 
-                $isResult = ScheduleTable::appointDoctorHalfDay(strtotime($_REQUEST['time']), $_REQUEST['doctor_id'], $_REQUEST['work_chair']);
+                $isResult = ScheduleTable::appointDoctorHalfDay(strtotime($_REQUEST['time']), $_REQUEST['doctor_id'], $_REQUEST['work_chair'], $_SESSION['CLINIC_ID']);
 
                 if ($isResult) {
                     echo json_encode(array(
@@ -95,7 +95,8 @@ if (isset($_REQUEST['action'])) {
                             '>=TIME' => $arFiled['TIME_START'],
                             '<TIME' => $arFiled['TIME_END'],
                             'WORK_CHAIR_ID' => $arFiled['WORK_CHAIR_ID'],
-                            'ENGAGED' => 'N'
+                            'ENGAGED' => 'N',
+                            'CLINIC_ID' => $_SESSION['CLINIC_ID']
                         )
                     ));
                     if ($rsSchedule->getSelectedRowsCount() > 0) {

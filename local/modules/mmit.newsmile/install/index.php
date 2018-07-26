@@ -66,6 +66,48 @@ class mmit_newsmile extends CModule
 
             NewSmile\VisitTable::createStatus();
             $this->testInstallDB();
+            $this->installDBUser();
+        }
+    }
+
+    private function installDBUser()
+    {
+        $rsTypeEntity = CUserTypeEntity::GetList(
+            [],
+            [
+                'ENTITY_ID' => 'USER',
+                'FIELD_NAME' => 'UF_CLINIC',
+            ]
+        );
+        if ($arTypeEntity = $rsTypeEntity->Fetch()) {
+
+        } else {
+            $oTypeEntity    = new CUserTypeEntity();
+            $arField = [
+                'ENTITY_ID' => 'USER',
+                'FIELD_NAME' => 'UF_CLINIC',
+                'USER_TYPE_ID' => 'integer',
+                'XML_ID' => 'UF_CLINIC',
+                'SORT' => 100,
+                'MULTIPLE' => 'N',
+                'MANDATORY' => 'N',
+                'SHOW_FILTER' => 'N',
+                'SHOW_IN_LIST' => 'Y',
+                'IS_SEARCHABLE' => 'Y',
+                'EDIT_FORM_LABEL'   => array(
+                    'ru' => 'Клиника',
+                    'en' => 'Clinic',
+                ),
+                'LIST_COLUMN_LABEL' => array(
+                    'ru' => 'Клиника',
+                    'en' => 'Clinic',
+                ),
+                'LIST_FILTER_LABEL' => array(
+                    'ru' => 'Клиника',
+                    'en' => 'Clinic',
+                ),
+            ];
+            $iUserFieldId = $oTypeEntity->Add($arField);
         }
     }
 
@@ -136,6 +178,8 @@ class mmit_newsmile extends CModule
 
         NewSmile\ScheduleTemplateTable::addWeekSchedule(1);
         NewSmile\ScheduleTable::addWeekSchedule(date('Y-m-d'), 1);
+        NewSmile\ScheduleTemplateTable::addWeekSchedule(2);
+        NewSmile\ScheduleTable::addWeekSchedule(date('Y-m-d'), 2);
 
 
     }

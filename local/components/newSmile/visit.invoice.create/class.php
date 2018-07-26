@@ -34,7 +34,8 @@ class VisitInvoiceCreateComponent extends \CBitrixComponent
     {
         $rsResult = VisitTable::getList([
             'filter' => [
-                'ID' => $invoiceID
+                'ID' => $invoiceID,
+                'CLINIC_ID' => $_SESSION['CLINIC_ID']
             ],
             'select' => [
                 '*',

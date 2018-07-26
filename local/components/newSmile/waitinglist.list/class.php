@@ -13,6 +13,9 @@ class WaitingListListComponent extends \CBitrixComponent
     protected function getResult()
     {
         $rsWaitingList = WaitingListTable::getList(array(
+            'filter' => [
+                'CLINIC_ID' => $_SESSION['CLINIC_ID']
+            ],
             'select' => array(
                 '*',
                 'UF_PATIENT_' => 'PATIENT',

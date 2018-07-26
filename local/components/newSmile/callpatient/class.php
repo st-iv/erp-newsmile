@@ -18,6 +18,7 @@ class CallPatientComponent extends \CBitrixComponent
         $rsVisit = VisitTable::getList(array(
             'filter' => array(
                 "DATE_START" => new Date(date('d.m.Y')),
+                'CLINIC_ID' => $_SESSION['CLINIC_ID']
             ),
             'select' =>array(
                 '*',

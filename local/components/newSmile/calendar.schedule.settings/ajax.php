@@ -56,7 +56,7 @@ if (isset($_REQUEST['action'])) {
                 && isset($_REQUEST['doctor_id'])
                 && isset($_REQUEST['work_chair'])) {
 
-                $isResult = ScheduleTemplateTable::appointDoctorHalfDay(strtotime($_REQUEST['time']), $_REQUEST['doctor_id'], $_REQUEST['work_chair']);
+                $isResult = ScheduleTemplateTable::appointDoctorHalfDay(strtotime($_REQUEST['time']), $_REQUEST['doctor_id'], $_REQUEST['work_chair'],$_SESSION['CLINIC_ID']);
 
                 if ($isResult) {
                     echo json_encode(array(
@@ -92,6 +92,7 @@ if (isset($_REQUEST['action'])) {
                 try {
                     $rsSchedule = ScheduleTemplateTable::getList(array(
                         'filter' => array(
+                            'CLINIC_ID' => $_SESSION['CLINIC_ID'],
                             '>=TIME' => $arFiled['TIME_START'],
                             '<TIME' => $arFiled['TIME_END'],
                             'WORK_CHAIR_ID' => $arFiled['WORK_CHAIR_ID'],

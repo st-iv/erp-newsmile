@@ -89,7 +89,11 @@ class ScheduleTemplateTable extends Entity\DataManager
         $dateStart = self::DEFAULT_START_DATE;
 
         $arResult = array();
-        $rsWorkChair = WorkChairTable::getList();
+        $rsWorkChair = WorkChairTable::getList([
+            'filter' => [
+                'CLINIC_ID' => $clinicID
+            ]
+        ]);
         while ($arWorkChair = $rsWorkChair->Fetch())
         {
             $arResult['WORK_CHAIR'][$arWorkChair['ID']] = $arWorkChair;

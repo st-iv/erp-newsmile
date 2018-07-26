@@ -24,10 +24,11 @@ class CalendarComponent extends \CBitrixComponent
 	    $this->arResult['LINK_PREV'] = '<a href="?nextWeek=' . ($this->request['nextWeek'] - 1) . '">&lt;&lt;&lt;</a>';
 	    if (!Loader::includeModule('mmit.newSmile')) die();
 
-        $rsSchedule = VisitTable::getCountVisitFromDate(array(
+        $rsSchedule = VisitTable::getCountVisitFromDate([
+            '==CLINIC_ID' => $_SESSION['CLINIC_ID'],
             ">=DATE_START" => $this->startDay,
             "<=DATE_START" => $this->endDay
-        ));
+        ]);
         while ($arSchedule = $rsSchedule->Fetch())
         {
             $this->arResult[] = $arSchedule;

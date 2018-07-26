@@ -52,7 +52,11 @@ class WaitingListCreateComponent extends \CBitrixComponent
             $this->arResult['PATIENT'][] = $arPatientCard;
         }
 
-        $rsDoctor = DoctorTable::getList();
+        $rsDoctor = DoctorTable::getList([
+            'filter' => [
+                'CLINIC_ID' => $_SESSION['CLINIC_ID']
+            ]
+        ]);
         while ($arDoctor = $rsDoctor->fetch())
         {
             $this->arResult['DOCTOR'][] = $arDoctor;

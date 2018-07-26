@@ -40,6 +40,9 @@ class PatientCardListComponent extends \CBitrixComponent
     protected function getDoctors()
     {
         $rsDoctor = DoctorTable::getList(array(
+            'filter' => [
+                'CLINIC_ID' => $_SESSION['CLINIC_ID']
+            ],
             'select' => array('ID','NAME')
         ));
         while ($arDoctor = $rsDoctor->fetch())

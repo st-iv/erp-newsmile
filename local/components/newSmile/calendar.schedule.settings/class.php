@@ -53,7 +53,8 @@ class CalendarScheduleSettingsComponent extends \CBitrixComponent
 
         $rsVisit = VisitTable::getList(array(
             'filter' => array(
-                'DATE_START' => new Date($date, 'Y-m-d')
+                'DATE_START' => new Date($date, 'Y-m-d'),
+                'CLINIC_ID' => $_SESSION['CLINIC_ID']
             ),
             'select' => array(
                 '*',
@@ -77,6 +78,7 @@ class CalendarScheduleSettingsComponent extends \CBitrixComponent
     {
         $rsSchedule = ScheduleTemplateTable::getList(array(
             'filter' => array(
+                'CLINIC_ID' => $_SESSION['CLINIC_ID'],
                 '>=TIME' => new Date($date, 'Y-m-d'),
                 '<=TIME' => new Date(date('Y-m-d', strtotime($date) + 86400), 'Y-m-d')
             )
@@ -102,7 +104,11 @@ class CalendarScheduleSettingsComponent extends \CBitrixComponent
 
     protected function getWorkChair()
     {
-        $rsWorkChair = WorkChairTable::getList();
+        $rsWorkChair = WorkChairTable::getList([
+            'filter' => [
+                'CLINIC_ID' => $_SESSION['CLINIC_ID']
+            ]
+        ]);
         while ($arWorkChair = $rsWorkChair->Fetch())
         {
             $this->arResult['WORK_CHAIR'][$arWorkChair['ID']] = $arWorkChair;
@@ -113,7 +119,8 @@ class CalendarScheduleSettingsComponent extends \CBitrixComponent
     {
         $rsDoctor = DoctorTable::getList(array(
             'filter' => array(
-                'ID' => array_merge($this->arResult['DOCTOR_ID'], $this->arResult['MAIN_DOCTOR_ID'])
+                'ID' => array_merge($this->arResult['DOCTOR_ID'], $this->arResult['MAIN_DOCTOR_ID']),
+                'CLINIC_ID' => $_SESSION['CLINIC_ID']
             )
         ));
         while ($arDoctor = $rsDoctor->fetch())
@@ -128,11 +135,14 @@ class CalendarScheduleSettingsComponent extends \CBitrixComponent
     }
     protected function getAllDoctor()
     {
-        $rsDoctor = DoctorTable::getList(array(
-            'select' => array(
+        $rsDoctor = DoctorTable::getList([
+            'filter' => [
+                $_SESSION['CLINIC_ID']
+            ],
+            'select' => [
                 'ID', 'NAME'
-            )
-        ));
+            ]
+        ]);
         while ($arDoctor = $rsDoctor->fetch())
         {
             $this->arResult['DOCTORS'][$arDoctor['ID']] = $arDoctor['NAME'];
