@@ -9,6 +9,7 @@ use Bitrix\Main\Loader,
     Mmit\NewSmile\TreatmentPlanTable,
     Mmit\NewSmile\VisitTable,
     Mmit\NewSmile\DoctorTable;
+use Mmit\NewSmile\ClinicTable;
 use Mmit\NewSmile\InvoiceItemTable;
 use Mmit\NewSmile\InvoiceTable;
 
@@ -122,7 +123,9 @@ class VisitInvoiceCreateComponent extends \CBitrixComponent
             }
             $rsPrice = PriceTable::getList(array(
                 'filter' => [
-                    'PRODUCT_ID' => $arProductID
+                    'PRODUCT_ID' => $arProductID,
+                    'CATALOG_GROUP_ID' => ClinicTable::getCatalogGroupFromClinic()
+
                 ]
             ));
             while ($arPrice = $rsPrice->fetch()) {

@@ -10,6 +10,7 @@ use Bitrix\Main\Loader,
     Mmit\NewSmile\TreatmentPlanTable,
     Mmit\NewSmile\TreatmentPlanItemTable,
     Mmit\NewSmile\DoctorTable;
+use Mmit\NewSmile\ClinicTable;
 
 class PatientCardTreatmentPlanComponent extends \CBitrixComponent
 {
@@ -57,7 +58,8 @@ class PatientCardTreatmentPlanComponent extends \CBitrixComponent
                         'ID' => 'desc'
                     ],
                     'filter' => [
-                        'PRODUCT_ID' => $elementID
+                        'PRODUCT_ID' => $elementID,
+                        'CATALOG_GROUP_ID' => ClinicTable::getCatalogGroupFromClinic()
                     ]
                 ));
                 if ($arPrice = $rsPrice->fetch()) {
@@ -153,13 +155,14 @@ class PatientCardTreatmentPlanComponent extends \CBitrixComponent
                 $arField['PRICE_SCALE'] = $request['PRICE'];
                 $arField['PRODUCT_ID'] = $idElement;
                 $arField['CURRENCY'] = 'RUB';
-                $arField['CATALOG_GROUP_ID'] = 1;
+                $arField['CATALOG_GROUP_ID'] = ClinicTable::getCatalogGroupFromClinic();
                 $rsPrice = PriceTable::getList(array(
                     'order' => [
                         'ID' => 'desc'
                     ],
                     'filter' => [
-                        'PRODUCT_ID' => $idElement
+                        'PRODUCT_ID' => $idElement,
+                        'CATALOG_GROUP_ID' => ClinicTable::getCatalogGroupFromClinic()
                     ]
                 ));
                 if ($arPrice = $rsPrice->fetch()) {
