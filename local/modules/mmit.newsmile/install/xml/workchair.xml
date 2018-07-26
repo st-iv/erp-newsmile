@@ -15,4 +15,14 @@
         <NAME>Кресло 3</NAME>
         <CLINIC_ID>1</CLINIC_ID>
     </Value>
+    <Value>
+        <ID>4</ID>
+        <NAME>Кресло 1</NAME>
+        <CLINIC_ID>2</CLINIC_ID>
+    </Value>
+    <Value>
+        <ID>5</ID>
+        <NAME>Кресло 2</NAME>
+        <CLINIC_ID>2</CLINIC_ID>
+    </Value>
 </Values>
