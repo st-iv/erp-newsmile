@@ -121,6 +121,7 @@ class VisitTable extends Entity\DataManager
             $strSecond = substr($field, 1, 1);
             if (in_array($strFirth, array('!','=','>','<'))) {
                 if (in_array($strSecond, array('='))) {
+                    if ($strFirth == $strSecond) $strSecond = '';
                     $strSqlWhere .= "`" . substr($field, 2) . "` " . $strFirth . $strSecond . " '" . $value . "' ";
                 }
             }
