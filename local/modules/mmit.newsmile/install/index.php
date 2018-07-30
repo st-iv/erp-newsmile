@@ -47,6 +47,7 @@ class mmit_newsmile extends CModule
 
     public function installDB()
     {
+        $this->installDBUser();
         if (Loader::includeModule($this->MODULE_ID))
         {
             NewSmile\VisitTable::getEntity()->createDbTable();
@@ -66,7 +67,6 @@ class mmit_newsmile extends CModule
 
             NewSmile\VisitTable::createStatus();
             $this->testInstallDB();
-            $this->installDBUser();
         }
     }
 
