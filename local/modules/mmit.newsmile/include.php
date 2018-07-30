@@ -10,5 +10,10 @@ $rsUser = \Bitrix\Main\UserTable::getList([
 ]);
 if ($arUser = $rsUser->fetch()) {
     session_start();
-    $_SESSION['CLINIC_ID'] = $arUser['UF_CLINIC'];
+    if (!empty( $arUser['UF_CLINIC'] )) {
+        $_SESSION['CLINIC_ID'] = $arUser['UF_CLINIC'];
+    } else {
+        $_SESSION['CLINIC_ID'] = 1;
+    }
+
 }
