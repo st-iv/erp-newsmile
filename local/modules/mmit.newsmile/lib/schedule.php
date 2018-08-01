@@ -103,18 +103,40 @@ class ScheduleTable extends Entity\DataManager
      */
     public static function addWeekSchedule($dateStart, $clinicID = 1)
     {
+        /* проверка начала недели */
         if (date('N', strtotime($dateStart)) != 1) {
             $dateStart = date('Y-m-d', strtotime('monday this week', strtotime($dateStart)));
         }
-        if (date('W', strtotime($dateStart)) % 2 == 0) {
-            $dateStart = date('Y-m-d', strtotime('monday last week', strtotime($dateStart)));
-        }
 
         $differenceTime = strtotime($dateStart) - strtotime(ScheduleTemplateTable::DEFAULT_START_DATE);
+        $arFields = [
+            'CLINIC_ID' => $clinicID,
+            '>=TIME' => new DateTime(ScheduleTemplateTable::DEFAULT_START_DATE,'Y-m-d'),
+            '<=TIME' => new DateTime(date('Y-m-d', strtotime('monday next week', strtotime(ScheduleTemplateTable::DEFAULT_START_DATE))),'Y-m-d'),
+        ];
+        /* проверка четной недели */
+        if (date('W', strtotime($dateStart)) % 2 == 0) {
+            $differenceTime = strtotime($dateStart) - strtotime(ScheduleTemplateTable::DEFAULT_START_DATE_EVEN);
+            $arFields = [
+                'CLINIC_ID' => $clinicID,
+                '>=TIME' => new DateTime(ScheduleTemplateTable::DEFAULT_START_DATE_EVEN,'Y-m-d'),
+                '<=TIME' => new DateTime(date('Y-m-d', strtotime('monday next week', strtotime(ScheduleTemplateTable::DEFAULT_START_DATE_EVEN))),'Y-m-d'),
+            ];
+        }
+
+        $rsSchedule = self::getList([
+            'filter' => [
+                'CLINIC_ID' => $clinicID,
+                '>=TIME' => new DateTime($dateStart,'Y-m-d'),
+                '<=TIME' => new DateTime(date('Y-m-d', strtotime('monday next week', strtotime($dateStart))),'Y-m-d'),
+            ]
+        ]);
+        if ($arSchedule = $rsSchedule->fetch()) {
+            return false;
+        }
+
         $rsScheduleTemplate = ScheduleTemplateTable::getList(array(
-            'filter' => array(
-                'CLINIC_ID' => $clinicID
-            )
+            'filter' => $arFields
         ));
         while ($arScheduleTemplate = $rsScheduleTemplate->fetch())
         {
@@ -185,5 +207,14 @@ class ScheduleTable extends Entity\DataManager
             $timeIndex += self::TIME_15_MINUTES;
         }
         return true;
+    }
+
+    public static function agentAddWeekSchedule($dateStart)
+    {
+        $rsClinic = ClinicTable::getList([]);
+        while ($arClinic = $rsClinic->fetch()) {
+            self::addWeekSchedule($dateStart, $arClinic['ID']);
+        }
+        return __CLASS__ . '::agentAddWeekSchedule();';
     }
 }
