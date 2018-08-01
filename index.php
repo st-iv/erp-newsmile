@@ -4,22 +4,33 @@ $APPLICATION->SetTitle("Главная страница");
 ?>
 <table>
     <tr>
+        <td colspan="2">
+            <?$APPLICATION->IncludeComponent(
+                "newSmile:calendar.filter",
+                "",
+                [
+                    'FILTER_NAME' => 'arrFilterCalendar'
+                ]
+            );?>
+        </td>
+    </tr>
+    <tr>
         <td>
             <?$APPLICATION->IncludeComponent(
                 "newSmile:calendar",
                 "",
-                Array(
-
-                )
+                [
+                    'FILTER_NAME' => 'arrFilterCalendar'
+                ]
             );?>
         </td>
         <td rowspan="3">
             <?$APPLICATION->IncludeComponent(
                 "newSmile:calendar.day",
                 "",
-                Array(
-
-                )
+                [
+                    'FILTER_NAME' => 'arrFilterCalendar'
+                ]
             );?>
         </td>
     </tr>
