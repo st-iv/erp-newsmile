@@ -1,6 +1,5 @@
 <?
 $aMenuLinks = Array(
-
 	Array(
 		"Главная", 
 		"/", 
@@ -8,13 +7,33 @@ $aMenuLinks = Array(
 		Array(), 
 		"" 
 	),
-
 	Array(
-		"Профиль", 
-		"/personal/", 
+		"пациенты", 
+		"/patientcard/", 
 		Array(), 
 		Array(), 
 		"" 
 	),
+	Array(
+		"прейскурант", 
+		"/price-list/", 
+		Array(), 
+		Array(), 
+		"" 
+	),
+	Array(
+		"настройка расписания", 
+		"/settings-schedule/", 
+		Array(), 
+		Array(), 
+		"" 
+	),
+	Array(
+		"Лист ожидания", 
+		"/waiting-list/", 
+		Array(), 
+		Array(), 
+		"" 
+	)
 );
 ?>
