@@ -17,6 +17,7 @@ Loc::loadMessages(__FILE__);
 class ScheduleTemplateTable extends Entity\DataManager
 {
     const DEFAULT_START_DATE = '1993-04-26';
+    const DEFAULT_START_DATE_EVEN = '1993-05-03';
 
     public static function getTableName()
     {
