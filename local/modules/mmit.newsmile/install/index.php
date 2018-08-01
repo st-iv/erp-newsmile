@@ -37,10 +37,12 @@ class mmit_newsmile extends CModule
     {
         ModuleManager::registerModule($this->MODULE_ID);
         $this->installDB();
+        $this->installAgents();
     }
 
     public function doUninstall()
     {
+        $this->uninstallAgents();
         $this->uninstallDB();
         ModuleManager::unRegisterModule($this->MODULE_ID);
     }
@@ -111,27 +113,6 @@ class mmit_newsmile extends CModule
         }
     }
 
-    public function uninstallDB()
-    {
-        if (Loader::includeModule($this->MODULE_ID))
-        {
-            $connection = Application::getInstance()->getConnection();
-            $connection->dropTable(NewSmile\VisitTable::getTableName());
-            $connection->dropTable(NewSmile\InvoiceTable::getTableName());
-            $connection->dropTable(NewSmile\InvoiceItemTable::getTableName());
-            $connection->dropTable(NewSmile\Status\VisitTable::getTableName());
-            $connection->dropTable(NewSmile\ClinicTable::getTableName());
-            $connection->dropTable(NewSmile\DoctorTable::getTableName());
-            $connection->dropTable(NewSmile\PatientCardTable::getTableName());
-            $connection->dropTable(NewSmile\Status\PatientTable::getTableName());
-            $connection->dropTable(NewSmile\TreatmentPlanTable::getTableName());
-            $connection->dropTable(NewSmile\TreatmentPlanItemTable::getTableName());
-            $connection->dropTable(NewSmile\ScheduleTable::getTableName());
-            $connection->dropTable(NewSmile\ScheduleTemplateTable::getTableName());
-            $connection->dropTable(NewSmile\WorkChairTable::getTableName());
-            $connection->dropTable(NewSmile\WaitingListTable::getTableName());
-        }
-    }
     public function testInstallDB()
     {
         $xmlClinic = simplexml_load_file(__DIR__ . '/xml/clinic.xml');
@@ -182,5 +163,45 @@ class mmit_newsmile extends CModule
         NewSmile\ScheduleTable::addWeekSchedule(date('Y-m-d'), 2);
 
 
+    }
+
+    public function installAgents()
+    {
+        CAgent::AddAgent(
+            "NewSmile\ScheduleTemplateTable::agentAddWeekSchedule(".date('d.m.Y', strtotime('+1 months')).")",
+            $this->MODULE_ID,
+            "N",
+            604800, // интервал запуска - 1 неделя
+            date('d.m.Y H:i:s'),
+            "Y",
+            date('d.m.Y H:i:s'),
+            30);
+    }
+
+    public function uninstallDB()
+    {
+        if (Loader::includeModule($this->MODULE_ID))
+        {
+            $connection = Application::getInstance()->getConnection();
+            $connection->dropTable(NewSmile\VisitTable::getTableName());
+            $connection->dropTable(NewSmile\InvoiceTable::getTableName());
+            $connection->dropTable(NewSmile\InvoiceItemTable::getTableName());
+            $connection->dropTable(NewSmile\Status\VisitTable::getTableName());
+            $connection->dropTable(NewSmile\ClinicTable::getTableName());
+            $connection->dropTable(NewSmile\DoctorTable::getTableName());
+            $connection->dropTable(NewSmile\PatientCardTable::getTableName());
+            $connection->dropTable(NewSmile\Status\PatientTable::getTableName());
+            $connection->dropTable(NewSmile\TreatmentPlanTable::getTableName());
+            $connection->dropTable(NewSmile\TreatmentPlanItemTable::getTableName());
+            $connection->dropTable(NewSmile\ScheduleTable::getTableName());
+            $connection->dropTable(NewSmile\ScheduleTemplateTable::getTableName());
+            $connection->dropTable(NewSmile\WorkChairTable::getTableName());
+            $connection->dropTable(NewSmile\WaitingListTable::getTableName());
+        }
+    }
+
+    public function uninstallAgents()
+    {
+        CAgent::RemoveModuleAgents($this->MODULE_ID);
     }
 }
