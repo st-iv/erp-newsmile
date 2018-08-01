@@ -26,6 +26,8 @@ class CalendarDayComponent extends \CBitrixComponent
         }
         $this->arResult['THIS_DATE'] = $this->thisDate;
 
+	    $this->setFilter();
+
         $isNext = $this->getWorkChair();
         $isNext = $isNext && $this->getSchedule();
         $isNext = $isNext && $this->getVisit();
@@ -33,18 +35,49 @@ class CalendarDayComponent extends \CBitrixComponent
         $this->getPatients();
 	}
 
+	protected function setFilter()
+    {
+        if (empty($this->arParams['FILTER_NAME'])) {
+            $this->FILTER_NAME = $this->arParams['FILTER_NAME'];
+        } else {
+            $this->FILTER_NAME = 'arFilter';
+        }
+        global ${$this->FILTER_NAME};
+        $arFilterGlobal = ${$this->FILTER_NAME};
+
+        $this->arResult['FILTER_SCHEDULE'] = [];
+
+        if (!empty($arFilterGlobal['TIME_FROM'])) {
+            $this->arResult['FILTER_SCHEDULE']['>=TIME'] = new DateTime($arFilterGlobal['TIME_FROM'], 'H:i');
+        }
+        if (!empty($arFilterGlobal['TIME_TO'])) {
+            $this->arResult['FILTER_SCHEDULE']['<=TIME'] = new DateTime($arFilterGlobal['TIME_TO'], 'H:i');
+        }
+        if (!empty($arFilterGlobal['DOCTOR'])) {
+            $this->arResult['FILTER_SCHEDULE']['DOCTOR_ID'] = $arFilterGlobal['DOCTOR'];
+        }
+    }
+
     protected function getSchedule()
     {
         $isResult = false;
+        $arFilter = [
+            '>=TIME' => new Date($this->thisDate, 'Y-m-d'),
+            '<=TIME' => new Date(date('Y-m-d', strtotime('tomorrow', strtotime($this->thisDate))), 'Y-m-d'),
+            'CLINIC_ID' => $_SESSION['CLINIC_ID']
+        ];
+        echo '<pre>';
+        print_r($this->arResult['FILTER_SCHEDULE']);
+        echo '</pre>';
+        $arFilter = array_merge($arFilter,$this->arResult['FILTER_SCHEDULE']);
+        echo '<pre>';
+        print_r($arFilter);
+        echo '</pre>';
         $rsSchedule = ScheduleTable::getList(array(
             'order' => array(
                 'TIME' => 'ASC'
             ),
-            'filter' => array(
-                '>=TIME' => new Date($this->thisDate, 'Y-m-d'),
-                '<=TIME' => new Date(date('Y-m-d', strtotime('tomorrow', strtotime($this->thisDate))), 'Y-m-d'),
-                'CLINIC_ID' => $_SESSION['CLINIC_ID']
-            ),
+            'filter' => $arFilter,
             'select' => array(
                 'ID',
                 'TIME',
