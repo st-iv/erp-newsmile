@@ -168,7 +168,7 @@ class mmit_newsmile extends CModule
     public function installAgents()
     {
         CAgent::AddAgent(
-            "NewSmile\ScheduleTemplateTable::agentAddWeekSchedule(".date('d.m.Y', strtotime('+1 months')).")",
+            "\Mmit\NewSmile\ScheduleTable::agentAddWeekSchedule('".date('d.m.Y', strtotime('+1 months'))."');",
             $this->MODULE_ID,
             "N",
             604800, // интервал запуска - 1 неделя

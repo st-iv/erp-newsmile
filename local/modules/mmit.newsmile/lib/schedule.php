@@ -215,6 +215,6 @@ class ScheduleTable extends Entity\DataManager
         while ($arClinic = $rsClinic->fetch()) {
             self::addWeekSchedule($dateStart, $arClinic['ID']);
         }
-        return __CLASS__ . '::agentAddWeekSchedule();';
+        return __CLASS__ . "::agentAddWeekSchedule('".date('d.m.Y', strtotime('+1 weeks', $dateStart))."');";
     }
 }
