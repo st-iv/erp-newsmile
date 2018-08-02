@@ -40,20 +40,28 @@ $arUrlRewrite=array (
     'PATH' => '/personal/lists/index.php',
     'SORT' => 100,
   ),
+  6 => 
+  array (
+    'CONDITION' => '#^/patientcard/#',
+    'RULE' => '',
+    'ID' => 'newSmile:patient.card',
+    'PATH' => '/patientcard/index.php',
+    'SORT' => 100,
+  ),
+  7 => 
+  array (
+    'CONDITION' => '#^/work-chair/#',
+    'RULE' => '',
+    'ID' => 'newSmile:workchair',
+    'PATH' => '/work-chair/index.php',
+    'SORT' => 100,
+  ),
   3 => 
   array (
     'CONDITION' => '#^/rest/#',
     'RULE' => '',
     'ID' => NULL,
     'PATH' => '/bitrix/services/rest/index.php',
-    'SORT' => 100,
-  ),
-  6 =>
-  array (
-    'CONDITION' => '#^/patientcard/#',
-    'RULE' => '',
-    'ID' => 'newSmile:patient.card',
-    'PATH' => '/patientcard/index.php',
     'SORT' => 100,
   ),
 );
