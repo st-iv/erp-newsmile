@@ -34,6 +34,20 @@ $aMenuLinks = Array(
 		Array(), 
 		Array(), 
 		"" 
+	),
+	Array(
+		"Рабочие места", 
+		"/work-chair/", 
+		Array(), 
+		Array(), 
+		"" 
+	),
+	Array(
+		"Врачи", 
+		"/doctors/", 
+		Array(), 
+		Array(), 
+		"" 
 	)
 );
 ?>
