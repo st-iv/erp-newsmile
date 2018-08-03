@@ -56,6 +56,14 @@ $arUrlRewrite=array (
     'PATH' => '/work-chair/index.php',
     'SORT' => 100,
   ),
+  8 =>
+  array (
+    'CONDITION' => '#^/doctors/#',
+    'RULE' => '',
+    'ID' => 'newSmile:doctor',
+    'PATH' => '/doctors/index.php',
+    'SORT' => 100,
+  ),
   3 => 
   array (
     'CONDITION' => '#^/rest/#',
