@@ -48,10 +48,10 @@ class CalendarDayComponent extends \CBitrixComponent
         $this->arResult['FILTER_SCHEDULE'] = [];
 
         if (!empty($arFilterGlobal['TIME_FROM'])) {
-            $this->arResult['FILTER_SCHEDULE']['>=TIME'] = new DateTime($arFilterGlobal['TIME_FROM'], 'H:i');
+            $this->arResult['FILTER_SCHEDULE']['>=TIME'] = new DateTime($this->thisDate . ' ' . $arFilterGlobal['TIME_FROM'], 'Y-m-d H:i');
         }
         if (!empty($arFilterGlobal['TIME_TO'])) {
-            $this->arResult['FILTER_SCHEDULE']['<=TIME'] = new DateTime($arFilterGlobal['TIME_TO'], 'H:i');
+            $this->arResult['FILTER_SCHEDULE']['<TIME'] = new DateTime($this->thisDate . ' ' .$arFilterGlobal['TIME_TO'], 'Y-m-d H:i');
         }
         if (!empty($arFilterGlobal['DOCTOR'])) {
             $this->arResult['FILTER_SCHEDULE']['DOCTOR_ID'] = $arFilterGlobal['DOCTOR'];
@@ -66,13 +66,7 @@ class CalendarDayComponent extends \CBitrixComponent
             '<=TIME' => new Date(date('Y-m-d', strtotime('tomorrow', strtotime($this->thisDate))), 'Y-m-d'),
             'CLINIC_ID' => $_SESSION['CLINIC_ID']
         ];
-        echo '<pre>';
-        print_r($this->arResult['FILTER_SCHEDULE']);
-        echo '</pre>';
         $arFilter = array_merge($arFilter,$this->arResult['FILTER_SCHEDULE']);
-        echo '<pre>';
-        print_r($arFilter);
-        echo '</pre>';
         $rsSchedule = ScheduleTable::getList(array(
             'order' => array(
                 'TIME' => 'ASC'
