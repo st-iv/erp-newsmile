@@ -96,6 +96,58 @@ class ScheduleTable extends Entity\DataManager
         );
     }
 
+    public static function getListFilter(array $arFilter)
+    {
+        global $DB;
+        $strSqlSelect = "SELECT DATE_FORMAT(TIME, '%Y-%m-%d') AS DATE, COUNT(*) AS COUNT ";
+        $strSqlFrom = "FROM " . self::getTableName();
+        $strSqlWhere = " WHERE ";
+        $isFirthWhere = true;
+        foreach ($arFilter as $field => $value)
+        {
+            if (!$isFirthWhere) {
+                $strSqlWhere .= 'AND ';
+            }
+            switch ($field)
+            {
+                case 'TIME_FROM':
+                    $strSqlWhere .= 'TIME_TO_SEC(TIME) >= TIME_TO_SEC(\'' . $value . '\') ';
+                    break;
+                case 'TIME_TO':
+                    $strSqlWhere .= 'TIME_TO_SEC(TIME) < TIME_TO_SEC(\'' . $value . '\') ';
+                    break;
+                case 'CLINIC_ID':
+                    $strSqlWhere .= 'CLINIC_ID = ' . $value . ' ';
+                    break;
+                case 'ENGAGED':
+                    $strSqlWhere .= 'ENGAGED = \'' . $value . '\' ';
+                    break;
+                case 'DATE_FROM':
+                    $strSqlWhere .= 'TIME >= \'' . $value . '\' ';
+                    break;
+                case 'DATE_TO':
+                    $strSqlWhere .= 'TIME <= \'' . $value . '\' ';
+                    break;
+                case 'DOCTOR':
+                    if ($value !== false) {
+                        $strSqlWhere .= 'DOCTOR_ID = \'' . $value . '\' ';
+                    } else {
+                        $strSqlWhere .= 'DOCTOR_ID <> \'0\' ';
+                    }
+                    break;
+            }
+            $isFirthWhere = false;
+        }
+        $strSqlGroup = "GROUP BY DATE";
+        $result = $DB->Query(
+            $strSqlSelect .
+            $strSqlFrom .
+            $strSqlWhere .
+            $strSqlGroup
+        );
+        return $result;
+    }
+
     /**
      * Создает расписание на 2 недели на основании шаблона расписания из таблицы ScheduleTemplateTable
      *
