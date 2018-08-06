@@ -30,8 +30,14 @@ if (isset($_GET['date'])) echo "выбрана дата ".$_GET['date'];
         <?foreach ($arWeek as $arDay):?>
             <?
             $style = '';
-            if ($arResult['DATE'][$arDay]){
+            if ($arResult['DATE'][$arDay] == 0){
+                $style = ' style="background-color: grey;"';
+            } elseif ($arResult['DATE'][$arDay] < 10) {
                 $style = ' style="background-color: red;"';
+            } elseif ($arResult['DATE'][$arDay] < 50) {
+                $style = ' style="background-color: orange;"';
+            } else {
+                $style = ' style="background-color: green;"';
             }
             ?>
             <td <?=$style?>>

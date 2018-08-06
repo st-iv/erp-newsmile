@@ -2,13 +2,15 @@
 if(!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED !== true) die();
 
 use Bitrix\Main\Loader,
-    Mmit\NewSmile\VisitTable;
+    Mmit\NewSmile\ScheduleTable;
 
 class CalendarComponent extends \CBitrixComponent
 {
     const mktimeWeek = 604800;
     private $startDay = '';
     private $endDay = '';
+
+
 
 	/**
 	 * получение результатов
@@ -24,17 +26,35 @@ class CalendarComponent extends \CBitrixComponent
 	    $this->arResult['LINK_PREV'] = '<a href="?nextWeek=' . ($this->request['nextWeek'] - 1) . '">&lt;&lt;&lt;</a>';
 	    if (!Loader::includeModule('mmit.newSmile')) die();
 
-        $rsSchedule = VisitTable::getCountVisitFromDate([
-            '==CLINIC_ID' => $_SESSION['CLINIC_ID'],
-            ">=DATE_START" => $this->startDay,
-            "<=DATE_START" => $this->endDay
-        ]);
+	    /*filter*/
+        $arFilterGlobal = $this->setFilter();
+
+        $arFilterGlobal['ENGAGED'] = 'N';
+        $arFilterGlobal['CLINIC_ID'] = $_SESSION['CLINIC_ID'];
+        $arFilterGlobal['DATE_FROM'] = $this->startDay;
+        $arFilterGlobal['DATE_TO'] = $this->endDay;
+        if (empty($arFilterGlobal['DOCTOR'])) {
+            $arFilterGlobal['DOCTOR'] = false;
+        }
+
+        $rsSchedule = ScheduleTable::getListFilter($arFilterGlobal);
         while ($arSchedule = $rsSchedule->Fetch())
         {
             $this->arResult[] = $arSchedule;
-            $this->arResult['DATE'][$arSchedule['DATE_START']] = $arSchedule['COUNT'];
+            $this->arResult['DATE'][$arSchedule['DATE']] = $arSchedule['COUNT'];
         }
 	}
+
+    protected function setFilter()
+    {
+        if (empty($this->arParams['FILTER_NAME'])) {
+            $this->FILTER_NAME = $this->arParams['FILTER_NAME'];
+        } else {
+            $this->FILTER_NAME = 'arFilter';
+        }
+        global ${$this->FILTER_NAME};
+        return $arFilterGlobal = ${$this->FILTER_NAME};
+    }
 
 	protected function setCalendar($intCurrentDate)
     {
