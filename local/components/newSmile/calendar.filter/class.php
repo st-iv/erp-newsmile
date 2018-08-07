@@ -95,7 +95,12 @@ class CalendarFilterComponent extends \CBitrixComponent
 
     protected function requestResult($request)
     {
-        $arResult = [];
+        global ${$this->FILTER_NAME};
+        if (!empty(${$this->FILTER_NAME}) && is_array(${$this->FILTER_NAME})){
+            $arResult = ${$this->FILTER_NAME};
+        } else {
+            $arResult = [];
+        }
         if (!empty($request['TIME_FROM'])) {
             $arResult['TIME_FROM'] = $request['TIME_FROM'];
         }
@@ -105,8 +110,7 @@ class CalendarFilterComponent extends \CBitrixComponent
         if (!empty($request['DOCTOR'])) {
             $arResult['DOCTOR'] = $request['DOCTOR'];
         }
-        global ${$this->FILTER_NAME};
-        ${$this->FILTER_NAME} = $arResult;
+        $this->arResult['CURRENT_FILTER'] = ${$this->FILTER_NAME} = $arResult;
     }
 	
 	/**

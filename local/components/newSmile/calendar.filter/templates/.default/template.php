@@ -8,6 +8,8 @@
 use Bitrix\Main\Config\Option;
 if(!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED !== true) die();
 
+$arFilter = $arResult['CURRENT_FILTER'];
+
 ?>
 <form action="" method="post">
     <table>
@@ -15,14 +17,14 @@ if(!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED !== true) die();
             <td>
                 <select name="TIME_FROM" id="">
                     <option value="">--:--</option>
-                    <?foreach ($arResult['FILTER']['FILTER_TIME'] as $arFilter):?>
-                        <option value="<?=$arFilter?>"><?=$arFilter?></option>
+                    <?foreach ($arResult['FILTER']['FILTER_TIME'] as $filter):?>
+                        <option value="<?=$filter?>" <?=($arFilter['TIME_FROM'] == $filter)?'selected':'';?>><?=$filter?></option>
                     <?endforeach;?>
                 </select>
                 <select name="TIME_TO" id="">
                     <option value="">--:--</option>
-                    <?foreach ($arResult['FILTER']['FILTER_TIME'] as $arFilter):?>
-                        <option value="<?=$arFilter?>"><?=$arFilter?></option>
+                    <?foreach ($arResult['FILTER']['FILTER_TIME'] as $filter):?>
+                        <option value="<?=$filter?>" <?=($arFilter['TIME_TO'] == $filter)?'selected':'';?>><?=$filter?></option>
                     <?endforeach;?>
                 </select>
             </td>
@@ -30,7 +32,7 @@ if(!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED !== true) die();
                 <select name="DOCTOR" id="">
                     <option value="">не выбран</option>
                     <?foreach ($arResult['DOCTORS'] as $arDoctor):?>
-                        <option value="<?=$arDoctor['ID']?>"><?=$arDoctor['NAME']?></option>
+                        <option value="<?=$arDoctor['ID']?>" <?=($arFilter['DOCTOR'] == $arDoctor['ID'])?'selected':'';?>><?=$arDoctor['NAME']?></option>
                     <?endforeach;?>
                 </select>
             </td>
