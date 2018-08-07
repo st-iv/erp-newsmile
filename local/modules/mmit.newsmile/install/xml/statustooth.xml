@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Values>
+    <Value>
+        <ID>1</ID>
+        <CODE>G</CODE>
+        <NAME>Здоров</NAME>
+    </Value>
+    <Value>
+        <ID>2</ID>
+        <CODE>S</CODE>
+        <NAME>Пломба</NAME>
+    </Value>
+    <Value>
+        <ID>3</ID>
+        <CODE>C</CODE>
+        <NAME>Коронка</NAME>
+    </Value>
+    <Value>
+        <ID>4</ID>
+        <CODE>I</CODE>
+        <NAME>Искусственный зуб</NAME>
+    </Value>
+    <Value>
+        <ID>5</ID>
+        <CODE>R</CODE>
+        <NAME>Радикс</NAME>
+    </Value>
+    <Value>
+        <ID>6</ID>
+        <CODE>Pt</CODE>
+        <NAME>Периодонтит</NAME>
+    </Value>
+    <Value>
+        <ID>7</ID>
+        <CODE>P</CODE>
+        <NAME>Пульпит</NAME>
+    </Value>
+    <Value>
+        <ID>8</ID>
+        <CODE>K</CODE>
+        <NAME>Кариес</NAME>
+    </Value>
+    <Value>
+        <ID>9</ID>
+        <CODE>E</CODE>
+        <NAME>Отсутствует</NAME>
+    </Value>
+</Values>

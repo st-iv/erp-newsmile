@@ -66,6 +66,7 @@ class mmit_newsmile extends CModule
             NewSmile\ScheduleTemplateTable::getEntity()->createDbTable();
             NewSmile\WorkChairTable::getEntity()->createDbTable();
             NewSmile\WaitingListTable::getEntity()->createDbTable();
+            NewSmile\Status\ToothTable::getEntity()->createDbTable();
 
             NewSmile\VisitTable::createStatus();
             $this->testInstallDB();
@@ -132,13 +133,6 @@ class mmit_newsmile extends CModule
                 'CLINIC_ID' => $value->CLINIC_ID
             ]);
         }
-        $xmlStatusPatient = simplexml_load_file(__DIR__ . '/xml/statuspatient.xml');
-        foreach ($xmlStatusPatient->Value as $value)
-        {
-            NewSmile\Status\PatientTable::add([
-                'NAME' => $value->NAME
-            ]);
-        }
         $xmlPatient = simplexml_load_file(__DIR__ . '/xml/patientcard.xml');
         foreach ($xmlPatient->Value as $value)
         {
@@ -154,6 +148,14 @@ class mmit_newsmile extends CModule
             NewSmile\WorkChairTable::add([
                 'NAME' => $value->NAME,
                 'CLINIC_ID' => $value->CLINIC_ID,
+            ]);
+        }
+        $xmlStatusTooth = simplexml_load_file(__DIR__ . '/xml/statustooth.xml');
+        foreach ($xmlStatusTooth->Value as $value)
+        {
+            NewSmile\Status\ToothTable::add([
+                'NAME' => $value->NAME,
+                'CODE' => $value->CODE
             ]);
         }
 
@@ -197,6 +199,7 @@ class mmit_newsmile extends CModule
             $connection->dropTable(NewSmile\ScheduleTemplateTable::getTableName());
             $connection->dropTable(NewSmile\WorkChairTable::getTableName());
             $connection->dropTable(NewSmile\WaitingListTable::getTableName());
+            $connection->dropTable(NewSmile\Status\ToothTable::getTableName());
         }
     }
 
