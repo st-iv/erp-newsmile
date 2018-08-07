@@ -1,0 +1,34 @@
+.dental-formula {
+    display: flex;
+    flex-direction: column;
+}
+.dental-formula--top, .dental-formula--bottom {
+    display: flex;
+    flex-direction: row;
+}
+.dental-formula__items {
+    display: flex;
+    flex-direction: row;
+}
+.dental-formula__items {
+    padding: 3px;
+}.dental-formula__item {
+    padding: 3px;
+}
+.dental-formula__item__tooth {
+    /*width: 25px;*/
+    height: 25px;
+    margin: 3px;
+    border: 1px solid #000;
+    box-shadow: 1px 1px 2px 0px #000000;
+}
+.tooth-items {
+    margin: 3px 0;
+}
+.tooth-item {
+    width: 25px;
+    height: 25px;
+    margin: 0 3px;
+    border: 1px solid #000;
+    box-shadow: 1px 1px 2px 0px #000000;
+}
