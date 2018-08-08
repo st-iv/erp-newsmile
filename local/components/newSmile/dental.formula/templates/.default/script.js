@@ -43,6 +43,19 @@
             items: items
         });
 
+        $('#json-formula').on('click', function () {
+            var formula = {};
+            $('.active .dental-formula__item__tooth').each(function () {
+                if ($(this).data('status')) {
+                    formula[$(this).next().text()] = $(this).data('status');
+                } else {
+
+                    formula[$(this).next().text()] = '';
+                }
+            });
+            console.log(formula);
+        });
+
     };
 
 })();

@@ -15,11 +15,11 @@ $componentID = rand(100000, 999999);
             <?foreach ($arResult['PARENT_TOOTH']['TOP_LEFT'] as $key => $tooth):?>
                 <div class="dental-formula__item">
                     <div class="dental-formula__item--parent">
-                        <div class="dental-formula__item__tooth"></div>
+                        <div class="dental-formula__item__tooth" data-number="<?=$arResult['PARENT_TOOTH']['TOP_LEFT'][$key]?>"></div>
                         <div class="dental-formula__item__number"><?=$arResult['PARENT_TOOTH']['TOP_LEFT'][$key]?></div>
                     </div>
                     <div class="dental-formula__item--child">
-                        <div class="dental-formula__item__tooth"></div>
+                        <div class="dental-formula__item__tooth" data-number="<?=$arResult['CHILD_TOOTH']['TOP_LEFT'][$key]?>"></div>
                         <div class="dental-formula__item__number"><?=$arResult['CHILD_TOOTH']['TOP_LEFT'][$key]?></div>
                     </div>
                     <div class="dental-formula__item__checked">
@@ -32,11 +32,11 @@ $componentID = rand(100000, 999999);
             <?foreach ($arResult['PARENT_TOOTH']['TOP_RIGHT'] as $key => $tooth):?>
                 <div class="dental-formula__item">
                     <div class="dental-formula__item--parent">
-                        <div class="dental-formula__item__tooth"></div>
+                        <div class="dental-formula__item__tooth" data-number="<?=$arResult['PARENT_TOOTH']['TOP_RIGHT'][$key]?>"></div>
                         <div class="dental-formula__item__number"><?=$arResult['PARENT_TOOTH']['TOP_RIGHT'][$key]?></div>
                     </div>
                     <div class="dental-formula__item--child">
-                        <div class="dental-formula__item__tooth"></div>
+                        <div class="dental-formula__item__tooth" data-number="<?=$arResult['CHILD_TOOTH']['TOP_RIGHT'][$key]?>"></div>
                         <div class="dental-formula__item__number"><?=$arResult['CHILD_TOOTH']['TOP_RIGHT'][$key]?></div>
                     </div>
                     <div class="dental-formula__item__checked">
@@ -51,11 +51,11 @@ $componentID = rand(100000, 999999);
             <?foreach ($arResult['PARENT_TOOTH']['BOTTOM_LEFT'] as $key => $tooth):?>
                 <div class="dental-formula__item">
                     <div class="dental-formula__item--parent">
-                        <div class="dental-formula__item__tooth"></div>
+                        <div class="dental-formula__item__tooth" data-number="<?=$arResult['PARENT_TOOTH']['BOTTOM_LEFT'][$key]?>"></div>
                         <div class="dental-formula__item__number"><?=$arResult['PARENT_TOOTH']['BOTTOM_LEFT'][$key]?></div>
                     </div>
                     <div class="dental-formula__item--child">
-                        <div class="dental-formula__item__tooth"></div>
+                        <div class="dental-formula__item__tooth" data-number="<?=$arResult['CHILD_TOOTH']['BOTTOM_LEFT'][$key]?>"></div>
                         <div class="dental-formula__item__number"><?=$arResult['CHILD_TOOTH']['BOTTOM_LEFT'][$key]?></div>
                     </div>
                     <div class="dental-formula__item__checked">
@@ -68,11 +68,11 @@ $componentID = rand(100000, 999999);
             <?foreach ($arResult['PARENT_TOOTH']['BOTTOM_RIGHT'] as $key => $tooth):?>
                 <div class="dental-formula__item">
                     <div class="dental-formula__item--parent">
-                        <div class="dental-formula__item__tooth"></div>
+                        <div class="dental-formula__item__tooth" data-number="<?=$arResult['PARENT_TOOTH']['BOTTOM_RIGHT'][$key]?>"></div>
                         <div class="dental-formula__item__number"><?=$arResult['PARENT_TOOTH']['BOTTOM_RIGHT'][$key]?></div>
                     </div>
                     <div class="dental-formula__item--child">
-                        <div class="dental-formula__item__tooth"></div>
+                        <div class="dental-formula__item__tooth" data-number="<?=$arResult['CHILD_TOOTH']['BOTTOM_RIGHT'][$key]?>"></div>
                         <div class="dental-formula__item__number"><?=$arResult['CHILD_TOOTH']['BOTTOM_RIGHT'][$key]?></div>
                     </div>
                     <div class="dental-formula__item__checked">
@@ -83,6 +83,7 @@ $componentID = rand(100000, 999999);
         </div>
     </div>
 </div>
+<button id="json-formula">Готово</button>
 
 <script>
     BX.ready(function(){
