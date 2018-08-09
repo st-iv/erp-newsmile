@@ -53,7 +53,7 @@ if(!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED !== true) die();
                 <lable>Фамилия</lable>
             </td>
             <td>
-                <input type="text" name="USER[LAST_NAME]" value="<?=$arResult['PATIENT_CARD']['USER_LAST_NAME']?>">
+                <input type="text" name="LAST_NAME" value="<?=$arResult['PATIENT_CARD']['LAST_NAME']?>">
             </td>
         </tr>
         <tr>
@@ -61,7 +61,7 @@ if(!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED !== true) die();
                 <lable>Имя</lable>
             </td>
             <td>
-                <input type="text" name="USER[NAME]" value="<?=$arResult['PATIENT_CARD']['USER_NAME']?>">
+                <input type="text" name="NAME" value="<?=$arResult['PATIENT_CARD']['NAME']?>">
             </td>
         </tr>
         <tr>
@@ -69,7 +69,7 @@ if(!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED !== true) die();
                 <lable>Отчество</lable>
             </td>
             <td>
-                <input type="text" name="USER[SECOND_NAME]" value="<?=$arResult['PATIENT_CARD']['USER_SECOND_NAME']?>">
+                <input type="text" name="SECOND_NAME" value="<?=$arResult['PATIENT_CARD']['SECOND_NAME']?>">
             </td>
         </tr>
         <tr>
@@ -77,7 +77,7 @@ if(!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED !== true) die();
                 <lable>Дата рождения</lable>
             </td>
             <td>
-                <input type="date" name="USER[PERSONAL_BIRTHDAY]" value="<?=$arResult['PATIENT_CARD']['USER_PERSONAL_BIRTHDAY']?>">
+                <input type="date" name="PERSONAL_BIRTHDAY" value="<?=$arResult['PATIENT_CARD']['PERSONAL_BIRTHDAY']?>">
             </td>
         </tr>
         <tr>
@@ -85,8 +85,8 @@ if(!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED !== true) die();
                 <lable>Пол</lable>
             </td>
             <td>
-                <input type="radio" name="USER[PERSONAL_GENDER]" value="M" <?=($arResult['PATIENT_CARD']['USER_PERSONAL_GENDER'] == 'M' ) ? 'checked': '';?>><lable>Мужской</lable>
-                <input type="radio" name="USER[PERSONAL_GENDER]" value="F" <?=($arResult['PATIENT_CARD']['USER_PERSONAL_GENDER'] == 'F' ) ? 'checked': '';?>><lable>Женский</lable>
+                <input type="radio" name="PERSONAL_GENDER" value="M" <?=($arResult['PATIENT_CARD']['PERSONAL_GENDER'] == 'M' ) ? 'checked': '';?>><lable>Мужской</lable>
+                <input type="radio" name="PERSONAL_GENDER" value="F" <?=($arResult['PATIENT_CARD']['PERSONAL_GENDER'] == 'F' ) ? 'checked': '';?>><lable>Женский</lable>
             </td>
         </tr>
         <tr>
@@ -112,7 +112,7 @@ if(!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED !== true) die();
                 <lable>Телефон</lable>
             </td>
             <td>
-                <input type="tel" name="USER[PERSONAL_PHONE]" value="<?=$arResult['PATIENT_CARD']['USER_PERSONAL_PHONE']?>">
+                <input type="tel" name="PERSONAL_PHONE" value="<?=$arResult['PATIENT_CARD']['PERSONAL_PHONE']?>">
             </td>
         </tr>
         <tr>
@@ -120,7 +120,7 @@ if(!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED !== true) die();
                 <lable>Дополнительный телефон</lable>
             </td>
             <td>
-                <input type="tel" name="USER[PERSONAL_MOBILE]" value="<?=$arResult['PATIENT_CARD']['USER_PERSONAL_MOBILE']?>">
+                <input type="tel" name="PERSONAL_MOBILE" value="<?=$arResult['PATIENT_CARD']['PERSONAL_MOBILE']?>">
             </td>
         </tr>
         <tr>
@@ -136,7 +136,7 @@ if(!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED !== true) die();
                 <lable>Email</lable>
             </td>
             <td>
-                <input type="email" name="USER[EMAIL]" value="<?=$arResult['PATIENT_CARD']['USER_EMAIL']?>">
+                <input type="email" name="EMAIL" value="<?=$arResult['PATIENT_CARD']['EMAIL']?>">
             </td>
         </tr>
     </table>
@@ -146,7 +146,7 @@ if(!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED !== true) die();
                 <lable>Город</lable>
             </td>
             <td>
-                <input type="text" name="USER[PERSONAL_CITY]" value="<?=$arResult['PATIENT_CARD']['USER_PERSONAL_CITY']?>">
+                <input type="text" name="PERSONAL_CITY" value="<?=$arResult['PATIENT_CARD']['PERSONAL_CITY']?>">
             </td>
         </tr>
         <tr>
@@ -154,7 +154,7 @@ if(!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED !== true) die();
                 <lable>Почтовый индекс</lable>
             </td>
             <td>
-                <input type="text" name="USER[PERSONAL_ZIP]" value="<?=$arResult['PATIENT_CARD']['USER_PERSONAL_ZIP']?>">
+                <input type="text" name="PERSONAL_ZIP" value="<?=$arResult['PATIENT_CARD']['PERSONAL_ZIP']?>">
             </td>
         </tr>
         <tr>
@@ -162,7 +162,7 @@ if(!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED !== true) die();
                 <lable>Улица дом</lable>
             </td>
             <td>
-                <textarea name="USER[PERSONAL_STREET]" id="" cols="30" rows="10"><?=$arResult['PATIENT_CARD']['USER_PERSONAL_STREET']?></textarea>
+                <textarea name="PERSONAL_STREET" id="" cols="30" rows="10"><?=$arResult['PATIENT_CARD']['PERSONAL_STREET']?></textarea>
             </td>
         </tr>
         <tr>
@@ -170,7 +170,7 @@ if(!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED !== true) die();
                 <lable>Дополнительные заметки</lable>
             </td>
             <td>
-                <textarea name="USER[PERSONAL_NOTES]" id="" cols="30" rows="10"><?=$arResult['PATIENT_CARD']['USER_PERSONAL_NOTES']?></textarea>
+                <textarea name="PERSONAL_NOTES" id="" cols="30" rows="10"><?=$arResult['PATIENT_CARD']['PERSONAL_NOTES']?></textarea>
             </td>
         </tr>
     </table>
@@ -210,7 +210,7 @@ if(!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED !== true) die();
                 <lable>Место работы</lable>
             </td>
             <td>
-                <input type="text" name="USER[WORK_COMPANY]" value="<?=$arResult['PATIENT_CARD']['USER_WORK_COMPANY']?>">
+                <input type="text" name="WORK_COMPANY" value="<?=$arResult['PATIENT_CARD']['WORK_COMPANY']?>">
             </td>
         </tr>
         <tr>
@@ -218,7 +218,7 @@ if(!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED !== true) die();
                 <lable>Профессия</lable>
             </td>
             <td>
-                <input type="text" name="USER[WORK_POSITION]" value="<?=$arResult['PATIENT_CARD']['USER_WORK_POSITION']?>">
+                <input type="text" name="WORK_POSITION" value="<?=$arResult['PATIENT_CARD']['WORK_POSITION']?>">
             </td>
         </tr>
     </table>
