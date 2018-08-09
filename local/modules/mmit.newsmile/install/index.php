@@ -137,9 +137,13 @@ class mmit_newsmile extends CModule
         foreach ($xmlPatient->Value as $value)
         {
             NewSmile\PatientCardTable::add([
+                'LAST_NAME' => $value->LAST_NAME,
                 'NAME' => $value->NAME,
+                'SECOND_NAME' => $value->SECOND_NAME,
                 'STATUS_ID' => $value->STATUS_ID,
                 'USER_ID' => $value->USER_ID,
+                'PERSONAL_PHONE' => $value->PERSONAL_PHONE,
+                'EMAIL' => $value->EMAIL
             ]);
         }
         $xmlWorkChair = simplexml_load_file(__DIR__ . '/xml/workchair.xml');

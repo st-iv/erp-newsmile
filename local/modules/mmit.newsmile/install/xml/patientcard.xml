@@ -2,44 +2,68 @@
 <Values>
     <Value>
         <ID>1</ID>
-        <NAME>Калинина А.И</NAME>
+        <LAST_NAME>Калинина</LAST_NAME>
+        <NAME>Анна</NAME>
+        <SECOND_NAME>Игоревна</SECOND_NAME>
         <USER_ID>1</USER_ID>
         <STATUS_ID>1</STATUS_ID>
         <CLINIC_ID>1</CLINIC_ID>
+        <PERSONAL_PHONE>+79149475875</PERSONAL_PHONE>
+        <EMAIL>test@test.ru</EMAIL>
     </Value>
     <Value>
         <ID>2</ID>
-        <NAME>Сергеева И.Г</NAME>
+        <LAST_NAME>Сергеева</LAST_NAME>
+        <NAME>Ирина</NAME>
+        <SECOND_NAME>Генадиевна</SECOND_NAME>
+        <PERSONAL_PHONE>+79459587562</PERSONAL_PHONE>
         <USER_ID>1</USER_ID>
         <STATUS_ID>1</STATUS_ID>
         <CLINIC_ID>1</CLINIC_ID>
+        <EMAIL>test@test.ru</EMAIL>
     </Value>
     <Value>
         <ID>3</ID>
-        <NAME>Горохов Ф.А</NAME>
+        <LAST_NAME>Горохов</LAST_NAME>
+        <NAME>Феофан</NAME>
+        <SECOND_NAME>Адольфович</SECOND_NAME>
+        <PERSONAL_PHONE>+79145556688</PERSONAL_PHONE>
         <USER_ID>1</USER_ID>
         <STATUS_ID>1</STATUS_ID>
         <CLINIC_ID>1</CLINIC_ID>
+        <EMAIL>test@test.ru</EMAIL>
     </Value>
     <Value>
         <ID>4</ID>
-        <NAME>Акилов Г.Р</NAME>
+        <LAST_NAME>Акилов</LAST_NAME>
+        <NAME>Герасим</NAME>
+        <SECOND_NAME>Рудольшович</SECOND_NAME>
+        <PERSONAL_PHONE>+79456231254</PERSONAL_PHONE>
         <USER_ID>1</USER_ID>
         <STATUS_ID>1</STATUS_ID>
         <CLINIC_ID>1</CLINIC_ID>
+        <EMAIL>test@test.ru</EMAIL>
     </Value>
     <Value>
         <ID>5</ID>
-        <NAME>Полумиленко Л.П</NAME>
+        <LAST_NAME>Полумиленко</LAST_NAME>
+        <NAME>Леха</NAME>
+        <SECOND_NAME>Павлович</SECOND_NAME>
+        <PERSONAL_PHONE>+79008000666</PERSONAL_PHONE>
         <USER_ID>1</USER_ID>
         <STATUS_ID>1</STATUS_ID>
         <CLINIC_ID>1</CLINIC_ID>
+        <EMAIL>test@test.ru</EMAIL>
     </Value>
     <Value>
         <ID>6</ID>
-        <NAME>Авганец В.В</NAME>
+        <LAST_NAME>Авганец</LAST_NAME>
+        <NAME>Вера</NAME>
+        <SECOND_NAME>Владимерович</SECOND_NAME>
+        <PERSONAL_PHONE>+79995551122</PERSONAL_PHONE>
         <USER_ID>1</USER_ID>
         <STATUS_ID>1</STATUS_ID>
         <CLINIC_ID>1</CLINIC_ID>
+        <EMAIL>test@test.ru</EMAIL>
     </Value>
 </Values>
