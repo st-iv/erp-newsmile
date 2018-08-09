@@ -14,6 +14,53 @@ class PatientCardEditComponent extends \CBitrixComponent
     protected function requestResult($request)
     {
         $arFields = array();
+        if (!empty($request['NAME'])) {
+            $arFields['NAME'] = $request['NAME'];
+            $arFields['USER']['NAME'] = $request['NAME'];
+        }
+        if (!empty($request['LAST_NAME'])) {
+            $arFields['LAST_NAME'] = $request['LAST_NAME'];
+            $arFields['USER']['LAST_NAME'] = $request['LAST_NAME'];
+        }
+        if (!empty($request['SECOND_NAME'])) {
+            $arFields['SECOND_NAME'] = $request['SECOND_NAME'];
+            $arFields['USER']['SECOND_NAME'] = $request['SECOND_NAME'];
+        }
+        if (!empty($request['PERSONAL_BIRTHDAY'])) {
+            $arFields['PERSONAL_BIRTHDAY'] = new Date($request['PERSONAL_BIRTHDAY'], 'Y-m-d');
+        }
+        if (!empty($request['PERSONAL_GENDER'])) {
+            $arFields['PERSONAL_GENDER'] = $request['PERSONAL_GENDER'];
+        }
+        if (!empty($request['PERSONAL_PHONE'])) {
+            $arFields['PERSONAL_PHONE'] = $request['PERSONAL_PHONE'];
+            $arFields['USER']['PERSONAL_PHONE'] = $request['PERSONAL_PHONE'];
+        }
+        if (!empty($request['PERSONAL_MOBILE'])) {
+            $arFields['PERSONAL_MOBILE'] = $request['PERSONAL_MOBILE'];
+        }
+        if (!empty($request['EMAIL'])) {
+            $arFields['EMAIL'] = $request['EMAIL'];
+            $arFields['USER']['EMAIL'] = $request['EMAIL'];
+        }
+        if (!empty($request['PERSONAL_CITY'])) {
+            $arFields['PERSONAL_CITY'] = $request['PERSONAL_CITY'];
+        }
+        if (!empty($request['PERSONAL_ZIP'])) {
+            $arFields['PERSONAL_ZIP'] = $request['PERSONAL_ZIP'];
+        }
+        if (!empty($request['PERSONAL_STREET'])) {
+            $arFields['PERSONAL_STREET'] = $request['PERSONAL_STREET'];
+        }
+        if (!empty($request['PERSONAL_NOTES'])) {
+            $arFields['PERSONAL_NOTES'] = $request['PERSONAL_NOTES'];
+        }
+        if (!empty($request['WORK_COMPANY'])) {
+            $arFields['WORK_COMPANY'] = $request['WORK_COMPANY'];
+        }
+        if (!empty($request['WORK_POSITION'])) {
+            $arFields['WORK_POSITION'] = $request['WORK_POSITION'];
+        }
         if (intval($request['STATUS_ID'])) {
             $arFields['STATUS_ID'] = intval($request['STATUS_ID']);
         }
@@ -82,12 +129,12 @@ class PatientCardEditComponent extends \CBitrixComponent
         }
 
         if (!empty($arFields['USER']) && is_array($arFields['USER'])) {
-            if (!empty($arFields['USER']['PERSONAL_BIRTHDAY'])) {
-                $arFields['USER']['PERSONAL_BIRTHDAY'] = new Date($arFields['USER']['PERSONAL_BIRTHDAY'], 'Y-m-d');
-            }
-            $userID = PatientCardTable::getUserIDByID($this->arParams['ID']);
-            $user = new CUser();
-            $user->Update($userID, $arFields['USER']);
+//            if (!empty($arFields['USER']['PERSONAL_BIRTHDAY'])) {
+//                $arFields['USER']['PERSONAL_BIRTHDAY'] = new Date($arFields['USER']['PERSONAL_BIRTHDAY'], 'Y-m-d');
+//            }
+//            $userID = PatientCardTable::getUserIDByID($this->arParams['ID']);
+//            $user = new CUser();
+//            $user->Update($userID, $arFields['USER']);
             unset($arFields['USER']);
         }
         if (!empty($arFields)) {
@@ -100,7 +147,15 @@ class PatientCardEditComponent extends \CBitrixComponent
 	 */
 	protected function getResult()
 	{
-        $this->arResult['PATIENT_CARD'] = PatientCardTable::getArrayById(intval($this->arParams['ID']));
+        $rsResult = PatientCardTable::getList([
+            'filter' => [
+                'ID' => $this->arParams['ID']
+            ]
+        ]);
+        if ($arResult = $rsResult->fetch()) {
+            $this->arResult['PATIENT_CARD'] = $arResult;
+        }
+
         if($this->arResult['PATIENT_CARD']['FIRST_VISIT']) {
             $this->arResult['PATIENT_CARD']['FIRST_VISIT'] = $this->arResult['PATIENT_CARD']['FIRST_VISIT']->format('Y-m-d\TH:i');
         }
