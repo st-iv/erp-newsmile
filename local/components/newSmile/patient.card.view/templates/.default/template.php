@@ -18,19 +18,19 @@ if(!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED !== true) die();
     </tr>
     <tr>
         <td>ФИО</td>
-        <td><?=$arResult['PATIENT_CARD']['USER_LAST_NAME']?> <?=$arResult['PATIENT_CARD']['USER_NAME']?> <?=$arResult['PATIENT_CARD']['USER_SECOND_NAME']?></td>
+        <td><?=$arResult['PATIENT_CARD']['LAST_NAME']?> <?=$arResult['PATIENT_CARD']['NAME']?> <?=$arResult['PATIENT_CARD']['SECOND_NAME']?></td>
     </tr>
     <tr>
         <td>Дата рождения</td>
-        <td><?=$arResult['PATIENT_CARD']['USER_PERSONAL_BIRTHDAY']?></td>
+        <td><?=$arResult['PATIENT_CARD']['PERSONAL_BIRTHDAY']?></td>
     </tr>
     <tr>
         <td>Адрес</td>
-        <td><?=$arResult['PATIENT_CARD']['USER_PERSONAL_ZIP']?> <?=$arResult['PATIENT_CARD']['USER_PERSONAL_CITY']?> <?=$arResult['PATIENT_CARD']['USER_PERSONAL_STREET']?> (<?=$arResult['PATIENT_CARD']['USER_PERSONAL_NOTES']?>)</td>
+        <td><?=$arResult['PATIENT_CARD']['PERSONAL_ZIP']?> <?=$arResult['PATIENT_CARD']['PERSONAL_CITY']?> <?=$arResult['PATIENT_CARD']['PERSONAL_STREET']?> (<?=$arResult['PATIENT_CARD']['PERSONAL_NOTES']?>)</td>
     </tr>
     <tr>
         <td>Контакты</td>
-        <td><?=$arResult['PATIENT_CARD']['USER_PERSONAL_PHONE']?>, <?=$arResult['PATIENT_CARD']['USER_PERSONAL_MOBILE']?></td>
+        <td><?=$arResult['PATIENT_CARD']['PERSONAL_PHONE']?>, <?=$arResult['PATIENT_CARD']['PERSONAL_MOBILE']?></td>
     </tr>
     <tr>
         <td>Лечения</td>

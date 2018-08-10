@@ -85,8 +85,8 @@ if(!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED !== true) die();
                 <lable>Пол</lable>
             </td>
             <td>
-                <input type="radio" name="PERSONAL_GENDER" value="M" <?=($arResult['PATIENT_CARD']['PERSONAL_GENDER'] == 'M' ) ? 'checked': '';?>><lable>Мужской</lable>
-                <input type="radio" name="PERSONAL_GENDER" value="F" <?=($arResult['PATIENT_CARD']['PERSONAL_GENDER'] == 'F' ) ? 'checked': '';?>><lable>Женский</lable>
+                <input type="radio" name="PERSONAL_GENDER" value="0" <?=($arResult['PATIENT_CARD']['PERSONAL_GENDER'] == '0' ) ? 'checked': '';?>><lable>Мужской</lable>
+                <input type="radio" name="PERSONAL_GENDER" value="1" <?=($arResult['PATIENT_CARD']['PERSONAL_GENDER'] == '1' ) ? 'checked': '';?>><lable>Женский</lable>
             </td>
         </tr>
         <tr>

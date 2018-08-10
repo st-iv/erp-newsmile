@@ -138,7 +138,18 @@ class PatientCardEditComponent extends \CBitrixComponent
             unset($arFields['USER']);
         }
         if (!empty($arFields)) {
-            PatientCardTable::update($this->arParams['ID'], $arFields);
+            if (!empty($this->arParams['ID'])) {
+                PatientCardTable::update($this->arParams['ID'], $arFields);
+            } else {
+                $res = PatientCardTable::add($arFields);
+                if ($res->isSuccess()) {
+                    LocalRedirect('/patientcard/view/' . $res->getId() . '/');
+                } else {
+                    echo '<pre>';
+                    print_r($res->getErrorMessages());
+                    echo '</pre>';
+                }
+            }
         }
     }
 
@@ -147,26 +158,30 @@ class PatientCardEditComponent extends \CBitrixComponent
 	 */
 	protected function getResult()
 	{
-        $rsResult = PatientCardTable::getList([
-            'filter' => [
-                'ID' => $this->arParams['ID']
-            ]
-        ]);
-        if ($arResult = $rsResult->fetch()) {
-            $this->arResult['PATIENT_CARD'] = $arResult;
-        }
+	    if ($this->arParams['ID'] != 0) {
+            $rsResult = PatientCardTable::getList([
+                'filter' => [
+                    'ID' => $this->arParams['ID']
+                ]
+            ]);
+            if ($arResult = $rsResult->fetch()) {
+                $this->arResult['PATIENT_CARD'] = $arResult;
+            } else {
+                die('Пациент не найден');
+            }
 
-        if($this->arResult['PATIENT_CARD']['FIRST_VISIT']) {
-            $this->arResult['PATIENT_CARD']['FIRST_VISIT'] = $this->arResult['PATIENT_CARD']['FIRST_VISIT']->format('Y-m-d\TH:i');
-        }
-        if($this->arResult['PATIENT_CARD']['PASSPORT_ISSUED_DATE']) {
-            $this->arResult['PATIENT_CARD']['PASSPORT_ISSUED_DATE'] = $this->arResult['PATIENT_CARD']['PASSPORT_ISSUED_DATE']->format('Y-m-d');
-        }
-        if($this->arResult['PATIENT_CARD']['PASSPORT_ADDRESS_DATE']) {
-            $this->arResult['PATIENT_CARD']['PASSPORT_ADDRESS_DATE'] = $this->arResult['PATIENT_CARD']['PASSPORT_ADDRESS_DATE']->format('Y-m-d');
-        }
-        if($this->arResult['PATIENT_CARD']['USER_PERSONAL_BIRTHDAY']) {
-            $this->arResult['PATIENT_CARD']['USER_PERSONAL_BIRTHDAY'] = $this->arResult['PATIENT_CARD']['USER_PERSONAL_BIRTHDAY']->format('Y-m-d');
+            if ($this->arResult['PATIENT_CARD']['FIRST_VISIT']) {
+                $this->arResult['PATIENT_CARD']['FIRST_VISIT'] = $this->arResult['PATIENT_CARD']['FIRST_VISIT']->format('Y-m-d\TH:i');
+            }
+            if ($this->arResult['PATIENT_CARD']['PASSPORT_ISSUED_DATE']) {
+                $this->arResult['PATIENT_CARD']['PASSPORT_ISSUED_DATE'] = $this->arResult['PATIENT_CARD']['PASSPORT_ISSUED_DATE']->format('Y-m-d');
+            }
+            if ($this->arResult['PATIENT_CARD']['PASSPORT_ADDRESS_DATE']) {
+                $this->arResult['PATIENT_CARD']['PASSPORT_ADDRESS_DATE'] = $this->arResult['PATIENT_CARD']['PASSPORT_ADDRESS_DATE']->format('Y-m-d');
+            }
+            if ($this->arResult['PATIENT_CARD']['USER_PERSONAL_BIRTHDAY']) {
+                $this->arResult['PATIENT_CARD']['USER_PERSONAL_BIRTHDAY'] = $this->arResult['PATIENT_CARD']['USER_PERSONAL_BIRTHDAY']->format('Y-m-d');
+            }
         }
 
         $this->getDoctors();
