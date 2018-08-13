@@ -337,7 +337,8 @@ class PatientCardTable extends Entity\DataManager
         return $result;
     }
 
-    private static function indexSearch($data) {
+    private static function indexSearch($data)
+    {
         Loader::includeModule('search');
 
         \CSearch::Index(
@@ -346,7 +347,7 @@ class PatientCardTable extends Entity\DataManager
             [
                 "DATE_CHANGE" => date('d.m.Y'),
                 "TITLE" => $data['LAST_NAME'] . ' ' . $data['NAME'] . ' ' . $data['SECOND_NAME'] . ' ' . $data['PERSONAL_PHONE'] . ' ' . $data['PERSONAL_MOBILE'],
-                "SITE_ID" => SITE_ID,
+                "SITE_ID" => 's1',
                 "PARAM1" => 'patientcard',
                 "PARAM2" => '',
                 "URL" => '',
@@ -355,6 +356,18 @@ class PatientCardTable extends Entity\DataManager
             ],
             true
         );
+    }
+
+    public static function indexSearchAll()
+    {
+        $rsResult = self::getList();
+        while ($arResult = $rsResult->fetch())
+        {
+            echo '<pre>';
+            print_r($arResult);
+            echo '</pre>';
+            self::indexSearch($arResult);
+        }
     }
 
     /**
