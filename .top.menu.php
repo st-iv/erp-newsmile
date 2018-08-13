@@ -48,6 +48,13 @@ $aMenuLinks = Array(
 		Array(), 
 		Array(), 
 		"" 
+	),
+	Array(
+		"Зубная формула", 
+		"/dental-formula/", 
+		Array(), 
+		Array(), 
+		"" 
 	)
 );
 ?>
