@@ -112,6 +112,7 @@ if(!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED !== true) die();
         </td>
     </tr>
 </table>
+<a href="?ACTION=ADD_SCHEDULE">Создать расписание на месяц</a>
 <script>
     BX.ready(function(){
         params = <?=CUtil::PhpToJSObject(array(

@@ -8,9 +8,25 @@ use Bitrix\Main\Loader,
     Mmit\NewSmile\ScheduleTemplateTable,
     Mmit\NewSmile\DoctorTable,
     Mmit\NewSmile\WorkChairTable;
+use Mmit\NewSmile\ScheduleTable;
 
 class CalendarScheduleSettingsComponent extends \CBitrixComponent
 {
+
+    /*
+     * обработка запроса
+     * */
+    protected function requestResult($request)
+    {
+        if (!empty($request['ACTION'])) {
+            if ($request['ACTION'] == 'ADD_SCHEDULE') {
+                ScheduleTable::addWeekSchedule(date('Y-m-d'), $_SESSION['CLINIC_ID']);
+                ScheduleTable::addWeekSchedule(date('Y-m-d', strtotime('+1 weeks')), $_SESSION['CLINIC_ID']);
+                ScheduleTable::addWeekSchedule(date('Y-m-d', strtotime('+2 weeks')), $_SESSION['CLINIC_ID']);
+                ScheduleTable::addWeekSchedule(date('Y-m-d', strtotime('+3 weeks')), $_SESSION['CLINIC_ID']);
+            }
+        }
+    }
 	
 	/**
 	 * получение результатов
@@ -158,6 +174,7 @@ class CalendarScheduleSettingsComponent extends \CBitrixComponent
 		{
             if (!Loader::includeModule('mmit.newSmile')) die();
 			$this->getResult();
+			$this->requestResult($this->request);
 //            echo '<pre>';
 //            print_r($this->arResult);
 //            echo '</pre>';
