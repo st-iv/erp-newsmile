@@ -100,6 +100,6 @@ if(!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED !== true) die();
             'doctors' => $arResult['DOCTORS'],
             'patients' => $arResult['PATIENTS'],
         ));?>;
-        window.calendarDay = new window.calendarDay(params);
+        new window.calendarDay(params);
     });
 </script>
