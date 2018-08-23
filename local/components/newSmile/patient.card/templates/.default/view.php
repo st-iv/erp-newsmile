@@ -15,3 +15,21 @@
         'PATIENT_ID' => $arResult['VARIABLES']['ELEMENT_ID'],
     )
 );?>
+
+
+<table border="1" width="100%">
+    <tr>
+        <td>Изображения</td>
+    </tr>
+    <tr>
+        <td>
+            <?$APPLICATION->IncludeComponent(
+                    'newSmile:patient.card.file',
+                    '',
+                    array(
+                            'ID' => $arResult['VARIABLES']['ELEMENT_ID']
+                    )
+                )?>
+        </td>
+    </tr>
+</table>
