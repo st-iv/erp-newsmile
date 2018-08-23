@@ -67,6 +67,7 @@ class mmit_newsmile extends CModule
             NewSmile\WorkChairTable::getEntity()->createDbTable();
             NewSmile\WaitingListTable::getEntity()->createDbTable();
             NewSmile\Status\ToothTable::getEntity()->createDbTable();
+            NewSmile\FileTable::getEntity()->createDbTable();
 
             NewSmile\VisitTable::createStatus();
             $this->testInstallDB();
@@ -204,6 +205,7 @@ class mmit_newsmile extends CModule
             $connection->dropTable(NewSmile\WorkChairTable::getTableName());
             $connection->dropTable(NewSmile\WaitingListTable::getTableName());
             $connection->dropTable(NewSmile\Status\ToothTable::getTableName());
+            $connection->dropTable(NewSmile\FileTable::getTableName());
         }
     }
 
