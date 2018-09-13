@@ -112,11 +112,11 @@
             console.log($(this));
             var id = [];
             var newSchedule = [];
-            if ($('.ui-selected').is('[data-start-time]')) {
+            if ($('.calendar-bottom-item.ui-selected').is('[data-start-time]')) {
                 _this.sendPost(
                     {
-                        time: $('.ui-selected').data('start-time'),
-                        work_chair: $('.ui-selected').parent().data('work-chair'),
+                        time: $('.calendar-bottom-item.ui-selected').data('start-time'),
+                        work_chair: $('.calendar-bottom-item.ui-selected').parent().data('work-chair'),
                         doctor_id: key
                     },
                     'selectDoctorDay',
@@ -125,7 +125,7 @@
                     }
                 );
             } else {
-                $('.ui-selected').each(function () {
+                $('.calendar-bottom-item.ui-selected').each(function () {
                     if ($(this).data('schedule-id')) {
                         id.push($(this).data('schedule-id'));
                     } else {
@@ -149,11 +149,11 @@
         this.selectPatient = function(key, opt) {
             window.calendarDay.sendPost(
                 {
-                    TIME_START: $('.ui-selected').first().data('schedule-time'),
-                    TIME_END: $('.ui-selected').last().data('schedule-time'),
+                    TIME_START: $('.calendar-bottom-item.ui-selected').first().data('schedule-time'),
+                    TIME_END: $('.calendar-bottom-item.ui-selected').last().data('schedule-time'),
                     PATIENT_ID: key,
-                    DOCTOR_ID: $('.ui-selected').first().data('doctor-id'),
-                    WORK_CHAIR_ID: $('.ui-selected').first().parent().data('work-chair')
+                    DOCTOR_ID: $('.calendar-bottom-item.ui-selected').first().data('doctor-id'),
+                    WORK_CHAIR_ID: $('.calendar-bottom-item.ui-selected').first().parent().data('work-chair')
                 },
                 'addVisit',
                 function () {

@@ -25,13 +25,15 @@ $APPLICATION->SetTitle("Главная страница");
             );?>
         </td>
         <td rowspan="3">
-            <?$APPLICATION->IncludeComponent(
-                "newSmile:calendar.day",
-                "",
-                [
-                    'FILTER_NAME' => 'arrFilterCalendar'
-                ]
-            );?>
+            <div class="calendar-days">
+                <?$APPLICATION->IncludeComponent(
+                    "newSmile:calendar.day",
+                    "",
+                    [
+                        'FILTER_NAME' => 'arrFilterCalendar'
+                    ]
+                );?>
+            </div>
         </td>
     </tr>
     <tr>
