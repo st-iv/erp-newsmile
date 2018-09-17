@@ -1,0 +1,11 @@
+.element-list {
+    min-width: 300px;
+}
+
+.elements-list {
+    list-style: circle;
+}
+
+.groups-list, .elements-list {
+    margin: 5px 0 10px;
+}

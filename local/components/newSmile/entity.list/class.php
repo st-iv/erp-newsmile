@@ -1,0 +1,213 @@
+<?
+if(!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED !== true) die();
+
+use Bitrix\Main\Loader,
+    Mmit\NewSmile;
+class EntityListComponent extends \CBitrixComponent
+{
+    public function onPrepareComponentParams($arParams)
+    {
+        $arParams['SECTION_ID'] = (int)$arParams['SECTION_ID'];
+        $arParams['SECTION_FIELDS'] = (is_array($arParams['SECTION_FIELDS']) ? $arParams['SECTION_FIELDS'] : array());
+        $arParams['ELEMENT_FIELDS'] = (is_array($arParams['ELEMENT_FIELDS']) ? $arParams['ELEMENT_FIELDS'] : array());
+
+        return $arParams;
+    }
+
+    protected function checkParams()
+    {
+        $isSuccess = true;
+
+        if($this->arParams['ENTITY_CLASS_ELEMENT'] && !class_exists($this->arParams['ENTITY_CLASS_ELEMENT']))
+        {
+            ShowError('Element entity is not found');
+            $isSuccess = false;
+        }
+
+        if($this->arParams['ENTITY_CLASS_GROUP'] && !class_exists($this->arParams['ENTITY_CLASS_GROUP']))
+        {
+            ShowError('Section entity is not found');
+            $isSuccess = false;
+        }
+
+        return $isSuccess;
+    }
+
+    protected function prepareResult()
+    {
+        $this->arResult['SECTIONS'] = $this->getSections();
+
+        if($this->arParams['ENTITY_CLASS_ELEMENT'])
+        {
+            $this->arResult['ELEMENTS'] = $this->getElements();
+        }
+
+        if(!$this->arParams['SECTION_ID'])
+        {
+            $this->arResult['SECTIONS'] = NewSmile\Helpers::getTree($this->arResult['SECTIONS']);
+        }
+    }
+
+
+    protected function getSections()
+    {
+        $sections = array();
+
+        $sectionEntity = $this->arParams['ENTITY_CLASS_GROUP'];
+
+        if($sectionEntity)
+        {
+            $filter = array();
+            $parentSectionFieldName = $this->getReferenceFieldName($sectionEntity, $sectionEntity);
+
+            if($this->arParams['SECTION_ID'])
+            {
+                if($parentSectionFieldName)
+                {
+                    $filter[$parentSectionFieldName] = $this->arParams['SECTION_ID'];
+                }
+            }
+
+            if($this->arParams['SECTION_FIELDS'])
+            {
+                $select = $this->arParams['SECTION_FIELDS'];
+                $select[] = 'ID';
+
+                if($parentSectionFieldName)
+                {
+                    $select[] = $parentSectionFieldName;
+                }
+            }
+            else
+            {
+                $select = array('*');
+            }
+
+            $dbSections = $sectionEntity::getList(array(
+                'filter' => $filter,
+                'select' => $select
+            ));
+
+            while ($section = $dbSections->fetch())
+            {
+                $section['URL'] = \CComponentEngine::makePathFromTemplate($this->arParams['SECTION_URL'], array(
+                    'SECTION_ID' => $section['ID']
+                ));
+
+                $section['EDIT_URL'] = \CComponentEngine::makePathFromTemplate($this->arParams['SECTION_EDIT_URL'], array(
+                    'SECTION_ID' => $section['ID']
+                ));
+
+                $sections[$section['ID']] = $section;
+            }
+        }
+
+        return $sections;
+    }
+
+    protected function getElements()
+    {
+        $elementEntity = $this->arParams['ENTITY_CLASS_ELEMENT'];
+
+        $filter = array();
+        if($this->arParams['SECTION_ID'] && $this->arParams['ENTITY_CLASS_GROUP'])
+        {
+            $parentSectionFieldName = $this->getReferenceFieldName(
+                $elementEntity,
+                $this->arParams['ENTITY_CLASS_GROUP']
+            );
+
+            if($parentSectionFieldName)
+            {
+                $filter[$parentSectionFieldName] = $this->arParams['SECTION_ID'];
+            }
+        }
+
+        $select = ($this->arParams['ELEMENT_FIELDS']
+            ? array_merge($this->arParams['ELEMENT_FIELDS'], array('ID'))
+            : array());
+
+        $dbElements = $elementEntity::getList(array(
+            'filter' => $filter,
+            'select' => $select
+        ));
+
+        $elements = $dbElements->fetchAll() ?: array();
+
+        foreach ($elements as &$element)
+        {
+            $element['URL'] = \CComponentEngine::makePathFromTemplate($this->arParams['ELEMENT_URL'], array(
+                'SECTION_ID' => $this->arParams['SECTION_ID'],
+                'ELEMENT_ID' => $element['ID']
+            ));
+
+            $element['EDIT_URL'] = \CComponentEngine::makePathFromTemplate($this->arParams['ELEMENT_EDIT_URL'], array(
+                'SECTION_ID' => $this->arParams['SECTION_ID'],
+                'ELEMENT_ID' => $element['ID'],
+            ));
+        }
+
+        unset($element);
+
+        return $elements;
+    }
+
+    /**
+     * Получает название поля - внешнего ключа, связывающего $needleEntity с $referenceEntity
+     * @param string $needleEntity - класс orm сущности (вместе с Table), в которой будет осуществляться поиск ключа
+     * @param string $referenceEntity - класс orm сущности (вместе с Table), привязанная к $needleEntity искомым внешним
+     * ключом
+     *
+     * @return string
+     */
+    protected function getReferenceFieldName($needleEntity, $referenceEntity)
+    {
+        $fieldName = '';
+
+        try
+        {
+            $map = $needleEntity::getMap();
+
+            foreach ($map as $field)
+            {
+                if($field instanceof Bitrix\Main\ORM\Fields\Relations\Reference)
+                {
+                    $curRefEntityClass = $field->getRefEntity()->getDataClass();
+
+                    if($curRefEntityClass[0] === '\\')
+                    {
+                        $curRefEntityClass = substr($curRefEntityClass, 1);
+                    }
+
+                    if($curRefEntityClass === $referenceEntity)
+                    {
+                        $fieldName = $field->getName() . '_ID';
+                        break;
+                    }
+                }
+            }
+        }
+        catch(\Exception $e) {}
+
+        return $fieldName;
+    }
+
+
+	/**
+	 * выполняет логику работы компонента
+	 */
+	public function executeComponent()
+	{
+        if (!Loader::includeModule('mmit.newSmile'))
+        {
+            ShowError('Module mmit.newsmile is not installed');
+        }
+
+        if($this->checkParams())
+        {
+            $this->prepareResult();
+            $this->includeComponentTemplate();
+        }
+	}
+}
+?>

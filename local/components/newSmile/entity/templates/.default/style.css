@@ -1,0 +1,12 @@
+.edit-form__row {
+    margin-bottom: 20px;
+    display: flex;
+}
+
+.edit-form__row .field__title {
+    margin-right: 10px;
+}
+
+.entity-edit-form {
+    padding: 10px;
+}
