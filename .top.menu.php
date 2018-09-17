@@ -55,6 +55,13 @@ $aMenuLinks = Array(
 		Array(), 
 		Array(), 
 		"" 
-	)
+	),
+    Array(
+		"Материалы",
+		"/materials/",
+		Array(),
+		Array(),
+		""
+	),
 );
 ?>
