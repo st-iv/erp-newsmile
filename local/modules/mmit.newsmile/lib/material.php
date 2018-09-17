@@ -28,7 +28,7 @@ class MaterialTable extends Entity\DataManager
                 },
             )),
             new Entity\ReferenceField('GROUP',
-                self::class,
+                'Mmit\NewSmile\MaterialGroupTable',
                 array('=this.GROUP_ID' => 'ref.ID'),
                 array(
                     'title' => 'Группа'
@@ -38,7 +38,7 @@ class MaterialTable extends Entity\DataManager
                 'title' => 'Группа'
             )),
             new Entity\ReferenceField('MEASURE',
-                self::class,
+                'Mmit\NewSmile\MeasureUnitTable',
                 array('=this.MEASURE_ID' => 'ref.ID'),
                 array(
                     'title' => 'Единица измерения',
