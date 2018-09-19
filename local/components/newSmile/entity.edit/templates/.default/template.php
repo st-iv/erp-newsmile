@@ -12,30 +12,53 @@
             </div>
 
             <div class="field__input">
-
-                <?switch($field['TYPE']):
-                    case 'reference':?>
-
-                        <select name="<?=$field['INPUT_NAME']?>">
-
-                            <?if(!$field['REQUIRED']):?>
-                                <option value="0">нет</option>
-                            <?endif;?>
-
-                            <?foreach ($field['REFERENCE_ITEMS'] as $item):?>
-                                <option value="<?=$item['ID']?>" <?=($item['SELECTED'] ? 'selected' : '')?>>
-                                    <?=$item['NAME']?>
-                                </option>
-                            <?endforeach;?>
-                        </select>
-                        <?break;?>
-
-                    <?default:?>
-                        <input type="text" name="<?=$field['INPUT_NAME']?>" value="<?=$field['VALUE']?>" <?=($field['REQUIRED'] ? 'required' : '') ?>>
-
-                <?endswitch;?>
-
+                <?include __DIR__ . '/page-blocks/input_field.php'?>
             </div>
+        </div>
+    <?endforeach;?>
+
+    <?foreach($arResult['REVERSE_REFERENCES'] as $reverseReference):?>
+
+        <div class="edit-form__row edit-form__row--table">
+
+            <b><?=$reverseReference['TITLE']?></b>
+
+            <table class="reverse-reference">
+                <tr>
+                    <?foreach ($reverseReference['FIELDS'] as $field):?>
+                        <th><?=$field['TITLE']?></th>
+                    <?endforeach;?>
+                </tr>
+
+                <?foreach ($reverseReference['ITEMS'] as $item):?>
+                    <?$isTemplate = empty($item['ID']);?>
+                    <tr class="<?=($isTemplate ? 'template-field js-template-field' : '')?>">
+                        <?foreach ($item as $fieldName => $fieldValue):?>
+                            <?
+                            $field = $reverseReference['FIELDS'][$fieldName];
+                            $field['VALUE'] = $fieldValue;
+
+                            $field['DISABLED'] = $isTemplate;
+
+                            if($field['TYPE'] == 'hidden'):?>
+                                <?include __DIR__ . '/page-blocks/input_field.php'?>
+                            <?else:?>
+                                <?
+                                if($field['TYPE'] == 'reference')
+                                {
+                                    $field['REFERENCE_ITEMS'][$fieldValue]['SELECTED'] = true;
+                                }
+                                ?>
+                                <td>
+                                    <?include __DIR__ . '/page-blocks/input_field.php'?>
+                                </td>
+                            <?endif;?>
+                        <?endforeach;?>
+                    </tr>
+                <?endforeach;?>
+
+            </table>
+
         </div>
     <?endforeach;?>
 
@@ -49,3 +72,4 @@
         </button>
     </div>
 </form>
+
