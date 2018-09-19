@@ -64,7 +64,7 @@ class EntityEditComponent extends \CBitrixComponent
     {
         $fieldsForUpdate = array();
 
-        foreach ($entityClass::getMap() as $field)
+        foreach ($entityClass::getEntity()->getFields() as $field)
         {
             /**
              * @var ORM\Fields\Field $field
@@ -392,7 +392,7 @@ class EntityEditComponent extends \CBitrixComponent
     {
         $fields = array();
 
-        foreach ($entityClass::getMap() as $field)
+        foreach ($entityClass::getEntity()->getFields() as $field)
         {
             /**
              * @var ORM\Fields\Field $field
@@ -564,7 +564,7 @@ class EntityEditComponent extends \CBitrixComponent
     {
         $resultField = null;
 
-        foreach($entityClass::getMap() as $field)
+        foreach($entityClass::getEntity()->getFields() as $field)
         {
             /**
              * @var \Bitrix\Main\Entity\Field $field

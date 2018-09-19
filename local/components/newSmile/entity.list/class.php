@@ -200,7 +200,7 @@ class EntityListComponent extends \CBitrixComponent
 
         try
         {
-            $map = $needleEntity::getMap();
+            $map = $needleEntity::getEntity()->getFields();
 
             foreach ($map as $field)
             {
