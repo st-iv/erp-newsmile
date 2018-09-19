@@ -132,10 +132,12 @@ class EntityListComponent extends \CBitrixComponent
             'select' => $select
         ));
 
-        $elements = $dbElements->fetchAll() ?: array();
+        $elements = array();
 
-        foreach ($elements as &$element)
+        while ($element = $dbElements->fetch())
         {
+            $element['NAME_BY_TEMPLATE'] = $this->getNameByTemplate($element);
+
             $element['URL'] = \CComponentEngine::makePathFromTemplate($this->arParams['ELEMENT_URL'], array(
                 'SECTION_ID' => $this->arParams['SECTION_ID'],
                 'ELEMENT_ID' => $element['ID']
@@ -145,11 +147,43 @@ class EntityListComponent extends \CBitrixComponent
                 'SECTION_ID' => $this->arParams['SECTION_ID'],
                 'ELEMENT_ID' => $element['ID'],
             ));
+
+            $elements[] = $element;
         }
 
-        unset($element);
-
         return $elements;
+    }
+
+    protected function getNameByTemplate(array $elementFields)
+    {
+        if(preg_match_all('/(#([A-Z0-9_]+)#)+/', $this->arParams['ELEMENT_NAME_TEMPLATE'], $matches))
+        {
+            $replaces = array();
+
+            foreach ($matches[2] as $fieldName)
+            {
+                $replaces[] = $elementFields[$fieldName];
+            }
+
+            $nameByTemplate = str_replace($matches[1], $replaces, $this->arParams['ELEMENT_NAME_TEMPLATE']);
+        }
+        elseif(count($elementFields) === 1)
+        {
+            $nameByTemplate = array_pop($elementFields);
+        }
+        else
+        {
+            foreach ($elementFields as $fieldName)
+            {
+                if($fieldName != 'ID')
+                {
+                    $nameByTemplate = $fieldName;
+                    break;
+                }
+            }
+        }
+
+        return $nameByTemplate;
     }
 
     /**
