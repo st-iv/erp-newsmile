@@ -1,0 +1,24 @@
+.edit-form__row {
+    margin-bottom: 20px;
+    display: flex;
+}
+
+.edit-form__row--table {
+    display: block;
+}
+
+.edit-form__row .field__title {
+    margin-right: 10px;
+}
+
+.entity-edit-form {
+    padding: 10px;
+}
+
+.elements-list-table {
+    min-width: 300px;
+}
+
+.reverse-reference .template-field {
+    display: none;
+}
