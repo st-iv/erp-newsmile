@@ -71,6 +71,10 @@ class mmit_newsmile extends CModule
             NewSmile\MeasureUnitTable::getEntity()->createDbTable();
             NewSmile\MaterialGroupTable::getEntity()->createDbTable();
             NewSmile\MaterialTable::getEntity()->createDbTable();
+            NewSmile\StoreTable::getEntity()->createDbTable();
+            NewSmile\MaterialQuantityTable::getEntity()->createDbTable();
+            NewSmile\PackingListTable::getEntity()->createDbTable();
+            NewSmile\PackingListItemTable::getEntity()->createDbTable();
 
             NewSmile\VisitTable::createStatus();
             $this->testInstallDB();
@@ -212,6 +216,10 @@ class mmit_newsmile extends CModule
             $connection->dropTable(NewSmile\MeasureUnitTable::getTableName());
             $connection->dropTable(NewSmile\MaterialGroupTable::getTableName());
             $connection->dropTable(NewSmile\MaterialTable::getTableName());
+            $connection->dropTable(NewSmile\StoreTable::getTableName());
+            $connection->dropTable(NewSmile\MaterialQuantityTable::getTableName());
+            $connection->dropTable(NewSmile\PackingListTable::getTableName());
+            $connection->dropTable(NewSmile\PackingListItemTable::getTableName());
         }
     }
 
