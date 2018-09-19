@@ -8,6 +8,22 @@ $arUrlRewrite=array (
     'PATH' => '/desktop_app/router.php',
     'SORT' => 100,
   ),
+  12 => 
+  array (
+    'CONDITION' => '#^/materials/measure-units/#',
+    'RULE' => '',
+    'ID' => 'newSmile:entity',
+    'PATH' => '/materials/measure-units/index.php',
+    'SORT' => 100,
+  ),
+  11 => 
+  array (
+    'CONDITION' => '#^/materials/packing-lists/#',
+    'RULE' => '',
+    'ID' => 'newSmile:entity',
+    'PATH' => '/materials/packing-lists/index.php',
+    'SORT' => 100,
+  ),
   4 => 
   array (
     'CONDITION' => '#^/bitrix/services/ymarket/#',
@@ -30,6 +46,14 @@ $arUrlRewrite=array (
     'RULE' => '',
     'ID' => 'bitrix:stssync.server',
     'PATH' => '/bitrix/services/stssync/calendar/index.php',
+    'SORT' => 100,
+  ),
+  10 => 
+  array (
+    'CONDITION' => '#^/materials/stores/#',
+    'RULE' => '',
+    'ID' => 'newSmile:entity',
+    'PATH' => '/materials/stores/index.php',
     'SORT' => 100,
   ),
   5 => 
