@@ -9,7 +9,7 @@
                 <option value="0">нет</option>
             <?endif;?>
 
-            <?foreach ($field['REFERENCE_ITEMS'] as $item):?>
+            <?foreach ($field['VARIANTS'] as $item):?>
                 <option value="<?=$item['ID']?>" <?=($item['SELECTED'] ? 'selected' : '')?>>
                     <?=$item['NAME']?>
                 </option>

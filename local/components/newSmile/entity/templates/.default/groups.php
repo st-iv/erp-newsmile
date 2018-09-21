@@ -3,7 +3,7 @@ $APPLICATION->IncludeComponent(
     "newSmile:entity.list",
     "",
     Array(
-        'ENTITY_CLASS_GROUP' => $arParams['ENTITY_CLASS_GROUP'],
+        'DATA_MANAGER_CLASS_GROUP' => $arParams['DATA_MANAGER_CLASS_GROUP'],
         'SECTION_FIELDS' => $arParams['LIST_SECTION_FIELDS'],
         'INDEX_URL' => $arResult['FOLDER'] . $arResult['URL_TEMPLATES']['groups'],
         'SECTION_URL' => $arResult['FOLDER'] . $arResult['URL_TEMPLATES']['group'],

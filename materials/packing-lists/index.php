@@ -7,7 +7,7 @@ $APPLICATION->SetTitle("Накладные");
     "newSmile:entity",
     "elements_only",
     Array(
-        'ENTITY_CLASS_ELEMENT' => 'Mmit\NewSmile\PackingListTable',
+        'DATA_MANAGER_CLASS_ELEMENT' => 'Mmit\NewSmile\PackingListTable',
         'SEF_MODE' => 'Y',
         'SEF_FOLDER' => '/materials/packing-lists/',
         'LIST_ELEMENT_FIELDS' => array('ID', 'DATE'),
@@ -16,8 +16,8 @@ $APPLICATION->SetTitle("Накладные");
         'EDIT_ELEMENTS_SHOW_FIELDS' => array('STORE.NAME'),
         'REVERSE_REFERENCES' => array(
             'Mmit\NewSmile\PackingListItemTable:PACKING_LIST_ID' => array(
-                'EDIT_FIELDS' => array('QUANTITY', 'PRICE', 'MATERIAL'),
-                'SHOW_FIELDS' => array('MATERIAL.NAME'),
+                'EDITABLE_FIELDS' => array('QUANTITY', 'PRICE', 'MATERIAL'),
+                'SELECT_FIELDS' => array('MATERIAL.NAME'),
                 'TITLE' => 'Материалы'
             )
         )

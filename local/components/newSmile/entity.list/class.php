@@ -18,15 +18,15 @@ class EntityListComponent extends \CBitrixComponent
     {
         $isSuccess = true;
 
-        if($this->arParams['ENTITY_CLASS_ELEMENT'] && !class_exists($this->arParams['ENTITY_CLASS_ELEMENT']))
+        if($this->arParams['DATA_MANAGER_CLASS_ELEMENT'] && !class_exists($this->arParams['DATA_MANAGER_CLASS_ELEMENT']))
         {
-            ShowError('Element entity is not found');
+            ShowError('Element data manager is not found');
             $isSuccess = false;
         }
 
-        if($this->arParams['ENTITY_CLASS_GROUP'] && !class_exists($this->arParams['ENTITY_CLASS_GROUP']))
+        if($this->arParams['DATA_MANAGER_CLASS_GROUP'] && !class_exists($this->arParams['DATA_MANAGER_CLASS_GROUP']))
         {
-            ShowError('Section entity is not found');
+            ShowError('Section data manager is not found');
             $isSuccess = false;
         }
 
@@ -37,7 +37,7 @@ class EntityListComponent extends \CBitrixComponent
     {
         $this->arResult['SECTIONS'] = $this->getSections();
 
-        if($this->arParams['ENTITY_CLASS_ELEMENT'])
+        if($this->arParams['DATA_MANAGER_CLASS_ELEMENT'])
         {
             $this->arResult['ELEMENTS'] = $this->getElements();
         }
@@ -53,12 +53,12 @@ class EntityListComponent extends \CBitrixComponent
     {
         $sections = array();
 
-        $sectionEntity = $this->arParams['ENTITY_CLASS_GROUP'];
+        $sectionDataManager = $this->arParams['DATA_MANAGER_CLASS_GROUP'];
 
-        if($sectionEntity)
+        if($sectionDataManager)
         {
             $filter = array();
-            $parentSectionFieldName = $this->getReferenceFieldName($sectionEntity, $sectionEntity);
+            $parentSectionFieldName = $this->getReferenceFieldName($sectionDataManager::getEntity(), $sectionDataManager);
 
             if($this->arParams['SECTION_ID'])
             {
@@ -83,7 +83,7 @@ class EntityListComponent extends \CBitrixComponent
                 $select = array('*');
             }
 
-            $dbSections = $sectionEntity::getList(array(
+            $dbSections = $sectionDataManager::getList(array(
                 'filter' => $filter,
                 'select' => $select
             ));
@@ -107,14 +107,14 @@ class EntityListComponent extends \CBitrixComponent
 
     protected function getElements()
     {
-        $elementEntity = $this->arParams['ENTITY_CLASS_ELEMENT'];
+        $elementDataManager = $this->arParams['DATA_MANAGER_CLASS_ELEMENT'];
 
         $filter = array();
-        if($this->arParams['SECTION_ID'] && $this->arParams['ENTITY_CLASS_GROUP'])
+        if($this->arParams['SECTION_ID'] && $this->arParams['DATA_MANAGER_CLASS_GROUP'])
         {
             $parentSectionFieldName = $this->getReferenceFieldName(
-                $elementEntity,
-                $this->arParams['ENTITY_CLASS_GROUP']
+                $elementDataManager::getEntity(),
+                $this->arParams['DATA_MANAGER_CLASS_GROUP']
             );
 
             if($parentSectionFieldName)
@@ -127,7 +127,8 @@ class EntityListComponent extends \CBitrixComponent
             ? array_merge($this->arParams['ELEMENT_FIELDS'], array('ID'))
             : array());
 
-        $dbElements = $elementEntity::getList(array(
+
+        $dbElements = $elementDataManager::getList(array(
             'filter' => $filter,
             'select' => $select
         ));
@@ -189,18 +190,18 @@ class EntityListComponent extends \CBitrixComponent
     /**
      * Получает название поля - внешнего ключа, связывающего $needleEntity с $referenceEntity
      * @param string $needleEntity - класс orm сущности (вместе с Table), в которой будет осуществляться поиск ключа
-     * @param string $referenceEntity - класс orm сущности (вместе с Table), привязанная к $needleEntity искомым внешним
+     * @param string $referenceClass - класс orm сущности (вместе с Table), привязанная к $needleEntity искомым внешним
      * ключом
      *
      * @return string
      */
-    protected function getReferenceFieldName($needleEntity, $referenceEntity)
+    protected function getReferenceFieldName(\Bitrix\Main\ORM\Entity $needleEntity, $referenceClass)
     {
         $fieldName = '';
 
         try
         {
-            $map = $needleEntity::getEntity()->getFields();
+            $map = $needleEntity->getFields();
 
             foreach ($map as $field)
             {
@@ -213,7 +214,7 @@ class EntityListComponent extends \CBitrixComponent
                         $curRefEntityClass = substr($curRefEntityClass, 1);
                     }
 
-                    if($curRefEntityClass === $referenceEntity)
+                    if($curRefEntityClass === $referenceClass)
                     {
                         $fieldName = $field->getName() . '_ID';
                         break;

@@ -7,8 +7,8 @@ $APPLICATION->SetTitle("Материалы");
     "newSmile:entity",
     "",
     Array(
-        'ENTITY_CLASS_ELEMENT' => 'Mmit\NewSmile\MaterialTable',
-        'ENTITY_CLASS_GROUP' => 'Mmit\NewSmile\MaterialGroupTable',
+        'DATA_MANAGER_CLASS_ELEMENT' => 'Mmit\NewSmile\MaterialTable',
+        'DATA_MANAGER_CLASS_GROUP' => 'Mmit\NewSmile\MaterialGroupTable',
         'SEF_MODE' => 'Y',
         'SEF_FOLDER' => '/materials/',
         'SECTION_ID' => $arResult['VARIABLES']['SECTION_ID'],

@@ -129,18 +129,4 @@ class Helpers
 
         return $output;
     }
-
-    public static function isOrmEntityClass($className)
-    {
-        return (!empty($className) && is_subclass_of($className, '\Bitrix\Main\Entity\DataManager'));
-    }
-
-    public static function getReferenceExternalKeyName(\Bitrix\Main\ORM\Fields\Relations\Reference $referenceField)
-    {
-        $referenceKey = array_pop(array_keys($referenceField->getReference()));
-        preg_match('/this\.([A-z0-9_]+)/', $referenceKey, $matches);
-        return $matches[1] ?: '';
-    }
-
-
 }

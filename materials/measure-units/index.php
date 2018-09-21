@@ -7,7 +7,7 @@ $APPLICATION->SetTitle("Единицы измерения");
     "newSmile:entity",
     "elements_only",
     Array(
-        'ENTITY_CLASS_ELEMENT' => 'Mmit\NewSmile\MeasureUnitTable',
+        'DATA_MANAGER_CLASS_ELEMENT' => 'Mmit\NewSmile\MeasureUnitTable',
         'SEF_MODE' => 'Y',
         'SEF_FOLDER' => '/materials/measure-units/',
         'LIST_ELEMENT_FIELDS' => array('NAME'),

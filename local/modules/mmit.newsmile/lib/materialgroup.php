@@ -73,34 +73,11 @@ class MaterialGroupTable extends Entity\DataManager
     public static function onAfterDelete(Entity\Event $event)
     {
         $id = $event->getParameter('primary');
-        static::cascadeDelete($id);
-    }
 
-    public static function cascadeDelete($parentId)
-    {
-        $dbChilds = static::getList(array(
-            'filter' => array(
-                'GROUP_ID' => $parentId
-            ),
-            'select' => array('ID')
+        NewSmile\Orm\Helper::cascadeDelete($id, array(
+            self::class => 'GROUP_ID',
+            'Mmit\NewSmile\MaterialTable' => 'GROUP_ID'
         ));
-
-        while($childGroup = $dbChilds->fetch())
-        {
-            static::delete($childGroup['ID']);
-        }
-
-        $dbChildElements = MaterialTable::getList(array(
-            'filter' => array(
-                'GROUP_ID' => $parentId
-            ),
-            'select' => array('ID')
-        ));
-
-        while($element = $dbChildElements->fetch())
-        {
-            MaterialTable::delete($element['ID']);
-        }
     }
 
     protected static function saveDepthLevel($fields, Entity\EventResult $result, $action)

@@ -46,7 +46,7 @@
                                 <?
                                 if($field['TYPE'] == 'reference')
                                 {
-                                    $field['REFERENCE_ITEMS'][$fieldValue]['SELECTED'] = true;
+                                    $field['VARIANTS'][$fieldValue]['SELECTED'] = true;
                                 }
                                 ?>
                                 <td>

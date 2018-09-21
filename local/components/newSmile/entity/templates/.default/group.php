@@ -8,8 +8,8 @@ $APPLICATION->IncludeComponent(
     "newSmile:entity.list",
     "section",
     Array(
-        'ENTITY_CLASS_ELEMENT' => $arParams['ENTITY_CLASS_ELEMENT'],
-        'ENTITY_CLASS_GROUP' => $arParams['ENTITY_CLASS_GROUP'],
+        'DATA_MANAGER_CLASS_ELEMENT' => $arParams['DATA_MANAGER_CLASS_ELEMENT'],
+        'DATA_MANAGER_CLASS_GROUP' => $arParams['DATA_MANAGER_CLASS_GROUP'],
         'SECTION_ID' => $arResult['VARIABLES']['SECTION_ID'],
         'SECTION_FIELDS' => $arParams['LIST_SECTION_FIELDS'],
         'ELEMENT_FIELDS' => $arParams['LIST_ELEMENT_FIELDS'],
