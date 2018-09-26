@@ -147,7 +147,7 @@
         };
 
         this.selectPatient = function(key, opt) {
-            window.calendarDay.sendPost(
+            _this.sendPost(
                 {
                     TIME_START: $('.calendar-bottom-item.ui-selected').first().data('schedule-time'),
                     TIME_END: $('.calendar-bottom-item.ui-selected').last().data('schedule-time'),
