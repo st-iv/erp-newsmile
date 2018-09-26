@@ -3,6 +3,7 @@
 namespace Mmit\NewSmile;
 
 use Bitrix\Main\Entity;
+use Mmit\NewSmile;
 
 class MaterialGroupTable extends Entity\DataManager
 {

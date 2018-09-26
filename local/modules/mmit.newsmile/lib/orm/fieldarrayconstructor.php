@@ -2,35 +2,49 @@
 
 namespace Mmit\NewSmile\Orm;
 
+use Bitrix\Main\DB\Result;
+use Bitrix\Main\Entity\BooleanField;
+use Bitrix\Main\Entity\Field;
+use Bitrix\Main\Entity\Query;
 use Bitrix\Main\Entity\ScalarField;
+use Bitrix\Main\ORM\Entity;
 use Bitrix\Main\ORM\Fields;
-use Mmit\NewSmile\MaterialTable;
+use Mmit\NewSmile\Orm\Fields\ReverseReference;
+
 
 /**
- * Подготавливает информацию о поле в виде массива
+ * Подготавливает информацию о полях ORM сущности в виде массива
  * Class FieldArrayConstructor
  * @package Mmit\NewSmile\Orm
  */
-class FieldArrayConstructor extends FieldsVisitor
+class FieldArrayConstructor extends FieldsProcessor
 {
-    protected $result = array();
+    protected $query = null;
+    protected $queryResultMap = array();
 
-    public function getResultArray()
+    public function __construct(Entity $entity, array $params)
     {
-        return $this->result;
+        parent::__construct($params);
+
+        $this->query = new Query($entity);
     }
 
-    protected function visitField(Fields\Field $field)
+    /**
+     * Формирует массив для указанного поля, вызывыает специализированные методы вида process<FieldClassName>
+     * @param Fields\Field $field
+     * @param array $fieldParams
+     * @return array|bool
+     */
+    protected function processField(Fields\Field $field)
     {
-        $this->result = array();
         $fieldName = $field->getName();
 
         $isEditable = !$this->params['EDITABLE_FIELDS'] || in_array($fieldName, $this->params['EDITABLE_FIELDS']);
         $isSelected = $isEditable || (!$this->params['SELECT_FIELDS'] || in_array($fieldName, $this->params['SELECT_FIELDS']));
 
-        if(!$isSelected) return false;
+        if (!$isSelected) return false;
 
-        $this->result = array(
+        $result = array(
             'NAME' => $fieldName,
             'TITLE' => $field->getTitle(),
             'TYPE' => Helper::getFieldType($field),
@@ -38,59 +52,191 @@ class FieldArrayConstructor extends FieldsVisitor
             'INPUT_NAME' => $fieldName
         );
 
-        if($field instanceof Fields\ScalarField)
-        {
-            $this->result['REQUIRED'] = $field->isRequired();
-            $this->result['DEFAULT'] = $field->getDefaultValue();
+        if ($field instanceof Fields\ScalarField) {
+            $result['REQUIRED'] = $field->isRequired();
+            $result['DEFAULT'] = $field->getDefaultValue();
         }
 
-        return true;
+        $this->queryValueDeferred($fieldName);
+
+        return $result;
     }
 
-    protected function visitEnumField(Fields\EnumField $field)
+
+    protected function processEnumField(Fields\EnumField $field)
     {
-        if($field instanceof ExtendedFieldsDescriptor)
+        $result = array();
+        $dataClass = $field->getEntity()->getDataClass();
+
+        if (is_subclass_of($dataClass, 'Mmit\NewSmile\Orm\ExtendedFieldsDescriptor'))
         {
-            $this->result['VALUES'] = $field->getEnumVariantsTitles($field->getName());
+            $variantsNames = $dataClass::getEnumVariantsTitles($field->getName());
+
         }
         else
         {
+            $variantsNames = array();
+
             foreach ($field->getValues() as $value)
             {
-                $this->result['VALUES'][$value] = $value;
+                $variantsNames[$value] = $value;
             }
         }
+
+        foreach ($variantsNames as $variantCode => $variantName)
+        {
+            $result['VARIANTS'][$variantCode] = array(
+                'NAME' => $variantName
+            );
+        }
+
+        return $result;
     }
-    
-    protected function visitBooleanField(Fields\BooleanField $field)
+
+    protected function processBooleanField(Fields\BooleanField $field)
     {
+        $result = array();
         $fieldValues = $field->getValues();
-        $this->result['TRUE_VALUE'] = $fieldValues[1];
+        $result['TRUE_VALUE'] = $fieldValues[1];
+        return $result;
     }
-    
-    protected function visitReference(Fields\Relations\Reference $field)
+
+    protected function processReference(Fields\Relations\Reference $field)
     {
+        $result = array();
         $keyName = Helper::getReferenceExternalKeyName($field);
         $externalKeyField = $field->getEntity()->getField($keyName);
 
-        $this->result['REFERENCE_ENTITY_CLASS'] = $field->getRefEntity()->getDataClass();
-        $this->result['REFERENCE_KEY_NAME'] = $keyName;
-        $this->result['INPUT_NAME'] = $keyName;
-        $this->result['VARIANTS'] = $this->getReferenceElements($field);
-        $this->result['TITLE'] = $externalKeyField->getTitle();
+        $result['REFERENCE_ENTITY_CLASS'] = $field->getRefEntity()->getDataClass();
+        $result['REFERENCE_KEY_NAME'] = $keyName;
+        $result['INPUT_NAME'] = $keyName;
+        $result['VARIANTS'] = $this->getReferenceElements($field);
+        $result['TITLE'] = $externalKeyField->getTitle();
 
-        if($externalKeyField instanceof ScalarField)
-        {
-            $this->result['DEFAULT'] = $externalKeyField->getDefaultValue();
-            $this->result['REQUIRED'] = $externalKeyField->isRequired();
-            if($this->result['REQUIRED'] && !$this->result['DEFAULT'] && $this->result['VARIANTS'])
-            {
-                $referenceItems = $this->result['VARIANTS'];
-                $this->result['DEFAULT'] = array_shift($referenceItems)['ID'];
+        if ($externalKeyField instanceof ScalarField) {
+            $result['DEFAULT'] = $externalKeyField->getDefaultValue();
+            $result['REQUIRED'] = $externalKeyField->isRequired();
+            if ($result['REQUIRED'] && !$result['DEFAULT'] && $result['VARIANTS']) {
+                $referenceItems = $result['VARIANTS'];
+                $result['DEFAULT'] = array_shift($referenceItems)['ID'];
             }
         }
+
+        $this->queryValueDeferred($field->getName(), $keyName);
+
+        return $result;
     }
 
+    /**
+     * @param ReverseReference $reverse
+     * @return array
+     */
+    protected function processReverseReference(ReverseReference $reverse)
+    {
+        $result = array(
+            'FIELDS' => array()
+        );
+
+        $sourceEntity = $reverse->getSourceEntity();
+        $keyField = $reverse->getKeyField();
+        $keyName = Helper::getReferenceExternalKeyName($keyField);
+
+        /* получаем параметры для fieldArrayConstructor */
+
+        $paramsKey = $sourceEntity->getDataClass() . ':' . $keyField->getName();
+        if ($paramsKey[0] == '\\')
+        {
+            $paramsKey = substr($paramsKey, 1);
+        }
+
+        $params = $this->params['REVERSE_REFERENCES'][$paramsKey];
+        $params['QUERY_FILTER'] = array(
+            $keyName => $this->params['ENTITY_ID']
+        );
+
+        if($params['SELECT_FIELDS'])
+        {
+            $params['SELECT_FIELDS'] = array_merge($params['SELECT_FIELDS'], $sourceEntity->getPrimaryArray());
+        }
+        else
+        {
+            $params['SELECT_FIELDS'] = $sourceEntity->getPrimaryArray();
+        }
+
+        /* проходимся конструктором по всем полям привязавшейся сущности и получаем массив описания полей */
+
+        $fieldArrayConstructor = new static($sourceEntity, $params);
+
+        foreach ($sourceEntity->getFields() as $field)
+        {
+            $fieldArrayConstructor->process($field);
+        }
+
+        if($params['SINGLE_MODE'])
+        {
+            // в режиме SINGLE_MODE работаем только с одной связанной сущностью, в такой ситуации можно воспользоваться
+            // методом writeValues для сохранения значений полей в результативный массив
+            $fieldArrayConstructor->writeValues();
+        }
+
+        $fieldsArray = $fieldArrayConstructor->getResult();
+
+        foreach ($fieldsArray as &$fieldArray)
+        {
+            $fieldArray['INPUT_NAME'] = $reverse->getName() . '__' . $fieldArray['INPUT_NAME'] . '[]';
+        }
+
+        unset($fieldArray);
+
+        foreach ($sourceEntity->getPrimaryArray() as $primaryFieldName)
+        {
+            $fieldsArray[$primaryFieldName]['TYPE'] = 'hidden';
+        }
+
+        /* отменяем запрос значения поля, который регистрируется для всех полей по умолчанию в методe processField */
+        $this->removeValueQuery($reverse->getName());
+
+        if($params['SINGLE_MODE'])
+        {
+            $this->result = array_merge($this->result, $fieldsArray);
+            $result = false; // не добавляем поле в результативный массив
+        }
+        else
+        {
+            /* сохраняем значения полей */
+
+            // метод queryValues запрашивает значения свойств, но не распределяет их по результативному массиву, в отличие
+            // от writeValues. Именно для данного типа полей в результате запроса для каждого поля возвращается несколько
+            // значений - это специфичная ситуация, с которой не умеет работать метод writeValues
+            $queryValuesResult = $fieldArrayConstructor->queryValues();
+            $queryResultMap = $fieldArrayConstructor->getQueryResultMap();
+
+            $result['ITEMS'] = array();
+            while ($itemValues = $queryValuesResult->fetch())
+            {
+                $item = array();
+                foreach ($queryResultMap as $targetFieldName => $selectFieldName)
+                {
+                    $item[$targetFieldName] = $itemValues[$selectFieldName];
+                }
+
+                $result['ITEMS'][] = $item;
+            }
+
+            $result['FIELDS'] = $fieldsArray;
+        }
+
+        return $result;
+    }
+
+    /**
+     * Получает все элементы связанной сущности по указанному полю Reference
+     * @param Fields\Relations\Reference $field
+     * @return array
+     * @throws \Bitrix\Main\ArgumentException
+     * @throws \Bitrix\Main\ObjectPropertyException
+     * @throws \Bitrix\Main\SystemException
+     */
     protected function getReferenceElements(Fields\Relations\Reference $field)
     {
         $result = array();
@@ -113,6 +259,11 @@ class FieldArrayConstructor extends FieldsVisitor
         return $result;
     }
 
+    /**
+     * Получает массив полей, которые необходимо выбрать для указанной сущности на основе параметра SELECT_FIELDS
+     * @param Fields\Relations\Reference $referenceField
+     * @return array
+     */
     protected function getReferenceSelectFields(Fields\Relations\Reference $referenceField)
     {
         $selectFields = array();
@@ -134,4 +285,116 @@ class FieldArrayConstructor extends FieldsVisitor
 
         return $selectFields;
     }
+
+    protected function setValue(Field $field, $value)
+    {
+        $fieldName = $field->getName();
+        $this->result[$fieldName]['VALUE'] = $value;
+
+        $specificMethodName = 'set' . $this->getShortClassName($field) . 'Value';
+
+        if(method_exists($this, $specificMethodName))
+        {
+            $this->$specificMethodName($this->result[$fieldName], $field, $value);
+        }
+    }
+
+    protected function setEnumFieldValue(&$fieldResult, Field $field, $value)
+    {
+        if(isset($value))
+        {
+            $fieldResult['VARIANTS'][$value]['SELECTED'] = true;
+        }
+        else
+        {
+            $variantsKeys = array_keys($fieldResult['VARIANTS']);
+            $fieldResult['VARIANTS'][$variantsKeys[0]]['SELECTED'] = true;
+        }
+    }
+
+    protected function setReferenceValue(&$fieldResult, Field $field, $value)
+    {
+        $this->setEnumFieldValue($fieldResult, $field, $value);
+    }
+
+    protected function setBooleanFieldValue(&$fieldResult, BooleanField $field, $value)
+    {
+        $fieldResult['CHECKED'] = ($value == $fieldResult['TRUE_VALUE']);
+    }
+
+
+    /**
+     * Регистрирует запрос значения поля в бд, сам запрос выполняется методом queryValues
+     * @param string $targetFieldName - название поля, в которое должно быть записано значение
+     * @param string $queryFieldName - название поля, значение которого будет запрошено
+     */
+    protected function queryValueDeferred($targetFieldName, $queryFieldName = '')
+    {
+        $queryFieldName = $queryFieldName ?: $targetFieldName;
+        $this->queryResultMap[$targetFieldName] = $queryFieldName;
+    }
+
+    protected function removeValueQuery($fieldName)
+    {
+        unset($this->queryResultMap[$fieldName]);
+    }
+
+    public function getQueryResultMap()
+    {
+        return $this->queryResultMap;
+    }
+
+    /**
+     * Запрашивает значения свойств в базе данных
+     * @return \Bitrix\Main\ORM\Query\Result
+     * @throws \Bitrix\Main\ObjectPropertyException
+     * @throws \Bitrix\Main\SystemException
+     */
+    public function queryValues()
+    {
+        if($this->params['QUERY_FILTER'])
+        {
+            $this->query->setFilter($this->params['QUERY_FILTER']);
+        }
+        elseif($this->params['ENTITY_ID'])
+        {
+            $this->query->setFilter(array(
+                'ID' => $this->params['ENTITY_ID']
+            ));
+        }
+        else
+        {
+            return null;
+        }
+
+        $this->query->setSelect(array_unique(array_values($this->queryResultMap)));
+        return $this->query->exec();
+    }
+
+    /**
+     * Пишет значения полей в результативный массив.
+     * @throws \Bitrix\Main\ObjectPropertyException
+     * @throws \Bitrix\Main\SystemException
+     */
+    public function writeValues()
+    {
+        $dbQueryResult = $this->queryValues();
+        if($dbQueryResult && ($queryResult = $dbQueryResult->fetch()))
+        {
+            foreach ($this->queryResultMap as $targetFieldName => $queryFieldName)
+            {
+                $this->setValue($this->fields[$targetFieldName], $queryResult[$queryFieldName]);
+            }
+        }
+        else
+        {
+            // пишем значения по умолчанию
+            foreach ($this->queryResultMap as $targetFieldName => $queryFieldName)
+            {
+                $value = ($this->params['PRESET'][$targetFieldName] ?: $this->result[$targetFieldName]['DEFAULT']);
+                $this->setValue($this->fields[$targetFieldName], $value);
+            }
+        }
+    }
+
 }

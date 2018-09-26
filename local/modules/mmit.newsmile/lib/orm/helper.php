@@ -1,7 +1,9 @@
 <?
 namespace Mmit\NewSmile\Orm;
 
+use Bitrix\Main\Diag\Debug;
 use Bitrix\Main\ORM\Entity;
+use Mmit\NewSmile\MaterialTable;
 
 class Helper
 {
@@ -18,12 +20,12 @@ class Helper
                 'filter' => array(
                     $keyFieldName => $itemId
                 ),
-                'select' => array('ID')
+                'select' => $dependentEntityClass::getEntity()->getPrimaryArray()
             ));
 
-            while($dependentRow = $dbDependentRows->fetch())
+            while($dependentRowPrimary = $dbDependentRows->fetch())
             {
-                $dependentEntityClass::delete($dependentRow['ID']);
+                $dependentEntityClass::delete($dependentRowPrimary);
             }
         }
     }

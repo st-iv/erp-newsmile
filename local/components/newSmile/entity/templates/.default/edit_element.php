@@ -14,6 +14,7 @@ $APPLICATION->IncludeComponent(
         'SELECT_FIELDS' => $arParams['EDIT_ELEMENTS_SHOW_FIELDS'],
         'ENTITY_ID' => $arResult['VARIABLES']['ELEMENT_ID'],
         'ADD_URL' => $arResult['FOLDER'] . $arResult['URL_TEMPLATES']['add_element'],
+        'REVERSE_REFERENCES' => $arParams['REVERSE_REFERENCES_ELEMENT']
     ),
     $component
 );

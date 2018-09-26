@@ -9,6 +9,7 @@
 namespace Mmit\NewSmile\Service;
 
 use Bitrix\Main\Entity;
+use Bitrix\Main\ORM\Event;
 
 class PriceTable extends Entity\DataManager
 {
@@ -49,6 +50,7 @@ class PriceTable extends Entity\DataManager
                         new Entity\Validator\Range(0),
                     );
                 },
+                'required' => true
             )),
             new Entity\FloatField('MIN_PRICE', array(
                 'title' => 'Минимальная цена',
@@ -68,4 +70,29 @@ class PriceTable extends Entity\DataManager
             )),
         );
     }
+
+    public static function onAfterAdd(Event $event)
+    {
+        $primary = $event->getParameter('primary');
+        $fields = $event->getParameter('fields');
+
+        $historyRecordFields = $primary;
+        $historyRecordFields['PRICE'] = $fields['PRICE'];
+        PriceHistoryTable::add($historyRecordFields);
+    }
+
+    public static function onUpdate(Event $event)
+    {
+        $primary = $event->getParameter('primary');
+        $newValues = $event->getParameter('fields');
+        $actualValues = static::getByPrimary($primary)->fetch();
+
+        if(isset($newValues['PRICE']) && ($newValues['PRICE'] != $actualValues['PRICE']))
+        {
+            $historyRecordFields = $primary;
+            $historyRecordFields['PRICE'] = $newValues['PRICE'];
+            PriceHistoryTable::add($historyRecordFields);
+        }
+    }
+
 }

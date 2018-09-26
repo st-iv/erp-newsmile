@@ -1,15 +1,18 @@
 <?if(!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED !== true) die();
 
-foreach ($arResult['REVERSE_REFERENCES'] as &$reverseReference)
+foreach ($arResult['FIELDS'] as &$field)
 {
-    $defaultItem = array();
-
-    foreach ($reverseReference['FIELDS'] as $field)
+    if($field['TYPE'] == 'reversereference')
     {
-        $defaultItem[$field['NAME']] = $field['DEFAULT'];
-    }
+        $defaultItem = array();
 
-    $reverseReference['ITEMS'][] = $defaultItem;
+        foreach ($field['FIELDS'] as $subField)
+        {
+            $defaultItem[$subField['NAME']] = $subField['DEFAULT'];
+        }
+
+        $field['ITEMS'][] = $defaultItem;
+    }
 }
 
-unset($reverseReference);
+unset($field);

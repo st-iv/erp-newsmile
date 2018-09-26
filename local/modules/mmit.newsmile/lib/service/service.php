@@ -4,6 +4,7 @@ namespace Mmit\NewSmile\Service;
 
 use Bitrix\Main\Entity;
 use Mmit\NewSmile\Orm\ExtendedFieldsDescriptor;
+use Mmit\NewSmile;
 
 class ServiceTable extends Entity\DataManager implements ExtendedFieldsDescriptor
 {
@@ -62,5 +63,14 @@ class ServiceTable extends Entity\DataManager implements ExtendedFieldsDescripto
     public static function getEnumVariantsTitles($enumFieldName)
     {
         return static::$enumVariantsTitles[$enumFieldName];
+    }
+
+    public static function onAfterDelete(Entity\Event $event)
+    {
+        $id = $event->getParameter('primary');
+
+        NewSmile\Orm\Helper::cascadeDelete($id, array(
+            'Mmit\NewSmile\Service\PriceTable' => 'SERVICE_ID'
+        ));
     }
 }

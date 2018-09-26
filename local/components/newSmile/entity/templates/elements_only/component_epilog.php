@@ -4,7 +4,8 @@
     BX.ready(function()
     {
         window.entitiesList = new window.entitiesList({
-            'ajaxUrlAddElement': '<?=$arResult['FOLDER'].$arResult['URL_TEMPLATES']['add_element']?>'
+            'ajaxUrlAddElement': '<?=$arResult['FOLDER'].$arResult['URL_TEMPLATES']['add_element']?>',
+            'sessid': '<?=bitrix_sessid()?>'
         });
     });
 </script>

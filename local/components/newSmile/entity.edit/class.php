@@ -10,6 +10,9 @@ use Bitrix\Main\Loader,
 
 class EntityEditComponent extends \CBitrixComponent
 {
+    /**
+     * @var \Bitrix\Main\Entity\Field[]
+     */
     protected $fields;
     protected $mode;
 
@@ -22,6 +25,11 @@ class EntityEditComponent extends \CBitrixComponent
      * @var NewSmile\Orm\FieldArrayConstructor
      */
     protected $fieldArrayConstructor;
+
+    /**
+     * @var NewSmile\Orm\FieldValueSaver
+     */
+    protected $fieldValueSaver;
 
     public function onPrepareComponentParams($arParams)
     {
@@ -54,8 +62,30 @@ class EntityEditComponent extends \CBitrixComponent
         }
         else
         {
-            $this->fieldArrayConstructor = new NewSmile\Orm\FieldArrayConstructor(array());
+            $this->fieldArrayConstructor = new NewSmile\Orm\FieldArrayConstructor(
+                $arParams['DATA_MANAGER_CLASS']::getEntity(),
+                array()
+            );
         }
+
+        $this->fieldArrayConstructor->setParam('EDITABLE_FIELDS', $arParams['EDITABLE_FIELDS']);
+        $this->fieldArrayConstructor->setParam('REVERSE_REFERENCES', $arParams['REVERSE_REFERENCES']);
+        $this->fieldArrayConstructor->setParam('ENTITY_ID', $arParams['ENTITY_ID']);
+
+        if($arParams['FIELD_VALUE_SAVER'] instanceof NewSmile\Orm\FieldValueSaver)
+        {
+            $this->fieldValueSaver = $arParams['FIELD_VALUE_SAVER'];
+        }
+        else
+        {
+            $this->fieldValueSaver = new NewSmile\Orm\FieldValueSaver(
+                $arParams['DATA_MANAGER_CLASS']::getEntity(),
+                array()
+            );
+        }
+
+        $this->fieldValueSaver->setParam('REVERSE_REFERENCES', $arParams['REVERSE_REFERENCES']);
+        $this->fieldValueSaver->setParam('ENTITY_ID', $arParams['ENTITY_ID']);
 
         return $arParams;
     }
@@ -80,46 +110,6 @@ class EntityEditComponent extends \CBitrixComponent
         }
     }
 
-    protected function getFieldsForEdit($entityClass, $editableFieldsParam)
-    {
-        $fieldsForUpdate = array();
-
-        foreach ($entityClass::getEntity()->getFields() as $field)
-        {
-            /**
-             * @var ORM\Fields\Field $field
-             */
-
-            $fieldName = $field->getName();
-            if($fieldName == 'ID') continue;
-
-            if(!$editableFieldsParam || in_array($fieldName, $editableFieldsParam))
-            {
-                $editField = array(
-                    'TYPE' => $this->getFieldType($field)
-                );
-
-                if($this->isReferenceField($field))
-                {
-                    $editField['NAME'] = NewSmile\Orm\Helper::getReferenceExternalKeyName($field);
-                }
-                else
-                {
-                    $editField['NAME'] = $fieldName;
-                }
-
-                if($editField['TYPE'] == 'boolean')
-                {
-                    $editField['VALUES'] = $field->getValues();
-                }
-
-                $fieldsForUpdate[] = $editField;
-            }
-        }
-
-        return $fieldsForUpdate;
-    }
-
     protected function prepareValueForSave($fieldInfo, $fieldValue)
     {
         switch($fieldInfo['TYPE'])
@@ -141,121 +131,35 @@ class EntityEditComponent extends \CBitrixComponent
 
     protected function processSaveRequest(\Bitrix\Main\HttpRequest $request)
     {
-        $entityClass = $this->arParams['DATA_MANAGER_CLASS'];
+        $editableFields = $this->arParams['EDITABLE_FIELDS'];
 
-        /* определяем, какие поля можно редактировать */
-
-        $editFields = $this->getFieldsForEdit($entityClass, $this->arParams['EDITABLE_FIELDS']);
-
-        /* добавляем / обновляем запись */
-
-        $fieldsValues = array();
-
-        foreach($editFields as $editField)
+        foreach ($this->fields as $field)
         {
-            if(isset($request[$editField['NAME']]) || ($editField['TYPE'] == 'boolean'))
+            if($field instanceof NewSmile\Orm\Fields\ReverseReference)
             {
-                $fieldValue = $request[$editField['NAME']];
-                $fieldsValues[$editField['NAME']] = $this->prepareValueForSave($editField, $fieldValue);
+                $editableFields[] = $field->getName();
             }
         }
 
-        $entityId = $this->arParams['ENTITY_ID'];
+        $this->fieldValueSaver->setRequest($request);
+        $this->fieldValueSaver->setParam('EDITABLE_FIELDS', $editableFields);
 
-        if($fieldsValues)
+        foreach ($this->fields as $field)
         {
-            if($request['action'] == 'add')
+            if($field->getName() != 'ID')
             {
-                /**
-                 * @var \Bitrix\Main\Entity\AddResult $addResult
-                 */
-                $addResult = $entityClass::add($fieldsValues);
-                $entityId = $addResult->getId();
-            }
-            else
-            {
-                $entityClass::update($this->arParams['ENTITY_ID'], $fieldsValues);
+                $this->fieldValueSaver->process($field);
             }
         }
 
-        if($this->arParams['REVERSE_REFERENCES'])
-        {
-            $this->saveReverseReferences($request, $entityId);
-        }
+        $this->fieldValueSaver->save();
     }
+
+
     protected function processDeleteRequest(\Bitrix\Main\HttpRequest $request)
     {
         $entityClass = $this->arParams['DATA_MANAGER_CLASS'];
         $entityClass::delete($this->arParams['ENTITY_ID']);
-    }
-
-    protected function saveReverseReferences(\Bitrix\Main\HttpRequest $request, $entityId)
-    {
-        foreach ($this->arParams['REVERSE_REFERENCES'] as $reverseReferenceParams)
-        {
-            $entityClass = $reverseReferenceParams['CLASS'];
-            $keyFieldName = $reverseReferenceParams['KEY_FIELD_NAME'];
-
-            $editFields = $this->getFieldsForEdit($entityClass, $reverseReferenceParams['EDITABLE_FIELDS']);
-
-            $editFields[] = array(
-                'NAME' => 'ID'
-            );
-
-            $fieldsValues = array();
-
-            foreach($editFields as $editField)
-            {
-                $inputName = $this->getReverseRefInputName($entityClass, $editField['NAME']);
-                if(isset($request[$inputName]) || ($editField['TYPE'] == 'boolean'))
-                {
-                    $fieldValues = $request[$inputName];
-
-                    foreach ($fieldValues as $index => $fieldValue)
-                    {
-                        $fieldsValues[$index][$editField['NAME']] = $this->prepareValueForSave($editField, $fieldValue);
-                    }
-                }
-            }
-
-            $dbAllElements = $entityClass::getList(array(
-                'filter' => array(
-                    $keyFieldName => $entityId
-                ),
-                'select' => array('ID')
-            ));
-
-            $allElementsIds = array();
-
-            while($element = $dbAllElements->fetch())
-            {
-                $allElementsIds[] = $element['ID'];
-            }
-
-            $savedElementsIds = array();
-
-            foreach ($fieldsValues as $itemFieldsValues)
-            {
-                $itemId = $itemFieldsValues['ID'];
-                unset($itemFieldsValues['ID']);
-
-                if(!$itemId)
-                {
-                    $itemFieldsValues[$keyFieldName] = $entityId;
-                    $entityClass::add($itemFieldsValues);
-                }
-                else
-                {
-                    $entityClass::update($itemId, $itemFieldsValues);
-                    $savedElementsIds[] = $itemId;
-                }
-            }
-
-            foreach (array_diff($allElementsIds, $savedElementsIds) as $itemId)
-            {
-                $entityClass::delete($itemId);
-            }
-        }
     }
 
     protected function isReferenceField(ORM\Fields\Field $field)
@@ -276,13 +180,13 @@ class EntityEditComponent extends \CBitrixComponent
 
         if(!NewSmile\Orm\Helper::isOrmEntityClass($this->arParams['DATA_MANAGER_CLASS']))
         {
-            ShowError('Group entity is not found');
+            ShowError('Entity is not found');
             $isSuccess = false;
         }
 
         if(!$this->arParams['ENTITY_ID'] && ($this->getMode() !== 'add'))
         {
-            ShowError('Group id is not specified');
+            ShowError('Entity id is not specified');
             $isSuccess = false;
         }
 
@@ -291,114 +195,13 @@ class EntityEditComponent extends \CBitrixComponent
 
     protected function prepareResult()
     {
-        $dataManagerClass = $this->arParams['DATA_MANAGER_CLASS'];
-
-        $this->fields = $this->getFields($dataManagerClass::getEntity(), array(
-            'SELECT_FIELDS' => $this->arParams['SELECT_FIELDS'],
-            'EDITABLE_FIELDS' => $this->arParams['EDITABLE_FIELDS'],
-        ));
-
-        $this->writeFieldsValues($this->arParams['DATA_MANAGER_CLASS'], $this->fields);
-        $this->arResult['FIELDS'] = $this->fields;
-
-        $this->arResult['REVERSE_REFERENCES'] = $this->getReverseReferences();
-
+        $this->arResult['FIELDS'] = $this->getFieldsArray();
         $this->arResult['ACTION'] = $this->getMode();
     }
 
-    protected function getReverseRefInputName($entityClass, $standardInputName)
+    protected function getReverseRefName($entityClass, $standardInputName)
     {
-        return strtoupper(str_replace('\\', '_', $entityClass)) . '_' . $standardInputName;
-    }
-
-    protected function getReverseReferences()
-    {
-        $reverseReferences = array();
-
-        foreach ($this->arParams['REVERSE_REFERENCES'] as $reverseReferenceParams)
-        {
-            $dataManagerClass = $reverseReferenceParams['CLASS'];
-            $entityKeyFieldName = $reverseReferenceParams['KEY_FIELD_NAME'];
-
-            $entityFields = $this->getFields($dataManagerClass::getEntity(), $reverseReferenceParams);
-
-
-            $entityFields['ID'] = array(
-                'TYPE' => 'hidden',
-                'NAME' => 'ID',
-                'INPUT_NAME' => 'ID',
-            );
-
-            foreach ($entityFields as $entityFieldName => &$entityField)
-            {
-                $entityField['INPUT_NAME'] = $this->getReverseRefInputName($dataManagerClass, $entityField['INPUT_NAME']) . '[]';
-
-                // удаляем из полученного массива полей reference поле, по которому осуществляется обратный reference
-                if(($entityField['NAME'] == $entityKeyFieldName) || ($entityField['REFERENCE_KEY_NAME'] == $entityKeyFieldName))
-                {
-                    unset($entityFields[$entityFieldName]);
-                }
-            }
-
-            unset($entityField);
-
-            $select = array();
-
-            $referencesFieldsMap = array();
-
-            foreach($entityFields as $entityField)
-            {
-                if($entityField['TYPE'] == 'reference')
-                {
-                    $referencesFieldsMap[$entityField['REFERENCE_KEY_NAME']] = $entityField['NAME'];
-                    $select[] = $entityField['REFERENCE_KEY_NAME'];
-                }
-                else
-                {
-                    $select[] = $entityField['NAME'];
-                }
-            }
-
-            /* запрашиваем значения полей */
-
-            $dbEntity = $dataManagerClass::getList(array(
-                'filter' => array(
-                    $entityKeyFieldName => $this->arParams['ENTITY_ID']
-                ),
-                'select' => $select
-            ));
-
-            /**
-             * @var Bitrix\Main\DB\Result $dbEntity
-             */
-
-            $reverseReferences[$dataManagerClass] = array(
-                'TITLE' => $reverseReferenceParams['TITLE'],
-                'FIELDS' => $entityFields,
-                'ITEMS' => array(),
-            );
-
-            $reverseReferenceItems =& $reverseReferences[$dataManagerClass]['ITEMS'];
-
-            while($element = $dbEntity->fetch())
-            {
-                foreach($element as $fieldName => $fieldValue)
-                {
-                    if(isset($entityFields[$fieldName]))
-                    {
-                        $reverseReferenceItems[$element['ID']][$fieldName] = $fieldValue;
-                    }
-                    elseif ($referencesFieldsMap[$fieldName] && $fieldValue)
-                    {
-                        // если поля с этим именем нет в массиве полей для вывода, это может быть значение поля reference
-                        $referenceFieldName = $referencesFieldsMap[$fieldName];
-                        $reverseReferenceItems[$element['ID']][$referenceFieldName] = $fieldValue;
-                    }
-                }
-            }
-        }
-
-        return $reverseReferences;
+        return strtoupper(str_replace('\\', '_', $entityClass)) . ':' . $standardInputName;
     }
 
     /**
@@ -406,138 +209,74 @@ class EntityEditComponent extends \CBitrixComponent
      * которые действительно есть в сущности
      *
      * @return array
+     * @throws \Bitrix\Main\ObjectPropertyException
+     * @throws \Bitrix\Main\SystemException
      */
-    protected function getFields(ORM\Entity $entity, array $params)
+    protected function getFieldsArray()
     {
-        $fields = array();
+        $selectFields = array_merge($this->arParams['SELECT_FIELDS']);
+        $selectFields = array_unique($selectFields);
 
-        foreach ($entity->getFields() as $field)
+        foreach ($this->fields as $field)
         {
-            /**
-             * @var ORM\Fields\Field $field
-             */
+            if($field instanceof NewSmile\Orm\Fields\ReverseReference)
+            {
+                $selectFields[] = $field->getName();
+            }
+        }
 
+        $this->fieldArrayConstructor->setParam('SELECT_FIELDS', $selectFields);
+
+        foreach ($this->fields as $field)
+        {
             $fieldName = $field->getName();
             if($fieldName == 'ID') continue;
 
-            $fieldArrayConstructor = clone $this->fieldArrayConstructor;
-            $fieldArrayConstructor->setParams($params);
-            
-            $fieldArrayConstructor->visit($field);
-            $fieldArray = $fieldArrayConstructor->getResultArray();
+            $this->fieldArrayConstructor->process($field);
+        }
 
-            if($fieldArray)
-            {
-                $fields[$fieldName] = $fieldArray;
-            }
+        $this->fieldArrayConstructor->writeValues();
+        $fieldArray = $this->fieldArrayConstructor->getResult();
+
+        return $fieldArray;
+    }
+
+    /**
+     * Возвращает поля сущности, с которой работает компонент. Включая фиктивные поля ReverseReference
+     * @return array|ORM\Fields\Field[]
+     * @throws \Bitrix\Main\SystemException
+     */
+    protected function getEntityFields()
+    {
+        $dataManagerClass = $this->arParams['DATA_MANAGER_CLASS'];
+
+        /**
+         * @var ORM\Entity $entity
+         */
+        $entity = $dataManagerClass::getEntity();
+        $fields = $entity->getFields();
+
+        foreach ($this->arParams['REVERSE_REFERENCES'] as $reverseReference)
+        {
+            $dataManagerClass = $reverseReference['CLASS'];
+            $refEntity = $dataManagerClass::getEntity();
+
+            $reverseName = $this->getReverseRefName($dataManagerClass, $reverseReference['KEY_FIELD_NAME']);
+
+            $reverseField =  new NewSmile\Orm\Fields\ReverseReference(
+                $reverseName,
+                array(
+                    'title' => $reverseReference['TITLE'],
+                    'source_entity' => $refEntity,
+                    'key_field' => $refEntity->getField($reverseReference['KEY_FIELD_NAME'])
+                )
+            );
+
+            $reverseField->setEntity($entity);
+            $fields[] = $reverseField;
         }
 
         return $fields;
-    }
-
-    /**
-     * Сохраняет значение поля в массив полей для вывода, на основе значения выставляет ключи SELECTED и CHECKED
-     * @param $fieldName
-     * @param $fieldValue
-     * @param $fields
-     * @param array $referenceFieldsMap
-     */
-    protected function writeFieldValue($fieldName, $fieldValue, &$fields, array $referenceFieldsMap = array())
-    {
-        if(isset($fields[$fieldName]))
-        {
-            $fields[$fieldName]['VALUE'] = $fieldValue;
-        }
-        elseif ($referenceFieldsMap[$fieldName] && $fieldValue)
-        {
-            // если поля с этим именем нет в массиве полей для вывода, это может быть значение поля reference
-
-            $referenceFieldName = $referenceFieldsMap[$fieldName];
-            $fields[$referenceFieldName]['VARIANTS'][$fieldValue]['SELECTED'] = true;
-            $fields[$referenceFieldName]['VALUE'] = $fieldValue;
-        }
-
-        $fieldType = $fields[$fieldName]['TYPE'];
-        if($fieldType == 'boolean')
-        {
-            $fields[$fieldName]['CHECKED'] = ($fieldValue == $fields[$fieldName]['TRUE_VALUE']);
-        }
-    }
-
-    /**
-     * Получает значения полей, попутно запрашивает связанные элементы
-     */
-    protected function writeFieldsValues($entityClass, array &$fields)
-    {
-        if($this->getMode() == 'add')
-        {
-            foreach ($fields as $field)
-            {
-                $this->writeFieldValue($field['NAME'], $field['DEFAULT'], $fields);
-            }
-
-            return;
-        }
-
-        $select = array();
-
-        $referencesFieldsMap = array();
-
-        foreach($fields as $field)
-        {
-            if($field['TYPE'] == 'reference')
-            {
-                $referencesFieldsMap[$field['REFERENCE_KEY_NAME']] = $field['NAME'];
-                $select[] = $field['REFERENCE_KEY_NAME'];
-            }
-            else
-            {
-                $select[] = $field['NAME'];
-            }
-        }
-
-        /* запрашиваем значения полей */
-
-        $select[] = 'ID';
-
-        $dbEntity = $entityClass::getList(array(
-            'filter' => array(
-                'ID' => $this->arParams['ENTITY_ID']
-            ),
-            'select' => $select
-        ));
-
-        /**
-         * @var Bitrix\Main\DB\Result $dbEntity
-         */
-
-        if($entity = $dbEntity->fetch())
-        {
-            foreach($entity as $fieldName => $fieldValue)
-            {
-                $this->writeFieldValue($fieldName, $fieldValue, $fields, $referencesFieldsMap);
-            }
-        }
-    }
-
-    protected function getFieldByName($entityClass, $fieldName)
-    {
-        $resultField = null;
-
-        foreach($entityClass::getEntity()->getFields() as $field)
-        {
-            /**
-             * @var \Bitrix\Main\Entity\Field $field
-             */
-
-            if($field->getName() == $fieldName)
-            {
-                $resultField = $field;
-                break;
-            }
-        }
-
-        return $resultField;
     }
 
     protected function getMode()
@@ -570,6 +309,7 @@ class EntityEditComponent extends \CBitrixComponent
 
         if($this->checkParams())
         {
+            $this->fields = $this->getEntityFields();
             $this->processRequest($this->request);
 
             if($this->getMode() != 'delete')

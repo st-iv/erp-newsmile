@@ -15,7 +15,7 @@ $APPLICATION->SetTitle("Накладные");
         'EDIT_ELEMENTS_EDIT_FIELDS' => array('DATE', 'RECEIVING_DATE', 'STORE', 'Mmit\NewSmile\PackingListItem'),
         'EDIT_ELEMENTS_SHOW_FIELDS' => array('STORE.NAME'),
         'REVERSE_REFERENCES' => array(
-            'Mmit\NewSmile\PackingListItemTable:PACKING_LIST_ID' => array(
+            'Mmit\NewSmile\PackingListItemTable:PACKING_LIST' => array(
                 'EDITABLE_FIELDS' => array('QUANTITY', 'PRICE', 'MATERIAL'),
                 'SELECT_FIELDS' => array('MATERIAL.NAME'),
                 'TITLE' => 'Материалы'

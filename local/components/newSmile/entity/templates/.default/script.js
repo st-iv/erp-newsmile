@@ -104,7 +104,8 @@
                                 editUrl,
                                 {
                                     action: 'delete',
-                                    ajax: 'Y'
+                                    ajax: 'Y',
+                                    sessid: _this.params.sessid
                                 },
                                 function (data)
                                 {
@@ -150,7 +151,8 @@
                                 editUrl,
                                 {
                                     action: 'delete',
-                                    ajax: 'Y'
+                                    ajax: 'Y',
+                                    sessid: _this.params.sessid
                                 },
                                 function (data)
                                 {
