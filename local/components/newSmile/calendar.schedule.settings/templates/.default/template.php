@@ -60,7 +60,7 @@ if(!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED !== true) die();
                             <?foreach ($arVisit['WORK_CHAIR'] as $key => $arWorkChair):?>
                                 <?
                                 $status = '';
-                                if ($arResult['SCHEDULE'][$arVisit['NAME']][$key]['ENGAGED'] == 'Y') {
+                                if ($arResult['SCHEDULE'][$arVisit['NAME']][$key]['PATIENT_ID']) {
                                     $status = 'background-color: red;';
                                 } elseif (!empty($arResult['SCHEDULE'][$arVisit['NAME']][$key]['MAIN_DOCTOR_ID'])) {
                                     $status = 'background-color: ' . $arResult['MAIN_DOCTOR_ID'][$arResult['SCHEDULE'][$arVisit['NAME']][$key]['MAIN_DOCTOR_ID']]['COLOR'] . ';';
@@ -79,7 +79,7 @@ if(!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED !== true) die();
                         <?foreach ($arVisit['WORK_CHAIR'] as $key => $arWorkChair):?>
                             <?
                             $status = '';
-                            if ($arResult['SCHEDULE'][$arVisit['NAME']][$key]['ENGAGED'] == 'Y') {
+                            if ($arResult['SCHEDULE'][$arVisit['NAME']][$key]['PATIENT_ID']) {
                                 $status = 'background-color: red;';
                             } elseif (!empty($arResult['SCHEDULE'][$arVisit['NAME']][$key]['DOCTOR_ID'])) {
                                 $status = 'background-color: ' . $arResult['DOCTOR_ID'][$arResult['SCHEDULE'][$arVisit['NAME']][$key]['DOCTOR_ID']]['COLOR'] . ';';

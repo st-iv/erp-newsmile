@@ -9,43 +9,48 @@ use Bitrix\Main\Loader,
     Mmit\NewSmile\ScheduleTable,
     Mmit\NewSmile\DoctorTable,
     Mmit\NewSmile\PatientCardTable,
-    Mmit\NewSmile\WorkChairTable;
+    Mmit\NewSmile\WorkChairTable,
+    \Mmit\NewSmile,
+    Bitrix\Main\ORM\Query\Query,
+    Bitrix\Main\Entity\ExpressionField,
+    Bitrix\Main\DB;
 
 class CalendarFilterComponent extends \CBitrixComponent
 {
     private $FILTER_NAME = '';
-	/**
+
+
+    public function onPrepareComponentParams($arParams)
+    {
+        if(!($arParams['FILTER'] instanceof Bitrix\Main\ORM\Query\Filter\ConditionTree))
+        {
+            $arParams['FILTER'] = Query::filter();
+        }
+
+        return $arParams;
+    }
+
+    /**
 	 * получение результатов
 	 */
 	protected function getResult()
 	{
-        $this->getWorkChair();
+        //$this->getWorkChair();
         $this->getDoctors();
-        $this->getPatients();
-        $this->getFilter();
+        $this->getSpecializations();
+        $this->getTimeFilterInfo();
+        //$this->getPatients();
 	}
 
-	protected function getFilter()
+    protected function getTimeFilterInfo()
     {
-        $arResult['FILTER_TIME'] = [
-            '8:00',
-            '9:00',
-            '10:00',
-            '11:00',
-            '12:00',
-            '13:00',
-            '14:00',
-            '15:00',
-            '16:00',
-            '17:00',
-            '18:00',
-            '19:00',
-            '20:00',
-            '21:00',
-            '22:00',
-            '23:00',
-        ];
-        $this->arResult['FILTER'] = $arResult;
+        $this->arResult['START_TIME'] = NewSmile\Config::getScheduleStartTime();
+        $this->arResult['END_TIME'] = NewSmile\Config::getScheduleEndTime();
+    }
+
+    protected function getSpecializations()
+    {
+       $this->arResult['SPECIALIZATIONS'] = NewSmile\DoctorSpecializationTable::getEnumVariants('SPECIALIZATION');
     }
 
     protected function getWorkChair()
@@ -68,7 +73,7 @@ class CalendarFilterComponent extends \CBitrixComponent
     {
         $rsDoctor = DoctorTable::getList(array(
             'select' => array(
-                'ID', 'NAME'
+                'ID', 'NAME', 'COLOR'
             ),
             'filter' => [
                 'CLINIC_ID' => $_SESSION['CLINIC_ID']
@@ -93,24 +98,52 @@ class CalendarFilterComponent extends \CBitrixComponent
         }
     }
 
-    protected function requestResult($request)
+    protected function getFilter($request)
     {
-        global ${$this->FILTER_NAME};
-        if (!empty(${$this->FILTER_NAME}) && is_array(${$this->FILTER_NAME})){
-            $arResult = ${$this->FILTER_NAME};
-        } else {
-            $arResult = [];
+        /**
+         * @var \Bitrix\Main\ORM\Query\Filter\ConditionTree $filter
+         */
+        $filter = $this->arParams['FILTER'];
+
+        if (!empty($request['TIME_FROM']))
+        {
+            $filter->where(
+                new ExpressionField('TIME_SECONDS', 'TIME_TO_SEC(%s)','TIME'),
+                '>=',
+                new DB\SqlExpression('TIME_TO_SEC(?)', urldecode($request['TIME_FROM']))
+            );
         }
-        if (!empty($request['TIME_FROM'])) {
-            $arResult['TIME_FROM'] = $request['TIME_FROM'];
+
+        if (!empty($request['TIME_TO']))
+        {
+            $filter->where(
+                new ExpressionField('TIME_SECONDS', 'TIME_TO_SEC(%s)','TIME'),
+                '<',
+                new DB\SqlExpression('TIME_TO_SEC(?)', urldecode($request['TIME_TO']))
+            );
         }
-        if (!empty($request['TIME_TO'])) {
-            $arResult['TIME_TO'] = $request['TIME_TO'];
+
+        if (!empty($request['DOCTOR']))
+        {
+            $filter->where('DOCTOR_ID', $request['DOCTOR']);
         }
-        if (!empty($request['DOCTOR'])) {
-            $arResult['DOCTOR'] = $request['DOCTOR'];
+
+        if(!empty($request['SPEC']))
+        {
+            $specSubQuery = new Query(NewSmile\DoctorSpecializationTable::getEntity());
+            $specSubQuery->setFilter(array(
+                'SPECIALIZATION' => $request['SPEC']
+            ));
+            $specSubQuery->setSelect(array('DOCTOR_ID'));
+
+            $filter->whereIn('DOCTOR_ID', $specSubQuery);
         }
-        $this->arResult['CURRENT_FILTER'] = ${$this->FILTER_NAME} = $arResult;
+
+        $filter->where('CLINIC_ID', NewSmile\Config::getClinicId());
+
+        $this->arResult['CURRENT_FILTER'] = $filter;
+
+        return $filter;
     }
 	
 	/**
@@ -127,8 +160,11 @@ class CalendarFilterComponent extends \CBitrixComponent
                 $this->FILTER_NAME = 'arFilter';
             }
 			$this->getResult();
-            $this->requestResult($this->request);
-			$this->includeComponentTemplate();
+            $filter = $this->getFilter($this->request);
+
+            $this->includeComponentTemplate();
+
+            return $filter;
 		}
 		catch (Exception $e)
 		{

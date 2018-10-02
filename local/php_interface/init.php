@@ -1,7 +1,16 @@
 <?
-function pr($var)
+function pr($var, $bDump = false)
 {
     ?>
-    <pre><?print_r($var)?></pre>
+    <pre style="max-height: 250px;max-width: 600px;border: 1px solid red;font-size: 12px;"><?
+        if($bDump)
+        {
+            var_dump($var);
+        }
+        else
+        {
+            print_r($var);
+        }
+    ?></pre>
     <?
 }

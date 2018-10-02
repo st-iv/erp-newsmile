@@ -96,7 +96,8 @@ $(document).ready(function(){
 		}
 	});
 
-    $.widget( "custom.iconselectmenu", $.ui.selectmenu, {
+    //MOVED TO local/templates/newsmile/components/newSmile/calendar.filter/main/script.js
+    /*$.widget( "custom.iconselectmenu", $.ui.selectmenu, {
 		_renderItem: function(ul, item) {
 			var li = $("<li>"),
 			wrapper = $("<div>", {text: item.label});
@@ -138,34 +139,12 @@ $(document).ready(function(){
  
     $("#doctor").iconselectmenu().iconselectmenu("menuWidget");
 
-	$("#speс").selectmenu();
+	$("#speс").selectmenu();*/
 
-	function prepareTime(x){
-		var hours = parseInt(x / 4),
-			minutes = (x - hours * 4) * 15; 
 
-		if (hours.toString().length === 1){
-			hours = '0' + hours;
-		}
-		if (minutes === 0){
-			minutes = '00';
-		}
-		return hours + ':' + minutes;
-	}	
-	$( "#time-range" ).slider({
-		range: true,
-		min: 36,
-		max: 72,
-		values: [36,72],
-		slide: function(event,ui) {
-			$("#time-range_from span").text(prepareTime(ui.values[0]));
-			$("#time-range_to span").text(prepareTime(ui.values[1]));
-		}
-	});
-	$("#time-range_from span").text(prepareTime($("#time-range").slider( "values",0)));
-	$("#time-range_to span").text(prepareTime($("#time-range").slider( "values",1)));
 
-	$( "#left-calendar" ).customCalendar({
+	// MOVED TO local/templates/newsmile/components/newSmile/calendar/main/script.js
+	/*$( "#left-calendar" ).customCalendar({
 		dateFrom: '2018-05-24',
 		dateTo: '2018-08-24',
 		curDate: '2018-05-28',
@@ -184,5 +163,26 @@ $(document).ready(function(){
 				timeAvlble: '20:30'
 			}
 		}
-	});
+	});*/
+});
+
+/* CUSTOM */
+
+$(document).ready(function()
+{
+    var $headerClock = $('#header-clock');
+    var tsDiff = Number($headerClock.data('ts')) - Date.now();
+    var serverDateTime = new Date(Date.now() + tsDiff);
+
+    setTimeout(function()
+    {
+        updateClock($headerClock);
+        setInterval(updateClock.bind(null, $headerClock), 60000);
+    }, (60 - serverDateTime.getSeconds()) * 1000);
+
+
+    function updateClock($clock)
+    {
+        $clock.text(General.Date.formatTime(Date.now() + tsDiff));
+    }
 });

@@ -1,64 +1,52 @@
 <?
 require($_SERVER['DOCUMENT_ROOT'].'/bitrix/header.php');
 $APPLICATION->SetTitle("Главная страница");
+
+use Mmit\NewSmile;
 ?>
-<table>
-    <tr>
-        <td colspan="2">
-            <?$APPLICATION->IncludeComponent(
-                "newSmile:calendar.filter",
-                "",
-                [
-                    'FILTER_NAME' => 'arrFilterCalendar'
-                ]
-            );?>
-        </td>
-    </tr>
-    <tr>
-        <td>
-            <?$APPLICATION->IncludeComponent(
-                "newSmile:calendar",
-                "",
-                [
-                    'FILTER_NAME' => 'arrFilterCalendar'
-                ]
-            );?>
-        </td>
-        <td rowspan="3">
-            <div class="calendar-days">
-                <?$APPLICATION->IncludeComponent(
-                    "newSmile:calendar.day",
-                    "",
-                    [
-                        'FILTER_NAME' => 'arrFilterCalendar'
-                    ]
-                );?>
-            </div>
-        </td>
-    </tr>
-    <tr>
-        <td>
-            <?$APPLICATION->IncludeComponent(
-                "newSmile:callpatient",
-                "",
-                Array(
-
-                )
-            );?>
-        </td>
-    </tr>
-    <tr>
-        <td>
-            <?$APPLICATION->IncludeComponent(
-                "newSmile:visit.add",
-                "",
-                Array(
-
-                )
-            );?>
-        </td>
-    </tr>
-</table>
 <?
+\Bitrix\Main\Loader::includeModule('mmit.newsmile');
+
+$filter = $APPLICATION->IncludeComponent(
+    "newSmile:calendar.filter",
+    "",
+    array()
+);
+
+NewSmile\Ajax::start('calendar', false);
+?>
+<div class="row main_content">
+<?
+
+$APPLICATION->IncludeComponent(
+    "newSmile:calendar",
+    "",
+    array(
+        'COLORS' => array(
+            0 => 'ffb637',
+            50 => 'd2d512',
+        ),
+        'FILTER' => $filter,
+        'CALENDAR_DAY_AJAX_AREA' => 'calendar-day'
+    )
+);
+
+NewSmile\Ajax::start('calendar-day');
+
+$APPLICATION->IncludeComponent(
+    "newSmile:calendar.day",
+    "",
+    [
+        'FILTER' => $filter
+    ]
+);
+
+NewSmile\Ajax::finish();
+?>
+</div>
+<?
+NewSmile\Ajax::finish();
+
+
 require($_SERVER['DOCUMENT_ROOT'].'/bitrix/footer.php');
 ?>

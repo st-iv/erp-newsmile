@@ -4,20 +4,21 @@ $APPLICATION->SetTitle("Новый раздел");
 ?>
 
 <?$APPLICATION->IncludeComponent(
-    "newSmile:doctor",
-    "",
+    "newSmile:entity",
+    "elements_only",
     Array(
+        'DATA_MANAGER_CLASS_ELEMENT' => 'Mmit\NewSmile\DoctorTable',
         'SEF_MODE' => 'Y',
         'SEF_FOLDER' => '/doctors/',
-        'SEF_URL_TEMPLATES' => array(
-            'index' => 'index.php',
-            'view' => 'view/#ELEMENT_ID#/',
-            'edit' => 'edit/#ELEMENT_ID#/',
-        ),
-        'VARIABLE_ALIASES' => array(
-            'ACTION',
-            'ELEMENT_ID'
-        ),
+        'LIST_ELEMENT_FIELDS' => array('NAME'),
+        'EDIT_ELEMENTS_EDIT_FIELDS' => array(),
+        'EDIT_ELEMENTS_SHOW_FIELDS' => array('USER.NAME', 'CLINIC.NAME'),
+        'REVERSE_REFERENCES' => array(
+            'Mmit\NewSmile\DoctorSpecializationTable:DOCTOR' => array(
+                'EDITABLE_FIELDS' => array('SPECIALIZATION'),
+                'SINGLE_MODE' => true,
+            )
+        )
     )
 );?>
 

@@ -87,11 +87,16 @@ class ScheduleTable extends Entity\DataManager
                 'default_value' => 'Y'
             )),
             /*end*/
-            new Entity\StringField('ENGAGED',array(
-                'title' => 'Занято',
-                'size' => 1,
-                'default_value' => 'N'
+            new Entity\IntegerField('PATIENT_ID', array(
+                'title' => 'PATIENT_ID',
             )),
+            new Entity\ReferenceField('PATIENT',
+                'Mmit\NewSmile\PatientCard',
+                array('=this.PATIENT_ID' => 'ref.ID'),
+                array(
+                    'title' => 'Карточка пациента'
+                )
+            ),
 
         );
     }
@@ -118,9 +123,6 @@ class ScheduleTable extends Entity\DataManager
                     break;
                 case 'CLINIC_ID':
                     $strSqlWhere .= 'CLINIC_ID = ' . $value . ' ';
-                    break;
-                case 'ENGAGED':
-                    $strSqlWhere .= 'ENGAGED = \'' . $value . '\' ';
                     break;
                 case 'DATE_FROM':
                     $strSqlWhere .= 'TIME >= \'' . $value . '\' ';

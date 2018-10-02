@@ -46,7 +46,7 @@ if(!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED !== true) die();
                         <?
                         $background = (!empty($arSchedule['UF_DOCTOR_COLOR']))? 'background-color: ' . $arSchedule['UF_DOCTOR_COLOR'] . ';' : '';
                         ?>
-                        <div class="calendar-bottom-item <?if($arSchedule['ENGAGED'] == 'N'):?>active<?endif;?>"
+                        <div class="calendar-bottom-item <?if(!$arSchedule['PATIENT_ID']):?>active<?endif;?>"
                              data-schedule-id="<?=$arSchedule['ID']?>"
                              data-schedule-time="<?=$arSchedule['TIME']->format('Y-m-d H:i')?>"
                              data-doctor-id="<?=$arSchedule['UF_DOCTOR_ID']?>"

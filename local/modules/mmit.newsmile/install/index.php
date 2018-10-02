@@ -79,6 +79,7 @@ class mmit_newsmile extends CModule
             NewSmile\Service\GroupTable::getEntity()->createDbTable();
             NewSmile\Service\PriceTable::getEntity()->createDbTable();
             NewSmile\Service\PriceHistoryTable::getEntity()->createDbTable();
+            NewSmile\DoctorSpecializationTable::getEntity()->createDbTable();
 
             NewSmile\VisitTable::createStatus();
             $this->testInstallDB();
@@ -228,6 +229,7 @@ class mmit_newsmile extends CModule
             $connection->dropTable(NewSmile\Service\GroupTable::getTableName());
             $connection->dropTable(NewSmile\Service\PriceTable::getTableName());
             $connection->dropTable(NewSmile\Service\PriceHistoryTable::getTableName());
+            $connection->dropTable(NewSmile\DoctorSpecializationTable::getTableName());
         }
     }
 

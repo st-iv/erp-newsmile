@@ -755,6 +755,11 @@ body.searchOpen .search_content{
 	cursor: pointer;
     background-repeat: no-repeat;
     background-position: center;
+
+	/* ADDED start*/
+	background-color: #fff;
+	outline: none;
+	/* ADDED end*/
 }
 .shld_btn_acc{
 	width: 42px;

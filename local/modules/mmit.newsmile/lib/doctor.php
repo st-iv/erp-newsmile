@@ -34,10 +34,7 @@ class DoctorTable extends Entity\DataManager
             )),
             new Entity\StringField('NAME', array(
                 'required' => true,
-                'title' => 'Название',
-                'default_value' => function () {
-                    return 'Без названия';
-                },
+                'title' => 'ФИО',
                 'validation' => function () {
                     return array(
                         new Entity\Validator\Length(null, 255),

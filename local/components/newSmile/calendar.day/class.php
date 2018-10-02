@@ -9,13 +9,28 @@ use Bitrix\Main\Loader,
     Mmit\NewSmile\ScheduleTable,
     Mmit\NewSmile\DoctorTable,
     Mmit\NewSmile\PatientCardTable,
-    Mmit\NewSmile\WorkChairTable;
+    Mmit\NewSmile\WorkChairTable,
+    Bitrix\Main\ORM\Query\Query;
 
 class CalendarDayComponent extends \CBitrixComponent
 {
     protected $thisDate = '';
-	
-	/**
+
+    public function onPrepareComponentParams($arParams)
+    {
+        if($arParams['FILTER'] instanceof \Bitrix\Main\ORM\Query\Filter\ConditionTree)
+        {
+            $arParams['FILTER'] = clone $arParams['FILTER'];
+        }
+        else
+        {
+            $arParams['FILTER'] = Query::filter();
+        }
+
+        return $arParams;
+    }
+
+    /**
 	 * получение результатов
 	 */
 	protected function getResult()
@@ -26,52 +41,39 @@ class CalendarDayComponent extends \CBitrixComponent
         }
         $this->arResult['THIS_DATE'] = $this->thisDate;
 
-	    $this->setFilter();
-
         $isNext = $this->getWorkChair();
         $isNext = $isNext && $this->getSchedule();
         $isNext = $isNext && $this->getVisit();
+
         $this->getDoctors();
         $this->getPatients();
 	}
 
-	protected function setFilter()
+	protected function getScheduleFilter()
     {
-        if (empty($this->arParams['FILTER_NAME'])) {
-            $this->FILTER_NAME = $this->arParams['FILTER_NAME'];
-        } else {
-            $this->FILTER_NAME = 'arFilter';
-        }
-        global ${$this->FILTER_NAME};
-        $arFilterGlobal = ${$this->FILTER_NAME};
+        /**
+         * @var \Bitrix\Main\ORM\Query\Filter\ConditionTree $filter
+         */
+        $filter = $this->arParams['FILTER'];
 
-        $this->arResult['FILTER_SCHEDULE'] = [];
+        $thisDate = new \DateTime($this->thisDate);
+        $tomorrowDate = clone $thisDate;
+        $tomorrowDate->modify('tomorrow');
 
-        if (!empty($arFilterGlobal['TIME_FROM'])) {
-            $this->arResult['FILTER_SCHEDULE']['>=TIME'] = new DateTime($this->thisDate . ' ' . $arFilterGlobal['TIME_FROM'], 'Y-m-d H:i');
-        }
-        if (!empty($arFilterGlobal['TIME_TO'])) {
-            $this->arResult['FILTER_SCHEDULE']['<TIME'] = new DateTime($this->thisDate . ' ' .$arFilterGlobal['TIME_TO'], 'Y-m-d H:i');
-        }
-        if (!empty($arFilterGlobal['DOCTOR'])) {
-            $this->arResult['FILTER_SCHEDULE']['DOCTOR_ID'] = $arFilterGlobal['DOCTOR'];
-        }
+        $filter->whereBetween('TIME', Date::createFromPhp($thisDate), Date::createFromPhp($tomorrowDate));
+
+        return $filter;
     }
 
     protected function getSchedule()
     {
         $isResult = false;
-        $arFilter = [
-            '>=TIME' => new Date($this->thisDate, 'Y-m-d'),
-            '<=TIME' => new Date(date('Y-m-d', strtotime('tomorrow', strtotime($this->thisDate))), 'Y-m-d'),
-            'CLINIC_ID' => $_SESSION['CLINIC_ID']
-        ];
-        $arFilter = array_merge($arFilter,$this->arResult['FILTER_SCHEDULE']);
+
         $rsSchedule = ScheduleTable::getList(array(
             'order' => array(
                 'TIME' => 'ASC'
             ),
-            'filter' => $arFilter,
+            'filter' => $this->getScheduleFilter(),
             'select' => array(
                 'ID',
                 'TIME',
@@ -79,9 +81,10 @@ class CalendarDayComponent extends \CBitrixComponent
                 'UF_MAIN_DOCTOR_' => 'MAIN_DOCTOR',
                 'WORK_CHAIR_ID',
                 'CLINIC_ID',
-                'ENGAGED'
+                'PATIENT_ID'
             )
         ));
+
         while ($arSchedule = $rsSchedule->fetch())
         {
             $this->arResult['WORK_CHAIR'][$arSchedule['WORK_CHAIR_ID']]['SCHEDULES'][] = $arSchedule;
@@ -132,7 +135,7 @@ class CalendarDayComponent extends \CBitrixComponent
             ),
             'filter' => array(
                 'DATE_START' => new Date($this->thisDate, 'Y-m-d'),
-                'CLINIC_ID' => $_SESSION['CLINIC_ID']
+                'CLINIC_ID' => \Mmit\NewSmile\Config::getClinicId()
             ),
             'select' => array(
                 'ID',
@@ -183,7 +186,7 @@ class CalendarDayComponent extends \CBitrixComponent
         $isResult = false;
         $rsWorkChair = WorkChairTable::getList([
             'filter' => [
-                'CLINIC_ID' => $_SESSION['CLINIC_ID']
+                'CLINIC_ID' => \Mmit\NewSmile\Config::getClinicId()
             ]
         ]);
         while ($arWorkChair = $rsWorkChair->Fetch())
@@ -201,7 +204,7 @@ class CalendarDayComponent extends \CBitrixComponent
                 'ID', 'NAME'
             ),
             'filter' => [
-                'CLINIC_ID' => $_SESSION['CLINIC_ID']
+                'CLINIC_ID' => \Mmit\NewSmile\Config::getClinicId()
             ]
         ));
         while ($arDoctor = $rsDoctor->fetch())

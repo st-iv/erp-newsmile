@@ -54,7 +54,7 @@ class VisitAddComponent extends \CBitrixComponent
                         '<TIME' => $arFiled['TIME_END'],
                         'WORK_CHAIR_ID' => $arFiled['WORK_CHAIR_ID'],
                         'WORK' => 'Y',
-                        'ENGAGED' => 'N'
+                        'PATIENT_ID' => false
                     )
                 ));
                 if ($rsSchedule->getSelectedRowsCount() > 0) {
@@ -62,7 +62,7 @@ class VisitAddComponent extends \CBitrixComponent
                     while ($arSchedule = $rsSchedule->fetch())
                     {
                         ScheduleTable::update($arSchedule['ID'], array(
-                            'ENGAGED' => 'Y'
+                            'PATIENT_ID' => $arFiled['PATIENT_ID']
                         ));
                     }
                 }else {

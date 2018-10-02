@@ -14,5 +14,5 @@ interface ExtendedFieldsDescriptor
      * @param $enumFieldName
      * @return mixed
      */
-    public static function getEnumVariantsTitles($enumFieldName);
+    public static function getEnumVariants($enumFieldName);
 }

@@ -7,10 +7,12 @@
     <?$APPLICATION->ShowHead()?>
 
     <?
-    $asset->addCss(SITE_TEMPLATE_PATH . '/css/style.css');
     $asset->addCss(SITE_TEMPLATE_PATH . '/css/bootstrap.min.css');
+    $asset->addCss('https://fonts.googleapis.com/css?family=Rubik:300,400,500 subset=cyrillic');
     $asset->addCss(SITE_TEMPLATE_PATH . '/css/jquery.mCustomScrollbar.css');
     $asset->addCss(SITE_TEMPLATE_PATH . '/css/jquery-ui.min.css');
+    $asset->addCss(SITE_TEMPLATE_PATH . '/css/jquery.contextMenu.min.css');
+    $asset->addCss(SITE_TEMPLATE_PATH . '/css/style.css');
 
     $asset->addJs(SITE_TEMPLATE_PATH . '/js/jquery-3.3.1.min.js');
     $asset->addJs(SITE_TEMPLATE_PATH . '/js/popper.min.js');
@@ -18,32 +20,32 @@
     $asset->addJs(SITE_TEMPLATE_PATH . '/js/bootstrap.min.js');
     $asset->addJs(SITE_TEMPLATE_PATH . '/js/jquery.mCustomScrollbar.min.js');
     $asset->addJs(SITE_TEMPLATE_PATH . '/js/jquery.mousewheel-3.0.6.min.js');
+    $asset->addJs(SITE_TEMPLATE_PATH . '/js/jquery.contextMenu.min.js');
     $asset->addJs(SITE_TEMPLATE_PATH . '/js/moment.min.js');
+    $asset->addJs(SITE_TEMPLATE_PATH . '/js/general.js');
     $asset->addJs(SITE_TEMPLATE_PATH . '/js/custom_calendar.js');
     $asset->addJs(SITE_TEMPLATE_PATH . '/js/main.js');
+    $asset->addJs(SITE_TEMPLATE_PATH . '/js/ajax_load.js');
     ?>
 </head>
 <body>
     <div id="panel">
-        <?$APPLICATION->ShowPanel()?>
+        <?//$APPLICATION->ShowPanel()?>
     </div>
 
-    <div class="left_menu">
-        <div class="menu_btn_shld"></div>
-        <div class="menu_btn_kartoteka"></div>
-        <div class="menu_btn_options"></div>
-    </div>
-    <div class="left_menu_vline"></div>
-    <div class="left_menu_content">
-        <div class="menu_shld_itmslst">
-            <div class="menu_shld_item">Запланировать прием</div>
-            <div class="menu_shld_item">Лист ожидания</div>
-            <div class="menu_shld_item">Новая запись в лист ожидания</div>
-            <div class="menu_shld_item">Рассылки</div>
-            <div class="menu_shld_item">Отправить SMS</div>
-            <div class="menu_shld_item">Журнал заказ-нарядов</div>
-        </div>
-    </div>
+    <?$APPLICATION->IncludeComponent("bitrix:menu","left",Array(
+            "ROOT_MENU_TYPE" => "left",
+            "MAX_LEVEL" => "1",
+            "CHILD_MENU_TYPE" => "left",
+            "USE_EXT" => "N",
+            "DELAY" => "N",
+            "ALLOW_MULTI_SELECT" => "N",
+            "MENU_CACHE_TYPE" => "Y",
+            "MENU_CACHE_TIME" => "36000",
+            "MENU_CACHE_USE_GROUPS" => "N",
+        )
+    );?>
+
     <div class="notif_content">
         <div class="notif_header">Уведомления</div>
         <div class="notif_content_close"></div>
@@ -112,7 +114,7 @@
 
     <div class="container-fluid">
         <div class="row main_header">
-            <div class="header_clock">12:40</div>
+            <div class="header_clock" data-ts="<?=time()?>000" id="header-clock"><?=date('H:i')?></div>
             <div class="header_notif">
                 <div class="notif_bell">
                     <div class="notif_amnt">14</div>
@@ -141,4 +143,3 @@
                 <div class="header_drwnarr"></div>
             </div>
         </div>
-

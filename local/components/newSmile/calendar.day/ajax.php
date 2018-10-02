@@ -95,7 +95,7 @@ if (isset($_REQUEST['action'])) {
                             '>=TIME' => $arFiled['TIME_START'],
                             '<TIME' => $arFiled['TIME_END'],
                             'WORK_CHAIR_ID' => $arFiled['WORK_CHAIR_ID'],
-                            'ENGAGED' => 'N',
+                            'PATIENT_ID' => false,
                             'CLINIC_ID' => $_SESSION['CLINIC_ID']
                         )
                     ));
@@ -104,7 +104,7 @@ if (isset($_REQUEST['action'])) {
                         while ($arSchedule = $rsSchedule->fetch())
                         {
                             ScheduleTable::update($arSchedule['ID'], array(
-                                'ENGAGED' => 'Y'
+                                'PATIENT_ID' => $arFiled['PATIENT_ID']
                             ));
                         }
                     }else {

@@ -44,7 +44,7 @@ class ServiceTable extends Entity\DataManager implements ExtendedFieldsDescripto
             )),
             new Entity\EnumField('MEASURE', array(
                 'title' => 'Единица измерения',
-                'values' => array('UNIT', 'TOOTH', 'JAW', 'BOTH_JAWS', 'ORAL_CAVITY', 'CONSULT', 'PRODUCT'),
+                'values' => array_keys(static::getEnumVariants('MEASURE')),
                 'required' => true,
             )),
             new Entity\ReferenceField('GROUP',
@@ -60,7 +60,7 @@ class ServiceTable extends Entity\DataManager implements ExtendedFieldsDescripto
         );
     }
 
-    public static function getEnumVariantsTitles($enumFieldName)
+    public static function getEnumVariants($enumFieldName)
     {
         return static::$enumVariantsTitles[$enumFieldName];
     }

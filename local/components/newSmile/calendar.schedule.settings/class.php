@@ -105,7 +105,7 @@ class CalendarScheduleSettingsComponent extends \CBitrixComponent
                 'ID' => $arSchedule['ID'],
                 'DOCTOR_ID' => $arSchedule['DOCTOR_ID'],
                 'MAIN_DOCTOR_ID' => $arSchedule['MAIN_DOCTOR_ID'],
-                'ENGAGED' => $arSchedule['ENGAGED']
+                'PATIENT_ID' => $arSchedule['PATIENT_ID']
             );
             if ($arSchedule['DOCTOR_ID']) {
                 $this->arResult['DOCTOR_ID'][$arSchedule['DOCTOR_ID']] = $arSchedule['DOCTOR_ID'];
