@@ -581,7 +581,8 @@ body.searchOpen .search_content{
 	margin-top: 1px;
 }
 .search_item_phone span,
-.search_item_dphone span{
+.search_item_dphone span,
+.search_item_name span{
 	color: #00d6d6;
 }
 .search_item_dname{

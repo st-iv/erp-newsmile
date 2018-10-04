@@ -48,6 +48,13 @@ $.extend(HeaderSearchTitle.prototype, {
         });
     },
 
+    initScrollbars: function()
+    {
+        this.$popup.find('.search_res_cont').mCustomScrollbar({
+            autoHideScrollbar: false
+        });
+    },
+
     toggleSearchPopup: function()
     {
         var $menu = $('.search_content');
@@ -109,6 +116,8 @@ $.extend(HeaderSearchTitle.prototype, {
                     this.queryInProgress = true;
                     this.$form.submit();
                     this.hasDefferedQuery = false;
+                    this.bInputUpdated = false;
+
                     result = true;
                 }
             }
@@ -124,8 +133,8 @@ $.extend(HeaderSearchTitle.prototype, {
 
     handleAjaxLoad: function()
     {
+        this.initScrollbars();
         this.openSearchPopup();
-        this.bInputUpdated = false;
         this.queryInProgress = false;
 
         if(this.hasDefferedQuery)

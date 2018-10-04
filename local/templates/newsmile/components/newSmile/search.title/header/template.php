@@ -25,13 +25,15 @@ use Bitrix\Main\Localization\Loc;
                     <div class="search_res_patients_с">
 
                         <?foreach ($category['SUBCATEGORIES'] as $subcategoryCode => $items):?>
-
-                            <?if($subcategoryCode == 'MAIN') continue;?>
+                            <?$isMainSubCat = ($subcategoryCode == 'MAIN');?>
 
                             <div class="search_res_list">
-                                <div class="search_res_subtitle">
-                                    <?=Loc::getMessage('MMIT_NS_ST_HEADER_FIELD_TITLE_' . strtoupper($categoryCode) . '_' . $subcategoryCode)?><span><?=count($category['SUBCATEGORIES'][$subcategoryCode])?></span>
-                                </div>
+
+                                <?if(!$isMainSubCat):?>
+                                    <div class="search_res_subtitle">
+                                        <?=Loc::getMessage('MMIT_NS_ST_HEADER_FIELD_TITLE_' . strtoupper($categoryCode) . '_' . $subcategoryCode)?><span><?=count($category['SUBCATEGORIES'][$subcategoryCode])?></span>
+                                    </div>
+                                <?endif;?>
 
                                 <div class="search_res_cont">
 
@@ -39,10 +41,13 @@ use Bitrix\Main\Localization\Loc;
 
                                         <div class="search_res_item">
                                             <div class="search_item_fl">
-                                                <div class="search_item_name"><?=$item['FIO']?></div>
+                                                <div class="search_item_name"><?= ($isMainSubCat ? $item['SEARCH_ENTRY'] : $item['FIO']) ?></div>
                                                 <div class="search_item_age"><?=$item['AGE']?></div>
                                             </div>
-                                            <div class="search_item_phone"><?=$item['SEARCH_ENTRY']?></div>
+
+                                            <?if(!$isMainSubCat):?>
+                                                <div class="search_item_phone"><?=$item['SEARCH_ENTRY']?></div>
+                                            <?endif;?>
                                         </div>
 
                                     <?endforeach;?>

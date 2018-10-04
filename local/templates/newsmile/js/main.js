@@ -60,7 +60,7 @@ $(document).ready(function(){
 		$(this).closest('.notif_item').remove();
 	});	
 
-	$(".notif_items, .search_res_cont").mCustomScrollbar({
+	$(".notif_items").mCustomScrollbar({ // DELETED ", .search_res_cont"
 		autoHideScrollbar: false
 	});
 
