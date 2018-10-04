@@ -120,10 +120,27 @@
                     <div class="notif_amnt">14</div>
                 </div>
             </div>
-            <form class="header_search_form">
-                <input type="text" name="search_str" class="search_str" placeholder="Искать пациента, врача, документ" />
-                <div class="search_sbmt"></div>
-            </form>
+            <?$APPLICATION->IncludeComponent(
+                "newSmile:search.title",
+                "header",
+                array(
+                    'USE_LANGUAGE_GUESS' => 'Y',
+                    'MIN_QUERY_LENGTH' => 3,
+                    'TOP_COUNT' => 200,
+                    'CATEGORIES' => array(
+                        'patientcard' => array(
+                            'TITLE' => 'Пациенты',
+                            'ENTITY' => 'Mmit\NewSmile\PatientCard',
+                            'FIELDS' => array('PERSONAL_BIRTHDAY', 'NAME', 'LAST_NAME', 'SECOND_NAME')
+                        ),
+                        'doctor' => array(
+                            'TITLE' => 'Врачи',
+                            'ENTITY' => 'Mmit\NewSmile\Doctor',
+                            'FIELDS' => array('PERSONAL_BIRTHDAY', 'NAME', 'LAST_NAME', 'SECOND_NAME', 'COLOR')
+                        )
+                    )
+                )
+            );?>
             <div class="header_place">
                 <div class="place_current">
                     <div class="place_current_city">Иркутск</div>

@@ -33,6 +33,16 @@
         <input type="datetime-local" name="<?=$outputField['INPUT_NAME']?>" value="<?=$value->format('Y-m-d\TH:i:s')?>" <?=($outputField['DISABLED'] ? 'disabled' : '')?>>
         <?break;?>
 
+    <?case 'date':?>
+        <?
+        /**
+         * @var \Bitrix\Main\Type\Date $value
+         */
+        $value = $outputField['VALUE'];
+        ?>
+        <input type="date" name="<?=$outputField['INPUT_NAME']?>" value="<?=$value->format('Y-m-d')?>" <?=($outputField['DISABLED'] ? 'disabled' : '')?>>
+        <?break;?>
+
     <?case 'hidden':?>
         <input type="hidden" name="<?=$outputField['INPUT_NAME']?>" value="<?=$outputField['VALUE']?>" <?=($outputField['DISABLED'] ? 'disabled' : '')?>>
         <?break;?>

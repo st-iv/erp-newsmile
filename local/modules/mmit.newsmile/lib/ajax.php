@@ -24,7 +24,7 @@ class Ajax
 
         if($bShowAreaId)
         {
-            echo '<div class="js-ajax-area" data-ajax-area="' . $areaId . '">';
+            echo '<div ' . static::getAreaIdAttr() . '>';
         }
 
         if(static::isAreaRequested() && $bWriteContent)
@@ -77,9 +77,14 @@ class Ajax
         }
     }
 
+    public static function isAjaxQuery()
+    {
+        return (($_REQUEST['ajax'] == 'Y') && !empty($_REQUEST['area']));
+    }
+
     protected static function isCurrentAreaRequested()
     {
-        return (($_REQUEST['ajax'] == 'Y') && ($_REQUEST['area'] == static::getAreaParam('AREA_ID')));
+        return (static::isAjaxQuery() && ($_REQUEST['area'] == static::getAreaParam('AREA_ID')));
     }
 
     protected static function isParentAreaRequested()
@@ -114,5 +119,10 @@ class Ajax
         static::$areasStack[count(static::$areasStack) - 1][$paramName] = $paramValue;
         Debug::writeToFile(static::$areasStack[count(static::$areasStack) - 1]);
         Debug::writeToFile(static::$areasStack);
+    }
+
+    public static function getAreaIdAttr()
+    {
+        return 'data-is-ajax-area="Y" data-ajax-area="' . static::getAreaParam('AREA_ID') . '"';
     }
 }

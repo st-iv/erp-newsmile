@@ -103,6 +103,8 @@ class CalendarDayComponent extends \CBitrixComponent
                 $tempField = array(
                     'ID' => $arSchedule['UF_MAIN_DOCTOR_ID'],
                     'NAME' => $arSchedule['UF_MAIN_DOCTOR_NAME'],
+                    'LAST_NAME' => $arSchedule['UF_MAIN_DOCTOR_LAST_NAME'],
+                    'SECOND_NAME' => $arSchedule['UF_MAIN_DOCTOR_SECOND_NAME'],
                     'TIME' => $time
                 );
                 if (array_search($tempField,$this->arResult['WORK_CHAIR'][$arSchedule['WORK_CHAIR_ID']]['MAIN_DOCTORS']) === null ||
@@ -201,7 +203,7 @@ class CalendarDayComponent extends \CBitrixComponent
     {
         $rsDoctor = DoctorTable::getList(array(
             'select' => array(
-                'ID', 'NAME'
+                'ID', 'NAME', 'LAST_NAME', 'SECOND_NAME'
             ),
             'filter' => [
                 'CLINIC_ID' => \Mmit\NewSmile\Config::getClinicId()
@@ -209,7 +211,7 @@ class CalendarDayComponent extends \CBitrixComponent
         ));
         while ($arDoctor = $rsDoctor->fetch())
         {
-            $this->arResult['DOCTORS'][$arDoctor['ID']] = $arDoctor['NAME'];
+            $this->arResult['DOCTORS'][$arDoctor['ID']] = $arDoctor;
         }
     }
 

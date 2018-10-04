@@ -1,0 +1,6 @@
+.preloader-ajax {
+    position: absolute;
+    height: 30px;
+    width: 30px;
+    background: url('../img/loader.gif') no-repeat center;
+}

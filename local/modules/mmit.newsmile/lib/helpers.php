@@ -2,8 +2,15 @@
 
 namespace Mmit\NewSmile;
 
+use Bitrix\Main\Type\Date;
+
 class Helpers
 {
+    /**
+     * @var \DateTime $currentDate
+     */
+    protected static $currentDate;
+
     public static function getTree(array $groups, $parentGroupField = 'GROUP_ID', $childsField = 'SUBGROUPS')
     {
         foreach ($groups as &$group)
@@ -128,5 +135,46 @@ class Helpers
         }
 
         return $output;
+    }
+
+    public static function getFio($firstName, $lastName, $secondName)
+    {
+        return $lastName . ' ' . mb_substr($firstName, 0 , 1) . '. ' . mb_substr($secondName, 0 , 1) . '.';
+    }
+
+    public static function getShortClassName($className)
+    {
+        return substr($className, strrpos($className, '\\') + 1);
+    }
+
+    public static function getAge(Date $birthDayParam)
+    {
+        $birthDay = new \DateTime();
+        $birthDay->setTimestamp($birthDayParam->getTimestamp());
+
+        if(!isset(static::$currentDate))
+        {
+            static::$currentDate = new \DateTime();
+        }
+
+        $dateDiff = static::$currentDate->diff($birthDay);
+
+        $yearsCount = $dateDiff->y;
+        $yearsCountMod = $yearsCount % 10;
+
+        if($yearsCountMod == 1)
+        {
+            $yearsCount .= ' год';
+        }
+        elseif (($yearsCountMod >= 2) && ($yearsCountMod <= 4))
+        {
+            $yearsCount .= ' года';
+        }
+        else
+        {
+            $yearsCount .=  ' лет';
+        }
+
+        return $yearsCount;
     }
 }

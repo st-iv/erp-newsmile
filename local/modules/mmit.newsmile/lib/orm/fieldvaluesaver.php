@@ -5,11 +5,13 @@ namespace Mmit\NewSmile\Orm;
 
 use Bitrix\Main\Diag\Debug;
 use Bitrix\Main\Entity\BooleanField;
+use Bitrix\Main\Entity\DateField;
 use Bitrix\Main\HttpRequest;
 use Bitrix\Main\ORM\Entity;
 use Bitrix\Main\ORM\Fields\DatetimeField;
 use Bitrix\Main\ORM\Fields\Field;
 use Bitrix\Main\ORM\Fields\Relations\Reference;
+use Bitrix\Main\Type\Date;
 use Bitrix\Main\Type\DateTime;
 use Mmit\NewSmile\MaterialTable;
 use Mmit\NewSmile\Orm\Fields\ReverseReference;
@@ -59,13 +61,11 @@ class FieldValueSaver extends FieldsProcessor
     protected function processField(Field $field)
     {
         $fieldName = $field->getName();
-        $isEmptyEditable = empty($this->params['EDITABLE_FIELDS']);
 
-        if($isEmptyEditable || in_array($fieldName, $this->params['EDITABLE_FIELDS']))
+        if(in_array('*', $this->params['EDITABLE_FIELDS']) || in_array($fieldName, $this->params['EDITABLE_FIELDS']))
         {
             $this->updateFields[$fieldName] = $this->getRequestParam($fieldName);
             $result = true;
-
         }
         else
         {
@@ -100,6 +100,13 @@ class FieldValueSaver extends FieldsProcessor
         $fieldName = $field->getName();
         $rawValue = $this->getRequestParam($fieldName);
         $this->updateFields[$fieldName] = DateTime::createFromTimestamp(strtotime($rawValue));
+    }
+
+    protected function processDateField(DateField $field)
+    {
+        $fieldName = $field->getName();
+        $rawValue = $this->getRequestParam($fieldName);
+        $this->updateFields[$fieldName] = Date::createFromTimestamp(strtotime($rawValue));
     }
 
     protected function processReverseReference(ReverseReference $field)

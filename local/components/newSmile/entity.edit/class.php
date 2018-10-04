@@ -44,7 +44,7 @@ class EntityEditComponent extends \CBitrixComponent
         {
             if (preg_match('/^([A-z0-9\\\\]+):([A-Z0-9_]+)$/', $entityKeyField, $matches))
             {
-                if(NewSmile\Orm\Helper::isOrmEntityClass($matches[1]))
+                if(NewSmile\Orm\Helper::isDataManagerClass($matches[1]))
                 {
                     $reverseReferences[$entityKeyField] = $reverseReferenceParams;
                     $reverseReferences[$entityKeyField]['CLASS'] = $matches[1];
@@ -178,7 +178,7 @@ class EntityEditComponent extends \CBitrixComponent
     {
         $isSuccess = true;
 
-        if(!NewSmile\Orm\Helper::isOrmEntityClass($this->arParams['DATA_MANAGER_CLASS']))
+        if(!NewSmile\Orm\Helper::isDataManagerClass($this->arParams['DATA_MANAGER_CLASS']))
         {
             ShowError('Entity is not found');
             $isSuccess = false;

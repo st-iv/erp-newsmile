@@ -20,4 +20,9 @@ class Config
     {
         return 1; // stub
     }
+
+    public static function getSiteId()
+    {
+        return 's1';
+    }
 }

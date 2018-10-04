@@ -40,7 +40,7 @@ class FieldArrayConstructor extends FieldsProcessor
     {
         $fieldName = $field->getName();
 
-        $isEditable = !$this->params['EDITABLE_FIELDS'] || in_array($fieldName, $this->params['EDITABLE_FIELDS']);
+        $isEditable = in_array('*', $this->params['EDITABLE_FIELDS']) || in_array($fieldName, $this->params['EDITABLE_FIELDS']);
         $isSelected = $isEditable || (!$this->params['SELECT_FIELDS'] || in_array($fieldName, $this->params['SELECT_FIELDS']));
 
         if (!$isSelected) return false;
@@ -254,7 +254,7 @@ class FieldArrayConstructor extends FieldsProcessor
         $entityClass = $field->getRefEntity()->getDataClass();
         $select = $this->getReferenceSelectFields($field);
 
-        if(Helper::isOrmEntityClass($entityClass) && $select)
+        if(Helper::isDataManagerClass($entityClass) && $select)
         {
             $dbElements = $entityClass::getList(array(
                 'select' => $select

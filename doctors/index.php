@@ -11,8 +11,10 @@ $APPLICATION->SetTitle("Новый раздел");
         'SEF_MODE' => 'Y',
         'SEF_FOLDER' => '/doctors/',
         'LIST_ELEMENT_FIELDS' => array('NAME'),
-        'EDIT_ELEMENTS_EDIT_FIELDS' => array(),
+        'EDIT_ELEMENTS_EDIT_FIELDS' => array('*'),
         'EDIT_ELEMENTS_SHOW_FIELDS' => array('USER.NAME', 'CLINIC.NAME'),
+        'LIST_ELEMENT_NAME_TEMPLATE' => '#LAST_NAME# #NAME# #SECOND_NAME#',
+        'LIST_ELEMENT_FIELDS' => array('LAST_NAME', 'NAME', 'SECOND_NAME'),
         'REVERSE_REFERENCES' => array(
             'Mmit\NewSmile\DoctorSpecializationTable:DOCTOR' => array(
                 'EDITABLE_FIELDS' => array('SPECIALIZATION'),

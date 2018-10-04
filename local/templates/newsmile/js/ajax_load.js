@@ -10,7 +10,6 @@ $(document).ready(function()
                 var areaCode = Ajax.getAreaCode($form);
                 Ajax.load($form.attr('action'), areaCode, $form.serialize());
                 e.preventDefault();
-                console.log();
             });
         }
         else if(this.tagName === 'A')
@@ -68,7 +67,10 @@ var Ajax = (function()
                     {
                         for(var contentAreaCode in response.content)
                         {
-                            $('div[data-ajax-area="' + contentAreaCode + '"]').html(response.content[contentAreaCode]);
+                            var $content = $('<div>' + response.content[contentAreaCode] + '</div>');
+                            var $container = $content.find('div[data-ajax-area=' + contentAreaCode + ']');
+                            var contentHtml = ($container.length ? $container.html() : response.content[contentAreaCode]);
+                            $('div[data-ajax-area="' + contentAreaCode + '"]').html(contentHtml);
                         }
                     }
 
@@ -95,7 +97,7 @@ var Ajax = (function()
 
         if(!areaCode)
         {
-            areaCode = $element.parents('.js-ajax-area').data('ajax-area');
+            areaCode = $element.parents('[data-is-ajax-area=Y]').data('ajax-area');
 
             if(!areaCode)
             {

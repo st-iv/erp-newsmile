@@ -1,0 +1,4 @@
+<?
+$MESS['MMIT_NS_ST_HEADER_FIELD_TITLE_PATIENTCARD_PERSONAL_PHONE'] = 'По номеру телефона';
+$MESS['MMIT_NS_ST_HEADER_FIELD_TITLE_PATIENTCARD_NUMBER'] = 'По номеру карточки пациента';
+?>

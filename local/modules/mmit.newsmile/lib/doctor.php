@@ -7,9 +7,14 @@
  */
 namespace Mmit\NewSmile;
 
+use Bitrix\Main\Diag\Debug;
 use Bitrix\Main\Entity;
+use Bitrix\Main\Loader;
 use Bitrix\Main\Localization\Loc;
+use Bitrix\Main\ORM\Event;
+use Bitrix\Main\Type\Date;
 use Bitrix\Main\Type\DateTime;
+use Mmit\NewSmile;
 
 Loc::loadMessages(__FILE__);
 
@@ -34,7 +39,25 @@ class DoctorTable extends Entity\DataManager
             )),
             new Entity\StringField('NAME', array(
                 'required' => true,
-                'title' => 'ФИО',
+                'title' => 'Имя',
+                'validation' => function () {
+                    return array(
+                        new Entity\Validator\Length(null, 255),
+                    );
+                },
+            )),
+            new Entity\StringField('LAST_NAME', array(
+                'required' => true,
+                'title' => 'Фамилия',
+                'validation' => function () {
+                    return array(
+                        new Entity\Validator\Length(null, 255),
+                    );
+                },
+            )),
+            new Entity\StringField('SECOND_NAME', array(
+                'required' => true,
+                'title' => 'Отчество',
                 'validation' => function () {
                     return array(
                         new Entity\Validator\Length(null, 255),
@@ -69,7 +92,75 @@ class DoctorTable extends Entity\DataManager
                     'title' => 'Клиника'
                 )
             ),
-
+            new Entity\StringField('PERSONAL_PHONE', array(
+                'title' => 'Телефон',
+                'default_value' => '',
+                'validation' => function () {
+                    return array(
+                        new Entity\Validator\Length(null, 255),
+                    );
+                },
+            )),
+            new Entity\DateField('PERSONAL_BIRTHDAY',
+                array(
+                    'title' => 'Дата рождения',
+                    'default_value' => Date::createFromTimestamp(0)
+                )
+            ),
         );
+    }
+
+    public static function onAfterAdd(Event $event)
+    {
+        $primary = $event->getParameter('primary');
+        $fields = $event->getParameter('fields');
+
+        static::indexSearch($primary['ID'], $fields);
+    }
+
+    public static function onAfterUpdate(Event $event)
+    {
+        $primary = $event->getParameter('primary');
+        $fields = $event->getParameter('fields');
+
+        static::indexSearch($primary['ID'], $fields);
+    }
+
+    public static function onAfterDelete(Event $event)
+    {
+        $primary = $event->getParameter('primary');
+        static::deleteSearchIndex($primary['ID']);
+    }
+
+    public static function indexSearchAll()
+    {
+        $dbDoctors = static::getList();
+
+        while($doctor = $dbDoctors->fetch())
+        {
+            static::indexSearch($doctor['ID'], $doctor);
+        }
+    }
+
+    protected static function indexSearch($id, array $fields)
+    {
+        $additionalFields = array();
+
+        if(isset($fields['PERSONAL_PHONE']))
+        {
+            $additionalFields['PERSONAL_PHONE'] = $fields['PERSONAL_PHONE'];
+        }
+
+        NewSmile\Orm\Helper::indexSearch(
+            $id,
+            'doctor',
+            array(Helpers::getFio($fields['NAME'], $fields['LAST_NAME'], $fields['SECOND_NAME'])),
+            $additionalFields
+        );
+    }
+
+    protected static function deleteSearchIndex($id)
+    {
+        NewSmile\Orm\Helper::deleteSearchIndex($id, 'doctor');
     }
 }

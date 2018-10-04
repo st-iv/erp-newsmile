@@ -16,7 +16,7 @@
                 <option  data-color="fff" value="">Любой</option>
 
                 <?foreach ($arResult['DOCTORS'] as $doctor):?>
-                    <option data-color="<?=$doctor['COLOR']?>" value="<?=$doctor['ID']?>"><?=$doctor['NAME']?></option>
+                    <option data-color="<?=$doctor['COLOR']?>" value="<?=$doctor['ID']?>"><?=$doctor['FIO']?></option>
                 <?endforeach;?>
 
             </select>

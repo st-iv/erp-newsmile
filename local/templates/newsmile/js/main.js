@@ -80,10 +80,11 @@ $(document).ready(function(){
 		}
 	});
 
-	$('.search_sbmt').on('click', function(){
+	//MOVED TO local/templates/newsmile/components/newSmile/search.title/header/script.js
+	/*$('.search_sbmt').on('click', function(){
 		var $menu = $('.search_content');
 
-		$('body').toggleClass('searchOpen');
+		$('body').toggleheader_search_formClass('searchOpen');
 
 		if ($('body').hasClass('searchOpen')){
 			$(document).on('mousedown.search', function(e){
@@ -94,7 +95,7 @@ $(document).ready(function(){
 		} else {
 			$(document).off('mousedown.search');
 		}
-	});
+	});*/
 
     //MOVED TO local/templates/newsmile/components/newSmile/calendar.filter/main/script.js
     /*$.widget( "custom.iconselectmenu", $.ui.selectmenu, {

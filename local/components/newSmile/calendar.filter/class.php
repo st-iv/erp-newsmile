@@ -73,7 +73,7 @@ class CalendarFilterComponent extends \CBitrixComponent
     {
         $rsDoctor = DoctorTable::getList(array(
             'select' => array(
-                'ID', 'NAME', 'COLOR'
+                'ID', 'NAME', 'COLOR', 'LAST_NAME', 'SECOND_NAME'
             ),
             'filter' => [
                 'CLINIC_ID' => $_SESSION['CLINIC_ID']
