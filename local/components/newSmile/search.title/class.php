@@ -61,35 +61,52 @@ class NewSmileSearchTitleComponent extends CBitrixComponent
 
         $this->arResult['CATEGORIES'] = array();
 
+        $obSearch = new CSearch();
+        $searchExFilter = array();
+
+
         foreach ($this->arParams['CATEGORIES'] as $categoryCode => $category)
         {
-            $obTitle = new CSearchTitle();
-            $obTitle->setMinWordLength($this->arParams['MIN_QUERY_LENGTH']);
+            $searchExFilter['PARAM1'][] = $categoryCode;
+        }
 
-            $isSuccess = $obTitle->Search(
-                $query,
-                $this->arParams['TOP_COUNT'],
-                array(
-                    'MODULE' => $category['MODULE'],
-                    'PARAM1' => $categoryCode
-                )
-            );
+        $obSearch->Search(
+            array(
+                'QUERY' => $query,
+                'MODULE_ID' => 'mmit.newsmile',
+            ),
+            array(),
+            $searchExFilter
+        );
 
-            if($isSuccess && $obTitle->SelectedRowsCount())
-            {
-                $this->arResult['CATEGORIES'][$categoryCode]['TITLE'] = $category['TITLE'];
-                $this->writeSearchResults($obTitle, $categoryCode, $category);
-            }
+        if(!$obSearch->error)
+        {
+            $queryElementsInfo = $this->writeSearchResults($obSearch);
+            $this->queryAdditionalInfo($queryElementsInfo);
+            $this->sortCategories();
         }
     }
 
-    protected function writeSearchResults(CSearchTitle $searchTitle, $categoryCode, array $categoryParams = array())
+    /**
+     * Пишет результаты поиска в arResult, подготавливает данные для запроса дополнительной информации
+     *
+     * @param CSearch $search
+     *
+     * @return array данные для запроса дополнительной информации
+     */
+    protected function writeSearchResults(CSearch $search)
     {
-        $category =& $this->arResult['CATEGORIES'][$categoryCode];
-        $queryElementsIds = array();
+        $queryElementsInfo = array();
 
-        while($searchResult = $searchTitle->Fetch())
+        while($searchResult = $search->Fetch())
         {
+            $categoryCode = $searchResult['PARAM1'];
+            $category =& $this->arResult['CATEGORIES'][$categoryCode];
+            $categoryParams = $this->arParams['CATEGORIES'][$categoryCode];
+
+            $category['TITLE'] = $categoryParams['TITLE'];
+            $category['CODE'] = $categoryCode;
+
             if(preg_match('/^' . $categoryCode . '_([a-z_]+)_' . $searchResult['PARAM2'] .'$/', $searchResult['ITEM_ID'], $matches))
             {
                 $subCategoryName = strtoupper($matches[1]);
@@ -100,19 +117,48 @@ class NewSmileSearchTitleComponent extends CBitrixComponent
             }
             $category['SUBCATEGORIES'][$subCategoryName][$searchResult['PARAM2']] = array(
                 'ID' => $searchResult['PARAM2'],
-                'SEARCH_ENTRY' => $searchResult['NAME']
+                'SEARCH_ENTRY' => $searchResult['TITLE_FORMATED']
             );
 
-            $queryElementsIds[] = $searchResult['PARAM2'];
+            if($categoryParams['ENTITY'] && $categoryParams['FIELDS'])
+            {
+                $queryElementsInfo[$categoryParams['ENTITY']]['CATEGORY'] = $categoryCode;
+                $queryElementsInfo[$categoryParams['ENTITY']]['ELEMENTS'][] = $searchResult['PARAM2'];
+            }
+
+            unset($category);
         }
 
+        return $queryElementsInfo;
+    }
 
-        // добираем поля элемента, указанные в параметре категории FIELDS
-        if($categoryParams['FIELDS'] && $categoryParams['ENTITY'])
+    /**
+     * Запрашивает и сохраняет в arResult дополнительную информацию об элементах в результатах поиска
+     * @param array $queryElementsInfo - массив в формате <класс ORM сущности> => ['CATEGORY' => <код категории>, 'ELEMENTS' => <массив id элементов>]
+     *
+     * @throws \Bitrix\Main\ArgumentException
+     * @throws \Bitrix\Main\ObjectPropertyException
+     * @throws \Bitrix\Main\SystemException
+     */
+    protected function queryAdditionalInfo(array $queryElementsInfo)
+    {
+        if(!$queryElementsInfo) return;
+
+        foreach ($queryElementsInfo as $entityClass => $queryInfo)
         {
+            if(!$queryInfo['ELEMENTS']) continue;
+
+            $categoryCode = $queryInfo['CATEGORY'];
+            $categoryParams = $this->arParams['CATEGORIES'][$categoryCode];
+            $category =& $this->arResult['CATEGORIES'][$categoryCode];
+
             $dataManager = $categoryParams['ENTITY'] . 'Table';
 
-            if(!NewSmile\Orm\Helper::isDataManagerClass($dataManager)) return;
+            if(!NewSmile\Orm\Helper::isDataManagerClass($dataManager))
+            {
+                throw new Exception('Entity class for category ' . $queryInfo['CATEGORY'] . ' is not correct');
+                continue;
+            }
 
             $select = $categoryParams['FIELDS'];
             $select[] = 'ID';
@@ -122,7 +168,9 @@ class NewSmileSearchTitleComponent extends CBitrixComponent
              */
             $dbElements = $dataManager::getList(array(
                 'select' => $select,
-                'filter' => $queryElementsIds
+                'filter' => array(
+                    'ID' => $queryInfo['ELEMENTS']
+                )
             ));
 
             while($element = $dbElements->fetch())
@@ -137,13 +185,40 @@ class NewSmileSearchTitleComponent extends CBitrixComponent
 
                 unset($items);
             }
-        }
 
-        unset($category);
+            unset($category);
+        }
+    }
+
+    protected function sortCategories()
+    {
+        $categoriesSort = array_flip(array_keys($this->arParams['CATEGORIES']));
+
+        uasort($this->arResult['CATEGORIES'], function($categoryA, $categoryB) use ($categoriesSort)
+        {
+            if($categoriesSort[$categoryA['CODE']] > $categoriesSort[$categoryB['CODE']])
+            {
+                return 1;
+            }
+            elseif($categoriesSort[$categoryA['CODE']] < $categoriesSort[$categoryB['CODE']])
+            {
+                return -1;
+            }
+            else
+            {
+                return 0;
+            }
+        });
     }
 
     public function executeComponent()
     {
+        if(!$this->arParams['CATEGORIES'])
+        {
+            ShowError('Not defined categories for search');
+            return;
+        }
+
         try
         {
             Loader::includeModule('mmit.newsmile');

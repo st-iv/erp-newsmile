@@ -1,5 +1,6 @@
 <?if(!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED !== true) die();?>
-<form action="<?=POST_FORM_ACTION_URI?>" class="js-ajax-load" data-ajax-area="calendar">
+<form action="<?=POST_FORM_ACTION_URI?>" class="js-ajax-load" data-ajax-area="calendar"
+      id="main-calendar-filter">
     <div class="row shld_filter">
         <div class="shld_filter_title">Расписание</div>
 

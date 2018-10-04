@@ -5,7 +5,7 @@ use Bitrix\Main\Localization\Loc;
 
 ?>
 
-<div class="search_content">
+<div class="search_content js-header-search-content">
     <div class="search_fake_header">
         <div class="search_adv_button">Расширенный поиск</div>
     </div>
@@ -85,7 +85,7 @@ use Bitrix\Main\Localization\Loc;
     <?NewSmile\Ajax::finish();?>
 </div>
 
-<form class="header_search_form js-ajax-load" action="<?=POST_FORM_ACTION_URI?>" data-ajax-area="header-search">
+<form class="header_search_form js-ajax-load" action="<?=POST_FORM_ACTION_URI?>" data-ajax-area="header-search" id="header-search-form">
     <input type="text" name="q" class="search_str" placeholder="Искать пациента, врача, документ" autocomplete="off" />
     <div class="search_sbmt"></div>
 </form>
