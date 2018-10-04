@@ -3,8 +3,9 @@ HeaderSearchTitle = function (params)
     this.params = params;
 
     this.$form = $('.header_search_form');
-    this.$input = $('.header_search_form .search_str');
-    this.$submit = $('.header_search_form .search_sbmt');
+    this.$input = this.$form.find('.search_str');
+    this.$submit = this.$form.find('.search_sbmt');
+    this.$popup = $('.js-header-search-content');
 
     this.bInputUpdated = false;
     this.bQueryInProgress = false;
@@ -94,19 +95,28 @@ $.extend(HeaderSearchTitle.prototype, {
     {
         var result = false;
 
-        if(this.bInputUpdated && (this.$input.val().length >= this.params.minQueryLength))
+        if(this.bInputUpdated)
         {
-            if(this.queryInProgress)
+            if(this.$input.val().length >= this.params.minQueryLength)
             {
-                this.hasDefferedQuery = true;
+                if(this.queryInProgress)
+                {
+                    this.hasDefferedQuery = true;
+                    result = false;
+                }
+                else
+                {
+                    this.queryInProgress = true;
+                    this.$form.submit();
+                    this.hasDefferedQuery = false;
+                    result = true;
+                }
             }
             else
             {
-                this.queryInProgress = true;
-                this.$form.submit();
+                this.cleanPopupWindow();
             }
 
-            result = true;
         }
 
         return result;
@@ -121,7 +131,11 @@ $.extend(HeaderSearchTitle.prototype, {
         if(this.hasDefferedQuery)
         {
             this.submit();
-            this.hasDefferedQuery = false;
         }
+    },
+
+    cleanPopupWindow: function()
+    {
+        this.$popup.find('.search_result').html('');
     }
 });

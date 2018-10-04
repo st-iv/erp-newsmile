@@ -1,10 +1,20 @@
 $(document).ready(function()
 {
-    $('.js-ajax-load').each(function()
+    $('.js-ajax-load').each(function(index, element)
     {
+        var $this = $(this);
+        var id = $this.attr('id');
+
+        if(!id)
+        {
+            console.log('Для привязки ajax загрузчика необходимо указать id:');
+            console.log(this);
+            return;
+        }
+
         if(this.tagName === 'FORM')
         {
-            $(document).on('submit', this, function(e)
+            $(document).on('submit', '#' + id, function(e)
             {
                 var $form = $(e.target);
                 var areaCode = Ajax.getAreaCode($form);
@@ -14,13 +24,17 @@ $(document).ready(function()
         }
         else if(this.tagName === 'A')
         {
-            $(document).on('click', this, function(e)
+            $(document).on('click', '#' + id, function(e)
             {
                 var $link = $(e.target);
                 var areaCode = Ajax.getAreaCode($link);
                 Ajax.load($link.attr('href'), areaCode);
                 e.preventDefault();
             });
+        }
+        else
+        {
+            console.log('Тег ' +  this.tagName + ' не поддерживается ajax загрузчиком');
         }
     });
 });
