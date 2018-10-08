@@ -105,6 +105,8 @@ class Helper
 
     public static function deleteSearchIndex($id, $category)
     {
+        Loader::includeModule('search');
+
         \CSearch::DeleteIndex(
             'mmit.newsmile',
             false,

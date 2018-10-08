@@ -110,7 +110,7 @@ class PatientCardTable extends Entity\DataManager
             new Entity\EnumField('PERSONAL_GENDER',
                 array(
                     'title' => 'Пол',
-                    'default_value' => 0,
+                    'default_value' => 'Мужской',
                     'values' => array('Мужской', 'Женский')
                 )
             ),
@@ -282,7 +282,7 @@ class PatientCardTable extends Entity\DataManager
                 array(
                     'title' => 'Архив',
                     'values' => array('Нет', 'Недовольство качеством', 'Недовольство ценой', 'Переезд', 'Причина не известна'),
-                    'default_value' => 0
+                    'default_value' => 'Нет'
                 )
             ),
             new Entity\IntegerField('FAMILY_ID',

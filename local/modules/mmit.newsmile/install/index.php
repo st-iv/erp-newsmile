@@ -133,59 +133,17 @@ class mmit_newsmile extends CModule
 
     public function testInstallDB()
     {
-        $xmlClinic = simplexml_load_file(__DIR__ . '/xml/clinic.xml');
-        foreach ($xmlClinic->Value as $value)
-        {
-            NewSmile\ClinicTable::add([
-                'NAME' => $value->NAME
-            ]);
-        }
-        $xmlDoctor = simplexml_load_file(__DIR__ . '/xml/doctor.xml');
-        foreach ($xmlDoctor->Value as $value)
-        {
-            NewSmile\DoctorTable::add([
-                'NAME' => $value->NAME,
-                'COLOR' => $value->COLOR,
-                'USER_ID' => $value->USER_ID,
-                'CLINIC_ID' => $value->CLINIC_ID
-            ]);
-        }
-        $xmlPatient = simplexml_load_file(__DIR__ . '/xml/patientcard.xml');
-        foreach ($xmlPatient->Value as $value)
-        {
-            NewSmile\PatientCardTable::add([
-                'LAST_NAME' => $value->LAST_NAME,
-                'NAME' => $value->NAME,
-                'SECOND_NAME' => $value->SECOND_NAME,
-                'STATUS_ID' => $value->STATUS_ID,
-                'USER_ID' => $value->USER_ID,
-                'PERSONAL_PHONE' => $value->PERSONAL_PHONE,
-                'EMAIL' => $value->EMAIL
-            ]);
-        }
-        $xmlWorkChair = simplexml_load_file(__DIR__ . '/xml/workchair.xml');
-        foreach ($xmlWorkChair->Value as $value)
-        {
-            NewSmile\WorkChairTable::add([
-                'NAME' => $value->NAME,
-                'CLINIC_ID' => $value->CLINIC_ID,
-            ]);
-        }
-        $xmlStatusTooth = simplexml_load_file(__DIR__ . '/xml/statustooth.xml');
-        foreach ($xmlStatusTooth->Value as $value)
-        {
-            NewSmile\Status\ToothTable::add([
-                'NAME' => $value->NAME,
-                'CODE' => $value->CODE
-            ]);
-        }
+        $xmlStore = new NewSmile\XmlDbStore(__DIR__ . '/xml');
+        $xmlStore->load(NewSmile\ClinicTable::getEntity());
+        $xmlStore->load(NewSmile\DoctorTable::getEntity());
+        $xmlStore->load(NewSmile\WorkChairTable::getEntity());
+        $xmlStore->load(NewSmile\Status\ToothTable::getEntity());
+        $xmlStore->load(NewSmile\PatientCardTable::getEntity());
 
         NewSmile\ScheduleTemplateTable::addWeekSchedule(1);
         NewSmile\ScheduleTable::addWeekSchedule(date('Y-m-d'), 1);
         NewSmile\ScheduleTemplateTable::addWeekSchedule(2);
         NewSmile\ScheduleTable::addWeekSchedule(date('Y-m-d'), 2);
-
-
     }
 
     public function installAgents()
