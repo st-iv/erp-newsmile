@@ -335,8 +335,21 @@
                 var dayClass = '';
 
                 if (dayData){
-                    if (dayData.color){
-                        dayStyle = ' style="background-color: #' + dayData.color + ';"';
+                    if (dayData.color)
+                    {
+                        dayStyle = ' style="';
+
+                        if(dayData.color.BACKGROUND)
+                        {
+                            dayStyle += 'background-color: #' + dayData.color.BACKGROUND + ';';
+                        }
+
+                        if(dayData.color.TEXT)
+                        {
+                            dayStyle += 'color: #' + dayData.color.TEXT + ';';
+                        }
+
+                        dayStyle += '"';
                     }
                     if (dayData.timeFree || dayData.timeAvlble || dayData.patients){
                         dayTooltip += ' data-toggle="tooltip" data-html="true" title="';

@@ -38,16 +38,20 @@
         Ajax.registerLoadHandler(Ajax.getAreaCode($( "#left-calendar" )), this.handleAjaxUpdate.bind(this));
     };
 
-    window.Calendar.prototype.defineColor = function(freeTimePercent)
+    window.Calendar.prototype.getColor = function(freeTimePercent)
     {
-        var color = 'eaeaea';
+        var color = {
+            BACKGROUND: 'eaeaea',
+            TEXT: '454545'
+        };
+
         var percents = Object.keys(this.params.colors);
 
         for(var i=0; i < percents.length; i++)
         {
             if((i == (percents.length - 1)) || ((freeTimePercent >= percents[i]) && (freeTimePercent < percents[i+1])))
             {
-                color = this.params.colors[percents[i]];
+                color = $.extend(color, this.params.colors[percents[i]]);
                 break;
             }
         }
@@ -101,7 +105,7 @@
                     timeAvlble: General.Date.formatMinutes(curDateInfo['GENERAL_MINUTES']),
                     timeFree: General.Date.formatMinutes(curDateInfo['GENERAL_MINUTES'] - curDateInfo['ENGAGED_MINUTES']),
                     patients: curDateInfo['PATIENTS'],
-                    color: this.defineColor(100 * (curDateInfo['GENERAL_MINUTES'] - curDateInfo['ENGAGED_MINUTES']) / curDateInfo['GENERAL_MINUTES'])
+                    color: this.getColor(100 * (curDateInfo['GENERAL_MINUTES'] - curDateInfo['ENGAGED_MINUTES']) / curDateInfo['GENERAL_MINUTES'])
                 };
             }
         }

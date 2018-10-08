@@ -23,11 +23,25 @@ $APPLICATION->IncludeComponent(
     "",
     array(
         'COLORS' => array(
-            0 => '454545',
-            20 => 'ff3758',
-            40 => 'ffb637',
-            60 => 'eaed14',
-            80 => '73cc00',
+            0 => array(
+                'BACKGROUND' => '454545',
+                'TEXT' => 'fff'
+            ),
+            20 => array(
+                'BACKGROUND' => 'ff3758',
+                'TEXT' => 'fff'
+            ),
+            40 => array(
+                'BACKGROUND' => 'ffb637',
+                'TEXT' => 'fff'
+            ),
+            60 => array(
+                'BACKGROUND' => 'eaed14',
+            ),
+            80 => array(
+                'BACKGROUND' => '73cc00',
+                'TEXT' => 'fff'
+            )
         ),
         'FILTER' => $filter,
         'CALENDAR_DAY_AJAX_AREA' => 'calendar-day'
