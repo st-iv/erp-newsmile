@@ -147,34 +147,13 @@ class Helpers
         return substr($className, strrpos($className, '\\') + 1);
     }
 
-    public static function getAge(Date $birthDayParam)
+    public static function getCamelCase($snakeCaseStr)
     {
-        $birthDay = new \DateTime();
-        $birthDay->setTimestamp($birthDayParam->getTimestamp());
+        $snakeCaseStr = strtolower($snakeCaseStr);
 
-        if(!isset(static::$currentDate))
+        return preg_replace_callback('/(^|_)([a-z])/', function($matches)
         {
-            static::$currentDate = new \DateTime();
-        }
-
-        $dateDiff = static::$currentDate->diff($birthDay);
-
-        $yearsCount = $dateDiff->y;
-        $yearsCountMod = $yearsCount % 10;
-
-        if($yearsCountMod == 1)
-        {
-            $yearsCount .= ' год';
-        }
-        elseif (($yearsCountMod >= 2) && ($yearsCountMod <= 4))
-        {
-            $yearsCount .= ' года';
-        }
-        else
-        {
-            $yearsCount .=  ' лет';
-        }
-
-        return $yearsCount;
+            return strtoupper($matches[2]);
+        }, $snakeCaseStr);
     }
 }

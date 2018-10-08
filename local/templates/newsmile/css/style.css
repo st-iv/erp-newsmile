@@ -17,6 +17,7 @@ body>.container-fluid:first-child {
 	font-weight: 300;
 	color: #4f5965;
 	line-height: 25px;
+    width: 80px; /*ADDED*/
 }
 .header_search_form{
 	position: relative;
@@ -377,6 +378,11 @@ body.notifOpen .notif_amnt{
 	line-height: 20px;
 	font-size: 13px;
 }
+/* ADDED start */
+.notif_data_action:hover {
+	text-decoration: none;
+}
+/* ADDED end */
 .notif_data_action.notifClose{
 	padding-left: 30px;
 	background-image: url('../svg/notif_V.svg');

@@ -132,7 +132,7 @@
         data.DATE_FROM = startDate;
         data.DATE_TO = endDate;
 
-        Ajax.load(this.params.ajaxUrl, Ajax.getAreaCode($calendar), data, function()
+        Ajax.load(this.params.ajaxUrl, Ajax.getAreaCode($calendar), data, false, function()
         {
             $scrollKoef = (direction == 'top' ? 1 : -1);
             $calendar.customCalendar('scroll', $scrollKoef, unit)

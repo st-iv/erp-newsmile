@@ -46,6 +46,15 @@ $.extend(HeaderSearchTitle.prototype, {
                 _this.submit();
             }
         });
+
+        $(document).keyup(function(e)
+        {
+            if(e.which == 27)
+            {
+                _this.closeSearchPopup();
+            }
+        });
+
     },
 
     initScrollbars: function()

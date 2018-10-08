@@ -23,8 +23,11 @@ $APPLICATION->IncludeComponent(
     "",
     array(
         'COLORS' => array(
-            0 => 'ffb637',
-            50 => 'd2d512',
+            0 => '454545',
+            20 => 'ff3758',
+            40 => 'ffb637',
+            60 => 'eaed14',
+            80 => '73cc00',
         ),
         'FILTER' => $filter,
         'CALENDAR_DAY_AJAX_AREA' => 'calendar-day'

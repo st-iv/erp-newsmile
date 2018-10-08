@@ -43,10 +43,11 @@ var Ajax = (function()
 {
     var loadHandlers = {};
 
-    function load(url, areaCode, data = {}, successHandler)
+    function load(url, areaCode, data = {}, contentUpdateMethod = 'html', successHandler)
     {
         if(!areaCode) return;
 
+        // если были переданы сериализованные параметры - переводим в объект
         if(typeof data === 'string')
         {
             var serializedData = data;
@@ -61,6 +62,7 @@ var Ajax = (function()
 
         data.ajax = 'Y';
         data.area = areaCode;
+        data.sessid = General.sessid;
 
         console.log('Ajax.load data:');
         console.log(data);
@@ -72,34 +74,53 @@ var Ajax = (function()
             method: 'post',
             success: function(response)
             {
+                var contentHtml = '';
+                var $content;
+                var $container;
+
                 console.log('Ajax.load response:');
                 console.log(response );
 
                 if(response.success)
                 {
-                    if(response.content)
+                    // обновляем содержимое всех областей, содержимое которых пришло в ответе
+                    if(response.content && contentUpdateMethod)
                     {
                         for(var contentAreaCode in response.content)
                         {
-                            var $content = $('<div>' + response.content[contentAreaCode] + '</div>');
-                            var $container = $content.find('div[data-ajax-area=' + contentAreaCode + ']');
-                            var contentHtml = ($container.length ? $container.html() : response.content[contentAreaCode]);
-                            $('div[data-ajax-area="' + contentAreaCode + '"]').html(contentHtml);
+                            $content = $('<div>' + response.content[contentAreaCode] + '</div>');
+                            $container = $content.find('div[data-ajax-area=' + contentAreaCode + ']');
+                            contentHtml = ($container.length ? $container.html() : response.content[contentAreaCode]);
+
+                            var $targetContainer = $('div[data-ajax-area="' + contentAreaCode + '"]');
+                            $targetContainer[contentUpdateMethod](contentHtml);
                         }
                     }
 
+                    /* достаем html код из контейнера */
+                    contentHtml = '';
+
+                    if(response.content[areaCode])
+                    {
+                        $content = $('<div>' + response.content[areaCode] + '</div>');
+                        $container = $content.find('div[data-ajax-area=' + areaCode + ']');
+                        contentHtml = ($container.length ? $container.html() : response.content[areaCode]);
+                    }
+
+                    // запускаем зарегистрированные обработчики загрузки области с кодом areaCode
                     if(loadHandlers[areaCode])
                     {
                         loadHandlers[areaCode].forEach(function(handler)
                         {
-                            handler(response);
+                            handler(response, contentHtml);
                         });
                     }
-                }
 
-                if(typeof successHandler === 'function')
-                {
-                    successHandler(response);
+                    // запускаем обработчик успешной загрузки
+                    if(typeof successHandler === 'function')
+                    {
+                        successHandler(response, contentHtml);
+                    }
                 }
             }
         });

@@ -38,12 +38,14 @@ class mmit_newsmile extends CModule
         ModuleManager::registerModule($this->MODULE_ID);
         $this->installDB();
         $this->installAgents();
+        $this->registerDependences();
     }
 
     public function doUninstall()
     {
         $this->uninstallAgents();
         $this->uninstallDB();
+        $this->unRegisterDependences();
         ModuleManager::unRegisterModule($this->MODULE_ID);
     }
 
@@ -80,6 +82,8 @@ class mmit_newsmile extends CModule
             NewSmile\Service\PriceTable::getEntity()->createDbTable();
             NewSmile\Service\PriceHistoryTable::getEntity()->createDbTable();
             NewSmile\DoctorSpecializationTable::getEntity()->createDbTable();
+            NewSmile\Notice\TypeTable::getEntity()->createDbTable();
+            NewSmile\Notice\NoticeTable::getEntity()->createDbTable();
 
             NewSmile\VisitTable::createStatus();
             $this->testInstallDB();
@@ -197,6 +201,16 @@ class mmit_newsmile extends CModule
             30);
     }
 
+    public function registerDependences()
+    {
+        RegisterModuleDependences('pull', 'OnGetDependentModule', $this->MODULE_ID, 'Mmit\NewSmile\DependencesManager', 'getPullDependenceData');
+    }
+
+    public function unRegisterDependences()
+    {
+        UnRegisterModuleDependences('pull', 'OnGetDependentModule', $this->MODULE_ID, 'Mmit\NewSmile\DependencesManager', 'getPullDependenceData');
+    }
+
     public function uninstallDB()
     {
         if (Loader::includeModule($this->MODULE_ID))
@@ -230,6 +244,8 @@ class mmit_newsmile extends CModule
             $connection->dropTable(NewSmile\Service\PriceTable::getTableName());
             $connection->dropTable(NewSmile\Service\PriceHistoryTable::getTableName());
             $connection->dropTable(NewSmile\DoctorSpecializationTable::getTableName());
+            $connection->dropTable(NewSmile\Notice\TypeTable::getTableName());
+            $connection->dropTable(NewSmile\Notice\NoticeTable::getTableName());
         }
     }
 

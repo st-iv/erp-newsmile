@@ -9,7 +9,7 @@ foreach ($arResult['CATEGORIES'] as $categoryCode => &$category)
         foreach ($items as &$item)
         {
             $item['SEARCH_ENTRY'] = str_replace(array('<b>', '</b>'), array(' <span>', '</span> '), $item['SEARCH_ENTRY']);
-            $item['AGE'] = \Mmit\NewSmile\Helpers::getAge($item['PERSONAL_BIRTHDAY']);
+            $item['AGE'] = \Mmit\NewSmile\Date\Helper::getAge($item['PERSONAL_BIRTHDAY']);
             $item['FIO'] = \Mmit\NewSmile\Helpers::getFio($item['NAME'], $item['LAST_NAME'], $item['SECOND_NAME']);
 
             // объединение подкатегорий в подкатегорию MAIN для врачей

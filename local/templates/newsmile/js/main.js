@@ -18,6 +18,8 @@ $(document).ready(function(){
 		}
 	});
 
+	/*
+	MOVED TO local/templates/newsmile/components/newSmile/notice.list/main/script.js
 	function hideNotifItems($items){
 		$items.each(function(){
 			var $this = $(this);
@@ -35,8 +37,8 @@ $(document).ready(function(){
 				$this.removeClass('niHidden');
 			}
 		});
-	}
-	$('.notif_content .notif_tab').on('click', function(){
+	}*/
+	/*$('.notif_content .notif_tab').on('click', function(){
 		var $this = $(this),
 		dataType = $this.data('select'),
 		$itemsForShow,
@@ -54,17 +56,17 @@ $(document).ready(function(){
 			}
 			showNotifItems($itemsForShow);
 		}
-	});
+	});*/
 
-	$('.notif_item .notif_close').on('click', function(){
+	/*$('.notif_item .notif_close').on('click', function(){
 		$(this).closest('.notif_item').remove();
-	});	
+	});	*/
 
-	$(".notif_items").mCustomScrollbar({ // DELETED ", .search_res_cont"
+	/*$(".notif_items").mCustomScrollbar({ // DELETED ", .search_res_cont"
 		autoHideScrollbar: false
-	});
+	});*/
 
-	$('.notif_bell, .notif_content_close').on('click', function(){
+	/*$('.notif_bell, .notif_content_close').on('click', function(){
 		var $menu = $('.notif_content');
 
 		$('body').toggleClass('notifOpen');
@@ -78,7 +80,7 @@ $(document).ready(function(){
 		} else {
 			$(document).off('mousedown.notif');
 		}
-	});
+	});*/
 
 	//MOVED TO local/templates/newsmile/components/newSmile/search.title/header/script.js
 	/*$('.search_sbmt').on('click', function(){

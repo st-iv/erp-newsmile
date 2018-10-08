@@ -1,5 +1,8 @@
 var General = (function()
 {
+    var sessid = $('body').data('sessid');
+    var postFormAction = $('body').data('post-form-action');
+
     function getParamsObject(serializedParams)
     {
         var result = {};
@@ -49,6 +52,8 @@ var General = (function()
 
     return {
         Date: Date,
-        getParamsObject: getParamsObject
+        getParamsObject: getParamsObject,
+        sessid: sessid,
+        postFormAction: postFormAction
     }
 })();
