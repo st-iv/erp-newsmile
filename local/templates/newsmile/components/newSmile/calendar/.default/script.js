@@ -24,6 +24,7 @@
             dateTo: this.params.endDay,
             curDate: this.params.curDay,
             defDateColor: 'eaeaea',
+            defDateTextColor: '454545',
             dateData: dateData,
             callbacks: {
                 onScrollEnd: this.loadNewDates.bind(_this)

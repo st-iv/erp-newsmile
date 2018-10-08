@@ -218,20 +218,26 @@
                     var dateData;
                     var date = $(this).data('date');
                     var curDateMoment = moment(date);
+                    var $dayContent = $(this).find('.custCalendar_day_content');
+
                     dateData = options['dateData'][date];
+
 
                     if(dateData)
                     {
                         $(this).attr('title', _this.getTooltipContent(dateData));
                         $(this).addClass('day_tooltip');
-                        $(this).find('.custCalendar_day_content').css('background-color', '#' + (dateData['color'] ? dateData['color'] : _this.defDateColor));
+
+                        $dayContent.css('background-color', '#' + ((dateData.color && dateData.color.BACKGROUND) ? dateData.color : _this.defDateColor));
+                        $dayContent.css('color', '#' + ((dateData.color && dateData.color.TEXT) ? dateData.color : _this.defDateTextColor));
                     }
                     else if(curDateMoment.isBetween(dateFrom, dateTo) || curDateMoment.isSame(dateFrom) || curDateMoment.isSame(dateTo))
                     {
                         $(this).attr('title', '');
                         $(this).data('original-title', '');
                         $(this).removeClass('day_tooltip');
-                        $(this).find('.custCalendar_day_content').css('background-color', '#' + _this.settings.defDateColor);
+                        $dayContent.css('background-color', '#' + _this.settings.defDateColor);
+                        $dayContent.css('color', '#' + _this.settings.defDateTextColor);
                     }
                 });
 
