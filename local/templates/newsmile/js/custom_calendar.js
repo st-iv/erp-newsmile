@@ -275,7 +275,14 @@
                     if(newDaysHtml)
                     {
                         $body.prepend(newDaysHtml);
-                        //this.scroll(-newWeeksCount, 'week', true);
+
+                        // После добавления новых недель перемещаем скролл на прежнее место.
+                        // Это делается не через метод плагина скрола, чтобы пользователь не успел заметить перемещение
+
+                        var $scrollCont =  $(this.element).find('.mCSB_container');
+                        var newTop = parseInt($scrollCont.css('top')) - 41 * newWeeksCount;
+                        $scrollCont.css('top', newTop);
+
                         this.settings.dateFrom = options.dateFrom;
                     }
                 }
