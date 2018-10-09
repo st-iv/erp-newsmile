@@ -3,6 +3,7 @@
 namespace Mmit\NewSmile;
 
 use Bitrix\Main\Entity;
+use Bitrix\Main\ORM\Fields\Relations\OneToMany;
 use Mmit\NewSmile;
 
 class MaterialGroupTable extends Entity\DataManager
@@ -48,6 +49,7 @@ class MaterialGroupTable extends Entity\DataManager
             new Entity\IntegerField('GROUP_ID', array(
                 'title' => 'Родительская Группа'
             )),
+            new OneToMany('MATERIALS', MaterialTable::class, 'GROUP')
         );
     }
 
