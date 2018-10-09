@@ -39,20 +39,20 @@
         Ajax.registerLoadHandler(Ajax.getAreaCode($( "#left-calendar" )), this.handleAjaxUpdate.bind(this));
     };
 
-    window.Calendar.prototype.getColor = function(freeTimePercent)
+    window.Calendar.prototype.getColor = function(freeMinutes)
     {
         var color = {
             BACKGROUND: 'eaeaea',
             TEXT: '454545'
         };
 
-        var percents = Object.keys(this.params.colors);
+        var minutesBounds = Object.keys(this.params.colors);
 
-        for(var i=0; i < percents.length; i++)
+        for(var i=0; i < minutesBounds.length; i++)
         {
-            if((i == (percents.length - 1)) || ((freeTimePercent >= percents[i]) && (freeTimePercent < percents[i+1])))
+            if((i == (minutesBounds.length - 1)) || ((freeMinutes >= minutesBounds[i]) && (freeMinutes < minutesBounds[i+1])))
             {
-                color = $.extend(color, this.params.colors[percents[i]]);
+                color = $.extend(color, this.params.colors[minutesBounds[i]]);
                 break;
             }
         }
@@ -106,7 +106,7 @@
                     timeAvlble: General.Date.formatMinutes(curDateInfo['GENERAL_MINUTES']),
                     timeFree: General.Date.formatMinutes(curDateInfo['GENERAL_MINUTES'] - curDateInfo['ENGAGED_MINUTES']),
                     patients: curDateInfo['PATIENTS'],
-                    color: this.getColor(100 * (curDateInfo['GENERAL_MINUTES'] - curDateInfo['ENGAGED_MINUTES']) / curDateInfo['GENERAL_MINUTES'])
+                    color: this.getColor(curDateInfo['GENERAL_MINUTES'] - curDateInfo['ENGAGED_MINUTES'])
                 };
             }
         }

@@ -27,18 +27,18 @@ $APPLICATION->IncludeComponent(
                 'BACKGROUND' => '454545',
                 'TEXT' => 'fff'
             ),
-            20 => array(
+            30 => array(
                 'BACKGROUND' => 'ff3758',
                 'TEXT' => 'fff'
             ),
-            40 => array(
+            90 => array(
                 'BACKGROUND' => 'ffb637',
                 'TEXT' => 'fff'
             ),
-            60 => array(
+            150 => array(
                 'BACKGROUND' => 'eaed14',
             ),
-            80 => array(
+            270 => array(
                 'BACKGROUND' => '73cc00',
                 'TEXT' => 'fff'
             )
@@ -63,7 +63,6 @@ NewSmile\Ajax::finish();
 </div>
 <?
 NewSmile\Ajax::finish();
-
 
 require($_SERVER['DOCUMENT_ROOT'].'/bitrix/footer.php');
 ?>

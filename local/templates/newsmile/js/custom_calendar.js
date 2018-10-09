@@ -228,8 +228,8 @@
                         $(this).attr('title', _this.getTooltipContent(dateData));
                         $(this).addClass('day_tooltip');
 
-                        $dayContent.css('background-color', '#' + ((dateData.color && dateData.color.BACKGROUND) ? dateData.color : _this.defDateColor));
-                        $dayContent.css('color', '#' + ((dateData.color && dateData.color.TEXT) ? dateData.color : _this.defDateTextColor));
+                        $dayContent.css('background-color', '#' + ((dateData.color && dateData.color.BACKGROUND) ? dateData.color.BACKGROUND : _this.defDateColor));
+                        $dayContent.css('color', '#' + ((dateData.color && dateData.color.TEXT) ? dateData.color.TEXT : _this.defDateTextColor));
                     }
                     else if(curDateMoment.isBetween(dateFrom, dateTo) || curDateMoment.isSame(dateFrom) || curDateMoment.isSame(dateTo))
                     {
