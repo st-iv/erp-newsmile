@@ -48,7 +48,8 @@ $.extend(NoticeList.prototype, {
         });
 
         // init tabs
-        this.$popup.find('.notif_tab').on('click', function(){
+        this.$popup.find('.notif_tab').on('click', function()
+        {
             var $this = $(this),
                 dataType = $this.data('select'),
                 $itemsForShow,
@@ -72,8 +73,9 @@ $.extend(NoticeList.prototype, {
         });
 
         //init notice delete
-        $('.notif_item .notif_close').on('click', function(){
-            _this.deleteNotice($(this).closest('.notif_item'));
+        $(this.$noticeList).on('click', '.notif_item .notif_close', function(e)
+        {
+            _this.deleteNotice($(e.target).closest('.notif_item'));
         });
 
         //init finalize action
