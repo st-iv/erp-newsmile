@@ -33,7 +33,7 @@ class Helper
         $monthIndex = date('n', $time);
         $format = str_replace('F_ru_gen', static::$ruMonthNamesGenitive[$monthIndex-1], $format);
 
-        return date($format);
+        return date($format, $time);
     }
 
     public static function getAge(Date $birthDayParam)
@@ -114,14 +114,7 @@ class Helper
         }
         elseif ($diff->d == 1)
         {
-            if($diff->invert)
-            {
-                $result = 'Завтра';
-            }
-            else
-            {
-                $result = 'Вчера';
-            }
+            $result = ($diff->invert ? 'Вчера' : 'Завтра');
         }
         else
         {
