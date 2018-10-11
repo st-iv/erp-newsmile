@@ -3,7 +3,6 @@
     {
         this.params = params;
         this.calendarFilter = calendarFilter;
-        this.loadWeeksCount = 4;
 
         var _this = this;
 
@@ -118,18 +117,19 @@
     {
         var $calendar = $( "#left-calendar" );
         var startDate, endDate;
+        var loadWeeksCount = ((unit == 'week') ? 1 : 4);
 
         if(direction == 'top')
         {
             endDate = $('#left-calendar').customCalendar('firstDate');
-            startDate = moment(endDate).add('-' + this.loadWeeksCount, 'w').format('YYYY-MM-DD');
+            startDate = moment(endDate).add('-' + loadWeeksCount, 'w').format('YYYY-MM-DD');
             this.calendarFilter.setFilterParam('DATE_FROM', startDate);
         }
         else
         {
             startDateMoment = moment($('#left-calendar').customCalendar('lastDate')).add('+1', 'd');
             startDate = startDateMoment.format('YYYY-MM-DD');
-            endDate = startDateMoment.add('+' + this.loadWeeksCount, 'w').add('-1', 'd').format('YYYY-MM-DD');
+            endDate = startDateMoment.add('+' + loadWeeksCount - 1, 'w').add('-1', 'd').format('YYYY-MM-DD');
             this.calendarFilter.setFilterParam('DATE_TO', endDate);
         }
 
