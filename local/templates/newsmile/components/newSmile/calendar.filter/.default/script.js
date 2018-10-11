@@ -3,6 +3,13 @@
     {
         this.params = params;
         this.$filterBlock = $('.shld_filter');
+        this.$form = this.$filterBlock.closest('form');
+        this.$submit = this.$filterBlock.find('.shld_btn_acc');
+        this.$reset = this.$filterBlock.find('.shld_btn_dcl');
+
+        this.requestedSnapshot = '';
+        this.defaultSnapshot = '';
+
         this.init();
     };
 
@@ -52,18 +59,32 @@
                 }
             });
 
-            $("#doctor").iconselectmenu().iconselectmenu("menuWidget");
+            $("#doctor").iconselectmenu({
+                select: _this.onFilterUpdate.bind(_this)
+            }).iconselectmenu("menuWidget");
 
-            $("#speс").selectmenu();
+            $("#speс").selectmenu({
+                select: _this.onFilterUpdate.bind(_this)
+            });
 
-            _this.$filterBlock.find('input[type=reset]').click(function(e)
+
+            _this.$reset.click(function(e)
             {
-                setTimeout(function(){
-                    _this.reset();
-                }, 300)
+                setTimeout(_this.reset.bind(_this), 100);
+            });
+
+            //init form ajax load
+            _this.$form.submit(function(e)
+            {
+                _this.submit();
+                e.preventDefault();
             });
 
             _this.initTimeRange();
+
+            // делаем снимок формы как актуальное состояние (которое не нужно отправлять на сервер)
+            _this.defaultSnapshot = _this.getSnapshot();
+            _this.requestedSnapshot = _this.defaultSnapshot;
         });
     };
 
@@ -82,6 +103,7 @@
             slide: function(event,ui)
             {
                 _this.setTimeRange(ui.values[0], ui.values[1]);
+                _this.onFilterUpdate();
             }
         });
 
@@ -106,7 +128,9 @@
 
         this.setTimeRange(minRange, maxRange);
 
-        this.$filterBlock.parents('form').submit();
+        this.submit();
+        this.hideReset();
+        this.hideSubmit();
     };
 
     window.CalendarFilter.prototype.setTimeRange = function(minRange, maxRange)
@@ -137,4 +161,133 @@
         var hours = Number(strTimeArray[0]);
         return (Number(strTimeArray[1]) / 15) + hours * 4;
     };
+
+    /**
+     *
+     */
+    window.CalendarFilter.prototype.submit = function()
+    {
+        var self = this;
+        var data = this.$form.serialize();
+        var snapshot = self.getSnapshot();
+
+        Ajax.load(this.$form.attr('action'), Ajax.getAreaCode(this.$form), data, 'html', function()
+        {
+            self.requestedSnapshot = snapshot;
+            self.onFilterUpdate();
+        });
+    };
+
+    /**
+     * Обработчик изменения полей фильтра
+     */
+    window.CalendarFilter.prototype.onFilterUpdate = function()
+    {
+        var currentSnapshot = this.getSnapshot();
+
+        if(this.defaultSnapshot === currentSnapshot)
+        {
+            this.onDataUnChangeDefault();
+        }
+        else
+        {
+            this.onDataChangeDefault();
+        }
+
+        if(this.requestedSnapshot === currentSnapshot)
+        {
+            this.onDataUnChange();
+        }
+        else
+        {
+            this.onDataChange();
+        }
+    };
+
+    /**
+     * Обработчик изменения конфигурации фильтра
+     */
+    window.CalendarFilter.prototype.onDataChange = function()
+    {
+        this.showSubmit();
+    };
+
+    /**
+     * Обработчик отмены изменения конфигурации фильтра. Срабатывает, когда фильтр приводится в ту же конфигурацию, которая
+     * была отправлена на сервер в последний раз
+     */
+    window.CalendarFilter.prototype.onDataUnChange = function()
+    {
+        this.hideSubmit();
+    };
+
+    /**
+     * Обработчик изменения конфигурации фильтра с установленной изначально при загрузке страницы
+     */
+    window.CalendarFilter.prototype.onDataChangeDefault = function()
+    {
+        this.showReset();
+    };
+
+    /**
+     * Обработчик отмены изменения конфигурации фильтра с установленной изначально при загрузке страницы.
+     * Срабатывает, когда фильтр приводится в ту же конфигурацию, которая была изначально
+     */
+    window.CalendarFilter.prototype.onDataUnChangeDefault = function()
+    {
+        this.hideReset();
+    };
+
+    window.CalendarFilter.prototype.showReset = function()
+    {
+        this.$reset.stop().fadeIn(200);
+    };
+    window.CalendarFilter.prototype.hideReset = function()
+    {
+        this.$reset.stop().fadeOut(200);
+    };
+
+    window.CalendarFilter.prototype.showSubmit = function()
+    {
+        this.$submit.stop().fadeIn(200);
+    };
+    window.CalendarFilter.prototype.hideSubmit = function()
+    {
+        this.$submit.stop().fadeOut(200);
+    };
+
+    /**
+     * Возвращает "снимок" формы - сериализованная строка тех параметров фильтра, которые может изменять пользователь через поля
+     * фильтра. Используется для скрытия / показа кнопок фильтра
+     * @returns {string}
+     */
+    window.CalendarFilter.prototype.getSnapshot = function()
+    {
+        var snapshot = '';
+
+        this.$form.find('select').each(function()
+        {
+            var $this = $(this);
+
+            if($this.val())
+            {
+                snapshot += $this.attr('name') + '=' + $this.val() + '&';
+            }
+        });
+
+        var timeFrom = this.$form.find('input[name=TIME_FROM]').val();
+        if(timeFrom)
+        {
+            snapshot += 'TIME_FROM=' + timeFrom + '&';
+        }
+
+        var timeTo = this.$form.find('input[name=TIME_TO]').val();
+        if(timeTo)
+        {
+            snapshot += 'TIME_TO=' + timeTo + '&';
+        }
+
+        return snapshot;
+    };
+
 })();

@@ -1,5 +1,5 @@
 <?if(!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED !== true) die();?>
-<form action="<?=POST_FORM_ACTION_URI?>" class="js-ajax-load" data-ajax-area="calendar"
+<form action="<?=POST_FORM_ACTION_URI?>" data-ajax-area="calendar"
       id="main-calendar-filter">
     <div class="row shld_filter">
         <div class="shld_filter_title">Расписание</div>
@@ -13,7 +13,7 @@
             </select>
 
             <select name="DOCTOR" id="doctor">
-                <option  data-color="fff" disabled selected>Врач</option>
+                <option  data-color="fff" disabled selected value="">Врач</option>
                 <option  data-color="fff" value="">Любой</option>
 
                 <?foreach ($arResult['DOCTORS'] as $doctor):?>
@@ -34,8 +34,8 @@
             <input type="hidden" name="DATE_FROM" value="">
             <input type="hidden" name="DATE_TO" value="">
 
-            <input class="shld_btn_dcl" type="reset" value="">
-            <input class="shld_btn_acc" type="submit" value="">
+            <input class="shld_btn_dcl" type="reset" value="" style="display: none;">
+            <input class="shld_btn_acc" type="submit" value="" style="display: none;">
     </div>
 </form>
 
