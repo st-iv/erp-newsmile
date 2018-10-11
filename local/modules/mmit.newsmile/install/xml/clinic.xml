@@ -1,15 +1,2 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Values>
-    <Value>
-        <ID>1</ID>
-        <NAME>Клиника 1</NAME>
-    </Value>
-    <Value>
-        <ID>2</ID>
-        <NAME>Клиника 2</NAME>
-    </Value>
-    <Value>
-        <ID>3</ID>
-        <NAME>Клиника 3</NAME>
-    </Value>
-</Values>
+<items><item><NAME>Клиника 1</NAME></item><item><NAME>Клиника 2</NAME></item><item><NAME>Клиника 3</NAME></item></items>

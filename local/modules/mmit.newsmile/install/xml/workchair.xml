@@ -1,28 +1,2 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Values>
-    <Value>
-        <ID>1</ID>
-        <NAME>Кресло 1</NAME>
-        <CLINIC_ID>1</CLINIC_ID>
-    </Value>
-    <Value>
-        <ID>2</ID>
-        <NAME>Кресло 2</NAME>
-        <CLINIC_ID>1</CLINIC_ID>
-    </Value>
-    <Value>
-        <ID>3</ID>
-        <NAME>Кресло 3</NAME>
-        <CLINIC_ID>1</CLINIC_ID>
-    </Value>
-    <Value>
-        <ID>4</ID>
-        <NAME>Кресло 1</NAME>
-        <CLINIC_ID>2</CLINIC_ID>
-    </Value>
-    <Value>
-        <ID>5</ID>
-        <NAME>Кресло 2</NAME>
-        <CLINIC_ID>2</CLINIC_ID>
-    </Value>
-</Values>
+<items><item><ID>1</ID><NAME>Кресло 1</NAME><CLINIC_ID>1</CLINIC_ID></item><item><ID>2</ID><NAME>Кресло 2</NAME><CLINIC_ID>1</CLINIC_ID></item><item><ID>3</ID><NAME>Кресло 3</NAME><CLINIC_ID>1</CLINIC_ID></item><item><ID>4</ID><NAME>Кресло 1</NAME><CLINIC_ID>2</CLINIC_ID></item><item><ID>5</ID><NAME>Кресло 2</NAME><CLINIC_ID>2</CLINIC_ID></item></items>
