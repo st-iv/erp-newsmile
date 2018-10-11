@@ -1,0 +1,2 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<items><item><ID>1</ID><CODE>VISIT_FINISHED</CODE><TITLE>Прием закончился</TITLE><TEXT>Рассчитайте пациента</TEXT><GROUP>VISIT</GROUP></item><item><ID>2</ID><CODE>BOSSES_UNHAPPY</CODE><TITLE>Начальство недовольно</TITLE><TEXT>Плохо работаешь, #INSULT#</TEXT><GROUP>BOSSES</GROUP></item><item><ID>3</ID><CODE>BAD_DOCUMENTS</CODE><TITLE>Документы не прошли проверку</TITLE><TEXT>Не прошли проверку: #DOCUMENTS#</TEXT><GROUP>SYSTEM</GROUP></item></items>
