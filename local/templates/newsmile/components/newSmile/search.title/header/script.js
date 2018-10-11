@@ -40,11 +40,7 @@ $.extend(HeaderSearchTitle.prototype, {
         this.$input.on('input', function()
         {
             _this.bInputUpdated = true;
-
-            if(_this.isPopupOpened())
-            {
-                _this.submit();
-            }
+            _this.submit();
         });
 
         $(document).keyup(function(e)
