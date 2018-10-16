@@ -14,7 +14,8 @@ use Bitrix\Main\Loader,
     Bitrix\Main\Config\Option,
     Mmit\NewSmile\VisitTable,
     Mmit\NewSmile\ScheduleTemplateTable,
-    Mmit\NewSmile\WorkChairTable;
+    Mmit\NewSmile\WorkChairTable,
+    Mmit\NewSmile\MainDoctorTemplateTable;
 
 if (!Loader::includeModule('mmit.newSmile')) {
     echo json_encode(array(
@@ -56,13 +57,45 @@ if (isset($_REQUEST['action'])) {
                 && isset($_REQUEST['doctor_id'])
                 && isset($_REQUEST['work_chair'])) {
 
+                $ts = strtotime($_REQUEST['time']);
+                $bitrixDate = Date::createFromTimestamp($ts);
+
+                $isSecondDayHalf = (date('H:i', $ts) != '09:00');
+
+
                 $isResult = ScheduleTemplateTable::appointDoctorHalfDay(strtotime($_REQUEST['time']), $_REQUEST['doctor_id'], $_REQUEST['work_chair'],$_SESSION['CLINIC_ID']);
 
-                if ($isResult) {
-                    echo json_encode(array(
-                        'result' => 'success'
-                    ));
+
+                $dbMainDoctor = MainDoctorTemplateTable::getList([
+                    'filter' => [
+                        'WORK_CHAIR_ID' => (int)$_REQUEST['work_chair'],
+                        'DATE' => $bitrixDate,
+                        'SECOND_DAY_HALF' => $isSecondDayHalf,
+                        'CLINIC_ID' => \Mmit\NewSmile\Config::getClinicId()
+                    ],
+                    'select' => ['ID']
+                ]);
+
+                if($mainDoctor = $dbMainDoctor->fetch())
+                {
+                    MainDoctorTemplateTable::update($mainDoctor['ID'], [
+                        'DOCTOR_ID' => (int)$_REQUEST['doctor_id']
+                    ]);
                 }
+                else
+                {
+                    MainDoctorTemplateTable::add([
+                        'WORK_CHAIR_ID' => (int)$_REQUEST['work_chair'],
+                        'DATE' => $bitrixDate,
+                        'SECOND_DAY_HALF' => $isSecondDayHalf,
+                        'DOCTOR_ID' => (int)$_REQUEST['doctor_id'],
+                        'CLINIC_ID' => \Mmit\NewSmile\Config::getClinicId()
+                    ]);
+                }
+
+                echo json_encode(array(
+                    'result' => 'success'
+                ));
             }
             break;
         case 'addVisit':

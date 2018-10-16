@@ -48,17 +48,6 @@ class ScheduleTable extends Entity\DataManager
                     'title' => 'Врач'
                 )
             ),
-            new Entity\IntegerField('MAIN_DOCTOR_ID', array(
-                'title' => 'DOCTOR_ID',
-                'default_value' => 0
-            )),
-            new Entity\ReferenceField('MAIN_DOCTOR',
-                'Mmit\NewSmile\Doctor',
-                array('=this.MAIN_DOCTOR_ID' => 'ref.ID'),
-                array(
-                    'title' => 'Врач'
-                )
-            ),
             new Entity\IntegerField('WORK_CHAIR_ID', array(
                 'title' => 'WORK_CHAIR_ID',
             )),
@@ -80,13 +69,6 @@ class ScheduleTable extends Entity\DataManager
                     'title' => 'Клиника'
                 )
             ),
-            /*delete*/
-            new Entity\StringField('WORK',array(
-                'title' => 'Рабочее время',
-                'size' => 1,
-                'default_value' => 'Y'
-            )),
-            /*end*/
             new Entity\IntegerField('PATIENT_ID', array(
                 'title' => 'PATIENT_ID',
             )),
@@ -162,22 +144,34 @@ class ScheduleTable extends Entity\DataManager
             $dateStart = date('Y-m-d', strtotime('monday this week', strtotime($dateStart)));
         }
 
+        /*  подготовка фильтра по расписанию  */
+
+        // фильтр шаблона расписания на нечетную неделю
         $differenceTime = strtotime($dateStart) - strtotime(ScheduleTemplateTable::DEFAULT_START_DATE);
-        $arFields = [
+        $arFilter = [
             'CLINIC_ID' => $clinicID,
             '>=TIME' => new DateTime(ScheduleTemplateTable::DEFAULT_START_DATE,'Y-m-d'),
             '<=TIME' => new DateTime(date('Y-m-d', strtotime('monday next week', strtotime(ScheduleTemplateTable::DEFAULT_START_DATE))),'Y-m-d'),
         ];
-        /* проверка четной недели */
+
+        // фильтр шаблона расписания на четную неделю
         if (date('W', strtotime($dateStart)) % 2 == 0) {
             $differenceTime = strtotime($dateStart) - strtotime(ScheduleTemplateTable::DEFAULT_START_DATE_EVEN);
-            $arFields = [
+            $arFilter = [
                 'CLINIC_ID' => $clinicID,
                 '>=TIME' => new DateTime(ScheduleTemplateTable::DEFAULT_START_DATE_EVEN,'Y-m-d'),
                 '<=TIME' => new DateTime(date('Y-m-d', strtotime('monday next week', strtotime(ScheduleTemplateTable::DEFAULT_START_DATE_EVEN))),'Y-m-d'),
             ];
         }
 
+        // фильтр шаблона main doctors
+        $arMainDoctorsFilter = [
+            'CLINIC_ID' => $clinicID,
+            '>=DATE' => Date::createFromTimestamp($arFilter['>=TIME']->getTimestamp()),
+            '<=DATE' => Date::createFromTimestamp($arFilter['<=TIME']->getTimestamp())
+        ];
+
+        /* проверка наличия расписания на указанную неделю */
         $rsSchedule = self::getList([
             'filter' => [
                 'CLINIC_ID' => $clinicID,
@@ -189,8 +183,10 @@ class ScheduleTable extends Entity\DataManager
             return false;
         }
 
+        /* добавление расписания по шаблону */
+
         $rsScheduleTemplate = ScheduleTemplateTable::getList(array(
-            'filter' => $arFields
+            'filter' => $arFilter
         ));
         while ($arScheduleTemplate = $rsScheduleTemplate->fetch())
         {
@@ -200,65 +196,29 @@ class ScheduleTable extends Entity\DataManager
             $arFields = array(
                 'TIME' => new DateTime($time, 'Y-m-d H:i'),
                 'DOCTOR_ID' => $arScheduleTemplate['DOCTOR_ID'],
-                'MAIN_DOCTOR_ID' => $arScheduleTemplate['MAIN_DOCTOR_ID'],
                 'WORK_CHAIR_ID' => $arScheduleTemplate['WORK_CHAIR_ID'],
                 'CLINIC_ID' => $arScheduleTemplate['CLINIC_ID'],
             );
             self::add($arFields);
         }
-    }
 
-    /**
-     * Назначает врача на пол рабочего дня в расписании
-     *
-     * @param int $dateTime - время начала половины рабочего дня
-     * @param int $doctorID
-     * @param int $workChair
-     * @param int $clinicID
-     *
-     * @return bool
-     */
-    public static function appointDoctorHalfDay($dateTime, $doctorID, $workChair, $clinicID = 1)
-    {
-        if (date('H:i', $dateTime) == '09:00') {
-            $timeStart = new DateTime(date('d.m.Y H:i', $dateTime));
-            $timeEnd = new DateTime(date('d.m.Y 15:00', $dateTime));
-        } else {
-            $timeStart = new DateTime(date('d.m.Y H:i', $dateTime));
-            $timeEnd = new DateTime(date('d.m.Y 21:00', $dateTime));
-        }
-        $rsSchedule = self::getList(array(
-            'filter' => array(
-                '>=TIME' => $timeStart,
-                '<TIME' => $timeEnd,
-                'WORK_CHAIR_ID' => $workChair,
-                'CLINIC_ID' => $clinicID,
-            ),
-            'select' => array('ID', 'TIME')
+        /* добавление основных врачей по шаблону */
+
+        $rsMainDoctorTemplate = MainDoctorTemplateTable::getList(array(
+            'filter' => $arMainDoctorsFilter,
         ));
-        $arResult = array();
-        while ($arSchedule = $rsSchedule->fetch()) {
-            $arResult[$arSchedule['TIME']->format('H:i')] = $arSchedule['ID'];
-        }
-        $timeIndex = $dateTime;
-        while ($timeIndex < $timeEnd->getTimestamp())
+
+        while($mainDoctorTemplate = $rsMainDoctorTemplate->fetch())
         {
-            if (isset($arResult[date('H:i', $timeIndex)])) {
-                self::update(
-                    $arResult[date('H:i', $timeIndex)],
-                    array(
-                        'MAIN_DOCTOR_ID' => $doctorID
-                    )
-                );
-            } else {
-                self::add(array(
-                    'TIME' => new DateTime(date('d.m.Y H:i', $timeIndex)),
-                    'MAIN_DOCTOR_ID' => $doctorID,
-                    'WORK_CHAIR_ID' => $workChair,
-                    'CLINIC_ID' => $clinicID,
-                ));
-            }
-            $timeIndex += self::TIME_15_MINUTES;
+            $dateTs = $mainDoctorTemplate['DATE']->getTimestamp() + $differenceTime;
+
+            $fields = $mainDoctorTemplate;
+            $fields['DATE'] = Date::createFromTimestamp($dateTs);
+            $fields['SECOND_DAY_HALF'] = $mainDoctorTemplate['SECOND_DAY_HALF'] == true;
+
+            unset($fields['ID']);
+
+            MainDoctorTable::add($fields);
         }
         return true;
     }

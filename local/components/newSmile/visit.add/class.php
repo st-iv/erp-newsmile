@@ -53,7 +53,6 @@ class VisitAddComponent extends \CBitrixComponent
                         '>=TIME' => $arFiled['TIME_START'],
                         '<TIME' => $arFiled['TIME_END'],
                         'WORK_CHAIR_ID' => $arFiled['WORK_CHAIR_ID'],
-                        'WORK' => 'Y',
                         'PATIENT_ID' => false
                     )
                 ));

@@ -21,13 +21,19 @@ class XmlDbStore
     /**
      * XmlDbStore constructor.
      *
-     * @param string $xmlDir - путь к директории с xml файлами, с которыми будет работать объект
+     * @param string $xmlDir - путь к директории с xml файлами, с которыми будет работать объект. По умолчанию - корневая
+     * директория сервера
      *
      * @throws FileNotFoundException
      * @throws \Bitrix\Main\LoaderException
      */
-    public function __construct($xmlDir)
+    public function __construct($xmlDir = null)
     {
+        if($xmlDir === null)
+        {
+            $xmlDir = $_SERVER['DOCUMENT_ROOT'];
+        }
+
         if(file_exists($xmlDir))
         {
             $this->baseDir = $xmlDir;

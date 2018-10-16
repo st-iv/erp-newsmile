@@ -50,17 +50,6 @@ class ScheduleTemplateTable extends Entity\DataManager
                     'title' => 'Врач'
                 )
             ),
-            new Entity\IntegerField('MAIN_DOCTOR_ID', array(
-                'title' => 'DOCTOR_ID',
-                'default_value' => 0
-            )),
-            new Entity\ReferenceField('MAIN_DOCTOR',
-                'Mmit\NewSmile\Doctor',
-                array('=this.MAIN_DOCTOR_ID' => 'ref.ID'),
-                array(
-                    'title' => 'Врач'
-                )
-            ),
             new Entity\IntegerField('WORK_CHAIR_ID', array(
                 'title' => 'WORK_CHAIR_ID',
             )),

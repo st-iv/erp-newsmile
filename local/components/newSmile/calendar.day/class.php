@@ -78,7 +78,6 @@ class CalendarDayComponent extends \CBitrixComponent
                 'ID',
                 'TIME',
                 'UF_DOCTOR_' => 'DOCTOR',
-                'UF_MAIN_DOCTOR_' => 'MAIN_DOCTOR',
                 'WORK_CHAIR_ID',
                 'CLINIC_ID',
                 'PATIENT_ID'
@@ -212,6 +211,31 @@ class CalendarDayComponent extends \CBitrixComponent
         while ($arDoctor = $rsDoctor->fetch())
         {
             $this->arResult['DOCTORS'][$arDoctor['ID']] = $arDoctor;
+        }
+
+        /* запрашиваем main doctors */
+
+        foreach ($this->arResult['WORK_CHAIR'] as &$workChair)
+        {
+            $workChair['MAIN_DOCTORS'] = [false, false];
+        }
+
+        unset($workChair);
+
+        if($this->arResult['DOCTORS'])
+        {
+            $rsMainDoctors = NewSmile\MainDoctorTable::getList(array(
+                'filter' => array(
+                    'DOCTOR_ID' => array_keys($this->arResult['DOCTORS']), // так мы косвенно фильтруем по id клиники
+                    'DATE' => Date::createFromPhp($this->thisDateTime)
+                ),
+                'select' => array('DOCTOR_ID', 'WORK_CHAIR_ID', 'SECOND_DAY_HALF'),
+            ));
+
+            while($mainDoctor = $rsMainDoctors->fetch())
+            {
+                $this->arResult['WORK_CHAIR'][$mainDoctor['WORK_CHAIR_ID']]['MAIN_DOCTORS'][(int)$mainDoctor['SECOND_DAY_HALF']] = $mainDoctor['DOCTOR_ID'];
+            }
         }
     }
 

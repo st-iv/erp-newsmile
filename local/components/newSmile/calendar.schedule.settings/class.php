@@ -42,6 +42,7 @@ class CalendarScheduleSettingsComponent extends \CBitrixComponent
         $this->getWorkChair();
         $this->getVisit($this->arResult['THIS_DATE']);
         $this->getSchedule($this->arResult['THIS_DATE']);
+        $this->getMainDoctors($this->arResult['THIS_DATE']);
         $this->getDoctor();
         $this->getAllDoctor();
 
@@ -90,11 +91,46 @@ class CalendarScheduleSettingsComponent extends \CBitrixComponent
 //        echo '</pre>';
     }
 
+    protected function getMainDoctors($date)
+    {
+        // TODO отрефакторить когда будет верстка и можно будет поменять формат вывода данных
+        $dbMainDoctors = \Mmit\NewSmile\MainDoctorTemplateTable::getList([
+            'filter' => [
+                'WORK_CHAIR_ID' => array_keys($this->arResult['WORK_CHAIR']),
+                'DATE' => new Date($date, 'Y-m-d')
+            ],
+            'select' => ['WORK_CHAIR_ID', 'DOCTOR_ID', 'SECOND_DAY_HALF']
+        ]);
+
+        $mainDoctors = array();
+
+        while($mainDoctor = $dbMainDoctors->fetch())
+        {
+            $mainDoctors[$mainDoctor['WORK_CHAIR_ID']][(int)$mainDoctor['SECOND_DAY_HALF']] = $mainDoctor['DOCTOR_ID'];
+            $this->arResult['MAIN_DOCTOR_ID'][$mainDoctor['DOCTOR_ID']] = $mainDoctor['DOCTOR_ID'];
+            $this->arResult['WORK_CHAIR'][$mainDoctor['WORK_CHAIR_ID']]['MAIN_DOCTOR'][$mainDoctor['DOCTOR_ID']] = $mainDoctor['DOCTOR_ID'];
+        }
+
+        foreach ($this->arResult['SCHEDULE'] as $time => &$chairsSchedule)
+        {
+            $isSecondDayHalf = strtotime(date('d-m-Y ' . $time)) >= strtotime(date('d-m-Y 15:00'));
+
+            foreach ($chairsSchedule as $workChairId => &$schedule)
+            {
+                $schedule['MAIN_DOCTOR_ID'] = $mainDoctors[$workChairId][(int)$isSecondDayHalf];
+            }
+
+            unset($schedule);
+        }
+
+        unset($chairsSchedule);
+    }
+
     protected function getSchedule($date)
     {
         $rsSchedule = ScheduleTemplateTable::getList(array(
             'filter' => array(
-                'CLINIC_ID' => $_SESSION['CLINIC_ID'],
+                'CLINIC_ID' => \Mmit\NewSmile\Config::getClinicId(),
                 '>=TIME' => new Date($date, 'Y-m-d'),
                 '<=TIME' => new Date(date('Y-m-d', strtotime($date) + 86400), 'Y-m-d')
             )

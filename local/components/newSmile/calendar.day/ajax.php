@@ -56,13 +56,9 @@ if (isset($_REQUEST['action'])) {
                 && isset($_REQUEST['doctor_id'])
                 && isset($_REQUEST['work_chair'])) {
 
-                $isResult = ScheduleTable::appointDoctorHalfDay(strtotime($_REQUEST['time']), $_REQUEST['doctor_id'], $_REQUEST['work_chair'], $_SESSION['CLINIC_ID']);
-
-                if ($isResult) {
-                    echo json_encode(array(
-                        'result' => 'success'
-                    ));
-                }
+                echo json_encode(array(
+                    'result' => 'not supported yet =('
+                ));
             }
             break;
         case 'addVisit':

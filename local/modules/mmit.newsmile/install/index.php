@@ -84,6 +84,8 @@ class mmit_newsmile extends CModule
             NewSmile\DoctorSpecializationTable::getEntity()->createDbTable();
             NewSmile\Notice\TypeTable::getEntity()->createDbTable();
             NewSmile\Notice\NoticeTable::getEntity()->createDbTable();
+            NewSmile\MainDoctorTable::getEntity()->createDbTable();
+            NewSmile\MainDoctorTemplateTable::getEntity()->createDbTable();
 
             NewSmile\VisitTable::createStatus();
             $this->testInstallDB();
@@ -204,6 +206,8 @@ class mmit_newsmile extends CModule
             $connection->dropTable(NewSmile\DoctorSpecializationTable::getTableName());
             $connection->dropTable(NewSmile\Notice\TypeTable::getTableName());
             $connection->dropTable(NewSmile\Notice\NoticeTable::getTableName());
+            $connection->dropTable(NewSmile\MainDoctorTable::getTableName());
+            $connection->dropTable(NewSmile\MainDoctorTemplateTable::getTableName());
         }
     }
 
