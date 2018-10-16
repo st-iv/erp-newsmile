@@ -154,7 +154,7 @@ class DoctorTable extends Entity\DataManager
         NewSmile\Orm\Helper::indexSearch(
             $id,
             'doctor',
-            array(Helpers::getFio($fields['NAME'], $fields['LAST_NAME'], $fields['SECOND_NAME'])),
+            array(Helpers::getFio($fields)),
             $additionalFields
         );
     }

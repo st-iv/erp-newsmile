@@ -5,7 +5,7 @@ use Mmit\NewSmile\Helpers;
 foreach ($arResult['DOCTORS'] as &$doctor)
 {
     $doctor['COLOR'] = str_replace('#', '', $doctor['COLOR']);
-    $doctor['FIO'] = Helpers::getFio($doctor['NAME'], $doctor['LAST_NAME'], $doctor['SECOND_NAME']);
+    $doctor['FIO'] = Helpers::getFio($doctor);
 }
 
 unset($doctor);

@@ -11,11 +11,7 @@ foreach ($arResult['NOTICES'] as &$notice)
 
     if($notice['TYPE'] == 'VISIT_FINISHED')
     {
-        $notice['PARAMS']['DOCTOR_FIO'] = NewSmile\Helpers::getFio(
-            $notice['PARAMS']['DOCTOR_NAME'],
-            $notice['PARAMS']['DOCTOR_LAST_NAME'],
-            $notice['PARAMS']['DOCTOR_SECOND_NAME']
-        );
+        $notice['PARAMS']['DOCTOR_FIO'] = NewSmile\Helpers::getFio($notice['PARAMS'], 'DOCTOR_');
     }
 
     $notice['TITLE_ICON_CLASS'] = '';

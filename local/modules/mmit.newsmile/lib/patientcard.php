@@ -358,7 +358,7 @@ class PatientCardTable extends Entity\DataManager
         NewSmile\Orm\Helper::indexSearch(
             $id,
             'patientcard',
-            array(Helpers::getFio($fields['NAME'], $fields['LAST_NAME'], $fields['SECOND_NAME'])),
+            array(Helpers::getFio($fields)),
             $additionalFields
         );
     }

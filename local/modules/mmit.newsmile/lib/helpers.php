@@ -137,9 +137,20 @@ class Helpers
         return $output;
     }
 
-    public static function getFio($firstName, $lastName, $secondName)
+    public static function getFio(array $person, $keyPrefix = '')
     {
-        return $lastName . ' ' . mb_substr($firstName, 0 , 1) . '. ' . mb_substr($secondName, 0 , 1) . '.';
+        $fio = $person[$keyPrefix . 'LAST_NAME'];
+        if($person[$keyPrefix . 'NAME'])
+        {
+            $fio .= ' ' . mb_substr($person[$keyPrefix . 'NAME'], 0 , 1) . '.';
+        }
+
+        if($person[$keyPrefix . 'SECOND_NAME'])
+        {
+            $fio .= ' ' . mb_substr($person[$keyPrefix . 'SECOND_NAME'], 0 , 1) . '.';
+        }
+
+        return $fio;
     }
 
     public static function getShortClassName($className)
