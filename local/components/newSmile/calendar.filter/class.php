@@ -58,7 +58,7 @@ class CalendarFilterComponent extends \CBitrixComponent
         $isResult = false;
         $rsWorkChair = WorkChairTable::getList([
             'filter' => [
-                'CLINIC_ID' => $_SESSION['CLINIC_ID']
+                'CLINIC_ID' => NewSmile\Config::getClinicId()
             ]
         ]);
         while ($arWorkChair = $rsWorkChair->Fetch())

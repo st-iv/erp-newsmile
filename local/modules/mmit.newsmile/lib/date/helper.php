@@ -13,10 +13,12 @@ class Helper
      */
     protected static $currentDate;
     protected static $ruMonthNamesGenitive = array('января', 'февраля', 'марта', 'апреля', 'мая', 'июня', 'июля', 'августа', 'сентября', 'октября', 'ноября', 'декабря');
+    protected static $ruWeekdayNames = array('Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота', 'Воскресенье');
 
     /**
      * Возвращает дату в указанном формате с использованием дополнительных параметров:
-     * F_ru_gen - название месяца на русском в родительном падеже
+     * F_ru_gen - название месяца на русском в родительном падеже;
+     * l_ru - название дня недели на русском языке
      *
      * @param string $format
      * @param int|null $time
@@ -31,7 +33,16 @@ class Helper
         }
 
         $monthIndex = date('n', $time);
-        $format = str_replace('F_ru_gen', static::$ruMonthNamesGenitive[$monthIndex-1], $format);
+        $weekdayIndex = date('N', $time);
+
+        $format = str_replace(
+            array('F_ru_gen', 'l_ru'),
+            array(
+                static::$ruMonthNamesGenitive[$monthIndex-1],
+                static::$ruWeekdayNames[$weekdayIndex-1]
+            ),
+            $format
+        );
 
         return date($format, $time);
     }
@@ -122,6 +133,52 @@ class Helper
         }
 
         $result .= ', в ' . date('H:i', $date->getTimestamp());
+
+        return $result;
+    }
+
+    public static function formatTimeInterval($seconds)
+    {
+        $result = '';
+
+        $hours = floor($seconds / 3600);
+        $seconds -= $hours * 3600;
+
+        $minutes = floor($seconds / 60);
+        $seconds = $seconds % 60;
+
+        if($hours)
+        {
+            $result = $hours . ' ' . static::getWordByNumber($hours, ['час', 'часа', 'часов']);
+        }
+
+        if($minutes)
+        {
+            $result .= ($result ? ' ' : '');
+            $result .= $minutes . ' ' . static::getWordByNumber($minutes, ['минута', 'минуты', 'минут']);
+        }
+
+        if($seconds)
+        {
+            $result .= ($result ? ' ' : '');
+            $result .= ' ' . $seconds . ' ' . static::getWordByNumber($seconds, ['секунда', 'секунды', 'секунд']);
+        }
+
+        return $result;
+    }
+
+    private static function getWordByNumber($number, array $variations)
+    {
+        $result = $variations[0];
+
+        if(($number > 1) && ($number < 5))
+        {
+            $result = $variations[1];
+        }
+        elseif(!$number || ($number >= 5))
+        {
+            $result = $variations[2];
+        }
 
         return $result;
     }

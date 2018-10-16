@@ -9,13 +9,14 @@ namespace Mmit\NewSmile;
 
 use Bitrix\Main\Entity;
 use Bitrix\Main\Localization\Loc;
+use Bitrix\Main\Type\Date;
 use Bitrix\Main\Type\DateTime;
 
 Loc::loadMessages(__FILE__);
 
 class ScheduleTable extends Entity\DataManager
 {
-    const TIME_15_MINUTES = 900;
+    const TIME_30_MINUTES = 1800;
 
     public static function getTableName()
     {

@@ -5,6 +5,7 @@ use Bitrix\Main\Loader,
     Bitrix\Main\Type\Date,
     Bitrix\Main\Type\DateTime,
     Bitrix\Main\Config\Option,
+    Mmit\NewSmile,
     Mmit\NewSmile\VisitTable,
     Mmit\NewSmile\ScheduleTable,
     Mmit\NewSmile\DoctorTable,
@@ -15,6 +16,11 @@ use Bitrix\Main\Loader,
 class CalendarDayComponent extends \CBitrixComponent
 {
     protected $thisDate = '';
+
+    /**
+     * @var \DateTime
+     */
+    protected $thisDateTime;
 
     public function onPrepareComponentParams($arParams)
     {
@@ -30,6 +36,72 @@ class CalendarDayComponent extends \CBitrixComponent
         return $arParams;
     }
 
+    protected function processRequest(\Bitrix\Main\HttpRequest $request)
+    {
+        if(check_bitrix_sessid() && isset($request['calendar_day']))
+        {
+            switch($request['action'])
+            {
+                case 'change_doctor':
+                    $this->processChangeDoctor($request);
+                    break;
+            }
+        }
+    }
+
+    protected function processChangeDoctor(\Bitrix\Main\HttpRequest $request)
+    {
+        $visitId = (int)$request['visit_id'];
+        $scheduleId = (int)$request['schedule_id'];
+        $doctorId = (int)$request['doctor_id'];
+
+        if(!$visitId && !$scheduleId) return;
+
+        if($visitId)
+        {
+            if(!$doctorId) return;
+
+            $this->processChangeVisitDoctor($visitId, $doctorId);
+        }
+        elseif ($scheduleId)
+        {
+            ScheduleTable::update($scheduleId, [
+                'DOCTOR_ID' => $doctorId
+            ]);
+        }
+    }
+
+    protected function processChangeVisitDoctor($visitId, $doctorId)
+    {
+        $dbVisit = VisitTable::getByPrimary(['ID' => $visitId], [
+            'select' => ['TIME_START', 'TIME_END']
+        ]);
+
+        $visit = $dbVisit->fetch();
+
+        if(!$visit) return;
+
+        VisitTable::update($visitId, [
+            'DOCTOR_ID' => $doctorId
+        ]);
+
+        $dbSchedules = ScheduleTable::getList([
+            'filter' => [
+                '>=TIME' => $visit['TIME_START'],
+                '<TIME' => $visit['TIME_END'],
+            ],
+            'select' => ['ID']
+        ]);
+
+        while($schedule = $dbSchedules->fetch())
+        {
+            ScheduleTable::update($schedule['ID'], [
+                'DOCTOR_ID' => $doctorId
+            ]);
+        }
+    }
+
+
     /**
 	 * получение результатов
 	 */
@@ -39,14 +111,23 @@ class CalendarDayComponent extends \CBitrixComponent
 	    if (!empty($this->request['THIS_DATE'])) {
             $this->thisDate = $this->request['THIS_DATE'];
         }
+
+        $this->thisDateTime = new \DateTime($this->thisDate);
+
         $this->arResult['THIS_DATE'] = $this->thisDate;
 
-        $isNext = $this->getWorkChair();
-        $isNext = $isNext && $this->getSchedule();
-        $isNext = $isNext && $this->getVisit();
+        $isNext = $this->writeWorkChair();
+        $isNext = $isNext && $this->writeSchedule();
+        $this->writeTimeLine();
+        $isNext = $isNext && $this->writeVisit();
 
-        $this->getDoctors();
-        $this->getPatients();
+        $this->writeDoctors();
+        $this->writePatients();
+
+
+
+        $this->arResult['START_TIME'] = urldecode($this->request['TIME_FROM']) ?: NewSmile\Config::getScheduleStartTime();
+        $this->arResult['END_TIME'] = urldecode($this->request['TIME_TO']) ?: NewSmile\Config::getScheduleEndTime();
 	}
 
 	protected function getScheduleFilter()
@@ -65,7 +146,7 @@ class CalendarDayComponent extends \CBitrixComponent
         return $filter;
     }
 
-    protected function getSchedule()
+    protected function writeSchedule()
     {
         $isResult = false;
 
@@ -86,39 +167,11 @@ class CalendarDayComponent extends \CBitrixComponent
 
         while ($arSchedule = $rsSchedule->fetch())
         {
-            $this->arResult['WORK_CHAIR'][$arSchedule['WORK_CHAIR_ID']]['SCHEDULES'][] = $arSchedule;
+            $this->arResult['WORK_CHAIR'][$arSchedule['WORK_CHAIR_ID']]['SCHEDULES'][$arSchedule['TIME']->format('H:i')] = $arSchedule;
             if (empty($this->arResult['WORK_CHAIR'][$arSchedule['WORK_CHAIR_ID']]['DOCTORS'][$arSchedule['UF_DOCTOR_ID']])) {
                 $this->arResult['WORK_CHAIR'][$arSchedule['WORK_CHAIR_ID']]['DOCTORS'][$arSchedule['UF_DOCTOR_ID']] = array(
                     'NAME' => $arSchedule['DOCTOR_NAME']
                 );
-            }
-
-            if ($arSchedule['TIME']->getTimestamp() < strtotime($arSchedule['TIME']->format('Y-m-d 15:00'))) {
-                $time = $arSchedule['TIME']->format('Y-m-d 9:00');
-            } else {
-                $time = $arSchedule['TIME']->format('Y-m-d 15:00');
-            }
-            if (!empty($arSchedule['UF_MAIN_DOCTOR_ID'])) {
-                $tempField = array(
-                    'ID' => $arSchedule['UF_MAIN_DOCTOR_ID'],
-                    'NAME' => $arSchedule['UF_MAIN_DOCTOR_NAME'],
-                    'LAST_NAME' => $arSchedule['UF_MAIN_DOCTOR_LAST_NAME'],
-                    'SECOND_NAME' => $arSchedule['UF_MAIN_DOCTOR_SECOND_NAME'],
-                    'TIME' => $time
-                );
-                if (array_search($tempField,$this->arResult['WORK_CHAIR'][$arSchedule['WORK_CHAIR_ID']]['MAIN_DOCTORS']) === null ||
-                    array_search($tempField,$this->arResult['WORK_CHAIR'][$arSchedule['WORK_CHAIR_ID']]['MAIN_DOCTORS']) === false) {
-                    $this->arResult['WORK_CHAIR'][$arSchedule['WORK_CHAIR_ID']]['MAIN_DOCTORS'][] = $tempField;
-                }
-            } else {
-                $tempField = array(
-                    'ID' => 0,
-                    'TIME' => $time
-                );
-                if (array_search($tempField,$this->arResult['WORK_CHAIR'][$arSchedule['WORK_CHAIR_ID']]['MAIN_DOCTORS']) === null ||
-                    array_search($tempField,$this->arResult['WORK_CHAIR'][$arSchedule['WORK_CHAIR_ID']]['MAIN_DOCTORS']) === false) {
-                    $this->arResult['WORK_CHAIR'][$arSchedule['WORK_CHAIR_ID']]['MAIN_DOCTORS'][] = $tempField;
-                }
             }
 
             $isResult = true;
@@ -126,7 +179,7 @@ class CalendarDayComponent extends \CBitrixComponent
         return $isResult;
     }
 
-	protected function getVisit()
+	protected function writeVisit()
     {
         $isResult = false;
         $arResult = array();
@@ -155,34 +208,27 @@ class CalendarDayComponent extends \CBitrixComponent
             $isResult = true;
         }
 
-        $timeStart = strtotime($this->thisDate . ' ' . Option::get('mmit.newsmile', "start_time_schedule", '00:00'));
-        $timeEnd = strtotime($this->thisDate . ' ' . Option::get('mmit.newsmile', "end_time_schedule", '00:00'));
+        $startTime = $this->arResult['TIME_LINE'][0]->getTimestamp();
+        $starTimeStr = $this->arResult['TIME_LINE'][0]->format('H:i');
+
         foreach ($arResult as $arVisit)
         {
-            while ($timeStart < $arVisit['TIME_START']->getTimestamp())
+            if(($startTime > $arVisit['TIME_START']->getTimestamp()) && ($startTime < $arVisit['TIME_END']->getTimestamp()))
             {
-                $this->arResult['WORK_CHAIR'][$arVisit['WORK_CHAIR_ID']]['VISITS'][] = array(
-                    'TIME_START' => new DateTime(date('Y-m-d H:i',$timeStart), 'Y-m-d H:i'),
-                    'TIME_END' => new DateTime(date('Y-m-d H:i',$timeStart + ScheduleTable::TIME_15_MINUTES), 'Y-m-d H:i'),
-                );
-                $timeStart += ScheduleTable::TIME_15_MINUTES;
+                $visitKey = $starTimeStr;
             }
-            $this->arResult['WORK_CHAIR'][$arVisit['WORK_CHAIR_ID']]['VISITS'][] = $arVisit;
-            $timeStart = $arVisit['TIME_END']->getTimestamp();
+            else
+            {
+                $visitKey = $arVisit['TIME_START']->format('H:i');
+            }
+
+            $this->arResult['WORK_CHAIR'][$arVisit['WORK_CHAIR_ID']]['VISITS'][$visitKey] = $arVisit;
         }
-        while ($timeStart < $timeEnd)
-        {
-            $this->arResult['WORK_CHAIR'][$arVisit['WORK_CHAIR_ID']]['VISITS'][] = array(
-                'TIME_START' => new DateTime(date('Y-m-d H:i',$timeStart), 'Y-m-d H:i'),
-                'TIME_END' => new DateTime(date('Y-m-d H:i',$timeStart + ScheduleTable::TIME_15_MINUTES), 'Y-m-d H:i'),
-            );
-            $timeStart += ScheduleTable::TIME_15_MINUTES;
-        }
-//        $this->arResult['WORK_CHAIR'][$arVisit['WORK_CHAIR_ID']]['VISITS'] = $arResult;
+
         return $isResult;
     }
 
-    protected function getWorkChair()
+    protected function writeWorkChair()
     {
         $isResult = false;
         $rsWorkChair = WorkChairTable::getList([
@@ -198,11 +244,11 @@ class CalendarDayComponent extends \CBitrixComponent
         return $isResult;
     }
 
-    protected function getDoctors()
+    protected function writeDoctors()
     {
         $rsDoctor = DoctorTable::getList(array(
             'select' => array(
-                'ID', 'NAME', 'LAST_NAME', 'SECOND_NAME'
+                'ID', 'NAME', 'LAST_NAME', 'SECOND_NAME', 'COLOR'
             ),
             'filter' => [
                 'CLINIC_ID' => \Mmit\NewSmile\Config::getClinicId()
@@ -239,16 +285,26 @@ class CalendarDayComponent extends \CBitrixComponent
         }
     }
 
-    protected function getPatients()
+    protected function writePatients()
     {
         $rsPatient = PatientCardTable::getList(array(
             'select' => array(
-                'ID', 'NAME'
+                'ID', 'NAME', 'LAST_NAME', 'SECOND_NAME'
             )
         ));
         while ($arPatient = $rsPatient->fetch())
         {
-            $this->arResult['PATIENTS'][$arPatient['ID']] = $arPatient['NAME'];
+            $this->arResult['PATIENTS'][$arPatient['ID']] = $arPatient;
+        }
+    }
+
+    protected function writeTimeLine()
+    {
+        $workChairs = $this->arResult['WORK_CHAIR'];
+        $firstWorkChair = array_pop($workChairs);
+        foreach ($firstWorkChair['SCHEDULES'] as $schedule)
+        {
+            $this->arResult['TIME_LINE'][] = $schedule['TIME'];
         }
     }
 	
@@ -260,6 +316,7 @@ class CalendarDayComponent extends \CBitrixComponent
 		try
 		{
             if (!Loader::includeModule('mmit.newSmile')) die();
+
 			$this->getResult();
 			$this->includeComponentTemplate();
 		}

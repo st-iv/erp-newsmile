@@ -187,7 +187,10 @@
 
         if(this.defaultSnapshot === currentSnapshot)
         {
-            this.onDataUnChangeDefault();
+            if(this.requestedSnapshot === this.defaultSnapshot)
+            {
+                this.onDataUnChangeDefault();
+            }
         }
         else
         {

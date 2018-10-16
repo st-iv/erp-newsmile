@@ -4,3 +4,7 @@
     width: 30px;
     background: url('../img/loader.gif') no-repeat center;
 }
+
+.tablebodytext {
+    display: none
+}

@@ -115,7 +115,7 @@ class ScheduleTemplateTable extends Entity\DataManager
         {
             $arTimes[] = date('H:i', $timeStart);
 
-            $timeStart += ScheduleTable::TIME_15_MINUTES;
+            $timeStart += ScheduleTable::TIME_30_MINUTES;
         }
         foreach ($arDays as $day)
         {
@@ -184,7 +184,7 @@ class ScheduleTemplateTable extends Entity\DataManager
                     'CLINIC_ID' => $clinicID,
                 ));
             }
-            $timeIndex += ScheduleTable::TIME_15_MINUTES;
+            $timeIndex += ScheduleTable::TIME_30_MINUTES;
         }
         return true;
     }

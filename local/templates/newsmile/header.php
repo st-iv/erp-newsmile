@@ -16,8 +16,11 @@
     $asset->addCss(SITE_TEMPLATE_PATH . '/css/jquery-ui.min.css');
     $asset->addCss(SITE_TEMPLATE_PATH . '/css/jquery.contextMenu.min.css');
     $asset->addCss(SITE_TEMPLATE_PATH . '/css/style.css');
+    $asset->addCss(SITE_TEMPLATE_PATH . '/css/main.css');
 
     $asset->addJs(SITE_TEMPLATE_PATH . '/js/jquery-3.3.1.min.js');
+    $asset->addJs(SITE_TEMPLATE_PATH . '/js/underscore-min.js');
+    $asset->addJs(SITE_TEMPLATE_PATH . '/js/tinycolor-min.js');
     $asset->addJs(SITE_TEMPLATE_PATH . '/js/popper.min.js');
     $asset->addJs(SITE_TEMPLATE_PATH . '/js/jquery-ui.min.js');
     $asset->addJs(SITE_TEMPLATE_PATH . '/js/bootstrap.min.js');
