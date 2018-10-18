@@ -1,26 +1,31 @@
 <?if(!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED !== true) die();?>
 
-<?switch($outputField['TYPE']):
+<?
+/**
+ * @var string $pageBlockName
+ * @var array $pageBlockData
+ */
+
+switch($pageBlockData['TYPE']):
     case 'enum':
     case 'reference':?>
+        <select name="<?=$pageBlockData['INPUT_NAME']?>" <?=($pageBlockData['DISABLED'] ? 'disabled' : '')?>>
 
-        <select name="<?=$outputField['INPUT_NAME']?>" <?=($outputField['DISABLED'] ? 'disabled' : '')?>>
-
-            <?if(!$outputField['REQUIRED']):?>
+            <?if(!$pageBlockData['REQUIRED']):?>
                 <option value="0">нет</option>
             <?endif;?>
 
-            <?foreach ($outputField['VARIANTS'] as $itemValue => $item):?>
+            <?foreach ($pageBlockData['VARIANTS'] as $itemValue => $item):?>
                 <option value="<?=$itemValue?>" <?=($item['SELECTED'] ? 'selected' : '')?>>
-                    <?=$item['NAME']?>
+                    <?=$item['VARIANT_TITLE'] ?: $item['NAME']?>
                 </option>
             <?endforeach;?>
         </select>
         <?break;?>
 
     <?case 'boolean':?>
-        <input type="checkbox" name="<?=$outputField['INPUT_NAME']?>"
-               value="<?=$outputField['TRUE_VALUE']?>" <?=($outputField['CHECKED'] ? 'checked' : '')?> <?=($outputField['DISABLED'] ? 'disabled' : '')?>>
+        <input type="checkbox" name="<?=$pageBlockData['INPUT_NAME']?>"
+               value="<?=$pageBlockData['TRUE_VALUE']?>" <?=($pageBlockData['CHECKED'] ? 'checked' : '')?> <?=($pageBlockData['DISABLED'] ? 'disabled' : '')?>>
         <?break;?>
 
     <?case 'datetime':?>
@@ -28,26 +33,28 @@
         /**
          * @var \Bitrix\Main\Type\DateTime $value
          */
-        $value = $outputField['VALUE'];
+        $value = $pageBlockData['VALUE'] ? $pageBlockData['VALUE']->format('Y-m-d\TH:i:s') : '';
         ?>
-        <input type="datetime-local" name="<?=$outputField['INPUT_NAME']?>" value="<?=$value->format('Y-m-d\TH:i:s')?>" <?=($outputField['DISABLED'] ? 'disabled' : '')?>>
+        <input type="datetime-local" name="<?=$pageBlockData['INPUT_NAME']?>" value="<?=$value?>" <?=($pageBlockData['DISABLED'] ? 'disabled' : '')?>>
         <?break;?>
+
+
 
     <?case 'date':?>
         <?
         /**
          * @var \Bitrix\Main\Type\Date $value
          */
-        $value = $outputField['VALUE'];
+        $value = $pageBlockData['VALUE'];
         ?>
-        <input type="date" name="<?=$outputField['INPUT_NAME']?>" value="<?=$value->format('Y-m-d')?>" <?=($outputField['DISABLED'] ? 'disabled' : '')?>>
+        <input type="date" name="<?=$pageBlockData['INPUT_NAME']?>" value="<?=$value->format('Y-m-d')?>" <?=($pageBlockData['DISABLED'] ? 'disabled' : '')?>>
         <?break;?>
 
     <?case 'hidden':?>
-        <input type="hidden" name="<?=$outputField['INPUT_NAME']?>" value="<?=$outputField['VALUE']?>" <?=($outputField['DISABLED'] ? 'disabled' : '')?>>
+        <input type="hidden" name="<?=$pageBlockData['INPUT_NAME']?>" value="<?=$pageBlockData['VALUE']?>" <?=($pageBlockData['DISABLED'] ? 'disabled' : '')?>>
         <?break;?>
 
     <?default:?>
-        <input type="text" name="<?=$outputField['INPUT_NAME']?>" value="<?=$outputField['VALUE']?>" <?=($outputField['REQUIRED'] ? 'required' : '') ?> <?=($outputField['DISABLED'] ? 'disabled' : '')?>>
+        <input type="text" name="<?=$pageBlockData['INPUT_NAME']?>" value="<?=$pageBlockData['VALUE']?>" <?=($pageBlockData['REQUIRED'] ? 'required' : '') ?> <?=($pageBlockData['DISABLED'] ? 'disabled' : '')?>>
 
 <?endswitch;?>

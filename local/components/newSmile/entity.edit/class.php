@@ -15,6 +15,8 @@ class EntityEditComponent extends \CBitrixComponent
      */
     protected $fields;
     protected $mode;
+    protected $mainTemplateFolder;
+    protected $originalTemplateFolder;
 
     /**
      * @var \Bitrix\Main\Entity\DataManager
@@ -36,6 +38,11 @@ class EntityEditComponent extends \CBitrixComponent
         \CModule::IncludeModule('mmit.newsmile');
 
         $arParams['ENTITY_ID'] = (int)$arParams['ENTITY_ID'];
+
+        if(!$arParams['ENTITY_ID'] && !$arParams['ADD_URL'])
+        {
+            $arParams['ADD_URL'] = $GLOBALS['APPLICATION']->GetCurPage();
+        }
 
 
         $reverseReferences = array();
@@ -214,8 +221,7 @@ class EntityEditComponent extends \CBitrixComponent
      */
     protected function getFieldsArray()
     {
-        $selectFields = array_merge($this->arParams['SELECT_FIELDS']);
-        $selectFields = array_unique($selectFields);
+        $selectFields = array_unique($this->arParams['SELECT_FIELDS']);
 
         foreach ($this->fields as $field)
         {
@@ -296,6 +302,98 @@ class EntityEditComponent extends \CBitrixComponent
         return $this->mode;
     }
 
+    /**
+     * Подключает блок шаблона из папки page-blocks. Если задан параметр OVERWRITE_TEMPLATE, то будет подключен блок из оригинального шаблона,
+     * если он в нем есть. Иначе будет подключен блок из переопределяемого шаблона. Таким образом можно например использовать стандартный шаблон,
+     * переопределив лишь один блок в новом шаблоне.
+     * @param string $pageBlockCode - код подключаемого блока
+     * @param mixed $pageBlockData - информация для вывода в блоке
+     */
+    public function includePageBlock($pageBlockCode, $pageBlockData)
+    {
+        if(!$this->doIncludePageBlock($pageBlockCode, $pageBlockData, $this->mainTemplateFolder))
+        {
+            $this->includeOriginalPageBlock($pageBlockCode, $pageBlockData);
+        }
+    }
+
+    public function includeOriginalPageBlock($pageBlockCode, $pageBlockData)
+    {
+        $this->doIncludePageBlock($pageBlockCode, $pageBlockData, $this->originalTemplateFolder);
+    }
+
+    protected function doIncludePageBlock($pageBlockCode, $pageBlockData, $templatePath)
+    {
+        if(!$pageBlockCode) return false;
+
+        $pageBlockRelativePath = '/page-blocks/' . $pageBlockCode . '.php';
+
+        $pageBlockPath = $_SERVER['DOCUMENT_ROOT'] . $templatePath . $pageBlockRelativePath;
+
+        if(file_exists($pageBlockPath))
+        {
+            $component = $this;
+            include $pageBlockPath;
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * Подключает шаблон с возможностью перезаписи шаблона, указанного в параметре OVERWRITE_TEMPLATE. Если определенный
+     * файл шаблона будет найден в папке шаблона компонента, то будет подключен он. Иначе - будет подключен файл из шаблона в параметре
+     * OVERWRITE_TEMPLATE
+     */
+    public function includeTemplate()
+    {
+        $this->initComponentTemplate();
+        $this->mainTemplateFolder = $this->getTemplate()->GetFolder();
+
+        if($this->arParams['OVERWRITE_TEMPLATE'])
+        {
+            $this->setTemplateName($this->arParams['OVERWRITE_TEMPLATE']);
+            $this->initComponentTemplate();
+            $this->originalTemplateFolder = $this->getTemplate()->GetFolder();;
+        }
+
+        $this->includeTemplatePage('result_modifier');
+        $this->includeTemplatePage('template');
+        $this->includeTemplatePage('component_epilog');
+        \Bitrix\Main\Page\Asset::getInstance()->addJs($this->mainTemplateFolder . '/script.js');
+    }
+
+    public function includeTemplatePage($templatePage)
+    {
+        $mainTemplatePagePath = $_SERVER['DOCUMENT_ROOT'] . $this->mainTemplateFolder . '/' . $templatePage . '.php';
+        $bIncludeOriginal = true;
+
+        if(file_exists($mainTemplatePagePath))
+        {
+            if($templatePage == 'result_modifier')
+            {
+                $arResult =& $this->arResult;
+            }
+            else
+            {
+                $arResult = $this->arResult;
+            }
+
+            $arParams =& $this->arParams;
+
+
+            include $mainTemplatePagePath;
+
+            $bIncludeOriginal = $templatePage == 'template';
+        }
+
+        if($bIncludeOriginal && file_exists($_SERVER['DOCUMENT_ROOT'] . $this->originalTemplateFolder . '/' . $templatePage . '.php'))
+        {
+            $this->includeComponentTemplate($templatePage);
+        }
+    }
+
+
 
 	/**
 	 * выполняет логику работы компонента
@@ -317,7 +415,7 @@ class EntityEditComponent extends \CBitrixComponent
                 $this->prepareResult();
             }
 
-            $this->includeComponentTemplate();
+            $this->includeTemplate();
         }
 	}
 }

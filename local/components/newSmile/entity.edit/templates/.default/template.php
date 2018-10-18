@@ -1,5 +1,11 @@
 <?if(!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED !== true) die();?>
-<form action="<?=POST_FORM_ACTION_URI?>" class="entity-edit-form">
+<?
+/**
+ * @var $component EntityEditComponent
+ */
+$component = $this->getComponent();
+?>
+<form action="<?=POST_FORM_ACTION_URI?>" class="entity-edit-form" method="post">
     <?=bitrix_sessid_post()?>
     <input type="hidden" name="ajax" value="Y">
     <input type="hidden" name="action" value="<?=$arResult['ACTION']?>">
@@ -9,7 +15,7 @@
         <?$outputField = $field;?>
 
         <?if($field['TYPE'] == 'hidden'):?>
-            <?include __DIR__ . '/page-blocks/input_field.php'?>
+            <?$component->includePageBlock('input_field', $outputField);?>
             <?continue;?>
         <?endif;?>
 
@@ -22,7 +28,7 @@
                 </div>
 
                 <div class="field__input">
-                    <?include __DIR__ . '/page-blocks/input_field.php'?>
+                    <?$component->includePageBlock('input_field', $outputField);?>
                 </div>
 
             <?else:?>
@@ -50,7 +56,7 @@
 
 
                                     if($outputField['TYPE'] == 'hidden'):?>
-                                        <?include __DIR__ . '/page-blocks/input_field.php'?>
+                                        <?$component->includePageBlock('input_field', $outputField);?>
                                     <?else:?>
                                         <?
                                         if($outputField['TYPE'] == 'reference')
@@ -59,7 +65,7 @@
                                         }
                                         ?>
                                         <td>
-                                            <?include __DIR__ . '/page-blocks/input_field.php'?>
+                                            <?$component->includePageBlock('input_field', $outputField);?>
                                         </td>
                                     <?endif;?>
                                 <?endforeach;?>
