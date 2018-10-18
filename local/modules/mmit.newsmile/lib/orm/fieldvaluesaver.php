@@ -6,6 +6,7 @@ namespace Mmit\NewSmile\Orm;
 use Bitrix\Main\Diag\Debug;
 use Bitrix\Main\Entity\BooleanField;
 use Bitrix\Main\Entity\DateField;
+use Bitrix\Main\Entity\EnumField;
 use Bitrix\Main\HttpRequest;
 use Bitrix\Main\ORM\Entity;
 use Bitrix\Main\ORM\Fields\DatetimeField;
@@ -95,18 +96,42 @@ class FieldValueSaver extends FieldsProcessor
         unset($this->updateFields[$field->getName()]);
     }
 
+    protected function processEnumField(EnumField $field)
+    {
+        $fieldName = $field->getName();
+        if(empty($this->updateFields[$fieldName]))
+        {
+            unset($this->updateFields[$fieldName]);
+        }
+
+    }
+
     protected function processDatetimeField(DatetimeField $field)
     {
         $fieldName = $field->getName();
         $rawValue = $this->getRequestParam($fieldName);
-        $this->updateFields[$fieldName] = DateTime::createFromTimestamp(strtotime($rawValue));
+        if($rawValue)
+        {
+            $this->updateFields[$fieldName] = DateTime::createFromTimestamp(strtotime($rawValue));
+        }
+        else
+        {
+            unset($this->updateFields[$fieldName]);
+        }
     }
 
     protected function processDateField(DateField $field)
     {
         $fieldName = $field->getName();
         $rawValue = $this->getRequestParam($fieldName);
-        $this->updateFields[$fieldName] = Date::createFromTimestamp(strtotime($rawValue));
+        if($rawValue)
+        {
+            $this->updateFields[$fieldName] = Date::createFromTimestamp(strtotime($rawValue));
+        }
+        else
+        {
+            unset($this->updateFields[$fieldName]);
+        }
     }
 
     protected function processReverseReference(ReverseReference $field)

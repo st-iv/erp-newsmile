@@ -41,7 +41,7 @@ class FieldArrayConstructor extends FieldsProcessor
         $fieldName = $field->getName();
 
         $isEditable = in_array('*', $this->params['EDITABLE_FIELDS']) || in_array($fieldName, $this->params['EDITABLE_FIELDS']);
-        $isSelected = $isEditable || (!$this->params['SELECT_FIELDS'] || in_array($fieldName, $this->params['SELECT_FIELDS']));
+        $isSelected = $isEditable || (in_array('*', $this->params['SELECTABLE_FIELDS']) || in_array($fieldName, $this->params['SELECT_FIELDS']));
 
         if (!$isSelected) return false;
 
@@ -72,7 +72,6 @@ class FieldArrayConstructor extends FieldsProcessor
         if (is_subclass_of($dataClass, 'Mmit\NewSmile\Orm\ExtendedFieldsDescriptor'))
         {
             $variantsNames = $dataClass::getEnumVariants($field->getName());
-
         }
         else
         {
@@ -86,9 +85,12 @@ class FieldArrayConstructor extends FieldsProcessor
 
         foreach ($variantsNames as $variantCode => $variantName)
         {
-            $result['VARIANTS'][$variantCode] = array(
-                'NAME' => $variantName
-            );
+            if(strlen($variantCode) > 0)
+            {
+                $result['VARIANTS'][$variantCode] = array(
+                    'NAME' => $variantName
+                );
+            }
         }
 
         return $result;
@@ -254,14 +256,21 @@ class FieldArrayConstructor extends FieldsProcessor
         $entityClass = $field->getRefEntity()->getDataClass();
         $select = $this->getReferenceSelectFields($field);
 
-        if(Helper::isDataManagerClass($entityClass) && $select)
+        if($select)
         {
+            $titleFieldName = (count($select) == 2) ? $select[0] : '';
+
             $dbElements = $entityClass::getList(array(
                 'select' => $select
             ));
 
             while($element = $dbElements->fetch())
             {
+                if($titleFieldName)
+                {
+                    $element['VARIANT_TITLE'] = $element[$titleFieldName];
+                }
+
                 $result[$element['ID']] = $element;
             }
         }
@@ -311,14 +320,9 @@ class FieldArrayConstructor extends FieldsProcessor
 
     protected function setEnumFieldValue(&$fieldResult, Field $field, $value)
     {
-        if(isset($value))
+        if(isset($value) && isset($fieldResult['VARIANTS'][$value]))
         {
             $fieldResult['VARIANTS'][$value]['SELECTED'] = true;
-        }
-        else
-        {
-            $variantsKeys = array_keys($fieldResult['VARIANTS']);
-            $fieldResult['VARIANTS'][$variantsKeys[0]]['SELECTED'] = true;
         }
     }
 

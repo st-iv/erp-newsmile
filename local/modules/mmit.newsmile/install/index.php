@@ -159,6 +159,9 @@ class mmit_newsmile extends CModule
             "Y",
             date('d.m.Y H:i:s'),
             30);
+
+
+        NewSmile\WaitingListTable::addAgent();
     }
 
     public function registerDependences()

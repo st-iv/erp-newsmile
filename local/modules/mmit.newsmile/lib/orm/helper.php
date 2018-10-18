@@ -2,7 +2,11 @@
 namespace Mmit\NewSmile\Orm;
 
 use Bitrix\Main\Diag\Debug;
+use Bitrix\Main\Entity\BooleanField;
 use Bitrix\Main\Loader;
+use Bitrix\Main\LoaderException;
+use Bitrix\Main\Type\Date;
+use Bitrix\Main\Type\DateTime;
 use Mmit\NewSmile\Config;
 use Mmit\NewSmile;
 
@@ -31,6 +35,13 @@ class Helper
         }
     }
 
+    /**
+     * Возвращает тип поля из класса поля (название класса поля в нижнем регистре без слова Field). Например,
+     * для поля Bitrix\Main\Entity\BooleanField выдаст boolean
+     * @param $field - объект поля
+     *
+     * @return string
+     */
     public static function getFieldType($field)
     {
         $fieldClassName = get_class($field);
@@ -45,6 +56,12 @@ class Helper
         return $matches[1] ?: '';
     }
 
+    /**
+     * Проверяет, является ли указанный класс data managerом
+     * @param string $className
+     *
+     * @return bool
+     */
     public static function isDataManagerClass($className)
     {
         return (!empty($className) && is_subclass_of($className, '\Bitrix\Main\Entity\DataManager'));
@@ -60,6 +77,8 @@ class Helper
      * @param array $mainFields - основной набор полей, для которых будет создана общая запись в поисковом индексе
      * @param array $additionalFields - дополнительные поля, для которых будут созданы отдельные записи в поисковом индексе.
      * По ним можно будет группировать результаты поиска
+     *
+     * @throws LoaderException
      */
     public static function indexSearch($id, $category, array $mainFields, array $additionalFields = array())
     {
@@ -103,6 +122,13 @@ class Helper
         }
     }
 
+    /**
+     * Удаляет поисковый индекс элемента с указанным id в указанной категории
+     * @param string $id
+     * @param string $category
+     *
+     * @throws \Bitrix\Main\LoaderException
+     */
     public static function deleteSearchIndex($id, $category)
     {
         Loader::includeModule('search');
@@ -113,5 +139,65 @@ class Helper
             $category,
             $id
         );
+    }
+
+    public static function filterResultArray(array $resultArray, array $filter)
+    {
+        if(!$resultArray || !$filter) return [];
+
+        $filterOps = [];
+
+        foreach ($filter as $filterName => $filterValue)
+        {
+            $opsReg = '/^([<>]=?)|[=]/';
+            $operation = (preg_match($opsReg, $filterName, $matches) ? $matches[0] : '');
+            $filterFieldName =  preg_replace($opsReg, '', $filterName);
+
+            $filterOps[$filterFieldName] = array(
+                'OPERATION' => $operation,
+                'FIELD_VALUE' => $filter
+            );
+        }
+
+        return array_filter($resultArray, function($resultItem) use ($filterOps)
+        {
+            $result = true;
+
+            foreach ($resultItem as $fieldName => $fieldValue)
+            {
+                if(!$filterOps[$fieldName]) continue;
+
+                if($fieldValue instanceof Date)
+                {
+                    $fieldValue = $fieldValue->getTimestamp();
+                }
+
+                switch($filterOps[$fieldName]['OPERATION'])
+                {
+                    case '>=':
+                        $result = $fieldValue >= $filterOps[$fieldName]['FIELD_VALUE'];
+                        break;
+
+                    case '>':
+                        $result = $fieldValue > $filterOps[$fieldName]['FIELD_VALUE'];
+                        break;
+
+                    case '<=':
+                        $result = $fieldValue <= $filterOps[$fieldName]['FIELD_VALUE'];
+                        break;
+
+                    case '<':
+                        $result = $fieldValue < $filterOps[$fieldName]['FIELD_VALUE'];
+                        break;
+
+                    default:
+                        $result = $fieldValue == $filterOps[$fieldName]['FIELD_VALUE'];
+                }
+
+                if(!$result) break;
+            }
+
+            return $result;
+        });
     }
 }
