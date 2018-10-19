@@ -50,7 +50,7 @@ class Helper
         return date($format, $time);
     }
 
-    public static function getAge(Date $birthDayParam)
+    public static function getAge(Date $birthDayParam, $bNumberOnly = false)
     {
         $birthDay = new \DateTime();
         $birthDay->setTimestamp($birthDayParam->getTimestamp());
@@ -63,19 +63,23 @@ class Helper
         $dateDiff = static::$currentDate->diff($birthDay);
 
         $yearsCount = $dateDiff->y;
-        $yearsCountMod = $yearsCount % 10;
 
-        if($yearsCountMod == 1)
+        if(!$bNumberOnly)
         {
-            $yearsCount .= ' год';
-        }
-        elseif (($yearsCountMod >= 2) && ($yearsCountMod <= 4))
-        {
-            $yearsCount .= ' года';
-        }
-        else
-        {
-            $yearsCount .=  ' лет';
+            $yearsCountMod = $yearsCount % 10;
+
+            if($yearsCountMod == 1)
+            {
+                $yearsCount .= ' год';
+            }
+            elseif (($yearsCountMod >= 2) && ($yearsCountMod <= 4))
+            {
+                $yearsCount .= ' года';
+            }
+            else
+            {
+                $yearsCount .=  ' лет';
+            }
         }
 
         return $yearsCount;

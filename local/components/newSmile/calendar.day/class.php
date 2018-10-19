@@ -161,7 +161,8 @@ class CalendarDayComponent extends \CBitrixComponent
                 'UF_DOCTOR_' => 'DOCTOR',
                 'WORK_CHAIR_ID',
                 'CLINIC_ID',
-                'PATIENT_ID'
+                'PATIENT_ID',
+                'DURATION'
             )
         ));
 
@@ -286,11 +287,7 @@ class CalendarDayComponent extends \CBitrixComponent
 
     protected function writePatients()
     {
-        $rsPatient = PatientCardTable::getList(array(
-            'select' => array(
-                'ID', 'NAME', 'LAST_NAME', 'SECOND_NAME'
-            )
-        ));
+        $rsPatient = PatientCardTable::getList();
         while ($arPatient = $rsPatient->fetch())
         {
             $this->arResult['PATIENTS'][$arPatient['ID']] = $arPatient;
