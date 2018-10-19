@@ -161,7 +161,8 @@ class CalendarDayComponent extends \CBitrixComponent
                 'UF_DOCTOR_' => 'DOCTOR',
                 'WORK_CHAIR_ID',
                 'CLINIC_ID',
-                'PATIENT_ID'
+                'PATIENT_ID',
+                'DURATION'
             )
         ));
 
@@ -197,8 +198,7 @@ class CalendarDayComponent extends \CBitrixComponent
                 'TIME_END',
                 'UF_PATIENT_' => 'PATIENT',
                 'UF_DOCTOR_' => 'DOCTOR',
-                'STATUS_ID',
-                'STATUS_NAME' => 'STATUS.NAME',
+                'STATUS',
                 'WORK_CHAIR_ID',
             )
         ));
@@ -287,11 +287,7 @@ class CalendarDayComponent extends \CBitrixComponent
 
     protected function writePatients()
     {
-        $rsPatient = PatientCardTable::getList(array(
-            'select' => array(
-                'ID', 'NAME', 'LAST_NAME', 'SECOND_NAME'
-            )
-        ));
+        $rsPatient = PatientCardTable::getList();
         while ($arPatient = $rsPatient->fetch())
         {
             $this->arResult['PATIENTS'][$arPatient['ID']] = $arPatient;
@@ -301,7 +297,8 @@ class CalendarDayComponent extends \CBitrixComponent
     protected function writeTimeLine()
     {
         $workChairs = $this->arResult['WORK_CHAIR'];
-        $firstWorkChair = array_pop($workChairs);
+        $firstWorkChair = array_shift($workChairs);
+
         foreach ($firstWorkChair['SCHEDULES'] as $schedule)
         {
             $this->arResult['TIME_LINE'][] = $schedule['TIME'];

@@ -183,7 +183,7 @@ class VisitInvoiceCreateComponent extends \CBitrixComponent
             InvoiceTable::addItemToInvoice($request['INVOICE_ID'], $request['ELEMENT_ID'], $request['MEASURE']);
         }
         if (isset($request['CLOSE_VISIT'])) {
-            $arFiled['STATUS_ID'] = VisitTable::STATUS_END;
+            $arFiled['STATUS'] = VisitTable::STATUS_END;
             /*TODO доработать учет времени*/
             //$arFiled['TIME_END'] = new DateTime();
 

@@ -87,7 +87,6 @@ class mmit_newsmile extends CModule
             NewSmile\MainDoctorTable::getEntity()->createDbTable();
             NewSmile\MainDoctorTemplateTable::getEntity()->createDbTable();
 
-            NewSmile\VisitTable::createStatus();
             $this->testInstallDB();
         }
     }

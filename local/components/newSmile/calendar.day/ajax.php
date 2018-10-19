@@ -122,7 +122,7 @@ if (isset($_REQUEST['action'])) {
             switch ($_REQUEST['status'])
             {
                 case 'start':
-                    $arFiled['STATUS_ID'] = VisitTable::STATUS_START;
+                    $arFiled['STATUS'] = VisitTable::STATUS_START;
                     /*TODO доработать учет времени*/
                     //$arFiled['TIME_START'] = new DateTime();
                     break;

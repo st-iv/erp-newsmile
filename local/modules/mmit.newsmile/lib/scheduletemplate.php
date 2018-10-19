@@ -71,7 +71,11 @@ class ScheduleTemplateTable extends Entity\DataManager
                     'title' => 'Клиника'
                 )
             ),
-
+            new Entity\EnumField('DURATION', array(
+                'title' => 'Продолжительность',
+                'values' => ['15', '30'],
+                'default_value' => '30'
+            )),
         );
     }
     public static function addWeekSchedule($clinicID = 1)
@@ -115,7 +119,7 @@ class ScheduleTemplateTable extends Entity\DataManager
         {
             $arTimes[] = date('H:i', $timeStart);
 
-            $timeStart += ScheduleTable::TIME_30_MINUTES;
+            $timeStart += ScheduleTable::STANDARD_INTERVAL;
         }
         foreach ($arDays as $day)
         {
@@ -184,7 +188,7 @@ class ScheduleTemplateTable extends Entity\DataManager
                     'CLINIC_ID' => $clinicID,
                 ));
             }
-            $timeIndex += ScheduleTable::TIME_30_MINUTES;
+            $timeIndex += ScheduleTable::STANDARD_INTERVAL;
         }
         return true;
     }
