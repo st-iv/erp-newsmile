@@ -65,7 +65,7 @@ class CalendarScheduleSettingsComponent extends \CBitrixComponent
                 'NAME' => date('H:i', $timeStart),
                 'WORK_CHAIR' => $this->arResult['WORK_CHAIR']
             );
-            $timeStart += 900;
+            $timeStart += ScheduleTable::STANDARD_INTERVAL;
         }
 
         $rsVisit = VisitTable::getList(array(

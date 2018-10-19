@@ -94,7 +94,7 @@ if(!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED !== true) die();
                                 <?if(!empty($arWorkChair['PATIENT_ID'])):?>
                                     <?
                                     $time = $arWorkChair['TIME_END']->getTimestamp() - $arWorkChair['TIME_START']->getTimestamp();
-                                    $length = intval($time / 900);
+                                    $length = intval($time / 1800);
                                     ?>
                                     <div class="visit-block" style="height: <?=($length * 22);?>px">
                                         <?=$arWorkChair['UF_PATIENT_NAME'];?>

@@ -20,7 +20,7 @@ NewSmile\Ajax::start('calendar', false);
 
 $APPLICATION->IncludeComponent(
     "newSmile:calendar",
-    "",
+    ".default____b",
     array(
         'COLORS' => array(
             0 => array(

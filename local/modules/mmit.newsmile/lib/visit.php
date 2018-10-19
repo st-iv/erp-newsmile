@@ -10,17 +10,22 @@ namespace Mmit\NewSmile;
 use Bitrix\Main\Entity;
 use Bitrix\Main\Localization\Loc;
 use Bitrix\Main\Type\Date;
+use Mmit\NewSmile\Orm\ExtendedFieldsDescriptor;
 
 Loc::loadMessages(__FILE__);
 
-class VisitTable extends Entity\DataManager
+class VisitTable extends Entity\DataManager implements ExtendedFieldsDescriptor
 {
-    const STATUS_VISIT = 1;
-    const STATUS_START = 2;
-    const STATUS_PAYMENT = 3;
-    const STATUS_CARD = 4;
-    const STATUS_END = 5;
-    const STATUS_CANCEL = 6;
+    const STATUS_START = 'NEW';
+    const STATUS_END = 'FINISHED';
+
+    protected static $enumVariants = [
+        'STATUS' => [
+            'NEW' => 'Новый',
+            'WAITING' => 'Пациент ожидает',
+            'FINISHED' => 'Прием завершен'
+        ]
+    ];
 
     public static function getTableName()
     {
@@ -39,17 +44,11 @@ class VisitTable extends Entity\DataManager
                 'title' => 'Дата создания',
                 'default_value' => Date::createFromTimestamp(time())
             )),
-            new Entity\IntegerField('STATUS_ID', array(
-                'title' => 'STATUS_ID',
-                'default_value' => 0
+            new Entity\EnumField('STATUS', array(
+                'title' => 'Статус',
+                'values' => array_keys(static::getEnumVariants('STATUS')),
+                'default_value' => 'NEW'
             )),
-            new Entity\ReferenceField('STATUS',
-                'Mmit\NewSmile\Status\Visit',
-                array('=this.STATUS_ID' => 'ref.ID'),
-                array(
-                    'title' => 'Статус приема'
-                )
-            ),
             new Entity\DateField('DATE_START', array(
                 'title' => 'Дата'
             )),
@@ -103,63 +102,8 @@ class VisitTable extends Entity\DataManager
         );
     }
 
-    public function getCountVisitFromDate($arFilter)
+    public static function getEnumVariants($enumFieldName)
     {
-        global $DB;
-        $strSqlSelect = "SELECT `DATE_START`, COUNT(*) AS `COUNT` ";
-        $strSqlFrom = "FROM `m_newsmile_visit` ";
-        $strSqlWhere = "WHERE ";
-        $isFirthWhere = true;
-        foreach ($arFilter as $field => $value)
-        {
-            if ($isFirthWhere) {
-                $isFirthWhere = false;
-            } else {
-                $strSqlWhere .= " AND ";
-            }
-            $strFirth = substr($field, 0, 1);
-            $strSecond = substr($field, 1, 1);
-            if (in_array($strFirth, array('!','=','>','<'))) {
-                if (in_array($strSecond, array('='))) {
-                    if ($strFirth == $strSecond) $strSecond = '';
-                    $strSqlWhere .= "`" . substr($field, 2) . "` " . $strFirth . $strSecond . " '" . $value . "' ";
-                }
-            }
-        }
-        $strSqlGroup = "GROUP BY `DATE_START`";
-        $result = $DB->Query(
-            $strSqlSelect .
-            $strSqlFrom .
-            $strSqlWhere .
-            $strSqlGroup
-        );
-        return $result;
-    }
-
-    public static function createStatus()
-    {
-        $arFields = [
-            [
-                'NAME' => 'Пациент ожидает'
-            ],
-            [
-                'NAME' => 'Выполняется'
-            ],
-            [
-                'NAME' => 'Оплата'
-            ],
-            [
-                'NAME' => 'Заполнение истории болезни'
-            ],
-            [
-                'NAME' => 'Завершен'
-            ],
-            [
-                'NAME' => 'Отменен'
-            ],
-        ];
-        foreach ($arFields as $item) {
-            Status\VisitTable::add($item);
-        }
+        return static::$enumVariants[$enumFieldName];
     }
 }

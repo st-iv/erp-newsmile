@@ -19,5 +19,3 @@ foreach ($arResult['WORK_CHAIR'] as $workChair)
 
 }
 
-pr($arResult);
-

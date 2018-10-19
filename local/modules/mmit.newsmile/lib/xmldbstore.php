@@ -174,7 +174,7 @@ class XmlDbStore
 
             if($addFields)
             {
-                $dataClass::add($addFields)->getErrorMessages();
+                $dataClass::add($addFields);
             }
         }
     }

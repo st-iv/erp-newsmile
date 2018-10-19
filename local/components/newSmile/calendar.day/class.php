@@ -197,8 +197,7 @@ class CalendarDayComponent extends \CBitrixComponent
                 'TIME_END',
                 'UF_PATIENT_' => 'PATIENT',
                 'UF_DOCTOR_' => 'DOCTOR',
-                'STATUS_ID',
-                'STATUS_NAME' => 'STATUS.NAME',
+                'STATUS',
                 'WORK_CHAIR_ID',
             )
         ));
@@ -301,7 +300,8 @@ class CalendarDayComponent extends \CBitrixComponent
     protected function writeTimeLine()
     {
         $workChairs = $this->arResult['WORK_CHAIR'];
-        $firstWorkChair = array_pop($workChairs);
+        $firstWorkChair = array_shift($workChairs);
+
         foreach ($firstWorkChair['SCHEDULES'] as $schedule)
         {
             $this->arResult['TIME_LINE'][] = $schedule['TIME'];

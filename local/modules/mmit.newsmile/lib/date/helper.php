@@ -15,6 +15,9 @@ class Helper
     protected static $ruMonthNamesGenitive = array('января', 'февраля', 'марта', 'апреля', 'мая', 'июня', 'июля', 'августа', 'сентября', 'октября', 'ноября', 'декабря');
     protected static $ruWeekdayNames = array('Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота', 'Воскресенье');
 
+    const TIME_INTERVAL_FORMAT_WORDS = 1;
+    const TIME_INTERVAL_FORMAT_COLON = 2;
+
     /**
      * Возвращает дату в указанном формате с использованием дополнительных параметров:
      * F_ru_gen - название месяца на русском в родительном падеже;
@@ -137,32 +140,47 @@ class Helper
         return $result;
     }
 
-    public static function formatTimeInterval($seconds)
+    public static function formatTimeInterval($seconds, $format = self::TIME_INTERVAL_FORMAT_COLON)
     {
         $result = '';
 
-        $hours = floor($seconds / 3600);
+        $time = new \DateTime('midnight');
+        $time->setTime(0, 0, $seconds);
+
+        /*$hours = floor($seconds / 3600);
         $seconds -= $hours * 3600;
 
         $minutes = floor($seconds / 60);
-        $seconds = $seconds % 60;
+        $seconds = $seconds % 60;*/
 
-        if($hours)
+        if($format == self::TIME_INTERVAL_FORMAT_WORDS)
         {
-            $result = $hours . ' ' . static::getWordByNumber($hours, ['час', 'часа', 'часов']);
+            $hours = (int)$time->format('H');
+            $minutes = (int)$time->format('i');
+            $seconds = (int)$time->format('s');
+
+            if($hours)
+            {
+                $result = $hours . ' ' . static::getWordByNumber($hours, ['час', 'часа', 'часов']);
+            }
+
+            if($minutes)
+            {
+                $result .= ($result ? ' ' : '');
+                $result .= $minutes . ' ' . static::getWordByNumber($minutes, ['минута', 'минуты', 'минут']);
+            }
+
+            if($seconds)
+            {
+                $result .= ($result ? ' ' : '');
+                $result .= ' ' . $seconds . ' ' . static::getWordByNumber($seconds, ['секунда', 'секунды', 'секунд']);
+            }
+        }
+        elseif ($format == self::TIME_INTERVAL_FORMAT_COLON)
+        {
+            $result = $time->format('H:i:s');
         }
 
-        if($minutes)
-        {
-            $result .= ($result ? ' ' : '');
-            $result .= $minutes . ' ' . static::getWordByNumber($minutes, ['минута', 'минуты', 'минут']);
-        }
-
-        if($seconds)
-        {
-            $result .= ($result ? ' ' : '');
-            $result .= ' ' . $seconds . ' ' . static::getWordByNumber($seconds, ['секунда', 'секунды', 'секунд']);
-        }
 
         return $result;
     }
