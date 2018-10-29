@@ -49,9 +49,25 @@ use Mmit\NewSmile\Ajax;
                     </div>
                 <?endif;?>
 
+
                 <div class="notif_text">
                     <?=$notice['TEXT']?>
+
+                    <?if($notice['TYPE'] == 'WAITING_LIST_SUGGEST'):?>
+                        <br><br>
+                        <?
+                        foreach ($notice['PARAMS']['FREE_TIME'] as $date => $freeIntervals):?>
+                            На <?=$date?>:
+                            <?foreach ($freeIntervals as $interval):?>
+                                с <?=$interval['START_TIME']?> до <?=$interval['END_TIME']?> (кресло <?=$interval['WORK_CHAIR']?>);
+                            <?endforeach;?>
+                            <br>
+                        <?endforeach;?>
+                    <?endif;?>
                 </div>
+
+
+
                 <div class="notif_close"></div>
             </div>
         <?endforeach;?>

@@ -4,7 +4,10 @@ namespace Mmit\NewSmile\Notice;
 use Bitrix\Main\Entity;
 use Bitrix\Main\Loader;
 use Bitrix\Main\Type\DateTime;
+use Bitrix\Main\UserTable;
 use Mmit\NewSmile\Helpers;
+use Mmit\NewSmile\PatientCardTable;
+use Mmit\NewSmile\RoleTable;
 use Mmit\NewSmile\VisitTable;
 use Mmit\NewSmile\Date;
 
@@ -119,16 +122,15 @@ class NoticeTable extends Entity\DataManager
     /**
      * Добавляет уведомление в бд и отправляет получателям
      * @param string $typeCode - символьный код типа
-     * @param array $users - id пользователей-получателей
+     * @param array $users - id пользователей-получателей. Можно указывать как конкретные id, так и коды ролей
      * @param array $params - параметры уведомления
      * @param bool $bUseParamModificator - использовать модификатор параметров
-     *
-     * @throws \Exception
      */
     public static function push($typeCode, array $params = array(), array $users = array(), $bUseParamModificator = true)
     {
         $sendToUsers = array();
         $noticeId = null;
+        static::prepareUserIdArray($users);
 
         if($bUseParamModificator && $params)
         {
@@ -176,9 +178,7 @@ class NoticeTable extends Entity\DataManager
      * @param int $noticeId - id уведомления
      * @param array $users - id пользователей-получателей
      *
-     * @throws \Bitrix\Main\ArgumentException
-     * @throws \Bitrix\Main\ObjectPropertyException
-     * @throws \Bitrix\Main\SystemException
+     * @throws \Bitrix\Main\LoaderException
      */
     protected static function send($noticeId, array $users)
     {
@@ -193,7 +193,30 @@ class NoticeTable extends Entity\DataManager
         ));
     }
 
-    /* модификаторы параметров уведомлений */
+    /**
+     * Заменяет в массиве идентификаторов пользователей названия ролей массивами id пользователей, состоящих в данных ролях.
+     * @param array $users
+     */
+    protected static function prepareUserIdArray(array &$users)
+    {
+        foreach ($users as $index => $userIndex)
+        {
+            if(is_string($userIndex))
+            {
+                $roleUsers = RoleTable::getUsersByRole($userIndex, [
+                    'select' => ['ID']
+                ]);
+
+                unset($users[$index]);
+
+                $users = array_merge($users, array_keys($roleUsers));
+            }
+        }
+
+        $users = array_unique($users);
+    }
+
+    /* модификаторы параметров уведомлений (срабатывают при добавлении нового уведомления в бд) */
 
     protected static function modifyParamsVisitFinished($params)
     {
@@ -218,6 +241,24 @@ class NoticeTable extends Entity\DataManager
                 unset($visit['PATIENT_BIRTHDAY']);
 
                 $params = array_merge($params, $visit);
+            }
+        }
+
+        return $params;
+    }
+
+    protected static function modifyParamsWaitingListSuggest($params)
+    {
+        if($params['PATIENT_ID'])
+        {
+            $dbPatient = PatientCardTable::getByPrimary($params['PATIENT_ID'], array(
+                'select' => ['NAME', 'LAST_NAME', 'SECOND_NAME', 'PERSONAL_PHONE']
+            ));
+
+            if($patient = $dbPatient->fetch())
+            {
+                $params['PATIENT_PHONE'] = $patient['PERSONAL_PHONE'];
+                $params['PATIENT_FIO'] = Helpers::getFio($patient);
             }
         }
 

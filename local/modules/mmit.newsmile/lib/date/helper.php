@@ -99,6 +99,18 @@ class Helper
     }
 
     /**
+     * Проверяет равны ли между собой два объекта DateTime
+     * @param \DateTime | DateTime $dateTimeA
+     * @param \DateTime | DateTime $dateTimeB
+     *
+     * @return bool
+     */
+    public static function isDateTimeEquals($dateTimeA, $dateTimeB)
+    {
+        return ($dateTimeA->getTimestamp() == $dateTimeB->getTimestamp());
+    }
+
+    /**
      * Возвращает дату со временем в формате NewSmile
      * @param $date
      *
@@ -204,4 +216,17 @@ class Helper
 
         return $result;
     }
+
+    /**
+     * Возвращает разницу между датами в минутах
+     * @param \DateTime | DateTime $dateA
+     * @param \DateTime | DateTime $dateB
+     *
+     * @return int
+     */
+    public static function getDiffMinutes($dateA, $dateB)
+    {
+        return abs(($dateA->getTimestamp() - $dateB->getTimestamp()) / 60);
+    }
+
 }

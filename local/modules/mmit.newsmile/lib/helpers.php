@@ -158,11 +158,20 @@ class Helpers
         return substr($className, strrpos($className, '\\') + 1);
     }
 
-    public static function getCamelCase($snakeCaseStr)
+    /**
+     * Переводит строку из snake case в camel case
+     * @param string $snakeCaseStr
+     * @param bool $bUpper - если true, то верхний camel case, иначе - нижний
+     *
+     * @return string
+     */
+    public static function getCamelCase($snakeCaseStr, $bUpper = true)
     {
         $snakeCaseStr = strtolower($snakeCaseStr);
 
-        return preg_replace_callback('/(^|_)([a-z])/', function($matches)
+        $regExp = $bUpper ? '/(^|_|-)([a-z])/' : '/(_|-)([a-z])/';
+
+        return preg_replace_callback($regExp, function($matches)
         {
             return strtoupper($matches[2]);
         }, $snakeCaseStr);

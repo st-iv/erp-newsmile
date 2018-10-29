@@ -15,6 +15,19 @@ $APPLICATION->IncludeComponent(
     $component
 );
 ?>
+
+<?
+$APPLICATION->IncludeComponent(
+    "newSmile:entity.list",
+    "just_table",
+    Array(
+        'DATA_MANAGER_CLASS_ELEMENT' => 'Mmit\\NewSmile\\WaitingListTable',
+        'ELEMENT_FIELDS' => ['*', 'DOCTOR.LAST_NAME', 'PATIENT.LAST_NAME', 'CLINIC.NAME'],
+    ),
+    $component
+);
+?>
+
 <?
 require($_SERVER['DOCUMENT_ROOT'].'/bitrix/footer.php');
 ?>

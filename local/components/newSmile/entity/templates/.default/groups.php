@@ -4,7 +4,7 @@ $APPLICATION->IncludeComponent(
     "",
     Array(
         'DATA_MANAGER_CLASS_GROUP' => $arParams['DATA_MANAGER_CLASS_GROUP'],
-        'SECTION_FIELDS' => $arParams['LIST_SECTION_FIELDS'],
+        'GROUP_FIELDS' => $arParams['LIST_SECTION_FIELDS'],
         'INDEX_URL' => $arResult['FOLDER'] . $arResult['URL_TEMPLATES']['groups'],
         'SECTION_URL' => $arResult['FOLDER'] . $arResult['URL_TEMPLATES']['group'],
         'DETAIL_URL' => $arResult['FOLDER'] . $arResult['URL_TEMPLATES']['element'],

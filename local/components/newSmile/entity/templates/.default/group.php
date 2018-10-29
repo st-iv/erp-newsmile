@@ -11,7 +11,7 @@ $APPLICATION->IncludeComponent(
         'DATA_MANAGER_CLASS_ELEMENT' => $arParams['DATA_MANAGER_CLASS_ELEMENT'],
         'DATA_MANAGER_CLASS_GROUP' => $arParams['DATA_MANAGER_CLASS_GROUP'],
         'SECTION_ID' => $arResult['VARIABLES']['SECTION_ID'],
-        'SECTION_FIELDS' => $arParams['LIST_SECTION_FIELDS'],
+        'GROUP_FIELDS' => $arParams['LIST_SECTION_FIELDS'],
         'ELEMENT_FIELDS' => $arParams['LIST_ELEMENT_FIELDS'],
         'INDEX_URL' => $arResult['FOLDER'] . $arResult['URL_TEMPLATES']['groups'],
         'SECTION_URL' => $arResult['FOLDER'] . $arResult['URL_TEMPLATES']['group'],

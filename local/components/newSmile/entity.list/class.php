@@ -8,10 +8,29 @@ class EntityListComponent extends \CBitrixComponent
     public function onPrepareComponentParams($arParams)
     {
         $arParams['SECTION_ID'] = (int)$arParams['SECTION_ID'];
-        $arParams['SECTION_FIELDS'] = (is_array($arParams['SECTION_FIELDS']) ? $arParams['SECTION_FIELDS'] : array());
+        $arParams['GROUP_FIELDS'] = (is_array($arParams['GROUP_FIELDS']) ? $arParams['GROUP_FIELDS'] : array());
         $arParams['ELEMENT_FIELDS'] = (is_array($arParams['ELEMENT_FIELDS']) ? $arParams['ELEMENT_FIELDS'] : array());
 
+        /* добавляем алиасы для полей reference, это нужно для сопоставления полей и их значений */
+        foreach (['ELEMENT', 'GROUP'] as $objectType)
+        {
+            foreach ($arParams[$objectType . '_FIELDS'] as $index => $selectFieldName)
+            {
+                if(preg_match('/^([A-Z0-9_]+)\.([A-Z0-9_]+)$/', $selectFieldName, $matches))
+                {
+                    unset($arParams[$objectType . '_FIELDS'][$index]);
+                    $alias = $this->getRefFieldAlias($matches[1], $matches[2]);
+                    $arParams[$objectType . '_FIELDS'][$alias] = $selectFieldName;
+                }
+            }
+        }
+
         return $arParams;
+    }
+
+    protected function getRefFieldAlias($refName, $fieldName)
+    {
+        return $refName . '__' . $fieldName;
     }
 
     protected function checkParams()
@@ -35,14 +54,19 @@ class EntityListComponent extends \CBitrixComponent
 
     protected function prepareResult()
     {
-        $this->arResult['SECTIONS'] = $this->getSections();
+        if($this->arParams['DATA_MANAGER_CLASS_GROUP'])
+        {
+            $this->arResult['SECTIONS'] = $this->getSections();
+            $this->arResult['GROUP_FIELDS'] = $this->getFieldsInfo('GROUP');
+        }
 
         if($this->arParams['DATA_MANAGER_CLASS_ELEMENT'])
         {
             $this->arResult['ELEMENTS'] = $this->getElements();
+            $this->arResult['ELEMENT_FIELDS'] = $this->getFieldsInfo('ELEMENT');
         }
 
-        if(!$this->arParams['SECTION_ID'])
+        if(!$this->arParams['SECTION_ID'] && $this->arResult['SECTIONS'])
         {
             $this->arResult['SECTIONS'] = NewSmile\Helpers::getTree($this->arResult['SECTIONS']);
         }
@@ -68,9 +92,9 @@ class EntityListComponent extends \CBitrixComponent
                 }
             }
 
-            if($this->arParams['SECTION_FIELDS'])
+            if($this->arParams['GROUP_FIELDS'])
             {
-                $select = $this->arParams['SECTION_FIELDS'];
+                $select = $this->arParams['GROUP_FIELDS'];
                 $select[] = 'ID';
 
                 if($parentSectionFieldName)
@@ -127,7 +151,6 @@ class EntityListComponent extends \CBitrixComponent
             ? array_merge($this->arParams['ELEMENT_FIELDS'], array('ID'))
             : array());
 
-
         $dbElements = $elementDataManager::getList(array(
             'filter' => $filter,
             'select' => $select
@@ -139,20 +162,115 @@ class EntityListComponent extends \CBitrixComponent
         {
             $element['NAME_BY_TEMPLATE'] = $this->getNameByTemplate($element);
 
-            $element['URL'] = \CComponentEngine::makePathFromTemplate($this->arParams['ELEMENT_URL'], array(
-                'SECTION_ID' => $this->arParams['SECTION_ID'],
-                'ELEMENT_ID' => $element['ID']
-            ));
+            if($this->arParams['ELEMENT_URL'])
+            {
+                $element['URL'] = \CComponentEngine::makePathFromTemplate($this->arParams['ELEMENT_URL'], array(
+                    'SECTION_ID' => $this->arParams['SECTION_ID'],
+                    'ELEMENT_ID' => $element['ID']
+                ));
+            }
 
-            $element['EDIT_URL'] = \CComponentEngine::makePathFromTemplate($this->arParams['ELEMENT_EDIT_URL'], array(
-                'SECTION_ID' => $this->arParams['SECTION_ID'],
-                'ELEMENT_ID' => $element['ID'],
-            ));
+
+            if($this->arParams['ELEMENT_EDIT_URL'])
+            {
+                $element['EDIT_URL'] = \CComponentEngine::makePathFromTemplate($this->arParams['ELEMENT_EDIT_URL'], array(
+                    'SECTION_ID' => $this->arParams['SECTION_ID'],
+                    'ELEMENT_ID' => $element['ID'],
+                ));
+            }
+
 
             $elements[] = $element;
         }
 
         return $elements;
+    }
+
+    protected function getFieldsInfo($objectType)
+    {
+        $fieldsInfo = [];
+
+        $dataManager = $this->arParams['DATA_MANAGER_CLASS_' . $objectType];
+
+        if(!NewSmile\Orm\Helper::isDataManagerClass($dataManager))
+        {
+            ShowError('Не найден DataManager класс ' . $dataManager);
+            return [];
+        }
+
+        /**
+         * @var \Bitrix\Main\Entity\DataManager $dataManager
+         */
+
+        $selectedFields = $this->arParams[$objectType . '_FIELDS'] ?: [];
+
+        $bAllFieldsSelected = !$selectedFields || in_array('*', $selectedFields);
+
+
+        $allFields = $dataManager::getEntity()->getFields();
+        $referenceFields = [];
+
+        foreach ($allFields as $field)
+        {
+            $fieldType = NewSmile\Orm\Helper::getFieldType($field);
+            $fieldName = $field->getName();
+
+            if($bAllFieldsSelected || in_array($fieldName, $selectedFields))
+            {
+                $fieldsInfo[$fieldName] = [
+                    'TITLE' => $field->getTitle(),
+                    'TYPE' => $fieldType,
+                    'VALUE_KEY' => $fieldName,
+                    'SERIALIZED' => $field->isSerialized()
+                ];
+
+
+                if($fieldType == 'reference')
+                {
+                    $referenceFields[] = $field;
+                }
+            }
+        }
+
+        foreach ($referenceFields as $referenceField)
+        {
+            $refKeyName = NewSmile\Orm\Helper::getReferenceExternalKeyName($referenceField);
+            $refFieldName = $referenceField->getName();
+
+            unset($fieldsInfo[$refKeyName]);
+
+            $refSelectedFields = $this->getRefSelectedFields($referenceField, $selectedFields);
+
+            if($refSelectedFields)
+            {
+                $fieldsInfo[$refFieldName]['VALUE_KEY'] = $this->getRefFieldAlias($refFieldName, array_pop($refSelectedFields));
+            }
+            else
+            {
+                ShowError('Для reference поля ' . $refFieldName . ' не указаны запрашиваемые поля связанной таблицы');
+                unset($fieldsInfo[$refFieldName]);
+            }
+
+
+        }
+
+
+        return $fieldsInfo;
+    }
+
+    protected function getRefSelectedFields(\Bitrix\Main\Entity\ReferenceField $referenceField, array $selectedFields)
+    {
+        $refSelectedFields = [];
+        $referenceFieldName = $referenceField->getName();
+        foreach ($selectedFields as $selectedFieldName)
+        {
+            if(preg_match('/^' . $referenceFieldName . '\.([A-Z_0-9]+)$/', $selectedFieldName, $matches))
+            {
+                $refSelectedFields[] = $matches[1];
+            }
+        }
+
+        return $refSelectedFields;
     }
 
     protected function getNameByTemplate(array $elementFields)
@@ -174,6 +292,8 @@ class EntityListComponent extends \CBitrixComponent
         }
         else
         {
+            $nameByTemplate = '';
+
             foreach ($elementFields as $fieldName)
             {
                 if($fieldName != 'ID')

@@ -14,6 +14,7 @@ use Bitrix\Main\Type\Date;
 use Bitrix\Main\Type\DateTime;
 use Mmit\NewSmile\Orm\ExtendedFieldsDescriptor;
 use Mmit\NewSmile\Orm\Helper;
+use Mmit\NewSmile;
 
 Loc::loadMessages(__FILE__);
 
@@ -137,7 +138,7 @@ class WaitingListTable extends Entity\DataManager implements ExtendedFieldsDescr
 
     public static function checkFreeIntervals()
     {
-        $freeIntervals = [];
+        $suitableIntervals = [];
 
         $dbWaitingListItems = static::getList();
 
@@ -148,11 +149,17 @@ class WaitingListTable extends Entity\DataManager implements ExtendedFieldsDescr
         $schedules = [];
         $doctorsIds = [];
 
+        /* запрос свободных для записи интервалов расписания */
+
         $dbSchedules = ScheduleTable::getList([
             'filter' => [
                 '!DOCTOR_ID' => false,
                 'PATIENT_ID' => false,
                 '>=TIME' => DateTime::createFromPhp($startTime)
+            ],
+            'order' => [
+                'WORK_CHAIR_ID' => 'asc',
+                'TIME' => 'asc'
             ]
         ]);
 
@@ -162,7 +169,9 @@ class WaitingListTable extends Entity\DataManager implements ExtendedFieldsDescr
             $doctorsIds[] = $schedule['DOCTOR_ID'];
         }
 
-        // запрос профессий врачей
+
+        /* запрос профессий врачей */
+
         $specializations = [];
 
         $dbSpecs = DoctorSpecializationTable::getList([
@@ -171,70 +180,174 @@ class WaitingListTable extends Entity\DataManager implements ExtendedFieldsDescr
             ]
         ]);
 
-
         while($spec = $dbSpecs->fetch())
         {
             $specializations[$spec['DOCTOR_ID']][$spec['SPECIALIZATION']] = true;
         }
 
+        /* фильтрация записей расписания для каждого из ожидающих пациентов */
+        $waitingList = [];
+
         while($waitingListItem = $dbWaitingListItems->fetch())
         {
+            $waitingList[] = $waitingListItem;
+
             foreach ($schedules as $schedule)
             {
-                $isSuitable = false;
-
-                $scheduleTime = $schedule['TIME']->format('H:i');
-                $scheduleDate = $schedule['TIME']->format('Y-m-d');
-
-                foreach ($waitingListItem['DATE'] as $waitingDate)
+                if(static::isScheduleSuitable($schedule, $waitingListItem, $specializations))
                 {
-                    if($waitingDate == $scheduleDate)
-                    {
-                        $isSuitable = true;
-                        break;
-                    }
+                    $suitableIntervals[$waitingListItem['PATIENT_ID']][$schedule['WORK_CHAIR_ID']][] = $schedule;
                 }
-
-                if(!$isSuitable) continue;
-
-                if($waitingListItem['TIME_START'] instanceof DateTime)
-                {
-                    $time = new \DateTime($scheduleTime);
-                    $scheduleTimeTs = $time->getTimestamp();
-                    $startTime = $waitingListItem['TIME_START']->format('H:i');
-                    $time->modify($startTime);
-                    $startTimeTs = $time->getTimestamp();
-
-                    if($scheduleTimeTs < $startTimeTs) continue;
-                }
-
-                if($waitingListItem['DOCTOR_ID'] && ($schedule['DOCTOR_ID'] != $waitingListItem['DOCTOR_ID']))
-                {
-                    continue;
-                }
-
-
-                if($waitingListItem['CLINIC_ID'] && ($schedule['CLINIC_ID'] != $waitingListItem['CLINIC_ID']))
-                {
-                    continue;
-                }
-
-                if($waitingListItem['SPECIALIZATION'])
-                {
-                    if(!$specializations[$schedule['DOCTOR_ID']][$waitingListItem['SPECIALIZATION']])
-                    {
-                        continue;
-                    }
-                }
-
-                $freeIntervals[] = $schedule;
             }
-
         }
 
-        pr('$freeIntervals');
-        pr($freeIntervals);
+        /*
+        На этом моменте $suitableIntervals - это отдельные интервалы расписания, которые подходят под фильтры, указанные
+        в записи ожидания. То есть под все фильтры, кроме DURATION, тк DURATION в данном случае - это продолжительность
+        намечаемого приема, а не продолжительность интервала расписания
+        */
+
+        $suitableTime = static::getSuitableTime($suitableIntervals, $waitingList);
+
+        foreach ($suitableTime as $patientId => $patientSuitableTime)
+        {
+            NewSmile\Notice\NoticeTable::push(
+                'WAITING_LIST_SUGGEST',
+                [
+                    'PATIENT_ID' => $patientId,
+                    'FREE_TIME' => $patientSuitableTime
+                ],
+                ['admin']
+            );
+        }
     }
+
+    /**
+     * Функция собирает из переданных записей расписания интервалы, в которые можно записать пациентов из листа ожидания
+     *
+     * @param array $suitableIntervals - записи расписания, из которых будут составляться интервалы. Должны быть отсортированы по
+     * рабочим креслам и времени (по возрастанию)
+     * @param array $waitingList - записи листа ожидания, для которых нужно сформировать интервалы
+     *
+     * @return array массив подходящего времени для каждого пациента из листа ожидания
+     */
+    protected static function getSuitableTime(array $suitableIntervals, array $waitingList)
+    {
+        $suitableTime = [];
+
+        foreach ($waitingList as $waitingListItem)
+        {
+            $intervals = $suitableIntervals[$waitingListItem['PATIENT_ID']];
+
+            foreach ($intervals as $workChairId => $workChairIntervals)
+            {
+                /**
+                 * @var DateTime $intervalStartTime
+                 */
+                $intervalStartTime = null;
+                $nextIntervalTime = new \DateTime();
+                $intervalsCount = count($workChairIntervals);
+                $intervalsCounter = 0;
+
+                foreach ($workChairIntervals as $workChairInterval)
+                {
+                    $intervalsCounter++;
+                    $isLast = ($intervalsCounter == $intervalsCount);
+
+                    if($intervalStartTime)
+                    {
+                        if($isLast || !NewSmile\Date\Helper::isDateTimeEquals($nextIntervalTime, $workChairInterval['TIME']))
+                        {
+                            $durationMinutes = NewSmile\Date\Helper::getDiffMinutes($intervalStartTime, $nextIntervalTime);
+                            if($durationMinutes >= $waitingListItem['DURATION'])
+                            {
+                                $suitableTime[$waitingListItem['PATIENT_ID']][$intervalStartTime->format('Y-m-d')][] = [
+                                    'START_TIME' => $intervalStartTime->format('H:i'),
+                                    'END_TIME' => $nextIntervalTime->format('H:i'),
+                                    'WORK_CHAIR' => $workChairId
+                                ];
+                            }
+
+                            $intervalStartTime = $workChairInterval['TIME'];
+                        }
+                    }
+                    else
+                    {
+                        $intervalStartTime = $workChairInterval['TIME'];
+                    }
+
+                    // прибавив DURATION к времени текущей записи расписания мы получаем время следующей записи $nextIntervalTime.
+                    // Если на следующей итерации время записи окажется другим, значит интервал завершен
+                    $nextIntervalTime->setTimestamp($workChairInterval['TIME']->getTimestamp());
+                    $nextIntervalTime->modify('+' . $workChairInterval['DURATION'] . ' minute');
+                }
+            }
+        }
+
+        return $suitableTime;
+    }
+
+    protected static function isScheduleSuitable(array $schedule, array $waitingListItem, array $specializations)
+    {
+        $isSuitable = false;
+
+        $scheduleTimeTs = $schedule['TIME']->getTimestamp();
+        $scheduleDate = $schedule['TIME']->format('Y-m-d');
+
+        /* проверка по дате */
+        foreach ($waitingListItem['DATE'] as $waitingDate)
+        {
+            if($waitingDate == $scheduleDate)
+            {
+                $isSuitable = true;
+                break;
+            }
+        }
+
+        if(!$isSuitable) return false;
+
+        /* проверка по начальному времени */
+        if($waitingListItem['TIME_START'] instanceof DateTime)
+        {
+            $waitingStartTime = NewSmile\Date\Helper::getPhpDateTime($waitingListItem['TIME_START']);
+            $waitingStartTime->modify($scheduleDate);
+
+            if($scheduleTimeTs < $waitingStartTime->getTimestamp()) return false;
+        }
+
+        /* проверка по конечному времени */
+        if($waitingListItem['TIME_END'] instanceof DateTime)
+        {
+            $waitingEndTime = NewSmile\Date\Helper::getPhpDateTime($waitingListItem['TIME_END']);
+            $waitingEndTime->modify($scheduleDate);
+
+            if($scheduleTimeTs >= $waitingEndTime->getTimestamp()) return false;
+        }
+
+        /* проверка по врачу */
+        if($waitingListItem['DOCTOR_ID'] && ($schedule['DOCTOR_ID'] != $waitingListItem['DOCTOR_ID']))
+        {
+            return false;
+        }
+
+        /* проверка по клинике */
+        if($waitingListItem['CLINIC_ID'] && ($schedule['CLINIC_ID'] != $waitingListItem['CLINIC_ID']))
+        {
+            return false;
+        }
+
+        /* проверка по профессии */
+        if($waitingListItem['SPECIALIZATION'])
+        {
+            if(!$specializations[$schedule['DOCTOR_ID']][$waitingListItem['SPECIALIZATION']])
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
 
     public static function getEnumVariants($enumFieldName)
     {

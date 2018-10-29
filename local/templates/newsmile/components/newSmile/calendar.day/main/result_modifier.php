@@ -130,5 +130,3 @@ unset($patientInfo);
 
 $arResult['JS_PARAMS']['patients'] = array_values($patients);
 
-pr($arResult['JS_PARAMS']);
-

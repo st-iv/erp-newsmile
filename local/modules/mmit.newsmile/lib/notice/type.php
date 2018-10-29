@@ -13,7 +13,8 @@ class TypeTable extends Entity\DataManager implements ExtendedFieldsDescriptor
         'GROUP' => array(
             'VISIT' => 'Приёмы',
             'SYSTEM' => 'Системные',
-            'BOSSES' => 'Начальство'
+            'BOSSES' => 'Начальство',
+            'CALLS' => 'Обзвон'
         )
     );
 
