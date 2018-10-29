@@ -1,10 +1,4 @@
-<?php
-/**
- * Created by PhpStorm.
- * User: User
- * Date: 27.09.2018
- * Time: 14:04
- */
+<?
 
 namespace Mmit\NewSmile;
 
@@ -106,19 +100,14 @@ class Ajax
         );
     }
 
-    protected static function getAreaParam($paramName)
+    public static function getAreaParam($paramName)
     {
         return static::$areasStack[count(static::$areasStack) - 1][$paramName];
     }
 
     public static function setAreaParam($paramName, $paramValue)
     {
-        Debug::writeToFile('setAreaParam!!');
-        Debug::writeToFile($paramName);
-        Debug::writeToFile($paramValue);
         static::$areasStack[count(static::$areasStack) - 1][$paramName] = $paramValue;
-        Debug::writeToFile(static::$areasStack[count(static::$areasStack) - 1]);
-        Debug::writeToFile(static::$areasStack);
     }
 
     public static function getAreaIdAttr()
