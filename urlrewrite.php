@@ -8,20 +8,20 @@ $arUrlRewrite=array (
     'PATH' => '/desktop_app/router.php',
     'SORT' => 100,
   ),
-  12 => 
-  array (
-    'CONDITION' => '#^/materials/measure-units/#',
-    'RULE' => '',
-    'ID' => 'newSmile:entity',
-    'PATH' => '/materials/measure-units/index.php',
-    'SORT' => 100,
-  ),
   11 => 
   array (
     'CONDITION' => '#^/materials/packing-lists/#',
     'RULE' => '',
     'ID' => 'newSmile:entity',
     'PATH' => '/materials/packing-lists/index.php',
+    'SORT' => 100,
+  ),
+  12 => 
+  array (
+    'CONDITION' => '#^/materials/measure-units/#',
+    'RULE' => '',
+    'ID' => 'newSmile:entity',
+    'PATH' => '/materials/measure-units/index.php',
     'SORT' => 100,
   ),
   4 => 
@@ -56,6 +56,14 @@ $arUrlRewrite=array (
     'PATH' => '/materials/stores/index.php',
     'SORT' => 100,
   ),
+  14 => 
+  array (
+    'CONDITION' => '#^/ajax/patientcard/#',
+    'RULE' => '',
+    'ID' => 'newSmile:entity',
+    'PATH' => '/ajax/patientcard/index.php',
+    'SORT' => 100,
+  ),
   5 => 
   array (
     'CONDITION' => '#^/personal/lists/#',
@@ -70,6 +78,14 @@ $arUrlRewrite=array (
     'RULE' => '',
     'ID' => 'newSmile:patient.card',
     'PATH' => '/patientcard/index.php',
+    'SORT' => 100,
+  ),
+  13 => 
+  array (
+    'CONDITION' => '#^/price-list/#',
+    'RULE' => '',
+    'ID' => 'newSmile:entity',
+    'PATH' => '/price-list/index.php',
     'SORT' => 100,
   ),
   7 => 

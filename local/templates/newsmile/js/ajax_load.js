@@ -157,6 +157,6 @@ var Ajax = (function()
     return {
         load: load,
         getAreaCode: getAreaCode,
-        registerLoadHandler: registerLoadHandler
+        registerLoadHandler: registerLoadHandler,
     }
 })();
