@@ -1,15 +1,16 @@
 <?if(!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED !== true) die();?>
+
 <br>
 <br>
 <table class="entity-list">
-    <tr>
+    <tr class="entity-list__header">
         <?foreach ($arResult['ELEMENT_FIELDS'] as $field):?>
             <th><?=$field['TITLE']?></th>
         <?endforeach;?>
     </tr>
 
     <?foreach ($arResult['ELEMENTS'] as $element):?>
-        <tr>
+        <tr class="entity-list__row" data-id="<?=$element['ID']?>">
             <?foreach ($arResult['ELEMENT_FIELDS'] as $fieldName => $field):?>
                 <?$value = $element[$field['VALUE_KEY']];?>
 

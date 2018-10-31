@@ -251,12 +251,38 @@ class EntityListComponent extends \CBitrixComponent
                 unset($fieldsInfo[$refFieldName]);
             }
 
+        }
 
+        if(!$bAllFieldsSelected)
+        {
+            $fieldsInfo = $this->sortFields($fieldsInfo, $selectedFields);
         }
 
 
         return $fieldsInfo;
     }
+
+    /**
+     * Сортирует массив полей в тот же порядок, в котором эти поля перечислены в $fieldsOrder
+     * @param array $fields
+     * @param array $fieldsOrder
+     * @return array
+     */
+    protected function sortFields(array $fields, array $fieldsOrder)
+    {
+        $sortedFields = [];
+
+        foreach ($fieldsOrder as $fieldName)
+        {
+            if(isset($fields[$fieldName]))
+            {
+                $sortedFields[$fieldName] = $fields[$fieldName];
+            }
+        }
+
+        return $sortedFields;
+    }
+
 
     protected function getRefSelectedFields(\Bitrix\Main\Entity\ReferenceField $referenceField, array $selectedFields)
     {

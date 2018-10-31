@@ -366,28 +366,36 @@ class EntityEditComponent extends \CBitrixComponent
     public function includeTemplatePage($templatePage)
     {
         $mainTemplatePagePath = $_SERVER['DOCUMENT_ROOT'] . $this->mainTemplateFolder . '/' . $templatePage . '.php';
-        $bIncludeOriginal = true;
 
-        if(file_exists($mainTemplatePagePath))
+        if($this->arParams['OVERWRITE_TEMPLATE'])
         {
-            if($templatePage == 'result_modifier')
+            $bIncludeOriginal = true;
+
+            if(file_exists($mainTemplatePagePath))
             {
-                $arResult =& $this->arResult;
+                if($templatePage == 'result_modifier')
+                {
+                    $arResult =& $this->arResult;
+                }
+                else
+                {
+                    $arResult = $this->arResult;
+                }
+
+                $arParams =& $this->arParams;
+
+
+                include $mainTemplatePagePath;
+
+                $bIncludeOriginal = $templatePage == 'template';
             }
-            else
+
+            if($bIncludeOriginal && file_exists($_SERVER['DOCUMENT_ROOT'] . $this->originalTemplateFolder . '/' . $templatePage . '.php'))
             {
-                $arResult = $this->arResult;
+                $this->includeComponentTemplate($templatePage);
             }
-
-            $arParams =& $this->arParams;
-
-
-            include $mainTemplatePagePath;
-
-            $bIncludeOriginal = $templatePage == 'template';
         }
-
-        if($bIncludeOriginal && file_exists($_SERVER['DOCUMENT_ROOT'] . $this->originalTemplateFolder . '/' . $templatePage . '.php'))
+        elseif(file_exists($mainTemplatePagePath))
         {
             $this->includeComponentTemplate($templatePage);
         }

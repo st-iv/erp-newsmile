@@ -1,0 +1,7 @@
+.card__tab-content {
+    display: none;
+}
+
+.card__tab-content.card__tab-content--active {
+    display: block;
+}

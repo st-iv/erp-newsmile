@@ -8,3 +8,7 @@
 .tablebodytext {
     display: none
 }
+
+.patients-list {
+    margin-left: 80px;
+}
