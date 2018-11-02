@@ -6,8 +6,10 @@ use Bitrix\Main\Entity\Field;
 
 abstract class FieldsProcessor
 {
-    protected $params = array();
-    protected $result = array();
+    protected $params = [];
+    protected $result = [];
+    protected $hiddenFields = [];
+
 
     /**
      * @var Field[]
@@ -47,6 +49,17 @@ abstract class FieldsProcessor
                 else
                 {
                     $this->params['SELECT_FIELDS'] = $this->params['EDITABLE_FIELDS'];
+                }
+            }
+        }
+
+        if($name == 'PRESET')
+        {
+            foreach ($value as $fieldName => $presetInfo)
+            {
+                if($presetInfo['HIDDEN'])
+                {
+                    $this->hiddenFields[$fieldName] = $presetInfo['VALUE'];
                 }
             }
         }

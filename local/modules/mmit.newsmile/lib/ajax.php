@@ -9,6 +9,7 @@ class Ajax
     protected static $areasStack = array();
     protected static $requestedArea = '';
     protected static $result = array();
+    protected static $isContentRecording = false;
 
     public static function start($areaId, $bWriteContent = true, $bShowAreaId = true)
     {
@@ -16,15 +17,16 @@ class Ajax
 
         static::addArea($areaId, $bWriteContent, $bShowAreaId);
 
-        if($bShowAreaId)
-        {
-            echo '<div ' . static::getAreaIdAttr() . '>';
-        }
-
-        if(static::isAreaRequested() && $bWriteContent)
+        if($bWriteContent && !static::$isContentRecording && static::isAreaRequested())
         {
             $APPLICATION->RestartBuffer();
             ob_start();
+            static::$isContentRecording = true;
+        }
+
+        if($bShowAreaId)
+        {
+            echo '<div ' . static::getAreaIdAttr() . '>';
         }
 
         if(static::isCurrentAreaRequested())
@@ -35,14 +37,22 @@ class Ajax
 
     public static function finish()
     {
+
+
         if(static::isAreaRequested())
         {
             $isCurrentAreaRequested = static::isCurrentAreaRequested();
             $currentArea = array_pop(static::$areasStack);
 
+            if($currentArea['SHOW_AREA_ID'])
+            {
+                echo '</div>';
+            }
+
             if($currentArea['WRITE_CONTENT'])
             {
-                static::$result['content'][$currentArea['AREA_ID']] = ob_get_clean();
+                static::$result['content'][$currentArea['AREA_ID']] = ob_get_contents();
+                static::$isContentRecording = false;
             }
 
             foreach ($currentArea as $paramName => $paramValue)
@@ -64,6 +74,7 @@ class Ajax
         else
         {
             $currentArea = array_pop(static::$areasStack);
+
             if($currentArea['SHOW_AREA_ID'])
             {
                 echo '</div>';
@@ -96,7 +107,7 @@ class Ajax
         static::$areasStack[] = array(
             'AREA_ID' => $areaId,
             'SHOW_AREA_ID' => $bShowAreaId,
-            'WRITE_CONTENT' => $bWriteContent,
+            'WRITE_CONTENT' => !static::$isContentRecording && $bWriteContent,
         );
     }
 
@@ -105,13 +116,39 @@ class Ajax
         return static::$areasStack[count(static::$areasStack) - 1][$paramName];
     }
 
+    /**
+     * Добавляет параметр в json ответ сервера
+     * @param $paramName
+     * @param $paramValue
+     */
     public static function setAreaParam($paramName, $paramValue)
     {
         static::$areasStack[count(static::$areasStack) - 1][$paramName] = $paramValue;
     }
 
+    /**
+     * Добавляет js скрипт в динамическую загрузку
+     * @param string $url
+     */
+    public static function addJs($url)
+    {
+        $jsList = static::getAreaParam('scripts');
+
+        if(!in_array($url, $jsList))
+        {
+            $jsList[] = $url;
+        }
+
+        static::setAreaParam('scripts', $jsList);
+    }
+
     public static function getAreaIdAttr()
     {
         return 'data-is-ajax-area="Y" data-ajax-area="' . static::getAreaParam('AREA_ID') . '"';
+    }
+
+    public static function getLoaderClass()
+    {
+        return 'js-ajax-load';
     }
 }

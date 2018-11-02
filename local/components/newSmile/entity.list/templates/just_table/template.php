@@ -10,7 +10,7 @@
     </tr>
 
     <?foreach ($arResult['ELEMENTS'] as $element):?>
-        <tr class="entity-list__row" data-id="<?=$element['ID']?>">
+        <tr class="entity-list__row" data-id="<?=$element['ID']?>" data-view-url="<?=$element['URL']?>">
             <?foreach ($arResult['ELEMENT_FIELDS'] as $fieldName => $field):?>
                 <?$value = $element[$field['VALUE_KEY']];?>
 

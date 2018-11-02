@@ -4,9 +4,11 @@
 /**
  * @var string $pageBlockName
  * @var array $pageBlockData
+ * @var array $arParams
+ * @var \CBitrixComponent $component
  */
 
-if($pageBlockData['EDITABLE']):
+if($pageBlockData['EDITABLE'] || ($pageBlockData['TYPE'] == 'hidden')):
     switch($pageBlockData['TYPE']):
         case 'enum':
         case 'reference':?>

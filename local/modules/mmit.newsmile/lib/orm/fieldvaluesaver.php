@@ -15,6 +15,7 @@ use Bitrix\Main\ORM\Fields\Relations\Reference;
 use Bitrix\Main\Type\Date;
 use Bitrix\Main\Type\DateTime;
 use Mmit\NewSmile\MaterialTable;
+use Mmit\NewSmile\Orm\Fields\FileField;
 use Mmit\NewSmile\Orm\Fields\ReverseReference;
 
 
@@ -51,7 +52,12 @@ class FieldValueSaver extends FieldsProcessor
 
     protected function getRequestParam($paramName)
     {
-        return $this->request[$this->params['REQUEST_PARAM_PREFIX'] . $paramName];
+        return urldecode($this->request[$this->params['REQUEST_PARAM_PREFIX'] . $paramName]);
+    }
+
+    protected function getRequestFile($paramName)
+    {
+        return $this->request->getFile($this->params['REQUEST_PARAM_PREFIX'] . $paramName);
     }
 
     public function setRequest(HttpRequest $request)
@@ -63,9 +69,15 @@ class FieldValueSaver extends FieldsProcessor
     {
         $fieldName = $field->getName();
 
-        if(in_array('*', $this->params['EDITABLE_FIELDS']) || in_array($fieldName, $this->params['EDITABLE_FIELDS']))
+        if(in_array('*', $this->params['EDITABLE_FIELDS']) || in_array($fieldName, $this->params['EDITABLE_FIELDS'])
+            || $this->hiddenFields[$fieldName])
         {
             $this->updateFields[$fieldName] = $this->getRequestParam($fieldName);
+            if($field->isSerialized() && $this->updateFields[$fieldName] && !is_array($this->updateFields[$fieldName]))
+            {
+                $this->updateFields[$fieldName] = explode(',', $this->updateFields[$fieldName]);
+            }
+
             $result = true;
         }
         else
@@ -103,7 +115,6 @@ class FieldValueSaver extends FieldsProcessor
         {
             unset($this->updateFields[$fieldName]);
         }
-
     }
 
     protected function processDatetimeField(DatetimeField $field)
@@ -269,6 +280,24 @@ class FieldValueSaver extends FieldsProcessor
         /* убираем поле из подготовленного запроса на обновление */
         unset($this->updateFields[$field->getName()]);
     }
+
+    protected function processFileField(FileField $field)
+    {
+        $fieldName = $field->getName();
+        $file = $this->getRequestFile($fieldName);
+        $file['MODULE_ID'] = 'mmit.newsmile';
+
+        if(strlen($file['name']) > 0)
+        {
+            $fileId = \CFile::SaveFile($file, 'patients_card');
+
+            if($fileId)
+            {
+                $this->updateFields[$fieldName] = $fileId;
+            }
+        }
+    }
+
 
     public function save()
     {

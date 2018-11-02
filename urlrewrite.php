@@ -8,12 +8,12 @@ $arUrlRewrite=array (
     'PATH' => '/desktop_app/router.php',
     'SORT' => 100,
   ),
-  11 => 
+  4 => 
   array (
-    'CONDITION' => '#^/materials/packing-lists/#',
+    'CONDITION' => '#^/bitrix/services/ymarket/#',
     'RULE' => '',
-    'ID' => 'newSmile:entity',
-    'PATH' => '/materials/packing-lists/index.php',
+    'ID' => '',
+    'PATH' => '/bitrix/services/ymarket/index.php',
     'SORT' => 100,
   ),
   12 => 
@@ -24,12 +24,12 @@ $arUrlRewrite=array (
     'PATH' => '/materials/measure-units/index.php',
     'SORT' => 100,
   ),
-  4 => 
+  11 => 
   array (
-    'CONDITION' => '#^/bitrix/services/ymarket/#',
+    'CONDITION' => '#^/materials/packing-lists/#',
     'RULE' => '',
-    'ID' => '',
-    'PATH' => '/bitrix/services/ymarket/index.php',
+    'ID' => 'newSmile:entity',
+    'PATH' => '/materials/packing-lists/index.php',
     'SORT' => 100,
   ),
   2 => 
@@ -40,12 +40,20 @@ $arUrlRewrite=array (
     'PATH' => '/desktop_app/router.php',
     'SORT' => 100,
   ),
-  0 => 
+  15 => 
   array (
-    'CONDITION' => '#^/stssync/calendar/#',
+    'CONDITION' => '#^/patientcard/file/#',
     'RULE' => '',
-    'ID' => 'bitrix:stssync.server',
-    'PATH' => '/bitrix/services/stssync/calendar/index.php',
+    'ID' => 'newSmile:entity',
+    'PATH' => '/patientcard/file/index.php',
+    'SORT' => 100,
+  ),
+  14 => 
+  array (
+    'CONDITION' => '#^/ajax/patientcard/#',
+    'RULE' => '',
+    'ID' => 'newSmile:entity',
+    'PATH' => '/ajax/patientcard/index.php',
     'SORT' => 100,
   ),
   10 => 
@@ -56,12 +64,12 @@ $arUrlRewrite=array (
     'PATH' => '/materials/stores/index.php',
     'SORT' => 100,
   ),
-  14 => 
+  0 => 
   array (
-    'CONDITION' => '#^/ajax/patientcard/#',
+    'CONDITION' => '#^/stssync/calendar/#',
     'RULE' => '',
-    'ID' => 'newSmile:entity',
-    'PATH' => '/ajax/patientcard/index.php',
+    'ID' => 'bitrix:stssync.server',
+    'PATH' => '/bitrix/services/stssync/calendar/index.php',
     'SORT' => 100,
   ),
   5 => 
@@ -80,20 +88,20 @@ $arUrlRewrite=array (
     'PATH' => '/patientcard/index.php',
     'SORT' => 100,
   ),
-  13 => 
-  array (
-    'CONDITION' => '#^/price-list/#',
-    'RULE' => '',
-    'ID' => 'newSmile:entity',
-    'PATH' => '/price-list/index.php',
-    'SORT' => 100,
-  ),
   7 => 
   array (
     'CONDITION' => '#^/work-chair/#',
     'RULE' => '',
     'ID' => 'newSmile:workchair',
     'PATH' => '/work-chair/index.php',
+    'SORT' => 100,
+  ),
+  13 => 
+  array (
+    'CONDITION' => '#^/price-list/#',
+    'RULE' => '',
+    'ID' => 'newSmile:entity',
+    'PATH' => '/price-list/index.php',
     'SORT' => 100,
   ),
   9 => 

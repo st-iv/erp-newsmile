@@ -10,11 +10,22 @@ namespace Mmit\NewSmile;
 use Bitrix\Main\Entity;
 use Bitrix\Main\Localization\Loc;
 use Bitrix\Main\Type\DateTime;
+use Mmit\NewSmile\Orm\ExtendedFieldsDescriptor;
+use Mmit\NewSmile\Orm\Fields\FileField;
 
 Loc::loadMessages(__FILE__);
 
-class FileTable extends Entity\DataManager
+class FileTable extends Entity\DataManager implements ExtendedFieldsDescriptor
 {
+    protected static $enumFields = [
+        'TYPE' => [
+            'OTHER' => 'Другое',
+            'XRAY' => 'Рентген',
+            'PHOTO' => 'Фото',
+            'DOCUMENT' => 'Документ',
+        ]
+    ];
+
     public static function getTableName()
     {
         return 'm_newsmile_file';
@@ -22,6 +33,8 @@ class FileTable extends Entity\DataManager
 
     public static function getMap()
     {
+        $types = array_keys(static::getEnumVariants('TYPE'));
+
         return array(
             new Entity\IntegerField('ID', array(
                 'autocomplete' => true,
@@ -35,34 +48,34 @@ class FileTable extends Entity\DataManager
             new Entity\StringField('NAME', array(
                 'required' => true,
                 'title' => 'Название',
-                'default_value' => function () {
-                    return 'Без названия';
-                },
                 'validation' => function () {
                     return array(
                         new Entity\Validator\Length(null, 255),
                     );
                 },
             )),
-            new Entity\IntegerField('FILE_ID', array(
+            new FileField('FILE', array(
                 'title' => 'Файл',
+                'required' => true,
                 'default_value' => 0,
             )),
             new Entity\EnumField('TYPE', array(
+                'required' => true,
                 'title' => 'Тип',
-                'default_value' => 0,
-                'values' => [
-                    'Другое',
-                    'Фото',
-                    'Снимок',
-                    'Документ',
-                    'Другое',
-                ]
+                'default_value' => $types[0],
+                'values' => $types
             )),
             new Entity\IntegerField('PATIENT_ID', array(
+                //'required' => true,
                 'title' => 'Карточка пациента',
+            )),
+            new Entity\TextField('COMMENT', array(
+                'title' => 'Комментарий',
+            )),
+            new Entity\TextField('TEETH', array(
+                'title' => 'Зубы',
+                'serialized' => true
             ))
-
         );
     }
     /*Удаление файла вместе с удалением элемента*/
@@ -92,5 +105,10 @@ class FileTable extends Entity\DataManager
                 }
             }
         }
+    }
+
+    public static function getEnumVariants($enumFieldName)
+    {
+        return static::$enumFields[$enumFieldName];
     }
 }

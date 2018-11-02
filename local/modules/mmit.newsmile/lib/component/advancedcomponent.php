@@ -6,18 +6,63 @@ use Mmit\NewSmile\Ajax;
 
 /**
  * Реализует поддержку ajax областей - компонент не будет выполняться при ajax запросах, если не запрошена его ajax-область.
+ * Реализует поддержку параметра PARENT_TEMPLATE. Этот параметр дает возможность использовать отдельные page-block из шаблона, указанного
+ * в качестве родительского
  *
  * Class AdvancedComponent
  * @package Mmit\NewSmile\Component
  */
 abstract class AdvancedComponent extends \CBitrixComponent
 {
+    protected $parentTemplateFolder;
+
     public function canExecute()
     {
         return (!Ajax::isAjaxQuery() || Ajax::isAreaRequested());
     }
 
-    public function onPrepareComponentParams($arParams)
+    /**
+     * Подключает блок шаблона из папки page-blocks. Если задан параметр PARENT_TEMPLATE, то будет подключен блок из родительского шаблона,
+     * если он в нем есть. Иначе будет подключен блок из текущего шаблона.
+     * @param string $pageBlockCode - код подключаемого блока
+     * @param mixed $pageBlockData - информация для вывода в блоке
+     */
+    public function includePageBlock($pageBlockCode, $pageBlockData)
+    {
+        if(!$this->doIncludePageBlock($pageBlockCode, $pageBlockData, $this->getTemplate()->GetFolder()))
+        {
+            $this->includeParentPageBlock($pageBlockCode, $pageBlockData);
+        }
+    }
+
+    public function includeParentPageBlock($pageBlockCode, $pageBlockData)
+    {
+        if($this->parentTemplateFolder)
+        {
+            $this->doIncludePageBlock($pageBlockCode, $pageBlockData, $this->parentTemplateFolder);
+        }
+    }
+
+    protected function doIncludePageBlock($pageBlockCode, $pageBlockData, $templatePath)
+    {
+        if(!$pageBlockCode) return false;
+
+        $pageBlockRelativePath = '/page-blocks/' . $pageBlockCode . '.php';
+
+        $pageBlockPath = $_SERVER['DOCUMENT_ROOT'] . $templatePath . $pageBlockRelativePath;
+
+        if(file_exists($pageBlockPath))
+        {
+            $component = $this;
+            $arParams = $this->arParams;
+            include $pageBlockPath;
+            return true;
+        }
+
+        return false;
+    }
+
+    final function onPrepareComponentParams($arParams)
     {
         if($this->canExecute())
         {
@@ -29,16 +74,42 @@ abstract class AdvancedComponent extends \CBitrixComponent
         }
     }
 
-    public function executeComponent()
+    final function executeComponent()
     {
-        if($this->canExecute())
+        if(!$this->canExecute()) return null;
+
+        if($this->arParams['PARENT_TEMPLATE'])
         {
-            return $this->execute();
+            $templateName = $this->getTemplateName();
+
+            /* узнаем путь к родительскому шаблону */
+            $this->setTemplateName($this->arParams['PARENT_TEMPLATE']);
+            $this->initComponentTemplate();
+            $this->parentTemplateFolder = $this->getTemplate()->GetFolder();
+
+            /* возвращаем прежний шаблон */
+            $this->setTemplateName($templateName);
         }
 
-        return null;
+        $this->initComponentTemplate();
+
+        if(Ajax::isAjaxQuery())
+        {
+            $scriptJs = $this->getTemplate()->GetFolder() . '/script.js';
+
+            if(file_exists($_SERVER['DOCUMENT_ROOT'] . $scriptJs))
+            {
+                Ajax::addJs($scriptJs);
+            }
+        }
+
+        return $this->execute();
     }
 
-    abstract protected function prepareParams(array $arParams);
+    protected function prepareParams(array $arParams)
+    {
+        return $arParams;
+    }
+
     abstract protected function execute();
 }

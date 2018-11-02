@@ -1,4 +1,6 @@
 <?
+\Bitrix\Main\Loader::includeModule('mmit.newsmile');
+
 function pr($var, $bDump = false)
 {
     ?>

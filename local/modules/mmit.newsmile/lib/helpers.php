@@ -6,6 +6,8 @@ use Bitrix\Main\Type\Date;
 
 class Helpers
 {
+    protected static $usedIds = [];
+
     /**
      * @var \DateTime $currentDate
      */
@@ -175,5 +177,21 @@ class Helpers
         {
             return strtoupper($matches[2]);
         }, $snakeCaseStr);
+    }
+
+    /**
+     * Получает гарантированно уникальный id
+     * @return string
+     */
+    public static function uniqid()
+    {
+        do
+        {
+            $id = uniqid();
+        }
+        while(isset(static::$usedIds[$id]));
+
+        static::$usedIds[$id] = true;
+        return $id;
     }
 }

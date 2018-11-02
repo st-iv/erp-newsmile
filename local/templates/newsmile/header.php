@@ -16,6 +16,7 @@
     $asset->addCss(SITE_TEMPLATE_PATH . '/css/jquery-ui.min.css');
     $asset->addCss(SITE_TEMPLATE_PATH . '/css/jquery.contextMenu.min.css');
     $asset->addCss(SITE_TEMPLATE_PATH . '/css/magnific-popup.css');
+    $asset->addCss(SITE_TEMPLATE_PATH . '/css/popup.css');
     $asset->addCss(SITE_TEMPLATE_PATH . '/css/style.css');
     $asset->addCss(SITE_TEMPLATE_PATH . '/css/main.css');
 
@@ -31,9 +32,10 @@
     $asset->addJs(SITE_TEMPLATE_PATH . '/js/moment.min.js');
     $asset->addJs(SITE_TEMPLATE_PATH . '/js/general.js');
     $asset->addJs(SITE_TEMPLATE_PATH . '/js/custom_calendar.js');
-    $asset->addJs(SITE_TEMPLATE_PATH . '/js/main.js');
     $asset->addJs(SITE_TEMPLATE_PATH . '/js/ajax_load.js');
     $asset->addJs(SITE_TEMPLATE_PATH . '/js/jquery.magnific-popup.js');
+    $asset->addJs(SITE_TEMPLATE_PATH . '/js/popup.js');
+    $asset->addJs(SITE_TEMPLATE_PATH . '/js/main.js');
     ?>
 </head>
 <body data-sessid="<?=bitrix_sessid()?>" data-post-form-action="<?=POST_FORM_ACTION_URI?>">

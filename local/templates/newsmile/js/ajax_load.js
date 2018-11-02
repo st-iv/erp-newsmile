@@ -1,51 +1,115 @@
-$(document).ready(function()
-{
-    $('.js-ajax-load').each(function(index, element)
-    {
-        var $this = $(this);
-        var id = $this.attr('id');
-
-        if(!id)
-        {
-            console.log('Для привязки ajax загрузчика необходимо указать id:');
-            console.log(this);
-            return;
-        }
-
-        if(this.tagName === 'FORM')
-        {
-            $(document).on('submit', '#' + id, function(e)
-            {
-                var $form = $(e.target);
-                var areaCode = Ajax.getAreaCode($form);
-                Ajax.load($form.attr('action'), areaCode, $form.serialize());
-                e.preventDefault();
-            });
-        }
-        else if(this.tagName === 'A')
-        {
-            $(document).on('click', '#' + id, function(e)
-            {
-                var $link = $(e.target);
-                var areaCode = Ajax.getAreaCode($link);
-                Ajax.load($link.attr('href'), areaCode);
-                e.preventDefault();
-            });
-        }
-        else
-        {
-            console.log('Тег ' +  this.tagName + ' не поддерживается ajax загрузчиком');
-        }
-    });
-});
-
 var Ajax = (function()
 {
     var loadHandlers = {};
+    var loadedScripts = {};
+    var loaders = [];
 
-    function load(url, areaCode, data = {}, contentUpdateMethod = 'html', successHandler)
+    function initLoaders()
     {
-        if(!areaCode) return;
+
+        console.log('init!!');
+        clearLoaders();
+
+        $('.js-ajax-load').each(function(index, element)
+        {
+            var $this = $(this);
+            /*var id = $this.attr('id');
+
+            if(!id)
+            {
+                console.log('Для привязки ajax загрузчика необходимо указать id:');
+                console.log(this);
+                return;
+            }*/
+
+            if(this.tagName === 'FORM')
+            {
+                $(this).on('submit.ajaxload', function(e)
+                {
+                    var $form = $(this);
+                    var areaCode = Ajax.getAreaCode($form);
+                    Ajax.load($form.attr('action'), areaCode, $form.serialize());
+                    e.preventDefault();
+                });
+            }
+            else if(this.tagName === 'A')
+            {
+                $(this).on('click.ajaxload', function(e)
+                {
+                    var $link = $(this);
+                    var areaCode = Ajax.getAreaCode($link);
+                    Ajax.load($link.attr('href'), areaCode);
+                    e.preventDefault();
+                });
+            }
+            else
+            {
+                console.log('Тег ' +  this.tagName + ' не поддерживается ajax загрузчиком');
+            }
+        });
+    }
+
+    function clearLoaders()
+    {
+        loaders.forEach(function(loader)
+        {
+            $(loader).off('submit.ajaxload click.ajaxload');
+        });
+
+        loaders = [];
+    }
+
+
+    /**
+     * Выполняет загрузку указанной области ajax запросом
+     * @param url
+     * @param areaCode - код ajax области, которую необходимо загрузить
+     * @param data - массив параметров
+     * @param contentUpdateMethod - метод обновления загружаемой области - название jquery функции для вставки нового контента
+     * в контейнер области. Например, html, prepend, append. При пустом значении загружаемая область не будет обновлена
+     * @param successHandler - обработчик успешной загрузки, в качестве первого параметра получает ответ сервера, вторым парметром
+     * загруженный html код (извлеченный из контейнера области)
+     */
+    function load(url, areaCode, data = {}, contentUpdateMethod = 'html', successHandler = null)
+    {
+        var ajaxConfig = getAjaxQueryConfig(url, areaCode, data,  contentUpdateMethod, successHandler);
+        $.ajax(ajaxConfig);
+    }
+
+    /**
+     * Выполняет загрузку указанной области ajax запросом и выводит результат в popup окне
+     * @param url
+     * @param areaCode
+     * @param data
+     * @param successHandler - обработчик успешной загрузки,  Function( String contentHtml, JQueryObject $popup )
+     *
+     * @param additionalClass
+     */
+    function loadPopup(url, areaCode, data = {}, successHandler = null, additionalClass = '')
+    {
+        load(url, areaCode, data, '', function(response)
+        {
+            window.popupManager.showPopup(response.content[areaCode], additionalClass);
+
+            if(typeof successHandler === 'function')
+            {
+                successHandler(response.content[areaCode], window.popupManager.getPopup());
+            }
+        });
+    }
+
+    /**
+     * Cобирает объект конфигурации ajax запроса
+     * @param url
+     * @param areaCode
+     * @param data
+     * @param contentUpdateMethod
+     * @param successHandler
+     * @returns {*}
+     */
+    function getAjaxQueryConfig(url, areaCode, data, contentUpdateMethod = 'html', successHandler = null)
+    {
+        if(!areaCode) return null;
 
         // если были переданы сериализованные параметры - переводим в объект
         if(typeof data === 'string')
@@ -60,71 +124,183 @@ var Ajax = (function()
             });
         }
 
-        data.ajax = 'Y';
-        data.area = areaCode;
-        data.sessid = General.sessid;
+        // простые объекты переводим в FormData
+        if($.isPlainObject(data))
+        {
+            var dataObj = Object.assign(data);
+            data = new FormData();
 
-        console.log('Ajax.load data:');
-        console.log(data);
+            for(var fieldName in dataObj)
+            {
+                data.set(fieldName, dataObj[fieldName]);
+            }
+        }
 
-        $.ajax({
+        if(!(data instanceof FormData))
+        {
+            console.log('При подготовке ajax запроса не удалось преобразовать данные к FormData');
+            return;
+        }
+
+        data.set('ajax', 'Y');
+        data.set('area', areaCode);
+        data.set('sessid', General.sessid);
+
+        return  {
             url: url,
             dataType: 'json',
             data: data,
+            processData: false,
+            contentType: false,
             method: 'post',
-            success: function(response)
+            success: handleAjaxResponse.bind(null, areaCode, successHandler, contentUpdateMethod)
+        };
+    }
+
+    /**
+     * Загружает и выполняет js скрипты (только если они не были загружены этим методом ранее)
+     * @param scripts - массив url скриптов
+     * @param callback - функция, вызываемая после успешной загрузки всех скриптов
+     */
+    function loadScripts(scripts, callback)
+    {
+        var scriptsQueueSize = 0;
+
+        scripts.forEach(function (scriptUrl)
+        {
+            if(!loadedScripts[scriptUrl])
             {
-                var contentHtml = '';
-                var $content;
-                var $container;
+                scriptsQueueSize++;
 
-                console.log('Ajax.load response:');
-                console.log(response );
-
-                if(response.success)
+                $.getScript(scriptUrl, function ()
                 {
-                    // обновляем содержимое всех областей, содержимое которых пришло в ответе
-                    if(response.content && contentUpdateMethod)
+                    scriptsQueueSize--;
+
+                    loadedScripts[scriptUrl] = true;
+
+                    if (!scriptsQueueSize && (typeof callback === 'function'))
                     {
-                        for(var contentAreaCode in response.content)
-                        {
-                            $content = $('<div>' + response.content[contentAreaCode] + '</div>');
-                            $container = $content.find('div[data-ajax-area=' + contentAreaCode + ']');
-                            contentHtml = ($container.length ? $container.html() : response.content[contentAreaCode]);
-
-                            var $targetContainer = $('div[data-ajax-area="' + contentAreaCode + '"]');
-                            $targetContainer[contentUpdateMethod](contentHtml);
-                        }
+                        callback();
                     }
-
-                    /* достаем html код из контейнера */
-                    contentHtml = '';
-
-                    if(response.content[areaCode])
-                    {
-                        $content = $('<div>' + response.content[areaCode] + '</div>');
-                        $container = $content.find('div[data-ajax-area=' + areaCode + ']');
-                        contentHtml = ($container.length ? $container.html() : response.content[areaCode]);
-                    }
-
-                    // запускаем зарегистрированные обработчики загрузки области с кодом areaCode
-                    if(loadHandlers[areaCode])
-                    {
-                        loadHandlers[areaCode].forEach(function(handler)
-                        {
-                            handler(response, contentHtml);
-                        });
-                    }
-
-                    // запускаем обработчик успешной загрузки
-                    if(typeof successHandler === 'function')
-                    {
-                        successHandler(response, contentHtml);
-                    }
-                }
+                });
             }
         });
+
+        if(!scriptsQueueSize)
+        {
+            callback();
+        }
     }
+
+    function loadNode($node, data = {}, success = null, contentUpdateMethod = 'html')
+    {
+        var url;
+
+        switch ($node[0].tagName)
+        {
+            case 'FORM':
+                url = $node.attr('action');
+                if(!data)
+                {
+                    data = new FormData($node[0]);
+                }
+                break;
+
+            case 'A':
+                url = $node.attr('href');
+                break;
+
+            default:
+                url = $node.data('href')
+        }
+
+        Ajax.load(url, getAreaCode($node), data, contentUpdateMethod, success);
+    }
+
+    function processAjaxResponse(areaCode, successHandler, contentUpdateMethod, response)
+    {
+        var contentHtml;
+
+        // обновляем все области, содержимое которых пришло в ответе
+        if(response.content && contentUpdateMethod)
+        {
+            for(var contentAreaCode in response.content)
+            {
+                contentHtml = unpackAreaContent(response.content[contentAreaCode], contentAreaCode);
+                var $targetContainer = $('div[data-ajax-area="' + contentAreaCode + '"]');
+                $targetContainer[contentUpdateMethod](contentHtml);
+            }
+        }
+
+        /* достаем html код из контейнера */
+        contentHtml = '';
+
+        if(response.content[areaCode])
+        {
+            contentHtml = unpackAreaContent(response.content[areaCode], areaCode);
+        }
+
+        // запускаем зарегистрированные обработчики загрузки области с кодом areaCode
+        if(loadHandlers[areaCode])
+        {
+            loadHandlers[areaCode].forEach(function(handler)
+            {
+                handler(response, contentHtml);
+            });
+        }
+
+        // запускаем обработчик успешной загрузки
+        if(typeof successHandler === 'function')
+        {
+            successHandler(response, contentHtml);
+        }
+
+        Ajax.initLoaders();
+    }
+
+    /**
+     * Обрабатывает результат ajax запроса
+     * @param areaCode
+     * @param successHandler
+     * @param contentUpdateMethod
+     * @param response
+     */
+    function handleAjaxResponse(areaCode, successHandler, contentUpdateMethod, response)
+    {
+        console.log('Ajax.load response:');
+        console.log(response );
+
+        if(response.success)
+        {
+            if(response.scripts)
+            {
+                // если в ответе указаны скрипты для динамической подгрузки, то сначала грузим их
+                loadScripts(
+                    response.scripts,
+                    processAjaxResponse.bind(null, areaCode, successHandler, contentUpdateMethod, response)
+                );
+            }
+            else
+            {
+                processAjaxResponse(areaCode, successHandler, contentUpdateMethod, response);
+            }
+        }
+    }
+
+
+    /**
+     * Вытаскивает html код указанной области из контейнера
+     * @param rawContentHtml - html код, в котором содержится контейнер области
+     * @param areaCode - код области
+     * @returns string
+     */
+    function unpackAreaContent(rawContentHtml, areaCode)
+    {
+        var $content = $('<div>' + rawContentHtml + '</div>');
+        var $container = $content.find('div[data-ajax-area=' + areaCode + ']');
+        return ($container.length ? $container.html() : rawContentHtml);
+    }
+
 
     function getAreaCode($element)
     {
@@ -155,8 +331,14 @@ var Ajax = (function()
     }
 
     return {
+        initLoaders: initLoaders,
         load: load,
+        loadPopup: loadPopup,
+        loadNode: loadNode,
+        loadScripts: loadScripts,
         getAreaCode: getAreaCode,
-        registerLoadHandler: registerLoadHandler,
+        registerLoadHandler: registerLoadHandler
     }
 })();
+
+$(document).ready(Ajax.initLoaders);

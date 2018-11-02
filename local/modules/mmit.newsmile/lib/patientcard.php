@@ -230,6 +230,12 @@ class PatientCardTable extends Entity\DataManager
                     'default_value' => 0
                 )
             ),
+            new Entity\StringField('RESIDENTIAL_ADDRESS',
+                array(
+                    'title' => 'Адрес проживания',
+                    'default_value' => ''
+                )
+            ),
             new Entity\StringField('PASSPORT_SN',
                 array(
                     'title' => 'Серия и номер',
@@ -260,6 +266,7 @@ class PatientCardTable extends Entity\DataManager
                     'default_value' => ''
                 )
             ),
+
             new Entity\DateField('PASSPORT_ADDRESS_DATE',
                 array(
                     'title' => 'Дата регистрации',

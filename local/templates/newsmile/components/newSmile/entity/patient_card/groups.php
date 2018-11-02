@@ -1,4 +1,4 @@
-<div class="patients-list">
+<div class="patients-list" id="patients-list">
     <?
     $APPLICATION->IncludeComponent(
         "newSmile:entity.list",
@@ -7,6 +7,7 @@
             'DATA_MANAGER_CLASS_ELEMENT' => '\\Mmit\\NewSmile\\PatientCardTable',
             'ELEMENT_FIELDS' => ['LAST_NAME', 'NAME', 'SECOND_NAME', 'PERSONAL_PHONE', 'PERSONAL_BIRTHDAY'],
             'ELEMENT_NAME_TEMPLATE' => '#LAST_NAME# #NAME# #SECOND_NAME#',
+            'ELEMENT_URL' => $arResult['FOLDER'] . $arResult['URL_TEMPLATES']['element'],
             /*'SECTION_ID' => $arResult['VARIABLES']['SECTION_ID'],
             'GROUP_FIELDS' => $arParams['LIST_SECTION_FIELDS'],
             'ELEMENT_FIELDS' => $arParams['LIST_ELEMENT_FIELDS'],
@@ -20,26 +21,5 @@
 </div>
 
 <script>
-    $(document).ready(function()
-    {
-        $('.patients-list tr.entity-list__row').each(function()
-        {
-            $(this).magnificPopup({
-                type: 'ajax',
-                ajax: {
-                    settings: {
-                        url: '/ajax/patientcard/',
-                        method: 'post',
-
-                    }
-                }
-            });
-        });
-
-        $('.patients-list tr td').magnificPopup({
-            items: {
-                src: ''
-            }
-        });
-    });
+    var patientsList = new PatientsList('#patients-list');
 </script>

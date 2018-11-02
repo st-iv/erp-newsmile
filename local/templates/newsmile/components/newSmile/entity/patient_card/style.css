@@ -1,7 +1,220 @@
+.card__main-content {
+    background-color: #fff;
+    min-height: 600px;
+    height: 100%;
+}
+
 .card__tab-content {
     display: none;
 }
 
-.card__tab-content.card__tab-content--active {
+.card__tab-content.active {
     display: block;
 }
+
+.patients-list .entity-list .entity-list__row {
+    cursor: pointer;
+}
+
+.card__workarea .edit-form__row {
+    display: flex;
+}
+
+.card__workarea .edit-form__row {
+    display: flex;
+}
+
+.card__header {
+    border-bottom: 1px solid gray;
+}
+
+.card__main-content .card__tabs-1lvl {
+    display: flex;
+    box-sizing: content-box;
+}
+
+.card__main-content .card__tab-1lvl{
+    border: 1px solid gray;
+    cursor: pointer;
+    padding: 10px;
+    position: relative;
+    bottom: -1px;
+}
+
+.card__main-content .card__tab-1lvl.active{
+    border-bottom: 1px solid #fff;
+}
+
+.card__main-info {
+    padding: 15px;
+}
+
+.card__main-info .edit-form__groups {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.edit-form__groups {
+    max-width: 1100px;
+}
+
+
+.card__main-info .field__title {
+    width: 50%;
+}
+
+.card__main-info .field__input {
+    width: 50%;
+}
+
+.card__main-info .edit-form__group {
+    width: 500px;
+    border: 1px solid gray;
+    position: relative;
+    padding: 15px;
+    margin-right: 30px;
+}
+
+.card__main-info .group__title {
+    position: absolute;
+    padding: 0 10px;
+    left: 15px;
+    top: -14px;
+    background-color: #fff;
+}
+
+.card__header-info {
+    padding: 10px;
+}
+
+.header__main-info {
+    display: flex;
+}
+
+.card__main-content .card__header-top {
+    display: flex;
+    justify-content: space-between;
+}
+
+.header__main-info .header__fio {
+    margin-right: 15px;
+}
+
+.mfp-container.mfp-ajax-holder {
+    padding-right: 0;
+}
+
+.mfp-close-btn-in .mfp-close {
+    left: -40px;
+    color: #fff !important;
+}
+
+.mfp-ajax-holder .mfp-content {
+    max-width: 1200px;
+    margin-right: 0;
+    margin-left: auto;
+    height: 100%;
+}
+
+.mfp-container.mfp-ajax-holder {
+    text-align: right;
+}
+
+.card__header-buttons {
+    margin-right: 50px;
+    margin-top: 10px;
+}
+
+/* file tab */
+
+.patient-file-edit .form__header-top {
+    padding: 20px;
+    display: flex;
+    justify-content: space-between;
+    border-bottom: 1px solid gray;
+}
+
+.patient-file-edit .form__header-bottom {
+    padding: 15px 20px;
+    border-bottom: 1px solid gray;
+}
+
+.patient-file-edit .form__header-bottom .patient-name {
+    margin-left: 20px;
+    font-weight: bold;
+}
+
+.patient-file-edit .form__header-bottom .patient-age {
+    margin-left: 10px;
+    color: gray;
+}
+
+.patient-file-edit .main-info__preview-container {
+    width: 40%;
+}
+
+.patient-file-edit .main-info__file-preview {
+    max-width: 100%;
+}
+
+.patient-file-edit .main-info {
+    display: flex;
+}
+
+.patient-file-edit .main-info__props {
+    padding: 20px;
+}
+
+/* teeth matrix */
+
+.patient-file-edit .form__teeth {
+    padding: 20px;
+}
+
+.patient-file-edit .teeth-matrix__control-panel {
+    margin-bottom: 20px;
+}
+
+.patient-file-edit .teeth-matrix__jaw {
+    display: flex;
+}
+
+.patient-file-edit .teeth-matrix__jaws {
+    display: none;
+}
+
+.patient-file-edit .teeth-matrix__jaws.selected {
+    display: block;
+}
+
+.patient-file-edit .teeth-matrix__jaw--top {
+    margin-bottom: 15px;
+}
+
+.patient-file-edit .jaw__tooth {
+    margin-right: 7px;
+    width: 25px;
+    border: 1px solid black;
+    display: flex;
+    align-content: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
+.patient-file-edit .jaw__tooth.ui-selected {
+    border-color: red;
+}
+
+.patient-file-edit .teeth-matrix__body {
+    display: flex;
+}
+
+.patient-file-edit .select-jaw {
+    display: block;
+    margin-bottom: 10px;
+}
+
+.patient-file-edit .edit-form__row {
+    margin-bottom: 10px;
+}
+

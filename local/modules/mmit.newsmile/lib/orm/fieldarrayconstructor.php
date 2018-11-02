@@ -20,8 +20,8 @@ use Mmit\NewSmile\Orm\Fields\ReverseReference;
 class FieldArrayConstructor extends FieldsProcessor
 {
     protected $query = null;
-    protected $queryResultMap = array();
-    protected $externalKeyNames = array();
+    protected $queryResultMap = [];
+    protected $externalKeyNames = [];
 
     public function __construct(Entity $entity, array $params)
     {
@@ -41,19 +41,21 @@ class FieldArrayConstructor extends FieldsProcessor
         $fieldName = $field->getName();
 
         $isEditable = in_array('*', $this->params['EDITABLE_FIELDS']) || in_array($fieldName, $this->params['EDITABLE_FIELDS']);
-        $isSelected = $isEditable || (in_array('*', $this->params['SELECTABLE_FIELDS']) || in_array($fieldName, $this->params['SELECT_FIELDS']));
+        $isSelected = $isEditable || (in_array('*', $this->params['SELECT_FIELDS']) || in_array($fieldName, $this->params['SELECT_FIELDS']));
 
         if (!$isSelected) return false;
 
         $result = array(
             'NAME' => $fieldName,
             'TITLE' => $field->getTitle(),
-            'TYPE' => Helper::getFieldType($field),
+            'TYPE' => $this->hiddenFields[$fieldName] ? 'hidden' : Helper::getFieldType($field),
             'EDITABLE' => $isEditable,
-            'INPUT_NAME' => $fieldName
+            'INPUT_NAME' => $fieldName,
+            'SERIALIZED' => $field->isSerialized()
         );
 
-        if ($field instanceof Fields\ScalarField) {
+        if ($field instanceof Fields\ScalarField)
+        {
             $result['REQUIRED'] = $field->isRequired();
             $result['DEFAULT'] = $field->getDefaultValue();
         }
@@ -405,7 +407,7 @@ class FieldArrayConstructor extends FieldsProcessor
             // пишем значения по умолчанию
             foreach ($this->queryResultMap as $targetFieldName => $queryFieldName)
             {
-                $value = ($this->params['PRESET'][$targetFieldName] ?: $this->result[$targetFieldName]['DEFAULT']);
+                $value = ($this->params['PRESET'][$targetFieldName]['VALUE'] ?: $this->result[$targetFieldName]['DEFAULT']);
                 $this->setValue($this->fields[$targetFieldName], $value);
             }
         }

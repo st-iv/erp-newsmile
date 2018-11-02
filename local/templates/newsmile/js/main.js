@@ -189,3 +189,5 @@ $(document).ready(function()
         $clock.text(General.Date.formatTime(Date.now() + tsDiff));
     }
 });
+
+var popupManager = new PopupManager();
