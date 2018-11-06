@@ -3,13 +3,18 @@ if(!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED !== true) die();
 
 use Bitrix\Main\Loader,
     Mmit\NewSmile;
-class EntityListComponent extends \CBitrixComponent
+class EntityListComponent extends NewSmile\Component\AdvancedComponent
 {
-    public function onPrepareComponentParams($arParams)
+    protected function prepareParams($arParams)
     {
         $arParams['SECTION_ID'] = (int)$arParams['SECTION_ID'];
         $arParams['GROUP_FIELDS'] = (is_array($arParams['GROUP_FIELDS']) ? $arParams['GROUP_FIELDS'] : array());
-        $arParams['ELEMENT_FIELDS'] = (is_array($arParams['ELEMENT_FIELDS']) ? $arParams['ELEMENT_FIELDS'] : array());
+
+        if(is_array($arParams['ELEMENT_FIELDS']))
+        {
+            $arParams['ELEMENT_QUERY_PARAMS']['select'] = $arParams['ELEMENT_FIELDS'];
+        }
+
 
         /* добавляем алиасы для полей reference, это нужно для сопоставления полей и их значений */
         foreach (['ELEMENT', 'GROUP'] as $objectType)
@@ -56,14 +61,14 @@ class EntityListComponent extends \CBitrixComponent
     {
         if($this->arParams['DATA_MANAGER_CLASS_GROUP'])
         {
-            $this->arResult['SECTIONS'] = $this->getSections();
             $this->arResult['GROUP_FIELDS'] = $this->getFieldsInfo('GROUP');
+            $this->arResult['SECTIONS'] = $this->getSections();
         }
 
         if($this->arParams['DATA_MANAGER_CLASS_ELEMENT'])
         {
-            $this->arResult['ELEMENTS'] = $this->getElements();
             $this->arResult['ELEMENT_FIELDS'] = $this->getFieldsInfo('ELEMENT');
+            $this->arResult['ELEMENTS'] = $this->getElements();
         }
 
         if(!$this->arParams['SECTION_ID'] && $this->arResult['SECTIONS'])
@@ -132,8 +137,8 @@ class EntityListComponent extends \CBitrixComponent
     protected function getElements()
     {
         $elementDataManager = $this->arParams['DATA_MANAGER_CLASS_ELEMENT'];
+        $queryParams = $this->arParams['ELEMENT_QUERY_PARAMS'];
 
-        $filter = array();
         if($this->arParams['SECTION_ID'] && $this->arParams['DATA_MANAGER_CLASS_GROUP'])
         {
             $parentSectionFieldName = $this->getReferenceFieldName(
@@ -143,18 +148,16 @@ class EntityListComponent extends \CBitrixComponent
 
             if($parentSectionFieldName)
             {
-                $filter[$parentSectionFieldName] = $this->arParams['SECTION_ID'];
+                $queryParams['filter'][$parentSectionFieldName] = $this->arParams['SECTION_ID'];
             }
         }
 
-        $select = ($this->arParams['ELEMENT_FIELDS']
-            ? array_merge($this->arParams['ELEMENT_FIELDS'], array('ID'))
-            : array());
+        if($queryParams['select'])
+        {
+            $queryParams['select'][] = 'ID';
+        }
 
-        $dbElements = $elementDataManager::getList(array(
-            'filter' => $filter,
-            'select' => $select
-        ));
+        $dbElements = $elementDataManager::getList($queryParams);
 
         $elements = array();
 
@@ -178,6 +181,16 @@ class EntityListComponent extends \CBitrixComponent
                     'ELEMENT_ID' => $element['ID'],
                 ));
             }
+
+            foreach ($element as $fieldCode => &$fieldValue)
+            {
+                if($this->arResult['ELEMENT_FIELDS'][$fieldCode]['TYPE'] == 'file')
+                {
+                    $fieldValue = \CFile::GetFileArray($fieldValue);
+                }
+            }
+
+            unset($fieldValue);
 
 
             $elements[] = $element;
@@ -217,18 +230,29 @@ class EntityListComponent extends \CBitrixComponent
 
             if($bAllFieldsSelected || in_array($fieldName, $selectedFields))
             {
-                $fieldsInfo[$fieldName] = [
+                $fieldInfo = [
                     'TITLE' => $field->getTitle(),
                     'TYPE' => $fieldType,
                     'VALUE_KEY' => $fieldName,
                     'SERIALIZED' => $field->isSerialized()
                 ];
 
+                if(($fieldType == 'enum') && (NewSmile\Orm\Helper::isExtendedFieldsDescriptor($dataManager)))
+                {
+                    /**
+                     * @var NewSmile\Orm\ExtendedFieldsDescriptor $dataManager
+                     */
+
+                    $fieldInfo['VARIANTS'] = $dataManager::getEnumVariants($fieldName);
+                }
+
 
                 if($fieldType == 'reference')
                 {
                     $referenceFields[] = $field;
                 }
+
+                $fieldsInfo[$fieldName] = $fieldInfo;
             }
         }
 
@@ -377,7 +401,7 @@ class EntityListComponent extends \CBitrixComponent
 	/**
 	 * выполняет логику работы компонента
 	 */
-	public function executeComponent()
+	public function execute()
 	{
         if (!Loader::includeModule('mmit.newSmile'))
         {

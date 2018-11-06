@@ -3,22 +3,22 @@
 <?
 /**
  * @var string $pageBlockName
- * @var array $pageBlockData
+ * @var array $data
  * @var array $arParams
  * @var \CBitrixComponent $component
  */
 
-if($pageBlockData['EDITABLE'] || ($pageBlockData['TYPE'] == 'hidden')):
-    switch($pageBlockData['TYPE']):
+if($data['EDITABLE'] || ($data['TYPE'] == 'hidden')):
+    switch($data['TYPE']):
         case 'enum':
         case 'reference':?>
-            <select name="<?=$pageBlockData['INPUT_NAME']?>" <?=($pageBlockData['DISABLED'] ? 'disabled' : '')?>>
+            <select name="<?=$data['INPUT_NAME']?>" <?=($data['DISABLED'] ? 'disabled' : '')?>>
 
-                <?if(!$pageBlockData['REQUIRED']):?>
+                <?if(!$data['REQUIRED']):?>
                     <option value="0">нет</option>
                 <?endif;?>
 
-                <?foreach ($pageBlockData['VARIANTS'] as $itemValue => $item):?>
+                <?foreach ($data['VARIANTS'] as $itemValue => $item):?>
                     <option value="<?=$itemValue?>" <?=($item['SELECTED'] ? 'selected' : '')?>>
                         <?=$item['VARIANT_TITLE'] ?: $item['NAME']?>
                     </option>
@@ -27,8 +27,8 @@ if($pageBlockData['EDITABLE'] || ($pageBlockData['TYPE'] == 'hidden')):
             <?break;?>
 
         <?case 'boolean':?>
-            <input type="checkbox" name="<?=$pageBlockData['INPUT_NAME']?>"
-                   value="<?=$pageBlockData['TRUE_VALUE']?>" <?=($pageBlockData['CHECKED'] ? 'checked' : '')?> <?=($pageBlockData['DISABLED'] ? 'disabled' : '')?>>
+            <input type="checkbox" name="<?=$data['INPUT_NAME']?>"
+                   value="<?=$data['TRUE_VALUE']?>" <?=($data['CHECKED'] ? 'checked' : '')?> <?=($data['DISABLED'] ? 'disabled' : '')?>>
             <?break;?>
 
         <?case 'datetime':?>
@@ -36,9 +36,9 @@ if($pageBlockData['EDITABLE'] || ($pageBlockData['TYPE'] == 'hidden')):
             /**
              * @var \Bitrix\Main\Type\DateTime $value
              */
-            $value = $pageBlockData['VALUE'] ? $pageBlockData['VALUE']->format('Y-m-d\TH:i:s') : '';
+            $value = $data['VALUE'] ? $data['VALUE']->format('Y-m-d\TH:i:s') : '';
             ?>
-            <input type="datetime-local" name="<?=$pageBlockData['INPUT_NAME']?>" value="<?=$value?>" <?=($pageBlockData['DISABLED'] ? 'disabled' : '')?>>
+            <input type="datetime-local" name="<?=$data['INPUT_NAME']?>" value="<?=$value?>" <?=($data['DISABLED'] ? 'disabled' : '')?>>
             <?break;?>
 
 
@@ -48,23 +48,23 @@ if($pageBlockData['EDITABLE'] || ($pageBlockData['TYPE'] == 'hidden')):
             /**
              * @var \Bitrix\Main\Type\Date $value
              */
-            $value = $pageBlockData['VALUE'];
+            $value = $data['VALUE'];
             ?>
-            <input type="date" name="<?=$pageBlockData['INPUT_NAME']?>" value="<?=$value->format('Y-m-d')?>" <?=($pageBlockData['DISABLED'] ? 'disabled' : '')?>>
+            <input type="date" name="<?=$data['INPUT_NAME']?>" value="<?=$value->format('Y-m-d')?>" <?=($data['DISABLED'] ? 'disabled' : '')?>>
             <?break;?>
 
         <?case 'hidden':?>
-            <input type="hidden" name="<?=$pageBlockData['INPUT_NAME']?>" value="<?=$pageBlockData['VALUE']?>" <?=($pageBlockData['DISABLED'] ? 'disabled' : '')?>>
+            <input type="hidden" name="<?=$data['INPUT_NAME']?>" value="<?=$data['VALUE']?>" <?=($data['DISABLED'] ? 'disabled' : '')?>>
             <?break;?>
 
         <?default:?>
-            <input type="text" name="<?=$pageBlockData['INPUT_NAME']?>" value="<?=$pageBlockData['VALUE']?>" <?=($pageBlockData['REQUIRED'] ? 'required' : '') ?> <?=($pageBlockData['DISABLED'] ? 'disabled' : '')?>>
+            <input type="text" name="<?=$data['INPUT_NAME']?>" value="<?=$data['VALUE']?>" <?=($data['REQUIRED'] ? 'required' : '') ?> <?=($data['DISABLED'] ? 'disabled' : '')?>>
 
     <?endswitch;?>
 
 <?else:?>
     <?
-    switch($pageBlockData['TYPE'])
+    switch($data['TYPE'])
     {
         case 'hidden':
             break;
@@ -73,15 +73,15 @@ if($pageBlockData['EDITABLE'] || ($pageBlockData['TYPE'] == 'hidden')):
             /**
              * @var \Bitrix\Main\Type\DateTime $value
              */
-            echo $pageBlockData['VALUE'] ? $pageBlockData['VALUE']->format('Y-m-d\TH:i:s') : '';
+            echo $data['VALUE'] ? $data['VALUE']->format('Y-m-d\TH:i:s') : '';
             break;
 
         case 'date':
-            echo $pageBlockData['VALUE'] ? $pageBlockData['VALUE']->format('Y-m-d') : '';
+            echo $data['VALUE'] ? $data['VALUE']->format('Y-m-d') : '';
             break;
 
         default:
-            echo $pageBlockData['VALUE'];
+            echo $data['VALUE'];
     }
     ?>
 <?endif;?>

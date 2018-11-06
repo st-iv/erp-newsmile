@@ -25,25 +25,25 @@ abstract class AdvancedComponent extends \CBitrixComponent
      * Подключает блок шаблона из папки page-blocks. Если задан параметр PARENT_TEMPLATE, то будет подключен блок из родительского шаблона,
      * если он в нем есть. Иначе будет подключен блок из текущего шаблона.
      * @param string $pageBlockCode - код подключаемого блока
-     * @param mixed $pageBlockData - информация для вывода в блоке
+     * @param mixed $data - информация для вывода в блоке
      */
-    public function includePageBlock($pageBlockCode, $pageBlockData)
+    public function includePageBlock($pageBlockCode, $data)
     {
-        if(!$this->doIncludePageBlock($pageBlockCode, $pageBlockData, $this->getTemplate()->GetFolder()))
+        if(!$this->doIncludePageBlock($pageBlockCode, $data, $this->getTemplate()->GetFolder()))
         {
-            $this->includeParentPageBlock($pageBlockCode, $pageBlockData);
+            $this->includeParentPageBlock($pageBlockCode, $data);
         }
     }
 
-    public function includeParentPageBlock($pageBlockCode, $pageBlockData)
+    public function includeParentPageBlock($pageBlockCode, $data)
     {
         if($this->parentTemplateFolder)
         {
-            $this->doIncludePageBlock($pageBlockCode, $pageBlockData, $this->parentTemplateFolder);
+            $this->doIncludePageBlock($pageBlockCode, $data, $this->parentTemplateFolder);
         }
     }
 
-    protected function doIncludePageBlock($pageBlockCode, $pageBlockData, $templatePath)
+    protected function doIncludePageBlock($pageBlockCode, $data, $templatePath)
     {
         if(!$pageBlockCode) return false;
 

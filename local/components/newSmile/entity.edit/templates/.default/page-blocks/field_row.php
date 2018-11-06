@@ -4,10 +4,10 @@
 <?
 /**
  * @var string $pageBlockName
- * @var array $pageBlockData
+ * @var array $data
  */
 
-$field = $pageBlockData;
+$field = $data;
 ?>
 
 <?if($field['TYPE'] == 'hidden'):?>

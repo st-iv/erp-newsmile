@@ -200,4 +200,9 @@ class Helper
             return $result;
         });
     }
+
+    public static function isExtendedFieldsDescriptor($className)
+    {
+        return is_subclass_of($className, 'Mmit\NewSmile\Orm\ExtendedFieldsDescriptor');
+    }
 }

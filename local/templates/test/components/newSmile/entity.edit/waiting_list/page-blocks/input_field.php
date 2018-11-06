@@ -3,15 +3,15 @@
 <?
 /**
  * @var string $pageBlockCode
- * @var array $pageBlockData
+ * @var array $data
  * @var \EntityEditComponent $component
  */
-if($pageBlockData['NAME'] == 'DATE'):
+if($data['NAME'] == 'DATE'):
 ?>
     <input type="hidden" name="DATE[]">
     <table class="calendar" border=1 cellspacing=0 cellpadding=2>
         <tr><td>Пн</td><td>Вт</td><td>Ср</td><td>Чт</td><td>Пт</td><td>Сб</td><td>Вс</td><tr>
-        <?foreach ($pageBlockData['CALENDAR'] as $arWeek):?>
+        <?foreach ($data['CALENDAR'] as $arWeek):?>
             <tr class="items-calendar">
                 <?foreach ($arWeek as $arDay):?>
                     <td data-date="<?=$arDay;?>">
@@ -26,6 +26,6 @@ if($pageBlockData['NAME'] == 'DATE'):
     </table>
 <?
 else:
-    $component->includeOriginalPageBlock($pageBlockCode, $pageBlockData);
+    $component->includeOriginalPageBlock($pageBlockCode, $data);
 endif;
 ?>

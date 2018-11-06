@@ -83,27 +83,46 @@ $patientEditUrl = $arResult['FOLDER'] . \CComponentEngine::makePathFromTemplate(
         </div>
 
         <div class="card__tab-content card__files" data-tab-code="files">
-            <div class="files__filter">
 
-            </div>
-            <div class="files__right">
-                <div class="files__add-file">
-                    <input type="file" class="js-patient-card-add-file" data-ajax-area="patient-file-edit">
-                </div>
+            <?
+            \Bitrix\Main\Diag\Debug::writeToFile('$_REQUEST');
+            \Bitrix\Main\Diag\Debug::writeToFile($_REQUEST['TYPE']);
+            ?>
 
-                <div class="files__list">
-                    <?NewSmile\Ajax::start('patient-files');?>
+            <?NewSmile\Ajax::start('patient-files');?>
+
+            <?
+            $filter = [
+                'PATIENT_ID' => $arResult['VARIABLES']['ELEMENT_ID']
+            ];
+
+            if($_REQUEST['TYPE'])
+            {
+                $filter['TYPE'] = explode(',', $_REQUEST['TYPE']);
+            }
 
 
+            $APPLICATION->IncludeComponent(
+                "newSmile:entity.list",
+                "files-list",
+                Array(
+                    'DATA_MANAGER_CLASS_ELEMENT' => '\\Mmit\\NewSmile\\FileTable',
+                    'ELEMENT_QUERY_PARAMS' => [
+                        'select' => ['NAME', 'TYPE', 'DATE_CREATE', 'TEETH', 'FILE'],
+                        'order' => [
+                            'DATE_CREATE' => 'desc'
+                        ],
+                        'filter' => $filter
+                    ],
+                    'PREVIEW_FIELDS' => ['NAME', 'TYPE', 'DATE_CREATE', 'TEETH']
+                ),
+                $component
+            );?>
 
-                    <?NewSmile\Ajax::finish();?>
-                </div>
-            </div>
+            <?NewSmile\Ajax::finish();?>
 
-            <div class="files__left">
-
-            </div>
         </div>
     </div>
 </div>
+
 

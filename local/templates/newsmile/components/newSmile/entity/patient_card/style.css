@@ -218,3 +218,83 @@
     margin-bottom: 10px;
 }
 
+/* files list */
+
+.card__files .files__right {
+    width: 40%;
+}
+
+.card__files .files__table {
+    display: table;
+}
+
+.card__files .table__row {
+    display: table-row;
+}
+
+.card__files .table__cell {
+    display: table-cell;
+    padding: 10px;
+}
+
+.card__file .table__col-group {
+    display: table-column-group;
+}
+
+.card__files .table__cell .file {
+    max-width: 200px;
+    max-height: 100px;
+    display: inline-block;
+    margin-right: 10px;
+}
+
+.card__files .table__cell .file img {
+    max-width: 100%;
+    max-height: 100px;
+}
+
+.card__files .table__cell .file.selected img {
+    border: 2px solid red;
+}
+
+.card__files .files__main-area {
+    display: flex;
+}
+
+.card__files .files__top-line {
+    display: flex;
+    padding: 10px;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.card__files .preview {
+    position: relative;
+}
+
+.card__files .preview .img {
+    max-width: 100%;
+}
+
+
+.card__files .file-info {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    background: #fff;
+    opacity: .5;
+    border-radius: 3px;
+    padding: 10px;
+}
+
+.card__files .file-info.hidden {
+    opacity: 0;
+}
+
+.card__files .files__filter {
+    margin-right: 20px;
+}
+
+.card__files .files__add-file {
+    padding: 10px;
+}

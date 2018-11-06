@@ -120,7 +120,15 @@ var Ajax = (function()
             serializedData.split('&').forEach(function(keyPair)
             {
                 var keyPairArray = keyPair.split('=');
-                data[keyPairArray[0]] = keyPairArray[1];
+
+                if(typeof data[keyPairArray[0]] === 'undefined')
+                {
+                    data[keyPairArray[0]] = keyPairArray[1];
+                }
+                else
+                {
+                    data[keyPairArray[0]] = keyPairArray[1];
+                }
             });
         }
 
@@ -132,7 +140,7 @@ var Ajax = (function()
 
             for(var fieldName in dataObj)
             {
-                data.set(fieldName, dataObj[fieldName]);
+                data.append(fieldName, dataObj[fieldName]);
             }
         }
 

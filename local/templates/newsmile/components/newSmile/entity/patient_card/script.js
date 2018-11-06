@@ -101,6 +101,14 @@ $.extend(PatientCard.prototype, {
                 );
             }
         });
+        
+        this.initFileTable();
+
+        // init file info hiding
+        this.$popup.find('.file-info').click(function()
+        {
+            $(this).toggleClass('hidden');
+        });
     },
 
     initFileEditPopup: function(file, contentHtml, $popup)
@@ -135,11 +143,110 @@ $.extend(PatientCard.prototype, {
             console.log(data);
             Ajax.loadNode($form, data, function()
             {
+                self.updateFileTable();
                 window.popupManager.close();
                 self.$addFileInput.val('');
             });
 
             e.preventDefault();
         });
+    },
+    
+    initFileTable: function()
+    {
+        // init files list ajax load handler
+
+        var self = this;
+        var filesListAreaCode = Ajax.getAreaCode(this.$popup.find('.js-files-list-filter-form'));
+
+        Ajax.registerLoadHandler(filesListAreaCode, function(response, contentHtml)
+        {
+            self.$popup.find('.files__table').html($(contentHtml).find('.files__table').html());
+        });
+
+        // init file filter field
+        this.$popup.find('.js-files-filter-type').change(function ()
+        {
+            //var showTypes = $(this).val();
+            /*var isAllEnabled = (showTypes.indexOf('ALL') !== -1);
+
+            self.$popup.find('.table__cell--files').each(function()
+            {
+                var filesCount = 0;
+
+                $(this).find('.file').each(function()
+                {
+                    if(!isAllEnabled && (showTypes.indexOf($(this).data('type-code')) === -1))
+                    {
+                        $(this).hide();
+                    }
+                    else
+                    {
+                        $(this).show();
+                        filesCount++;
+                    }
+                });
+
+                var $group = $(this).closest('.table__row').prev('.table__row--group');
+
+                if(filesCount)
+                {
+                    $(this).show();
+                    $group.show();
+                    $group.find('.js-files-count').text(filesCount);
+                }
+                else
+                {
+                    $(this).hide();
+                    $group.hide();
+                }
+            });*/
+
+            self.updateFileTable();
+        });
+
+        // init file preview change
+        this.$popup.find('.files__table .file').click(function (e)
+        {
+            if(!$(this).hasClass('selected'))
+            {
+                var detailPictureSrc = $(this).data('detail-picture');
+                var $file = $(this);
+
+                self.$popup.find('.js-files-preview').attr('src', detailPictureSrc);
+
+                self.$popup.find('.files__table .file').removeClass('selected');
+                $(this).addClass('selected');
+
+                self.$popup.find('.file-info__field').each(function ()
+                {
+                    var $this = $(this);
+                    var fieldCode = $this.data('field-code');
+                    var fieldDataAttrName = 'field-' + fieldCode.toLowerCase().replace('_', '-');
+                    var fieldValue = $file.data(fieldDataAttrName);
+
+                    if(fieldValue)
+                    {
+                        $this.find('.field-value').text(fieldValue);
+                        $this.show();
+                    }
+                    else
+                    {
+                        $this.hide();
+                    }
+                });
+            }
+
+            e.preventDefault();
+        });  
+    },
+
+    updateFileTable: function()
+    {
+        var $form = this.$popup.find('.js-files-list-filter-form');
+
+        Ajax.loadNode($form, {
+            TYPE: $form.find('.js-files-filter-type').val().join(',')
+        }, this.initFileTable.bind(this), '');
     }
 });
