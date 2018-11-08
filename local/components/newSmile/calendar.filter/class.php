@@ -76,7 +76,7 @@ class CalendarFilterComponent extends \CBitrixComponent
                 'ID', 'NAME', 'COLOR', 'LAST_NAME', 'SECOND_NAME'
             ),
             'filter' => [
-                'CLINIC_ID' => $_SESSION['CLINIC_ID']
+                'CLINIC_ID' => NewSmile\Config::getClinicId()
             ]
         ));
         while ($arDoctor = $rsDoctor->fetch())

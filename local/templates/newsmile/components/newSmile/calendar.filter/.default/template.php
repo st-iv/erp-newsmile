@@ -40,6 +40,7 @@
 </form>
 
 <?
+
 $jsParams = array(
     'startTime' => $arResult['START_TIME'],
     'endTime' => $arResult['END_TIME'],
