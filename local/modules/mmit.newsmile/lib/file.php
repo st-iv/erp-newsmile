@@ -7,6 +7,7 @@
  */
 namespace Mmit\NewSmile;
 
+use Bitrix\Main\Diag\Debug;
 use Bitrix\Main\Entity;
 use Bitrix\Main\Localization\Loc;
 use Bitrix\Main\Type\DateTime;
@@ -82,11 +83,16 @@ class FileTable extends Entity\DataManager implements ExtendedFieldsDescriptor
     public static function onBeforeDelete(Entity\Event $event)
     {
         $primary = $event->getParameter("primary");
+
         $rs = static::GetByID($primary["ID"]);
+
         if($ar = $rs->Fetch()){
+
             if (intval($ar['FILE'])>0)
             {
-                CFile::Delete($ar['FILE']);
+
+                Debug::writeToFile($ar['FILE']);
+                \CFile::Delete($ar['FILE']);
             }
         }
     }
@@ -101,7 +107,7 @@ class FileTable extends Entity\DataManager implements ExtendedFieldsDescriptor
             if($old = $rs->Fetch()){
                 if (intval($old['FILE'])>0 && $fields["FILE"]!=$old["FILE"])
                 {
-                    CFile::Delete($old['FILE']);
+                    \CFile::Delete($old['FILE']);
                 }
             }
         }

@@ -22,7 +22,7 @@ use Mmit\NewSmile\Ajax;
 
     <?Ajax::start('notices-list', true, false);?>
 
-    <div class="notif_items" <?=Ajax::getAreaIdAttr()?>>
+    <div class="notif_items" <?=Ajax::getAreaCodeAttr()?>>
 
         <?foreach ($arResult['NOTICES'] as $notice):?>
             <div class="notif_item" data-type="<?=$notice['GROUP']?>" data-id="<?=$notice['ID']?>" data-is-read="<?=$notice['IS_READ']?>">

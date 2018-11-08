@@ -82,45 +82,9 @@ $patientEditUrl = $arResult['FOLDER'] . \CComponentEngine::makePathFromTemplate(
             курсы лечения!
         </div>
 
-        <div class="card__tab-content card__files" data-tab-code="files">
-
-            <?
-            \Bitrix\Main\Diag\Debug::writeToFile('$_REQUEST');
-            \Bitrix\Main\Diag\Debug::writeToFile($_REQUEST['TYPE']);
-            ?>
-
-            <?NewSmile\Ajax::start('patient-files');?>
-
-            <?
-            $filter = [
-                'PATIENT_ID' => $arResult['VARIABLES']['ELEMENT_ID']
-            ];
-
-            if($_REQUEST['TYPE'])
-            {
-                $filter['TYPE'] = explode(',', $_REQUEST['TYPE']);
-            }
-
-
-            $APPLICATION->IncludeComponent(
-                "newSmile:entity.list",
-                "files-list",
-                Array(
-                    'DATA_MANAGER_CLASS_ELEMENT' => '\\Mmit\\NewSmile\\FileTable',
-                    'ELEMENT_QUERY_PARAMS' => [
-                        'select' => ['NAME', 'TYPE', 'DATE_CREATE', 'TEETH', 'FILE'],
-                        'order' => [
-                            'DATE_CREATE' => 'desc'
-                        ],
-                        'filter' => $filter
-                    ],
-                    'PREVIEW_FIELDS' => ['NAME', 'TYPE', 'DATE_CREATE', 'TEETH']
-                ),
-                $component
-            );?>
-
-            <?NewSmile\Ajax::finish();?>
-
+        <div class="card__tab-content card__files" data-tab-code="files" data-is-ajax-area="Y" data-ajax-area="patient-files"
+             data-action="/ajax/patient-card/tabs/files.php">
+            загрузка...
         </div>
     </div>
 </div>

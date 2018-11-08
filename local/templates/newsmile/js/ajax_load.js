@@ -219,7 +219,7 @@ var Ajax = (function()
                 break;
 
             default:
-                url = $node.data('href')
+                url = $node.data('action')
         }
 
         Ajax.load(url, getAreaCode($node), data, contentUpdateMethod, success);
@@ -305,16 +305,16 @@ var Ajax = (function()
     function unpackAreaContent(rawContentHtml, areaCode)
     {
         var $content = $('<div>' + rawContentHtml + '</div>');
-        var $container = $content.find('div[data-ajax-area=' + areaCode + ']');
+        var $container = $content.find('div[data-ajax-area="' + areaCode + '"]');
         return ($container.length ? $container.html() : rawContentHtml);
     }
 
 
-    function getAreaCode($element)
+    function getAreaCode($element, checkParents = true)
     {
         var areaCode = $element.data('ajax-area');
 
-        if(!areaCode)
+        if(!areaCode && checkParents)
         {
             areaCode = $element.parents('[data-is-ajax-area=Y]').data('ajax-area');
 

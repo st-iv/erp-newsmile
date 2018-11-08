@@ -225,20 +225,32 @@
 }
 
 .card__files .files__table {
-    display: table;
+    display: block;
+    max-height: 360px;
+    overflow-y: scroll;
 }
 
 .card__files .table__row {
-    display: table-row;
+    display: flex;
+}
+
+.card__files .table__row .table__cell:first-child {
+    width: 150px;
+}
+
+.card__files .table__row .table__cell.table__cell--files {
+    width: 100%;
+    display: none;
+}
+
+.card__files .table__row--group {
+    cursor: pointer;
 }
 
 .card__files .table__cell {
-    display: table-cell;
     padding: 10px;
-}
-
-.card__file .table__col-group {
-    display: table-column-group;
+    border-bottom: 1px solid black;
+    width: 100%
 }
 
 .card__files .table__cell .file {
@@ -246,6 +258,7 @@
     max-height: 100px;
     display: inline-block;
     margin-right: 10px;
+    margin-bottom: 10px;
 }
 
 .card__files .table__cell .file img {
@@ -272,8 +285,9 @@
     position: relative;
 }
 
-.card__files .preview .img {
+.card__files .preview img {
     max-width: 100%;
+    max-height: 450px;
 }
 
 
@@ -297,4 +311,8 @@
 
 .card__files .files__add-file {
     padding: 10px;
+}
+
+.card__files .table__cell--sort {
+    cursor: pointer;
 }

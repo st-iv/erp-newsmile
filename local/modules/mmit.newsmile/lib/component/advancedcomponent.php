@@ -18,7 +18,7 @@ abstract class AdvancedComponent extends \CBitrixComponent
 
     public function canExecute()
     {
-        return (!Ajax::isAjaxQuery() || Ajax::isAreaRequested());
+        return (!Ajax::isAjaxQuery() || Ajax::isCurrentBlockRequested());
     }
 
     /**

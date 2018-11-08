@@ -284,20 +284,25 @@ class FieldValueSaver extends FieldsProcessor
     protected function processFileField(FileField $field)
     {
         $fieldName = $field->getName();
+        unset($this->updateFields[$fieldName]);
+
         $file = $this->getRequestFile($fieldName);
-        $file['MODULE_ID'] = 'mmit.newsmile';
 
-        if(strlen($file['name']) > 0)
+        if($file)
         {
-            $fileId = \CFile::SaveFile($file, 'patients_card');
+            $file['MODULE_ID'] = 'mmit.newsmile';
 
-            if($fileId)
+            if(strlen($file['name']) > 0)
             {
-                $this->updateFields[$fieldName] = $fileId;
+                $fileId = \CFile::SaveFile($file, 'patients_card');
+
+                if($fileId)
+                {
+                    $this->updateFields[$fieldName] = $fileId;
+                }
             }
         }
     }
-
 
     public function save()
     {

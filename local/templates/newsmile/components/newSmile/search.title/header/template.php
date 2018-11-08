@@ -12,7 +12,7 @@ use Bitrix\Main\Localization\Loc;
 
     <?NewSmile\Ajax::start('header-search', true, false);?>
 
-    <div class="search_result" <?=NewSmile\Ajax::getAreaIdAttr()?>>
+    <div class="search_result" <?=NewSmile\Ajax::getAreaCodeAttr()?>>
 
         <?foreach($arResult['CATEGORIES'] as $categoryCode => $category):?>
             <?

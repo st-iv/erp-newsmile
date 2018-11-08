@@ -4,6 +4,18 @@ namespace Mmit\NewSmile;
 
 use Bitrix\Main\Diag\Debug;
 
+/**
+ * Реализует разбиение кода на области (area) ajax загрузки. Области делятся на блоки (block) и чанки (chunk).
+ * Блок - это область первого уровня. Компоненты AdvancedComponent обязательно должны быть включены внутрь
+ * блока для возможности использовать их в ajax запросах, иначе они просто не будут выполняться (при ajax запросах).
+ *
+ * Чанк - это область 2-го уровня и далее.
+ *
+ * При запросах из js в качестве кода области можно указать только id блока, либо id блока и id чанка, разделенные точкой.
+ *
+ * Class Ajax
+ * @package Mmit\NewSmile
+ */
 class Ajax
 {
     protected static $areasStack = array();
@@ -26,7 +38,7 @@ class Ajax
 
         if($bShowAreaId)
         {
-            echo '<div ' . static::getAreaIdAttr() . '>';
+            echo '<div ' . static::getAreaCodeAttr() . '>';
         }
 
         if(static::isCurrentAreaRequested())
@@ -37,23 +49,23 @@ class Ajax
 
     public static function finish()
     {
-
-
         if(static::isAreaRequested())
         {
             $isCurrentAreaRequested = static::isCurrentAreaRequested();
-            $currentArea = array_pop(static::$areasStack);
 
-            if($currentArea['SHOW_AREA_ID'])
+
+            if(static::getAreaParam('SHOW_AREA_ID'))
             {
                 echo '</div>';
             }
 
-            if($currentArea['WRITE_CONTENT'])
+            if(static::getAreaParam('WRITE_CONTENT'))
             {
-                static::$result['content'][$currentArea['AREA_ID']] = ob_get_contents();
+                static::$result['content'][static::getAreaCode()] = ob_get_contents();
                 static::$isContentRecording = false;
             }
+
+            $currentArea = array_pop(static::$areasStack);
 
             foreach ($currentArea as $paramName => $paramValue)
             {
@@ -89,7 +101,47 @@ class Ajax
 
     protected static function isCurrentAreaRequested()
     {
-        return (static::isAjaxQuery() && ($_REQUEST['area'] == static::getAreaParam('AREA_ID')));
+        $result = false;
+
+        if(!static::isAjaxQuery())
+        {
+            return false;
+        }
+
+        $areaAddress = explode('.', $_REQUEST['area']);
+        $countAreaAddress = count($areaAddress);
+
+        $curAreaId = static::getAreaParam('AREA_ID');
+
+        if($countAreaAddress == 1)
+        {
+            $requestedBlockId = $areaAddress[0];
+            $result = ((count(static::$areasStack) == 1) && ($curAreaId == $requestedBlockId));
+        }
+        elseif($countAreaAddress == 2)
+        {
+            $requestedBlockId = $areaAddress[0];
+            $requestedChunkId = $areaAddress[1];
+
+            // если в запросе указан блок и чанк, проверяем id и того, и другого
+            $result = ((count(static::$areasStack) > 1) && ($requestedChunkId == $curAreaId)
+                && (static::getBlockParam('AREA_ID') == $requestedBlockId));
+        }
+
+        return $result;
+    }
+
+    public static function isCurrentBlockRequested()
+    {
+        if(!static::isAjaxQuery())
+        {
+            return false;
+        }
+
+        $areaAddress = explode('.', $_REQUEST['area']);
+        $requestedBlockId = $areaAddress[0];
+
+        return ($requestedBlockId && ($requestedBlockId == static::getBlockParam('AREA_ID')));
     }
 
     protected static function isParentAreaRequested()
@@ -111,9 +163,14 @@ class Ajax
         );
     }
 
-    public static function getAreaParam($paramName)
+    public static function getAreaParam($paramName, $level = 1)
     {
-        return static::$areasStack[count(static::$areasStack) - 1][$paramName];
+        return static::$areasStack[count(static::$areasStack) - $level][$paramName];
+    }
+
+    public static function getBlockParam($paramName)
+    {
+        return static::$areasStack[0][$paramName];
     }
 
     /**
@@ -142,9 +199,21 @@ class Ajax
         static::setAreaParam('scripts', $jsList);
     }
 
-    public static function getAreaIdAttr()
+    public static function getAreaCode()
     {
-        return 'data-is-ajax-area="Y" data-ajax-area="' . static::getAreaParam('AREA_ID') . '"';
+        $areaCode = static::getBlockParam('AREA_ID');
+
+        if(count(static::$areasStack) > 1)
+        {
+            $areaCode .= '.' . static::getAreaParam('AREA_ID');
+        }
+
+        return $areaCode;
+    }
+
+    public static function getAreaCodeAttr()
+    {
+        return 'data-is-ajax-area="Y" data-ajax-area="' . static::getAreaCode() . '"';
     }
 
     public static function getLoaderClass()

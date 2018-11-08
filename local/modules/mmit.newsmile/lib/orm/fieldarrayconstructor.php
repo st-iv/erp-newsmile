@@ -9,6 +9,7 @@ use Bitrix\Main\Entity\Query;
 use Bitrix\Main\Entity\ScalarField;
 use Bitrix\Main\ORM\Entity;
 use Bitrix\Main\ORM\Fields;
+use Mmit\NewSmile\Orm\Fields\FileField;
 use Mmit\NewSmile\Orm\Fields\ReverseReference;
 
 
@@ -336,6 +337,11 @@ class FieldArrayConstructor extends FieldsProcessor
     protected function setBooleanFieldValue(&$fieldResult, BooleanField $field, $value)
     {
         $fieldResult['CHECKED'] = ($value == $fieldResult['TRUE_VALUE']);
+    }
+
+    protected function setFileFieldValue(&$fieldResult, FileField $field, $value)
+    {
+        $fieldResult['VALUE'] = \CFile::GetFileArray($value);
     }
 
 

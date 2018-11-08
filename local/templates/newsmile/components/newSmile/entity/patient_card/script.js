@@ -1,6 +1,9 @@
-var PatientsList = function(selector)
+var PatientsList = function(selector, params)
 {
     this.$list = $(selector);
+    this.params = params;
+    this.filesList = null;
+
     $(document).ready(this.init.bind(this));
 };
 
@@ -30,8 +33,9 @@ $.extend(PatientsList.prototype, {
 var PatientCard = function(selector, patientId)
 {
     this.$popup = $(selector);
-    this.$addFileInput = this.$popup.find('.js-patient-card-add-file');
     this.patientId = patientId;
+
+    this.initedTabs = [];
     this.init();
 };
 
@@ -48,14 +52,12 @@ $.extend(PatientCard.prototype, {
             var $this = $(e.target);
             if(!$this.hasClass('active'))
             {
-                var targetTab = $this.data('target');
-
-                $('.card__main-content .card__tab-1lvl').removeClass('active');
-                $this.addClass('active');
-                $('.card__main-content .card__tab-content').removeClass('active');
-                $('.card__main-content .card__tab-content[data-tab-code=' + targetTab + ']').addClass('active');
+                self.showTab($this);
             }
         });
+
+        // init first tab
+        this.showTab(this.$popup.find('.card__tab-1lvl.active'));
 
         // init edit mode button
         this.$popup.find('.js-toggle-edit-mode').click(function(e)
@@ -82,171 +84,50 @@ $.extend(PatientCard.prototype, {
 
             Ajax.load(url, editAreaCode);
         });
-
-
-        // init add file field
-        this.$addFileInput.change(function(e)
-        {
-            if(e.target.files.length)
-            {
-                var $this = $(this);
-                Ajax.loadPopup(
-                    '/ajax/edit-patient-file.php',
-                    Ajax.getAreaCode($this),
-                    {
-                        'PATIENT_ID': self.patientId
-                    },
-                    self.initFileEditPopup.bind(self, e.target.files[0]),
-                    'js-patient-file-edit'
-                );
-            }
-        });
-        
-        this.initFileTable();
-
-        // init file info hiding
-        this.$popup.find('.file-info').click(function()
-        {
-            $(this).toggleClass('hidden');
-        });
     },
 
-    initFileEditPopup: function(file, contentHtml, $popup)
+    /**
+     * Отображение вкладки
+     * @param $tab - jQuery объект вкладки
+     */
+    showTab: function($tab)
     {
+        var targetTab = $tab.data('target');
+        var $tabBody = this.$popup.find('.card__main-content .card__tab-content[data-tab-code=' + targetTab + ']');
+
+        this.$popup.find('.card__main-content .card__tab-1lvl').removeClass('active');
+        $tab.addClass('active');
+        this.$popup.find('.card__main-content .card__tab-content').removeClass('active');
+        $tabBody.addClass('active');
+
+        if(this.initedTabs.indexOf(targetTab) === -1)
+        {
+            this.initTab(targetTab, $tab, $tabBody);
+            this.initedTabs.push(targetTab);
+        }
+    },
+
+    /**
+     * Инициализация содержимого вкладки (вызывается при первом открытии вкладки)
+     * @param tabCode
+     * @param $tab
+     * @param $tabBody
+     */
+    initTab: function(tabCode, $tab, $tabBody)
+    {
+        var ajaxArea = Ajax.getAreaCode($tabBody, false);
         var self = this;
 
-        if (file.type.match('image.*'))
+        if(ajaxArea)
         {
-            var reader = new FileReader();
-            reader.onload = function(e)
-            {
-                $popup.find('.js-patient-file-edit-preview').attr('src', e.target.result);
+            var data = {
+                PATIENT_ID: this.patientId
             };
 
-            reader.readAsDataURL(file);
-        }
-
-        var $form = $popup.find('form');
-
-        $popup.find('.js-patient-file-save-button').click(function()
-        {
-            $form.submit();
-        });
-
-        $form.submit(function(e)
-        {
-            var data = new FormData($form[0]);
-            var fileFieldName = $form.find('.js-file-input-field').attr('name');
-
-            data.set(fileFieldName, self.$addFileInput.prop('files')[0]);
-
-            console.log(data);
-            Ajax.loadNode($form, data, function()
+            Ajax.loadNode($tabBody, data, function()
             {
-                self.updateFileTable();
-                window.popupManager.close();
-                self.$addFileInput.val('');
+                self.filesList = new PatientFilesList($tabBody, self.patientId);
             });
-
-            e.preventDefault();
-        });
+        }
     },
-    
-    initFileTable: function()
-    {
-        // init files list ajax load handler
-
-        var self = this;
-        var filesListAreaCode = Ajax.getAreaCode(this.$popup.find('.js-files-list-filter-form'));
-
-        Ajax.registerLoadHandler(filesListAreaCode, function(response, contentHtml)
-        {
-            self.$popup.find('.files__table').html($(contentHtml).find('.files__table').html());
-        });
-
-        // init file filter field
-        this.$popup.find('.js-files-filter-type').change(function ()
-        {
-            //var showTypes = $(this).val();
-            /*var isAllEnabled = (showTypes.indexOf('ALL') !== -1);
-
-            self.$popup.find('.table__cell--files').each(function()
-            {
-                var filesCount = 0;
-
-                $(this).find('.file').each(function()
-                {
-                    if(!isAllEnabled && (showTypes.indexOf($(this).data('type-code')) === -1))
-                    {
-                        $(this).hide();
-                    }
-                    else
-                    {
-                        $(this).show();
-                        filesCount++;
-                    }
-                });
-
-                var $group = $(this).closest('.table__row').prev('.table__row--group');
-
-                if(filesCount)
-                {
-                    $(this).show();
-                    $group.show();
-                    $group.find('.js-files-count').text(filesCount);
-                }
-                else
-                {
-                    $(this).hide();
-                    $group.hide();
-                }
-            });*/
-
-            self.updateFileTable();
-        });
-
-        // init file preview change
-        this.$popup.find('.files__table .file').click(function (e)
-        {
-            if(!$(this).hasClass('selected'))
-            {
-                var detailPictureSrc = $(this).data('detail-picture');
-                var $file = $(this);
-
-                self.$popup.find('.js-files-preview').attr('src', detailPictureSrc);
-
-                self.$popup.find('.files__table .file').removeClass('selected');
-                $(this).addClass('selected');
-
-                self.$popup.find('.file-info__field').each(function ()
-                {
-                    var $this = $(this);
-                    var fieldCode = $this.data('field-code');
-                    var fieldDataAttrName = 'field-' + fieldCode.toLowerCase().replace('_', '-');
-                    var fieldValue = $file.data(fieldDataAttrName);
-
-                    if(fieldValue)
-                    {
-                        $this.find('.field-value').text(fieldValue);
-                        $this.show();
-                    }
-                    else
-                    {
-                        $this.hide();
-                    }
-                });
-            }
-
-            e.preventDefault();
-        });  
-    },
-
-    updateFileTable: function()
-    {
-        var $form = this.$popup.find('.js-files-list-filter-form');
-
-        Ajax.loadNode($form, {
-            TYPE: $form.find('.js-files-filter-type').val().join(',')
-        }, this.initFileTable.bind(this), '');
-    }
 });

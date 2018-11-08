@@ -2,6 +2,7 @@
 
 use Mmit\NewSmile;
 
+NewSmile\Ajax::start('patient-card');
 NewSmile\Ajax::start('patient-main-info');
 
 $APPLICATION->IncludeComponent(
@@ -19,4 +20,5 @@ $APPLICATION->IncludeComponent(
     $component
 );
 
+NewSmile\Ajax::finish();
 NewSmile\Ajax::finish();
