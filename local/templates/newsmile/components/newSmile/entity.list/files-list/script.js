@@ -158,6 +158,11 @@ $.extend(PatientFilesList.prototype, {
 
         this.sortOrder = $toggleSort.data('sort-order');
 
+        if(!this.sortOrder)
+        {
+            this.sortOrder = 'desc';
+        }
+
         $toggleSort.click(function()
         {
             self.sortOrder = ((self.sortOrder === 'asc') ? 'desc' : 'asc');
@@ -215,7 +220,20 @@ $.extend(PatientFilesList.prototype, {
             var reader = new FileReader();
             reader.onload = function(e)
             {
-                $popup.find('.js-patient-file-edit-preview').attr('src', e.target.result);
+                var $preview = $popup.find('.js-patient-file-edit-preview');
+                var $noPreviewNote = $popup.find('.js-patient-file-edit-no-preview');
+
+                if(file.type.match(/image.*/))
+                {
+                    $preview.attr('src', e.target.result);
+                    $preview.show();
+                    $noPreviewNote.hide();
+                }
+                else
+                {
+                    $preview.hide();
+                    $noPreviewNote.show();
+                }
             };
 
             reader.readAsDataURL(file);
@@ -290,9 +308,36 @@ $.extend(PatientFilesList.prototype, {
      */
     showFileDetail: function($file)
     {
+        var $filePreview = this.$root.find('.js-files-preview');
+        var $fileNoPreviewNote = this.$root.find('.js-files-no-preview');
+
+        var $fileInfo = this.$root.find('.file-info');
+
+        if($file.length)
+        {
+            $filePreview.show();
+            $fileInfo.show();
+        }
+        else
+        {
+            $filePreview.hide();
+            $fileInfo.hide();
+            return;
+        }
+
         var detailPictureSrc = $file.data('detail-picture');
 
-        this.$root.find('.js-files-preview').attr('src', detailPictureSrc);
+        if(detailPictureSrc)
+        {
+            $filePreview.show();
+            $filePreview.attr('src', detailPictureSrc);
+            this.$root.find('.preview').removeClass('no-image');
+        }
+        else
+        {
+            $filePreview.hide();
+            this.$root.find('.preview').addClass('no-image');
+        }
 
         this.$root.find('.files__table .file').removeClass('selected');
         $file.addClass('selected');

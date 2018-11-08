@@ -91,9 +91,9 @@ $component = $this->getComponent();
                                 }
 
                                 $isImage = \CFile::IsImage($patientFile['FILE']['FILE_NAME'], $patientFile['FILE']['CONTENT_TYPE']);
-                                ?>
 
-                                <a class="file js-patient-file-list-file <?=($isSelected ? 'selected' : '')?>" href="#"
+                                ?><a class="file js-patient-file-list-file <?=($isSelected ? 'selected' : '')?> <?= ($isImage ? '' : 'no-image') ?>"
+                                     href="#"
 
                                    data-detail-picture="<?=($isImage ? $patientFile['FILE']['SRC'] : '')?>"
                                    data-download="<?=$patientFile['FILE']['SRC']?>"
@@ -111,13 +111,17 @@ $component = $this->getComponent();
                                         data-field-<?=str_replace('_', '-', strtolower($previewFieldName))?>="<?$component->includePageBlock('field_value', $pageBlockData);?>"
                                     <?endforeach;?>
                                 >
-                                    <?if(\CFile::IsImage($patientFile['FILE']['FILE_NAME'], $patientFile['FILE']['CONTENT_TYPE'])):?>
+                                    <?if($isImage):?>
 
                                         <img src="<?=$patientFile['FILE']['RESIZED_SRC']?>" alt="<?=$patientFile['NAME']?>">
 
+                                    <?else:?>
+                                        <div class="file__name"><?=$patientFile['NAME']?></div>
+                                        <div class="file__extension"><?=strtoupper(pathinfo($patientFile['FILE']['SRC'], PATHINFO_EXTENSION))?></div>
+
                                     <?endif;?>
-                                </a>
-                            <?endforeach;?>
+                                </a><?
+                            endforeach;?>
 
                         </div>
                     </div>
@@ -136,9 +140,6 @@ $component = $this->getComponent();
 
                 <img class="js-files-preview" src="<?=$arResult['SELECTED_ELEMENT']['FILE']['SRC']?>" alt="<?=$arResult['SELECTED_ELEMENT']['NAME']?>" <?=($isImage ? '' : 'style="display:none;"')?>>
 
-                <div class="no-preview" <?=($isImage ? 'style="display:none;"' : '')?>>
-                    Файл не является изображением, предпросмотр невозможен
-                </div>
 
                 <div class="file-info">
                     <?$exceptFields = ['ID', 'FILE', 'NAME_BY_TEMPLATE']?>

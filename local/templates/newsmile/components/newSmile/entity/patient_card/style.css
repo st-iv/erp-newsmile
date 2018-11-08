@@ -151,6 +151,9 @@
 
 .patient-file-edit .main-info__preview-container {
     width: 40%;
+    display: flex;
+    padding: 10px;
+    align-items: center;
 }
 
 .patient-file-edit .main-info__file-preview {
@@ -255,10 +258,29 @@
 
 .card__files .table__cell .file {
     max-width: 200px;
-    max-height: 100px;
+    min-width: 100px;
+    height: 100px;
     display: inline-block;
     margin-right: 10px;
     margin-bottom: 10px;
+    vertical-align: top;
+    text-decoration: none;
+    color: black;
+}
+
+.card__files .table__cell .file.no-image {
+    border: 1px solid black;
+}
+
+.card__files .table__cell .file .file__name {
+    padding: 10px;
+    text-align: center;
+    line-height: 14px;
+}
+
+.card__files .table__cell .file .file__extension {
+    text-align: center;
+    font-size: 30px;
 }
 
 .card__files .table__cell .file img {
@@ -299,6 +321,10 @@
     opacity: .5;
     border-radius: 3px;
     padding: 10px;
+}
+
+.card__files .preview.no-image .file-info {
+    position: relative;
 }
 
 .card__files .file-info.hidden {

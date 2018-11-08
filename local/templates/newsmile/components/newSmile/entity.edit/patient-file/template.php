@@ -37,8 +37,15 @@ $component = $this->getComponent();
         <form action="<?=POST_FORM_ACTION_URI?>" class="entity-edit-form" method="post">
 
             <div class="main-info">
+                <?
+                $isImage = \CFile::IsImage($arResult['FIELDS']['FILE']['VALUE']['FILE_NAME']);
+                ?>
+
                 <div class="main-info__preview-container">
-                    <img src="<?= ($arResult['FIELDS']['FILE']['VALUE']['SRC'] ?: '') ?>" class="main-info__file-preview js-patient-file-edit-preview">
+                    <img src="<?= ($isImage ? $arResult['FIELDS']['FILE']['VALUE']['SRC'] : '') ?>" class="main-info__file-preview js-patient-file-edit-preview">
+                    <div class="main-info__file-no-preview js-patient-file-edit-no-preview" <?=($isImage ? 'style="display: none;"' : '')?>>
+                        Файл не является изображением, просмотр недоступен
+                    </div>
                 </div>
 
 
