@@ -30,42 +30,6 @@ class TreatmentPlanItemTable extends Entity\DataManager
                 'primary' => true,
                 'title' => 'ID',
             )),
-            new Entity\DatetimeField('DATE_CREATE', array(
-                'title' => 'Дата создания',
-                'default_value' => DateTime::createFromTimestamp(time())
-            )),
-            new Entity\IntegerField('USER_CREATE_ID', array(
-                'title' => 'Кто создал',
-                'default_value' => function () {
-                    global $USER;
-                    return $USER->GetID();
-                }
-            )),
-            new Entity\ReferenceField('USER_CREATE',
-                'Bitrix\Main\User',
-                array('=this.USER_CREATE_ID' => 'ref.ID'),
-                array(
-                    'title' => 'Кто создал'
-                )
-            ),
-            new Entity\DatetimeField('DATE_UPDATE', array(
-                'title' => 'Дата изменения',
-                'default_value' => DateTime::createFromTimestamp(time())
-            )),
-            new Entity\IntegerField('USER_UPDATE_ID', array(
-                'title' => 'Кто изменил',
-                'default_value' => function () {
-                    global $USER;
-                    return $USER->GetID();
-                }
-            )),
-            new Entity\ReferenceField('USER_UPDATE',
-                'Bitrix\Main\User',
-                array('=this.USER_UPDATE_ID' => 'ref.ID'),
-                array(
-                    'title' => 'Кто изменил'
-                )
-            ),
             new Entity\IntegerField('PLAN_ID', array(
                 'title' => 'PLAN_ID',
             )),
@@ -76,20 +40,20 @@ class TreatmentPlanItemTable extends Entity\DataManager
                     'title' => 'План лечения'
                 )
             ),
-            new Entity\IntegerField('PRODUCT_ID', array(
-                'title' => 'PRODUCT_ID',
+            new Entity\IntegerField('SERVICE_ID', array(
+                'title' => 'SERVICE_ID',
             )),
-            new Entity\ReferenceField('PRODUCT',
-                'Bitrix\Iblock',
-                array('=this.PRODUCT_ID' => 'ref.ID'),
+            new Entity\ReferenceField('SERVICE',
+                Service\ServiceTable::class,
+                array('=this.SERVICE_ID' => 'ref.ID'),
                 array(
-                    'title' => 'План лечения'
+                    'title' => 'Услуга'
                 )
             ),
             new Entity\IntegerField('QUANTITY', array(
                 'title' => 'Количество',
             )),
-            new Entity\StringField('MEASURE', array(
+            new Entity\StringField('TARGET', array(
                 'title' => 'Единица'
             )),
             new Entity\FloatField('MIN_PRICE', array(
@@ -97,12 +61,6 @@ class TreatmentPlanItemTable extends Entity\DataManager
             )),
             new Entity\FloatField('MAX_PRICE', array(
                 'title' => 'Максимальная цена'
-            )),
-            new Entity\FloatField('MIN_SUM', array(
-                'title' => 'Минимальная сумма'
-            )),
-            new Entity\FloatField('MAX_SUM', array(
-                'title' => 'Максимальная сумма'
             )),
         );
     }

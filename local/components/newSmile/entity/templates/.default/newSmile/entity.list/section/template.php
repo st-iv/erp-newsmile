@@ -10,7 +10,7 @@
     </ul>
 <?endif;?>
 <?if($arResult['ELEMENTS']):?>
-    Материалы:
+    Элементы:
     <ul class="elements-list">
         <?foreach ($arResult['ELEMENTS'] as $arElement):?>
             <li class="element-service" data-edit-url="<?=$arElement['EDIT_URL']?>">

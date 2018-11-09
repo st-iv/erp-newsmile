@@ -11,6 +11,7 @@ use Bitrix\Main\Config\Option;
 use Bitrix\Main\Entity;
 use Bitrix\Main\Loader;
 use Bitrix\Main\Localization\Loc;
+use Bitrix\Main\ORM\Fields\Relations\OneToMany;
 use Bitrix\Main\Type\DateTime;
 
 Loc::loadMessages(__FILE__);
@@ -45,6 +46,8 @@ class TreatmentPlanTable extends Entity\DataManager
 
     public static function addItemToTreatmentPlan($ID, $elementID, $arMeasure)
     {
+        return;
+
         $arFields = array();
         if (intval($ID)) {
             $arFields['PLAN_ID'] = intval($ID);
@@ -177,13 +180,13 @@ class TreatmentPlanTable extends Entity\DataManager
                 )
             ),
             new Entity\StringField('NAME', array(
-                'primary' => true,
                 'title' => 'Название'
             )),
             new Entity\DateField('DATE_START', array(
                 'title' => 'Действителен с',
                 'default_value' => DateTime::createFromTimestamp(time())
             )),
+            new OneToMany('ITEMS', TreatmentPlanItemTable::class, 'PLAN')
         );
     }
 }

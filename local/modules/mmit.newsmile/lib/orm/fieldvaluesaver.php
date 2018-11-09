@@ -73,6 +73,7 @@ class FieldValueSaver extends FieldsProcessor
             || $this->hiddenFields[$fieldName])
         {
             $this->updateFields[$fieldName] = $this->getRequestParam($fieldName);
+
             if($field->isSerialized() && $this->updateFields[$fieldName] && !is_array($this->updateFields[$fieldName]))
             {
                 $this->updateFields[$fieldName] = explode(',', $this->updateFields[$fieldName]);
@@ -165,6 +166,8 @@ class FieldValueSaver extends FieldsProcessor
         /*  проходим сейвером по всем полям привязавшейся сущности и получаем массив полей и их значений для всех элементов,
             привязанных к текущему */
 
+        Debug::writeToFile('paramsss!');
+        Debug::writeToFile($params);
         $fieldValueSaver = new static($sourceEntity, $params);
         $fieldValueSaver->setRequest($this->request);
 
@@ -174,8 +177,8 @@ class FieldValueSaver extends FieldsProcessor
         }
 
 
-
         $updateFields = $fieldValueSaver->getUpdateFields();
+
 
         /* обновляем существующие элементы и добавляем новые */
 
@@ -243,7 +246,7 @@ class FieldValueSaver extends FieldsProcessor
                     unset($itemFields[$primaryName]);
                 }
 
-                $sourceDataClass::update($primary, $itemFields);
+                Debug::writeToFile($sourceDataClass::update($primary, $itemFields)->getErrorMessages());
                 $savedItemsPrimaries[serialize($primary)] = true;
             }
             else
@@ -312,7 +315,7 @@ class FieldValueSaver extends FieldsProcessor
 
         if($this->params['ENTITY_ID'])
         {
-            $dataManager::update($this->params['ENTITY_ID'], $this->updateFields);
+            Debug::writeToFile($dataManager::update($this->params['ENTITY_ID'], $this->updateFields)->getErrorMessages());
         }
         else
         {
