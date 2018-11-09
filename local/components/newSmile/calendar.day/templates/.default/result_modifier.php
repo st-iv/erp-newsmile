@@ -18,16 +18,6 @@ foreach ($arResult['WORK_CHAIR'] as &$workChair)
     }
 
     unset($schedule);
-
-    foreach ($workChair['MAIN_DOCTORS'] as &$mainDoctor)
-    {
-        if($mainDoctor['ID'])
-        {
-            $mainDoctor['NAME'] = Helpers::getFio($mainDoctor);
-        }
-    }
-
-    unset($mainDoctor);
 }
 
 unset($workChair);
