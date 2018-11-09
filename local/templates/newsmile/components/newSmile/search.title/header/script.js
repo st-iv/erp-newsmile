@@ -8,8 +8,6 @@ HeaderSearchTitle = function (params)
     this.$popup = $('.js-header-search-content');
 
     this.bInputUpdated = false;
-    this.bQueryInProgress = false;
-    this.hasDefferedQuery = false;
 
     this.init();
 };
@@ -105,26 +103,12 @@ $.extend(HeaderSearchTitle.prototype, {
 
     submit: function()
     {
-        var result = false;
-
         if(this.bInputUpdated)
         {
             if(this.$input.val().length >= this.params.minQueryLength)
             {
-                if(this.queryInProgress)
-                {
-                    this.hasDefferedQuery = true;
-                    result = false;
-                }
-                else
-                {
-                    this.queryInProgress = true;
-                    this.$form.submit();
-                    this.hasDefferedQuery = false;
-                    this.bInputUpdated = false;
-
-                    result = true;
-                }
+                this.$form.submit();
+                this.bInputUpdated = false;
             }
             else
             {
@@ -132,20 +116,12 @@ $.extend(HeaderSearchTitle.prototype, {
             }
 
         }
-
-        return result;
     },
 
     handleAjaxLoad: function()
     {
         this.initScrollbars();
         this.openSearchPopup();
-        this.queryInProgress = false;
-
-        if(this.hasDefferedQuery)
-        {
-            this.submit();
-        }
     },
 
     cleanPopupWindow: function()

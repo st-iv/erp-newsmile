@@ -163,7 +163,11 @@ $.extend(NoticeList.prototype, {
 
         this.loadItemsIds = [];
 
-        Ajax.load(General.postFormAction, this.ajaxAreaCode, queryData, '', function(response, contentHtml)
+        var ajaxSettings = {
+            updateMethod: ''
+        };
+
+        Ajax.load(General.postFormAction, this.ajaxAreaCode, queryData, function(response, contentHtml)
         {
             $newItems = $(contentHtml);
 
@@ -174,7 +178,7 @@ $.extend(NoticeList.prototype, {
             _this.$popup.find('.notif_tab.tActive').trigger('click');
             _this.setNoticesCount(_this.getNoticesItems().length);
             _this.updateItemsIds();
-        });
+        }, ajaxSettings);
     },
 
     /**
@@ -188,7 +192,9 @@ $.extend(NoticeList.prototype, {
             del_notices: this.deletedItemsIds
         };
 
-        Ajax.load(General.postFormAction, this.ajaxAreaCode, queryData, false);
+        Ajax.load(General.postFormAction, this.ajaxAreaCode, queryData, null, {
+            updateMethod: ''
+        });
     },
 
 
@@ -206,7 +212,7 @@ $.extend(NoticeList.prototype, {
 
         Ajax.load(General.postFormAction, this.ajaxAreaCode, {
             'read_notices': notReadNotices
-        }, false);
+        }, null, {updateMethod: false});
     },
 
     /**

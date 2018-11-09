@@ -3,25 +3,18 @@ var Ajax = (function()
     var loadHandlers = {};
     var loadedScripts = {};
     var loaders = [];
+    var inProgress = [];
+    var throttleModes = {
+        blockAll: 1,
+        passLastOnly: 2
+    };
 
     function initLoaders()
     {
-
-        console.log('init!!');
         clearLoaders();
 
         $('.js-ajax-load').each(function(index, element)
         {
-            var $this = $(this);
-            /*var id = $this.attr('id');
-
-            if(!id)
-            {
-                console.log('Для привязки ajax загрузчика необходимо указать id:');
-                console.log(this);
-                return;
-            }*/
-
             if(this.tagName === 'FORM')
             {
                 $(this).on('submit.ajaxload', function(e)
@@ -65,15 +58,43 @@ var Ajax = (function()
      * @param url
      * @param areaCode - код ajax области, которую необходимо загрузить
      * @param data - массив параметров
-     * @param contentUpdateMethod - метод обновления загружаемой области - название jquery функции для вставки нового контента
-     * в контейнер области. Например, html, prepend, append. При пустом значении загружаемая область не будет обновлена
      * @param successHandler - обработчик успешной загрузки, в качестве первого параметра получает ответ сервера, вторым парметром
-     * загруженный html код (извлеченный из контейнера области)
+     * @param settings - объект с дополнителньыми настройками:
+     *                  updateMethod - метод обновления загружаемой области - название jquery функции для вставки нового контента
+     *                  в контейнер области. Например, html, prepend, append. При пустом значении загружаемая область не будет обновлена
+     *                  загруженный html код (извлеченный из контейнера области)
+     *
+     *                  throttleMode - режим блокировки загрузки данной области во время выполнения запроса. По умолчанию passLastOnly
+     *                      blockAll - игнорирование всех запросов
+     *                      passLastOnly - выполнение только последнего запроса
+     *
      */
-    function load(url, areaCode, data = {}, contentUpdateMethod = 'html', successHandler = null)
+    function load(url, areaCode, data = {}, successHandler = null, settings = {})
     {
-        var ajaxConfig = getAjaxQueryConfig(url, areaCode, data,  contentUpdateMethod, successHandler);
-        $.ajax(ajaxConfig);
+        var defaults = {
+            updateMethod: 'html',
+            throttleMode: throttleModes.passLastOnly
+        };
+
+        settings = $.extend(defaults, settings);
+
+        if(!inProgress[areaCode])
+        {
+            console.log('Ajax.load load');
+
+            inProgress[areaCode] = true;
+            var ajaxConfig = getAjaxQueryConfig(url, areaCode, data,  settings.updateMethod, successHandler);
+            $.ajax(ajaxConfig);
+        }
+        else
+        {
+            console.log('Ajax.load block');
+
+            if(settings.throttleMode === throttleModes.passLastOnly)
+            {
+                // запомнить последний запрос
+            }
+        }
     }
 
     /**
@@ -87,7 +108,11 @@ var Ajax = (function()
      */
     function loadPopup(url, areaCode, data = {}, successHandler = null, additionalClass = '')
     {
-        load(url, areaCode, data, '', function(response)
+        var ajaxSettings = {
+            updateMethod: false
+        };
+
+        load(url, areaCode, data, function(response)
         {
             window.popupManager.showPopup(response.content[areaCode], additionalClass);
 
@@ -95,11 +120,11 @@ var Ajax = (function()
             {
                 successHandler(response.content[areaCode], window.popupManager.getPopup());
             }
-        });
+        }, ajaxSettings);
     }
 
     /**
-     * Cобирает объект конфигурации ajax запроса
+     * Собирает объект конфигурации ajax запроса
      * @param url
      * @param areaCode
      * @param data
@@ -161,7 +186,11 @@ var Ajax = (function()
             processData: false,
             contentType: false,
             method: 'post',
-            success: handleAjaxResponse.bind(null, areaCode, successHandler, contentUpdateMethod)
+            success: handleAjaxResponse.bind(null, areaCode, successHandler, contentUpdateMethod),
+            complete: function()
+            {
+                inProgress[areaCode] = false;
+            }
         };
     }
 
@@ -200,7 +229,7 @@ var Ajax = (function()
         }
     }
 
-    function loadNode($node, data = {}, success = null, contentUpdateMethod = 'html')
+    function loadNode($node, data = {}, success = null, settings = {})
     {
         var url;
 
@@ -222,7 +251,7 @@ var Ajax = (function()
                 url = $node.data('action')
         }
 
-        Ajax.load(url, getAreaCode($node), data, contentUpdateMethod, success);
+        Ajax.load(url, getAreaCode($node), data, success, settings);
     }
 
     function processAjaxResponse(areaCode, successHandler, contentUpdateMethod, response)

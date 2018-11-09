@@ -171,7 +171,7 @@
         var data = this.$form.serialize();
         var snapshot = self.getSnapshot();
 
-        Ajax.load(this.$form.attr('action'), Ajax.getAreaCode(this.$form), data, 'html', function()
+        Ajax.load(this.$form.attr('action'), Ajax.getAreaCode(this.$form), data, function()
         {
             self.requestedSnapshot = snapshot;
             self.onFilterUpdate();
