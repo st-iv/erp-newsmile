@@ -183,7 +183,6 @@ $.extend(PatientFilesList.prototype, {
      */
     openFileEditPopup: function(file, fileId = 0)
     {
-        var $this = $(this);
         var self = this;
 
         Ajax.loadPopup(
