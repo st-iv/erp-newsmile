@@ -4,10 +4,7 @@ var Ajax = (function()
     var loadedScripts = {};
     var loaders = [];
     var inProgress = [];
-    var throttleModes = {
-        blockAll: 1,
-        passLastOnly: 2
-    };
+    var queryBuffer = {};
 
     function initLoaders()
     {
@@ -39,6 +36,8 @@ var Ajax = (function()
             {
                 console.log('Тег ' +  this.tagName + ' не поддерживается ajax загрузчиком');
             }
+
+            loaders.push(this);
         });
     }
 
@@ -59,21 +58,20 @@ var Ajax = (function()
      * @param areaCode - код ajax области, которую необходимо загрузить
      * @param data - массив параметров
      * @param successHandler - обработчик успешной загрузки, в качестве первого параметра получает ответ сервера, вторым парметром
+     *                         загруженный html код (извлеченный из контейнера области)<br>
      * @param settings - объект с дополнителньыми настройками:
-     *                  updateMethod - метод обновления загружаемой области - название jquery функции для вставки нового контента
-     *                  в контейнер области. Например, html, prepend, append. При пустом значении загружаемая область не будет обновлена
-     *                  загруженный html код (извлеченный из контейнера области)
-     *
-     *                  throttleMode - режим блокировки загрузки данной области во время выполнения запроса. По умолчанию passLastOnly
-     *                      blockAll - игнорирование всех запросов
-     *                      passLastOnly - выполнение только последнего запроса
+     *                  <b>updateMethod</b> - метод обновления загружаемой области - название jquery функции для вставки нового контента
+     *                  в контейнер области. Например, html, prepend, append. При пустом значении загружаемая область не будет обновлена<br>
+     *                  <b>throttleMode</b> - режим блокировки загрузки данной области во время выполнения запроса. По умолчанию passLastOnly.<br>
+     *                      <i>block_all</i> - игнорирование всех запросов<br>
+     *                      <i>pass_last_only</i> - выполнение только последнего запроса
      *
      */
     function load(url, areaCode, data = {}, successHandler = null, settings = {})
     {
         var defaults = {
             updateMethod: 'html',
-            throttleMode: throttleModes.passLastOnly
+            throttleMode: 'pass_last_only'
         };
 
         settings = $.extend(defaults, settings);
@@ -90,9 +88,10 @@ var Ajax = (function()
         {
             console.log('Ajax.load block');
 
-            if(settings.throttleMode === throttleModes.passLastOnly)
+            if(settings.throttleMode === 'pass_last_only')
             {
-                // запомнить последний запрос
+                // запоминаем последний запрос
+                queryBuffer[areaCode] = arguments;
             }
         }
     }
@@ -106,15 +105,18 @@ var Ajax = (function()
      *
      * @param additionalClass
      */
-    function loadPopup(url, areaCode, data = {}, successHandler = null, additionalClass = '')
+    function loadPopup(url, areaCode, data = {}, successHandler = null, settings = {})
     {
         var ajaxSettings = {
-            updateMethod: false
+            updateMethod: false,
+            additionalClass: ''
         };
+
+        ajaxSettings = $.extend(ajaxSettings, settings);
 
         load(url, areaCode, data, function(response)
         {
-            window.popupManager.showPopup(response.content[areaCode], additionalClass);
+            window.popupManager.showPopup(response.content[areaCode], ajaxSettings.additionalClass);
 
             if(typeof successHandler === 'function')
             {
@@ -190,6 +192,14 @@ var Ajax = (function()
             complete: function()
             {
                 inProgress[areaCode] = false;
+
+                // выполняем запрос из буффера, если он имеется для данной области
+                if(queryBuffer[areaCode])
+                {
+                    console.log('query from buffer!');
+                    load.apply(null, queryBuffer[areaCode]);
+                    delete queryBuffer[areaCode];
+                }
             }
         };
     }

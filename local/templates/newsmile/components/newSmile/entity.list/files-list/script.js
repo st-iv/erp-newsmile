@@ -193,7 +193,9 @@ $.extend(PatientFilesList.prototype, {
                 'FILE_ID': fileId
             },
             this.initFileEditPopup.bind(this, file),
-            'js-patient-file-edit'
+            {
+                additionalClass: 'js-patient-file-edit'
+            }
         );
     },
 
@@ -262,7 +264,7 @@ $.extend(PatientFilesList.prototype, {
 
                 window.popupManager.close();
                 self.$addFileInput.val('');
-            });
+            }, {throttleMode: 'block_all'});
 
             e.preventDefault();
         });
@@ -291,7 +293,7 @@ $.extend(PatientFilesList.prototype, {
         {
             self.$root.find('.files__table').html($(contentHtml).find('.files__table').html());
             self.initFileTable();
-        }, '');
+        }, {updateMethod: false});
     },
 
     update: function()

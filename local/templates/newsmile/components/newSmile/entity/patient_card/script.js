@@ -23,7 +23,9 @@ $.extend(PatientsList.prototype, {
                 {
                     window.patientCard = new PatientCard('.patient-card-popup', Number($this.data('id')))
                 },
-                'patient-card-popup'
+                {
+                    additionalClass: 'patient-card-popup'
+                }
             );
         });
     }
