@@ -11,6 +11,7 @@ $APPLICATION->SetTitle("Склады");
         'SEF_MODE' => 'Y',
         'SEF_FOLDER' => '/materials/stores/',
         'LIST_ELEMENT_FIELDS' => array('NAME'),
+        'EDIT_ELEMENTS_EDIT_FIELDS' => ['*']
     )
 );?>
 

@@ -30,7 +30,7 @@ use Mmit\NewSmile\Ajax;
                     <div class="notif_data_date"><?=$notice['TIME_FORMATTED']?></div>
 
                     <?if($notice['TYPE'] == 'VISIT_FINISHED'):?>
-                        <div class="notif_data_action notifClose">Закрыть</div>
+                        <div class="notif_data_action">Рассчитать пациента</div>
                     <?elseif($notice['PARAMS']['LINK']):?>
                         <a class="notif_data_action" href="<?=$notice['PARAMS']['LINK']?>">Подробнее</a>
                     <?endif;?>

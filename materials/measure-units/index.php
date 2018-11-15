@@ -11,6 +11,7 @@ $APPLICATION->SetTitle("Единицы измерения");
         'SEF_MODE' => 'Y',
         'SEF_FOLDER' => '/materials/measure-units/',
         'LIST_ELEMENT_FIELDS' => array('NAME'),
+        'EDIT_ELEMENTS_EDIT_FIELDS' => ['*']
     )
 );?>
 
