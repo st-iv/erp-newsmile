@@ -211,9 +211,7 @@ class CalendarScheduleSettingsComponent extends \CBitrixComponent
             if (!Loader::includeModule('mmit.newSmile')) die();
 			$this->getResult();
 			$this->requestResult($this->request);
-//            echo '<pre>';
-//            print_r($this->arResult);
-//            echo '</pre>';
+
 			$this->includeComponentTemplate();
 		}
 		catch (Exception $e)

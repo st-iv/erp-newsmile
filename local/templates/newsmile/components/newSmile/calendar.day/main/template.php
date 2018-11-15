@@ -8,5 +8,5 @@
 </div>
 
 <script>
-    var calendarDay = new CalendarDay({}, '#day-calendar');
+    var calendarDay = new CalendarDay(<?=\CUtil::PhpToJSObject($arResult['JS_PARAMS'])?>, '#day-calendar');
 </script>

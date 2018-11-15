@@ -52,7 +52,7 @@ NewSmile\Ajax::start('calendar-day');
 
 /*$APPLICATION->IncludeComponent(
     "newSmile:calendar.day",
-    "test",
+    "main",
     [
         'FILTER' => $filter
     ]
