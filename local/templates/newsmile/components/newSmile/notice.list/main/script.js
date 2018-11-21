@@ -169,7 +169,7 @@ $.extend(NoticeList.prototype, {
 
         Ajax.load(General.postFormAction, this.ajaxAreaCode, queryData, function(response, contentHtml)
         {
-            $newItems = $(contentHtml);
+            var $newItems = $(contentHtml);
 
             var $notifItems = _this.getNoticesItems();
 

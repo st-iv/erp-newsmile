@@ -13,6 +13,14 @@ class Helpers
      */
     protected static $currentDate;
 
+    /**
+     * Получает из массива групп дерево
+     * @param array $groups
+     * @param string $parentGroupField - название ключа, в котором хранится id родительской группы
+     * @param string $childsField - название ключа, по которому будут хранитсья подгруппы
+     *
+     * @return array
+     */
     public static function getTree(array $groups, $parentGroupField = 'GROUP_ID', $childsField = 'SUBGROUPS')
     {
         foreach ($groups as &$group)
@@ -179,6 +187,23 @@ class Helpers
         }, $snakeCaseStr);
     }
 
+    public static function getSnakeCase($camelCaseStr, $bUpper = true)
+    {
+        $camelCaseStr[0] = strtolower($camelCaseStr[0]);
+        $result = preg_replace('/([A-Z])/', '_$1', $camelCaseStr);
+
+        if($bUpper)
+        {
+            $result = strtoupper($result);
+        }
+        else
+        {
+            $result = strtolower($result);
+        }
+
+        return $result;
+    }
+
     /**
      * Получает гарантированно уникальный id
      * @return string
@@ -193,5 +218,23 @@ class Helpers
 
         static::$usedIds[$id] = true;
         return $id;
+    }
+
+    /**
+     * Приводит ключи массива к нижнему регистру
+     * @param array $array
+     *
+     * @return array
+     */
+    public static function strtolowerKeys(array $array)
+    {
+        $result = [];
+
+        foreach ($array as $key => $value)
+        {
+            $result[strtolower($key)] = $value;
+        }
+
+        return $result;
     }
 }

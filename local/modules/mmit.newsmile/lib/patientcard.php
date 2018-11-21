@@ -199,29 +199,10 @@ class PatientCardTable extends Entity\DataManager
                     'default_value' => ''
                 )
             ),
-            new Entity\IntegerField('DOCTORS_ID',
+            new Entity\StringField('DOCTORS_ID',
                 array(
                     'title' => 'Лечащие врачи',
-                    'default_value' => 0,
                     'serialized' => true,
-                    'save_data_modification' => function(){
-                        return [
-                            function($value){
-                                if(!is_array($value)){
-                                    return [$value];
-                                }else{
-                                    return $value;
-                                }
-                            }
-                        ];
-                    },
-                )
-            ),
-            new Entity\ReferenceField('DOCTORS',
-                'Mmit\NewSmile\Doctor',
-                array('=this.DOCTORS_ID' => 'ref.ID'),
-                array(
-                    'title' => 'Лечащие врачи'
                 )
             ),
             new Entity\BooleanField('NEED_CHECK',
@@ -321,8 +302,11 @@ class PatientCardTable extends Entity\DataManager
                     'title' => 'Общий счет',
                     'default_value' => 0
                 )
-            )
-
+            ),
+            new Entity\TextField('TEETH_MAP',[
+                'title' => 'Карта зубов',
+                'serialized' => true
+            ])
         );
     }
 

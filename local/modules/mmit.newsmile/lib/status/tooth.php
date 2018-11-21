@@ -10,14 +10,42 @@ namespace Mmit\NewSmile\Status;
 use Bitrix\Main\Entity;
 use Bitrix\Main\Localization\Loc;
 use Bitrix\Main\Type\Date;
+use Mmit\NewSmile\Orm\ExtendedFieldsDescriptor;
 use Mmit\NewSmile\Status;
 
 Loc::loadMessages(__FILE__);
 
-class ToothTable extends Status
+class ToothTable extends Status implements ExtendedFieldsDescriptor
 {
+    protected static $enumVariants = [
+        'GROUP' => [
+            'HEALTHY' => 'здоровый',
+            'SICK' => 'больной',
+            'CURED' => 'вылеченный',
+            'MISSING' => 'отсутствует'
+        ]
+    ];
+
+    public static function getMap()
+    {
+        $map = parent::getMap();
+        $groups = static::getEnumVariants('GROUP');
+
+        $map[] = new Entity\EnumField('GROUP',[
+            'values' => array_keys($groups),
+            'required' => true
+        ]);
+
+        return $map;
+    }
+
     public static function getTableName()
     {
         return 'm_newsmile_status_tooth';
+    }
+
+    public static function getEnumVariants($enumFieldName)
+    {
+        return static::$enumVariants[$enumFieldName];
     }
 }

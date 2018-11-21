@@ -1,5 +1,5 @@
 <?
-namespace Mmit\NewSmile\Notice;
+namespace Mmit\NewSmile\Notice\Data;
 
 use Bitrix\Main\Entity;
 use Mmit\NewSmile\Orm\ExtendedFieldsDescriptor;

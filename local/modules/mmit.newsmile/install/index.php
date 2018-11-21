@@ -26,10 +26,10 @@ class mmit_newsmile extends CModule
         }
         
         $this->MODULE_ID = 'mmit.newsmile';
-        $this->MODULE_NAME = Loc::getMessage('BEX_D7DULL_MODULE_NAME');
-        $this->MODULE_DESCRIPTION = Loc::getMessage('BEX_D7DULL_MODULE_DESCRIPTION');
+        $this->MODULE_NAME = Loc::getMessage('MMIT_NEWSMILE_MODULE_NAME');
+        $this->MODULE_DESCRIPTION = Loc::getMessage('MMIT_NEWSMILE_MODULE_DESCRIPTION');
         $this->MODULE_GROUP_RIGHTS = 'N';
-        $this->PARTNER_NAME = Loc::getMessage('BEX_D7DULL_MODULE_PARTNER_NAME');
+        $this->PARTNER_NAME = Loc::getMessage('MMIT_NEWSMILE_MODULE_PARTNER_NAME');
         $this->PARTNER_URI = 'https://mmit.ru';
     }
 
@@ -82,11 +82,12 @@ class mmit_newsmile extends CModule
             NewSmile\Service\PriceTable::getEntity()->createDbTable();
             NewSmile\Service\PriceHistoryTable::getEntity()->createDbTable();
             NewSmile\DoctorSpecializationTable::getEntity()->createDbTable();
-            NewSmile\Notice\TypeTable::getEntity()->createDbTable();
-            NewSmile\Notice\NoticeTable::getEntity()->createDbTable();
+            NewSmile\Notice\Data\TypeTable::getEntity()->createDbTable();
+            NewSmile\Notice\Data\NoticeTable::getEntity()->createDbTable();
             NewSmile\MainDoctorTable::getEntity()->createDbTable();
             NewSmile\MainDoctorTemplateTable::getEntity()->createDbTable();
             NewSmile\Document\DocumentTable::getEntity()->createDbTable();
+            NewSmile\Sms\TokenTable::getEntity()->createDbTable();
 
             $this->testInstallDB();
         }
@@ -164,6 +165,11 @@ class mmit_newsmile extends CModule
         NewSmile\WaitingListTable::addAgent();
     }
 
+    protected function installSefRules()
+    {
+        NewSmile\Rest\Controller::installSefRule('/api/rest');
+    }
+
     public function registerDependences()
     {
         RegisterModuleDependences('pull', 'OnGetDependentModule', $this->MODULE_ID, 'Mmit\NewSmile\DependencesManager', 'getPullDependenceData');
@@ -212,6 +218,7 @@ class mmit_newsmile extends CModule
             $connection->dropTable(NewSmile\MainDoctorTable::getTableName());
             $connection->dropTable(NewSmile\MainDoctorTemplateTable::getTableName());
             $connection->dropTable(NewSmile\Document\DocumentTable::getTableName());
+            $connection->dropTable(NewSmile\Sms\TokenTable::getTableName());
         }
     }
 

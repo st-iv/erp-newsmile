@@ -5,6 +5,7 @@ namespace Mmit\NewSmile;
 
 use Bitrix\Main\Type\Date;
 use Bitrix\Main\Type\DateTime;
+use Mmit\NewSmile\Date\Helper;
 
 class Scheduler
 {
@@ -295,5 +296,50 @@ class Scheduler
     {
         $standardIntervalMinutes = ScheduleTable::STANDARD_INTERVAL / 60;
         return (int)$time->format('i') % $standardIntervalMinutes == $standardIntervalMinutes / 2;
+    }
+
+
+    public static function getDoctorsSchedule()
+    {
+        $dbSchedule = ScheduleTemplateTable::getList([
+            'order' => [
+                'CLINIC_ID' => 'asc',
+                'WORK_CHAIR_ID' => 'asc',
+                'TIME' => 'asc'
+            ]
+        ]);
+
+        $result = [];
+        $intervalStart = null;
+        $prevSchedule = null;
+
+        while($schedule = $dbSchedule->fetch())
+        {
+            if(!$prevSchedule || ($schedule['DOCTOR_ID'] != $prevSchedule['DOCTOR_ID']))
+            {
+                if($intervalStart && $prevSchedule['DOCTOR_ID'])
+                {
+                    $intervalEnd = Helper::getPhpDateTime($prevSchedule['TIME']);
+                    $intervalEnd->modify('add +' . $prevSchedule['DURATION'] . ' minute');
+                    $isEvenWeek = ScheduleTemplateTable::isEvenWeek(Helper::getPhpDateTime($intervalStart));
+
+                    $weekDayIndex = (int)$intervalStart->format('N');
+                    $parity = ($isEvenWeek ? 'even' : 'odd');
+
+                    $strInterval = $intervalStart->format('H:i') . '-' . $intervalEnd->format('H:i');
+
+                    $result[$prevSchedule['DOCTOR_ID']][$parity][$weekDayIndex][] = $strInterval;
+                }
+
+                if($schedule['DOCTOR_ID'])
+                {
+                    $intervalStart = $schedule['TIME'];
+                }
+            }
+
+            $prevSchedule = $schedule;
+        }
+
+        return $result;
     }
 }

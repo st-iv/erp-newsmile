@@ -163,11 +163,25 @@ var Ajax = (function()
         if($.isPlainObject(data))
         {
             var dataObj = Object.assign(data);
+            var fieldValue;
+
             data = new FormData();
 
             for(var fieldName in dataObj)
             {
-                data.append(fieldName, dataObj[fieldName]);
+                fieldValue = dataObj[fieldName];
+
+                if(Array.isArray(fieldValue))
+                {
+                    var fieldValueStr = '';
+
+                    fieldValue.forEach(function(fieldValueItem)
+                    {
+                        fieldValueStr += ',' + fieldValueItem;
+                    });
+                }
+
+                data.append(fieldName, fieldValue);
             }
         }
 
