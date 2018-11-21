@@ -42,17 +42,17 @@ class NewSmileNoticeList extends \CBitrixComponent
         {
             if($request['del_notices'])
             {
-                $this->deleteNotices($request['del_notices']);
+                $this->deleteNotices(explode(',', $request['del_notices']));
             }
 
             if($request['read_notices'])
             {
-                $this->readNotices($request['read_notices']);
+                $this->readNotices( explode(',', $request['read_notices']) );
             }
 
             if($request['notices_ids'])
             {
-                $this->filter['ID'] = $request['notices_ids'];
+                $this->filter['ID'] = explode(',', $request['notices_ids']);
             }
         }
     }
