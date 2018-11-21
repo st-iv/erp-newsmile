@@ -192,4 +192,12 @@ class ScheduleTemplateTable extends Entity\DataManager
         }
         return true;
     }
+
+    public static function isEvenWeek(\DateTime $dateTime)
+    {
+        $dateTime->modify('monday this week');
+        $startDate = new \DateTime(static::DEFAULT_START_DATE);
+        $diffWeeks = floor($startDate->diff($dateTime)->d / 7);
+        return ($diffWeeks % 2 == 1);
+    }
 }

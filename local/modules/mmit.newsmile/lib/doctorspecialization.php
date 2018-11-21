@@ -50,4 +50,9 @@ class DoctorSpecializationTable extends Entity\DataManager implements Orm\Extend
     {
         return static::$enumVariantsTitles[$enumFieldName];
     }
+
+    public static function getSpecName($specializationCode)
+    {
+        return static::$enumVariantsTitles['SPECIALIZATION'][$specializationCode];
+    }
 }

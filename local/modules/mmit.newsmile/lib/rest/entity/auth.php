@@ -1,46 +1,21 @@
 <?
 
-namespace Mmit\NewSmile\Rest\Operation;
+namespace Mmit\NewSmile\Rest\Entity;
 
 use Bitrix\Main\UserTable;
+use Mmit\NewSmile\Application;
 use Mmit\NewSmile\Config;
 use Mmit\NewSmile\Error;
-use Mmit\NewSmile\Exception;
 use Mmit\NewSmile\Sms;
 
 class Auth extends Controller
 {
     protected $testMode = true;
 
-    public function process()
-    {
-        if(!$this->checkMethod('GET'))
-        {
-            return;
-        }
 
-        if ($this->request['phone'] && !$this->request['code'])
-        {
-            $this->sendNewCode($this->request['phone']);
-        }
-        elseif($this->request['phone'] && $this->request['code'])
-        {
-            $this->generateToken($this->request['phone'], $this->request['code']);
-        }
-        elseif(!empty($this->request['token']))
-        {
-            $this->authorize($this->request['token']);
-        }
-        else
-        {
-            $this->setError('Не указаны параметры, необходимые для выполнения операции ' . $this->operation, 'PARAMS_NOT_SPECIFIED');
-        }
-    }
-
-    protected function sendNewCode($phone)
+    protected function processSendCode()
     {
-        $phone = strip_tags($phone);
-        $phone = htmlspecialchars($phone);
+        $phone = $this->getParam('phone');
 
         try
         {
@@ -61,13 +36,10 @@ class Auth extends Controller
         }
     }
 
-    protected function generateToken($phone, $code)
+    protected function processGetToken()
     {
-        $phone = strip_tags($phone);
-        $phone = htmlspecialchars($phone);
-
-        $code = strip_tags($code);
-        $code = htmlspecialchars($code);
+        $phone = $this->getParam('phone');
+        $code = $this->getParam('code');
 
         try
         {
@@ -116,20 +88,34 @@ class Auth extends Controller
         }
     }
 
-    protected function authorize($token)
+    public function processAuthorize()
     {
-        $token = strip_tags($token);
-        $token = htmlspecialchars($token);
+        $token = $this->getParam('token');
+        $this->authorize($token);
+    }
 
+    public function authorize($token, $bGetUserInfo = true)
+    {
         $userId = Sms\TokenTable::getUserByToken($token);
         if ($userId)
         {
-            $this->responseData = $this->getUserInfo($userId);
+            if($bGetUserInfo)
+            {
+                $this->responseData = $this->getUserInfo($userId);;
+            }
+
+            $GLOBALS['USER']->Authorize($userId);
+
+            if(!Application::getInstance()->getUser()->is('patient'))
+            {
+                $this->setError('Пользователь не является пациентом', 'USER_IS_NOT_PATIENT');
+            }
         }
         else
         {
             $this->setError('Токен недействителен', 'INVALID_TOKEN');
         }
+
     }
 
     protected function getUserInfo($userId)
@@ -142,6 +128,39 @@ class Auth extends Controller
             'name' => $user['NAME'],
             'last_name' => $user['LAST_NAME'],
             'second_name' => $user['SECOND_NAME']
+        ];
+    }
+
+    protected function getActionsMap()
+    {
+        return [
+            'authorize' => [
+                'DEFAULT' => true,
+                'PARAMS' => [
+                    'token' => [
+                        'TITLE' => 'токен авторизации'
+                    ]
+                ]
+            ],
+
+            'send-code' => [
+                'PARAMS' => [
+                    'phone' => [
+                        'TITLE' => 'телефон'
+                    ]
+                ]
+            ],
+
+            'get-token' => [
+                'PARAMS' => [
+                    'phone' => [
+                        'TITLE' => 'телефон'
+                    ],
+                    'code' => [
+                        'TITLE' => 'код подтверждения'
+                    ]
+                ]
+            ]
         ];
     }
 }

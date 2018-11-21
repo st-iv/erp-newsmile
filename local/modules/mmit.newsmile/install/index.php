@@ -82,8 +82,8 @@ class mmit_newsmile extends CModule
             NewSmile\Service\PriceTable::getEntity()->createDbTable();
             NewSmile\Service\PriceHistoryTable::getEntity()->createDbTable();
             NewSmile\DoctorSpecializationTable::getEntity()->createDbTable();
-            NewSmile\Notice\TypeTable::getEntity()->createDbTable();
-            NewSmile\Notice\NoticeTable::getEntity()->createDbTable();
+            NewSmile\Notice\Data\TypeTable::getEntity()->createDbTable();
+            NewSmile\Notice\Data\NoticeTable::getEntity()->createDbTable();
             NewSmile\MainDoctorTable::getEntity()->createDbTable();
             NewSmile\MainDoctorTemplateTable::getEntity()->createDbTable();
             NewSmile\Document\DocumentTable::getEntity()->createDbTable();

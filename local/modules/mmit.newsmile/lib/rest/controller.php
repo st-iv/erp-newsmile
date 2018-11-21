@@ -7,12 +7,12 @@ use Bitrix\Main\UrlRewriter;
 use Mmit\NewSmile\Config;
 use Mmit\NewSmile\Error;
 use Mmit\NewSmile\Helpers;
-use Mmit\NewSmile\Sms;
+use Mmit\NewSmile\Rest\Entity\Auth;
 
 class Controller
 {
     protected $request;
-    const OPERATION_CONTROLLER_INTERFACE = __NAMESPACE__ . '\\Operation\\Controller';
+    const ENTITY_CONTROLLER_INTERFACE = __NAMESPACE__ . '\\Entity\\Controller';
 
     public function __construct()
     {
@@ -23,33 +23,54 @@ class Controller
     {
         $error = null;
         $responseData = [];
-        $operation = $this->request['operation'];
+        $entity = $this->request['entity'];
 
-        if(strlen($operation) > 0)
+        if(strlen($entity) > 0)
         {
-            $operationControllerClass = __NAMESPACE__ . '\\Operation\\' . Helpers::getCamelCase($operation);
-
-            if(class_exists($operationControllerClass) && is_subclass_of($operationControllerClass, static::OPERATION_CONTROLLER_INTERFACE))
+            /* проверка авторизационного токена */
+            if($entity != 'auth')
             {
-                /**
-                 * @var \Mmit\NewSmile\Rest\Operation\Controller $operationController
-                 */
-                $operationController = new $operationControllerClass($operation);
-                $operationController->process();
-
-                $error = $operationController->getError();
-
-                $responseData = $operationController->getResponseData();
+               if($this->request['token'])
+               {
+                   $authController = new Auth();
+                   $authController->authorize($this->request['token']);
+                   $error = $authController->getError();
+               }
+               else
+               {
+                   $error = new Error('Не указан авторизационный токен', 'TOKEN_IS_NOT_SPECIFIED');
+               }
             }
-            else
+
+            if(!$error)
             {
-                $error = new Error('Операция ' . $this->request['operation'] . ' не поддерживается', 'OPERATION_IS_NOT_SUPPORTED');
+                /* подключение контроллера указанной операции */
+
+                $entityControllerClass = __NAMESPACE__ . '\\Entity\\' . Helpers::getCamelCase($entity);
+
+                if(class_exists($entityControllerClass) && is_subclass_of($entityControllerClass, static::ENTITY_CONTROLLER_INTERFACE))
+                {
+                    /**
+                     * @var \Mmit\NewSmile\Rest\Entity\Controller $entityController
+                     */
+                    $entityController = new $entityControllerClass();
+                    $entityController->process($this->request['action']);
+                    $error = $entityController->getError();
+                    $responseData = $entityController->getResponseData();
+                }
+                else
+                {
+                    $error = new Error('Сущность ' . $this->request['entity'] . ' не поддерживается', 'ENTITY_IS_NOT_SUPPORTED');
+                }
             }
+
         }
         else
         {
-            $error = new Error('Не указана операция', 'OPERATION_IS_NOT_SPECIFIED');
+            $error = new Error('Не указана сущность', 'ENTITY_IS_NOT_SPECIFIED');
         }
+
+        /* формирование ответа */
 
         $response = [
             'result' => $error ? 'fail' : 'success',
@@ -68,17 +89,25 @@ class Controller
             $response['error'] = null;
         }
 
-        echo json_encode($response, JSON_UNESCAPED_UNICODE);
+        echo json_encode($response, JSON_UNESCAPED_UNICODE | JSON_NUMERIC_CHECK);
     }
 
     public static function installSefRule($restSection)
     {
-        $rule = [
+        $entityRule = [
             'CONDITION' => '#^' . $restSection . '/([^/]+)/.*#',
             'PATH' => $restSection . '/index.php',
-            'RULE' => 'operation=$1'
+            'RULE' => 'entity=$1'
         ];
 
-        UrlRewriter::add(Config::getSiteId(), $rule);
+        UrlRewriter::add(Config::getSiteId(), $entityRule);
+
+        $actionsRule = [
+            'CONDITION' => '#^' . $restSection . '/([^/]+)/([^/]+)/.*#',
+            'PATH' => $restSection . '/index.php',
+            'RULE' => 'entity=$1&action=$2'
+        ];
+
+        UrlRewriter::add(Config::getSiteId(), $actionsRule);
     }
 }

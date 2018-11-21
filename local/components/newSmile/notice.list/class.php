@@ -1,7 +1,6 @@
 <?if(!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED !== true) die();
 
 use Mmit\NewSmile\Notice;
-use Mmit\NewSmile\Notice\NoticeTable;
 
 class NewSmileNoticeList extends \CBitrixComponent
 {
@@ -14,7 +13,7 @@ class NewSmileNoticeList extends \CBitrixComponent
         $filter = $this->filter;
         $filter['USER_ID'] = $GLOBALS['USER']->GetID();
 
-        $dbNotices = NoticeTable::getList(array(
+        $dbNotices = Notice\Data\NoticeTable::getList(array(
             'filter' => $filter,
             'order' => array(
                 'ID' => 'desc'
@@ -25,7 +24,7 @@ class NewSmileNoticeList extends \CBitrixComponent
 
         while($notice = $dbNotices->fetch())
         {
-            NoticeTable::extendNoticeDataByType($notice);
+            Notice\Data\NoticeTable::extendNoticeDataByType($notice);
             $notices[$notice['ID']] = $notice;
         }
 
@@ -34,7 +33,7 @@ class NewSmileNoticeList extends \CBitrixComponent
 
     protected function getNoticesGroups()
     {
-        return Notice\TypeTable::getEnumVariants('GROUP');
+        return Notice\Data\TypeTable::getEnumVariants('GROUP');
     }
 
     protected function processRequest(\Bitrix\Main\HttpRequest $request)
@@ -62,7 +61,7 @@ class NewSmileNoticeList extends \CBitrixComponent
     {
         $this->arResult['DELETED_ITEMS'] = array();
 
-        $dbNotices = NoticeTable::getList(array(
+        $dbNotices = Notice\Data\NoticeTable::getList(array(
             'filter' => array(
                 'ID' => $noticesIds,
                 'USER_ID' => $GLOBALS['USER']->GetID()
@@ -72,13 +71,13 @@ class NewSmileNoticeList extends \CBitrixComponent
 
         while($notice = $dbNotices->fetch())
         {
-            NoticeTable::delete($notice['ID']);
+            Notice\Data\NoticeTable::delete($notice['ID']);
         }
     }
 
     protected function readNotices($noticesIds)
     {
-        $dbNotices = NoticeTable::getList(array(
+        $dbNotices = Notice\Data\NoticeTable::getList(array(
             'filter' => array(
                 'ID' => $noticesIds,
                 'USER_ID' => $GLOBALS['USER']->GetID(),
@@ -89,7 +88,7 @@ class NewSmileNoticeList extends \CBitrixComponent
 
         while($notice = $dbNotices->fetch())
         {
-            NoticeTable::update($notice['ID'], array(
+            Notice\Data\NoticeTable::update($notice['ID'], array(
                 'IS_READ' => true
             ));
         }

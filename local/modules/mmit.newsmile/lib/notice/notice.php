@@ -1,151 +1,45 @@
 <?
+
 namespace Mmit\NewSmile\Notice;
 
-use Bitrix\Main\Entity;
 use Bitrix\Main\Loader;
-use Bitrix\Main\Type\DateTime;
-use Bitrix\Main\UserTable;
+use Mmit\NewSmile\Error;
 use Mmit\NewSmile\Helpers;
-use Mmit\NewSmile\PatientCardTable;
+use Mmit\NewSmile\Notice\Data\NoticeTable;
 use Mmit\NewSmile\RoleTable;
-use Mmit\NewSmile\VisitTable;
-use Mmit\NewSmile\Date;
 
-class NoticeTable extends Entity\DataManager
+abstract class Notice
 {
-    public static function getTableName()
-    {
-        return 'm_newsmile_notice';
-    }
+    protected $params;
 
-    public static function getMap()
+    public function __construct($params = [])
     {
-        return array(
-            new Entity\IntegerField('ID', array(
-                'autocomplete' => true,
-                'primary' => true,
-                'title' => 'ID',
-            )),
-            new Entity\DatetimeField('TIME', array(
-                'title' => 'Время',
-                'default_value' => DateTime::createFromTimestamp(time())
-            )),
-            new Entity\ReferenceField('TYPE',
-                'Mmit\NewSmile\Notice\Type',
-                array('=this.TYPE_ID' => 'ref.ID'),
-                array(
-                    'title' => 'Тип'
-                )
-            ),
-            new Entity\IntegerField('TYPE_ID', array(
-                'title' => 'Тип',
-                'required' => true
-            )),
-            new Entity\BooleanField('IS_READ', array(
-                'title' => 'Прочитано',
-                'default_value' => 0
-            )),
-            new Entity\TextField('PARAMS', array(
-                'title' => 'Параметры',
-                'serialized' => true
-            )),
-            new Entity\ReferenceField('USER',
-                'Bitrix\Main\User',
-                array('=this.USER_ID' => 'ref.ID'),
-                array(
-                    'title' => 'Получатель'
-                )
-            ),
-            new Entity\IntegerField('USER_ID', array(
-                'title' => 'Получатель',
-                'required' => true
-            ))
-        );
-    }
-
-    public static function add(array $data)
-    {
-        if(isset($data['TYPE']))
+        foreach ($this->getParamsList() as $paramName)
         {
-            $data['TYPE_ID'] = TypeTable::getIdByCode($data['TYPE']);
-            unset($data['TYPE']);
-        }
-
-        return parent::add($data);
-    }
-
-    /**
-     * Добавляет в массив полей уведомления поля типа уведомления, в полях TITLE, TEXT и в параметре
-     * LINK подставляет значения параметров уведомления.
-     * @param array $noticeData поля уведомления
-     *
-     * @throws \Bitrix\Main\ArgumentException
-     * @throws \Bitrix\Main\ObjectPropertyException
-     * @throws \Bitrix\Main\SystemException
-     */
-    public static function  extendNoticeDataByType(array &$noticeData)
-    {
-        $typeInfo = TypeTable::getTypeInfo($noticeData['TYPE_ID']);
-
-        $noticeData = array_merge($noticeData, $typeInfo);
-        $noticeData['TYPE'] = $noticeData['CODE'];
-        unset($noticeData['CODE']);
-
-        if($noticeData['PARAMS'])
-        {
-            $searchParams = array_keys($noticeData['PARAMS']);
-            array_walk($searchParams, function(&$paramName)
+            if(!isset($params[$paramName]))
             {
-                $paramName = '#' . $paramName . '#';
-            });
-
-            $replaceParams = array_values($noticeData['PARAMS']);
-            $searchSubjects = array($typeInfo['TITLE'], $typeInfo['TEXT']);
-
-            if($noticeData['PARAMS']['LINK'])
-            {
-                $searchSubjects[] = $noticeData['PARAMS']['LINK'];
-            }
-
-            $replaceResults = str_replace($searchParams, $replaceParams, $searchSubjects);
-
-            $noticeData['TITLE'] = $replaceResults[0];
-            $noticeData['TEXT'] = $replaceResults[1];
-
-            if($noticeData['PARAMS']['LINK'])
-            {
-                $noticeData['PARAMS']['LINK'] = $replaceResults[2];
+                throw new Error('Не указан параметр ' . $paramName . '  уведомления ' . $this->getType(), 'PARAM_NOT_SPECIFIED');
             }
         }
+
+        $this->params = $params;
+        $this->extendParams();
     }
 
-    /**
-     * Добавляет уведомление в бд и отправляет получателям
-     * @param string $typeCode - символьный код типа
-     * @param array $users - id пользователей-получателей. Можно указывать как конкретные id, так и коды ролей
-     * @param array $params - параметры уведомления
-     * @param bool $bUseParamModificator - использовать модификатор параметров
-     */
-    public static function push($typeCode, array $params = array(), array $users = array(), $bUseParamModificator = true)
+    protected function getType()
     {
-        $sendToUsers = array();
+        $className = Helpers::getShortClassName(static::class);
+        return Helpers::getSnakeCase($className);
+    }
+
+    public function push($users)
+    {
         $noticeId = null;
-        static::prepareUserIdArray($users);
-
-        if($bUseParamModificator && $params)
-        {
-            // применяем модификатор параметров, если он есть
-            $modifierName = 'modifyParams' . Helpers::getCamelCase($typeCode);
-
-            if(method_exists(static::class, $modifierName))
-            {
-                $params = static::{$modifierName}($params);
-            }
-        }
+        $this->prepareUserIdArray($users);
 
         $noticeData = array(
-            'TYPE' => $typeCode,
-            'PARAMS' => $params
+            'TYPE' => $this->getType(),
+            'PARAMS' => $this->params
         );
 
         if(!$users)
@@ -158,33 +52,27 @@ class NoticeTable extends Entity\DataManager
             $currentNoticeData = $noticeData;
             $currentNoticeData['USER_ID'] = $userId;
 
-            $addResult = static::add($currentNoticeData);
+            $addResult = NoticeTable::add($currentNoticeData);
 
             if($addResult->isSuccess())
             {
-                $sendToUsers[] = $userId;
-                $noticeId = $addResult->getId();
+                $this->send($addResult->getId(), $userId);
             }
-        }
-
-        if($sendToUsers && $noticeId)
-        {
-            static::send($noticeId, $sendToUsers);
         }
     }
 
     /**
      * Отправляет уведомление получателям
      * @param int $noticeId - id уведомления
-     * @param array $users - id пользователей-получателей
+     * @param int $userId - id пользователей-получателей
      *
      * @throws \Bitrix\Main\LoaderException
      */
-    protected static function send($noticeId, array $users)
+    protected function send($noticeId, $userId)
     {
         if(!Loader::includeModule('pull')) return;
 
-        \CPullStack::AddByUsers($users, array(
+        \CPullStack::AddByUser($userId, array(
             'module_id' => 'mmit.newsmile',
             'command' => 'add_notice',
             'params' => array(
@@ -197,7 +85,7 @@ class NoticeTable extends Entity\DataManager
      * Заменяет в массиве идентификаторов пользователей названия ролей массивами id пользователей, состоящих в данных ролях.
      * @param array $users
      */
-    protected static function prepareUserIdArray(array &$users)
+    protected function prepareUserIdArray(array &$users)
     {
         foreach ($users as $index => $userIndex)
         {
@@ -216,53 +104,10 @@ class NoticeTable extends Entity\DataManager
         $users = array_unique($users);
     }
 
-    /* модификаторы параметров уведомлений (срабатывают при добавлении нового уведомления в бд) */
-
-    protected static function modifyParamsVisitFinished($params)
+    protected function extendParams()
     {
-        if($params['VISIT_ID'])
-        {
-            $dbVisit = VisitTable::getByPrimary($params['VISIT_ID'], array(
-                'select' => array(
-                    'PATIENT_NAME' => 'PATIENT.NAME',
-                    'PATIENT_LAST_NAME' => 'PATIENT.LAST_NAME',
-                    'PATIENT_SECOND_NAME' => 'PATIENT.SECOND_NAME',
-                    'PATIENT_BIRTHDAY' => 'PATIENT.PERSONAL_BIRTHDAY',
-                    'DOCTOR_NAME' => 'DOCTOR.NAME',
-                    'DOCTOR_LAST_NAME' => 'DOCTOR.LAST_NAME',
-                    'DOCTOR_SECOND_NAME' => 'DOCTOR.SECOND_NAME',
-                    'DOCTOR_COLOR' => 'DOCTOR.COLOR',
-                )
-            ));
-            
-            if($visit = $dbVisit->fetch())
-            {
-                $params['PATIENT_AGE'] = Date\Helper::getAge($visit['PATIENT_BIRTHDAY']);
-                unset($visit['PATIENT_BIRTHDAY']);
-
-                $params = array_merge($params, $visit);
-            }
-        }
-
-        return $params;
+        return;
     }
 
-    protected static function modifyParamsWaitingListSuggest($params)
-    {
-        if($params['PATIENT_ID'])
-        {
-            $dbPatient = PatientCardTable::getByPrimary($params['PATIENT_ID'], array(
-                'select' => ['NAME', 'LAST_NAME', 'SECOND_NAME', 'PERSONAL_PHONE']
-            ));
-
-            if($patient = $dbPatient->fetch())
-            {
-                $params['PATIENT_PHONE'] = $patient['PERSONAL_PHONE'];
-                $params['PATIENT_FIO'] = Helpers::getFio($patient);
-            }
-        }
-
-        return $params;
-    }
-
+    abstract protected function getParamsList();
 }

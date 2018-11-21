@@ -61,7 +61,7 @@
             <li><?=$group['NAME']?>: <?=$group['MIN_SUM']?>&#8381; - <?=$group['MAX_SUM']?>&#8381;</li>
 
             <?foreach ($group['ITEMS'] as $item):?>
-                <li class="service"><?=$item['TARGET']?> (<?=$item['NAME']?>): <?=$item['MIN_PRICE']?>&#8381; - <?=$item['MAX_PRICE']?>&#8381;</li>
+                <li class="service"><?=implode(', ', $item['TARGET'])?> (<?=$item['NAME']?>): <?=$item['MIN_PRICE']?>&#8381; - <?=$item['MAX_PRICE']?>&#8381;</li>
             <?endforeach;?>
         <?endforeach;?>
     </ul>

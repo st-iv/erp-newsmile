@@ -211,14 +211,12 @@ class WaitingListTable extends Entity\DataManager implements ExtendedFieldsDescr
 
         foreach ($suitableTime as $patientId => $patientSuitableTime)
         {
-            NewSmile\Notice\NoticeTable::push(
-                'WAITING_LIST_SUGGEST',
-                [
-                    'PATIENT_ID' => $patientId,
-                    'FREE_TIME' => $patientSuitableTime
-                ],
-                ['admin']
-            );
+            $notice = new NewSmile\Notice\WaitingListSuggest([
+                'PATIENT_ID' => $patientId,
+                'FREE_TIME' => $patientSuitableTime
+            ]);
+
+            $notice->push(['admin']);
         }
     }
 

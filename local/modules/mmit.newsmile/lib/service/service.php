@@ -73,4 +73,49 @@ class ServiceTable extends Entity\DataManager implements ExtendedFieldsDescripto
             'Mmit\NewSmile\Service\PriceTable' => 'SERVICE_ID'
         ));
     }
+
+    public static function get1LvlTree()
+    {
+        $dbServiceGroups = GroupTable::getList();
+        $groups = [];
+        $result = [];
+
+        while($group = $dbServiceGroups->fetch())
+        {
+            $groups[$group['ID']] = $group;
+        }
+
+
+        $tree = NewSmile\Helpers::getTree($groups);
+        $dbServices = static::getList([
+            'select' => ['ID', 'NAME', 'GROUP_ID']
+        ]);
+
+        $allServices = [];
+
+        while ($service = $dbServices->fetch())
+        {
+            $allServices[$service['GROUP_ID']][] = $service;
+        }
+
+        foreach ($tree as $firstLvlGroup)
+        {
+            $firstLvlGroup['SERVICES'] = static::getServicesRecursive($firstLvlGroup, $allServices);
+            $result[$firstLvlGroup['ID']] = $firstLvlGroup;
+        }
+
+        return $result;
+    }
+
+    protected static  function getServicesRecursive($group, $allServices)
+    {
+        $result = $allServices[$group['ID']];
+
+        foreach ($group['SUBGROUPS'] as $subgroup)
+        {
+            $result = array_merge($result, static::getServicesRecursive($subgroup, $allServices));
+        }
+
+        return $result;
+    }
 }

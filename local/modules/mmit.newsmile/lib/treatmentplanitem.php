@@ -34,7 +34,7 @@ class TreatmentPlanItemTable extends Entity\DataManager
                 'title' => 'PLAN_ID',
             )),
             new Entity\ReferenceField('PLAN',
-                'Mmit\NewSmile\TreatmentPlan',
+                TreatmentPlanTable::class,
                 array('=this.PLAN_ID' => 'ref.ID'),
                 array(
                     'title' => 'План лечения'
@@ -53,8 +53,9 @@ class TreatmentPlanItemTable extends Entity\DataManager
             new Entity\IntegerField('QUANTITY', array(
                 'title' => 'Количество',
             )),
-            new Entity\StringField('TARGET', array(
-                'title' => 'Единица'
+            new Entity\TextField('TARGET', array(
+                'title' => 'Единица',
+                'serialized' => true
             )),
             new Entity\FloatField('MIN_PRICE', array(
                 'title' => 'Минимальная цена'
