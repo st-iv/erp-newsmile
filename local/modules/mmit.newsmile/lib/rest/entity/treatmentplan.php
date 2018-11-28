@@ -81,11 +81,11 @@ class TreatmentPlan extends Controller
             return;
         }
 
-        $itemsList = [];
-        $teethSum = $this->getTeethPlanSum($plan['ITEMS']);
-
         $planSumMax = 0;
         $planSumMin = 0;
+
+        $itemsList = [];
+        $teethSum = $this->getTeethPlanSum($plan['ITEMS']);
 
         foreach ($plan['ITEMS'] as $item)
         {
@@ -131,7 +131,7 @@ class TreatmentPlan extends Controller
                 'max' => $planSumMax,
                 'min' => $planSumMin
             ],
-            'category_list' => $itemsList
+            'category_list' => array_values($itemsList)
         ];
     }
 

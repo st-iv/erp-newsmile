@@ -24,6 +24,7 @@
     $asset->addJs(SITE_TEMPLATE_PATH . '/js/underscore-min.js');
     $asset->addJs(SITE_TEMPLATE_PATH . '/js/tinycolor-min.js');
     $asset->addJs(SITE_TEMPLATE_PATH . '/js/popper.min.js');
+    $asset->addJs(SITE_TEMPLATE_PATH . '/js/react-popper.js');
     $asset->addJs(SITE_TEMPLATE_PATH . '/js/jquery-ui.min.js');
     $asset->addJs(SITE_TEMPLATE_PATH . '/js/bootstrap.min.js');
     $asset->addJs(SITE_TEMPLATE_PATH . '/js/jquery.mCustomScrollbar.min.js');

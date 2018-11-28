@@ -13,16 +13,17 @@ use Bitrix\Main\Loader,
     Mmit\NewSmile\WorkChairTable,
     Bitrix\Main\ORM\Query\Query;
 
-class CalendarDayComponent extends \CBitrixComponent
+class CalendarDayComponent extends NewSmile\Component\AdvancedComponent
 {
     protected $thisDate = '';
+    protected $patientsIds = [];
 
     /**
      * @var \DateTime
      */
     protected $thisDateTime;
 
-    public function onPrepareComponentParams($arParams)
+    protected function prepareParams(array $arParams)
     {
         if($arParams['FILTER'] instanceof \Bitrix\Main\ORM\Query\Filter\ConditionTree)
         {
@@ -124,10 +125,20 @@ class CalendarDayComponent extends \CBitrixComponent
         $this->writeDoctors();
         $this->writePatients();
 
+        foreach ($this->arResult['WORK_CHAIR'] as &$workChair)
+        {
+            $workChair['DOCTORS_SCHEDULE'] = $workChair['INTERVALS'] ? $this->getDoctorsIntervals($workChair['INTERVALS']) : [];
+            unset($workChair['INTERVALS']);
+        }
+
+        unset($workChair);
 
 
-        $this->arResult['START_TIME'] = urldecode($this->request['TIME_FROM']) ?: NewSmile\Config::getScheduleStartTime();
-        $this->arResult['END_TIME'] = urldecode($this->request['TIME_TO']) ?: NewSmile\Config::getScheduleEndTime();
+        $this->arResult['SCHEDULE_START_TIME'] = NewSmile\Config::getScheduleStartTime();
+        $this->arResult['SCHEDULE_END_TIME'] = NewSmile\Config::getScheduleEndTime();
+
+        $this->arResult['START_TIME'] = urldecode($this->request['TIME_FROM']) ?: $this->arResult['SCHEDULE_START_TIME'];
+        $this->arResult['END_TIME'] = urldecode($this->request['TIME_TO']) ?: $this->arResult['SCHEDULE_END_TIME'];
 	}
 
 	protected function getScheduleFilter()
@@ -158,7 +169,7 @@ class CalendarDayComponent extends \CBitrixComponent
             'select' => array(
                 'ID',
                 'TIME',
-                'UF_DOCTOR_' => 'DOCTOR',
+                'DOCTOR_ID',
                 'WORK_CHAIR_ID',
                 'CLINIC_ID',
                 'PATIENT_ID',
@@ -168,13 +179,7 @@ class CalendarDayComponent extends \CBitrixComponent
 
         while ($arSchedule = $rsSchedule->fetch())
         {
-            $this->arResult['WORK_CHAIR'][$arSchedule['WORK_CHAIR_ID']]['SCHEDULES'][$arSchedule['TIME']->format('H:i')] = $arSchedule;
-            if (empty($this->arResult['WORK_CHAIR'][$arSchedule['WORK_CHAIR_ID']]['DOCTORS'][$arSchedule['UF_DOCTOR_ID']])) {
-                $this->arResult['WORK_CHAIR'][$arSchedule['WORK_CHAIR_ID']]['DOCTORS'][$arSchedule['UF_DOCTOR_ID']] = array(
-                    'NAME' => $arSchedule['DOCTOR_NAME']
-                );
-            }
-
+            $this->arResult['WORK_CHAIR'][$arSchedule['WORK_CHAIR_ID']]['INTERVALS'][$arSchedule['TIME']->format('H:i')] = $arSchedule;
             $isResult = true;
         }
         return $isResult;
@@ -196,8 +201,8 @@ class CalendarDayComponent extends \CBitrixComponent
                 'ID',
                 'TIME_START',
                 'TIME_END',
-                'UF_PATIENT_' => 'PATIENT',
-                'UF_DOCTOR_' => 'DOCTOR',
+                'PATIENT_ID',
+                'DOCTOR_ID',
                 'STATUS',
                 'WORK_CHAIR_ID',
             )
@@ -223,6 +228,7 @@ class CalendarDayComponent extends \CBitrixComponent
             }
 
             $this->arResult['WORK_CHAIR'][$arVisit['WORK_CHAIR_ID']]['VISITS'][$visitKey] = $arVisit;
+            $this->patientsIds[] = $arVisit['PATIENT_ID'];
         }
 
         return $isResult;
@@ -287,7 +293,11 @@ class CalendarDayComponent extends \CBitrixComponent
 
     protected function writePatients()
     {
-        $rsPatient = PatientCardTable::getList();
+        $rsPatient = PatientCardTable::getList([
+            'filter' => [
+                'ID' => $this->patientsIds
+            ]
+        ]);
         while ($arPatient = $rsPatient->fetch())
         {
             $this->arResult['PATIENTS'][$arPatient['ID']] = $arPatient;
@@ -299,16 +309,63 @@ class CalendarDayComponent extends \CBitrixComponent
         $workChairs = $this->arResult['WORK_CHAIR'];
         $firstWorkChair = array_shift($workChairs);
 
-        foreach ($firstWorkChair['SCHEDULES'] as $schedule)
+        foreach ($firstWorkChair['INTERVALS'] as $schedule)
         {
             $this->arResult['TIME_LINE'][] = $schedule['TIME'];
         }
     }
-	
-	/**
-	 * выполняет логику работы компонента
-	 */
-	public function executeComponent()
+
+    protected function getDoctorsIntervals(array $intervals)
+    {
+        $unitedIntervals = [];
+        $prevDoctorId = null;
+        $intervalStartTime = null;
+        $counter = 0;
+        $schedulesCount = count($intervals);
+
+        /* подготовка doctors (заполнение массива workTime) */
+
+        foreach ($intervals as $interval)
+        {
+            $counter++;
+            $isLastItem = ($counter == $schedulesCount);
+
+            if($isLastItem || ($interval['DOCTOR_ID'] !== $prevDoctorId))
+            {
+                if($prevDoctorId)
+                {
+                    if($isLastItem)
+                    {
+                        $intervalEndTime = new \DateTime();
+                        $intervalEndTime->setTimestamp($interval['TIME']->getTimestamp());
+                        $intervalEndTime->modify('+' . $interval['DURATION'] . ' minute');
+                    }
+                    else
+                    {
+                        $intervalEndTime = clone $interval['TIME'];
+                    }
+
+                    // записываем интервал
+
+                    $unitedInterval = [
+                        'DOCTOR_ID' => $prevDoctorId,
+                        'TIME_START' => $intervalStartTime->format('H:i'),
+                        'TIME_END' => $intervalEndTime->format('H:i')
+                    ];
+
+                    $unitedIntervals[] = $unitedInterval;
+                }
+
+                $intervalStartTime = $interval['TIME'];
+            }
+
+            $prevDoctorId = $interval['DOCTOR_ID'];
+        }
+
+        return $unitedIntervals;
+    }
+
+	public function execute()
 	{
 		try
 		{

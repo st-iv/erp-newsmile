@@ -22,7 +22,7 @@ class Controller
     public function process()
     {
         $error = null;
-        $responseData = [];
+        $responseData = null;
         $entity = $this->request['entity'];
 
         if(strlen($entity) > 0)

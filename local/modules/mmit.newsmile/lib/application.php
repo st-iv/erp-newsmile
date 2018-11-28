@@ -11,6 +11,7 @@ class Application
      * @var Application
      */
     protected static $instance;
+    protected $reactRenderPoints = [];
 
     /**
      * @var User
@@ -36,6 +37,39 @@ class Application
         }
 
         return static::$instance;
+    }
+
+    public function init()
+    {
+
+    }
+
+    public function addReactRoot($componentName, $rootId, $props = [])
+    {
+        $this->reactRenderPoints[$componentName] = [
+            'ROOT_ID' => $rootId,
+            'PROPS' => $props
+        ];
+    }
+
+    public function renderReactComponents()
+    {
+        if($this->reactRenderPoints)
+        {
+            ?>
+            <script type="text/babel">
+                <?foreach ($this->reactRenderPoints as $componentName => $componentData):?>
+                ReactDOM.render(
+                    React.createElement(
+                        <?=$componentName?>,
+                        <?=($componentData['PROPS'] ? \CUtil::PhpToJSObject($componentData['PROPS'], false, false, true) : 'null')?>
+                    ),
+                    document.getElementById('<?=$componentData['ROOT_ID']?>')
+                );
+                <?endforeach;?>
+            </script>
+            <?
+        }
     }
 
     /**

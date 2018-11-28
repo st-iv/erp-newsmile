@@ -50,13 +50,13 @@ $APPLICATION->IncludeComponent(
 
 NewSmile\Ajax::start('calendar-day');
 
-/*$APPLICATION->IncludeComponent(
+$APPLICATION->IncludeComponent(
     "newSmile:calendar.day",
     "main",
     [
         'FILTER' => $filter
     ]
-);*/
+);
 
 NewSmile\Ajax::finish();
 ?>

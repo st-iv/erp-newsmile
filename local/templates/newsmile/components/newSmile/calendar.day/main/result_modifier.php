@@ -2,131 +2,64 @@
 
 use Mmit\NewSmile;
 
-$arResult['JS_PARAMS'] = array(
-    'curDate' => $arResult['THIS_DATE'],
-    'curTime' => date('H:i'),
-    'startTime' => $arResult['START_TIME'],
-    'endTime' => $arResult['END_TIME'],
-);
-
+$schedule = [];
 $doctors = [];
-$patients = [];
+
 
 foreach ($arResult['WORK_CHAIR'] as $workChairId => $workChair)
 {
-    $prevDoctorId = 0;
-
-    /**
-     * @var \Bitrix\Main\Type\DateTime $intervalStartTime
-     */
-    $intervalStartTime = null;
-    $counter = 0;
-    $schedulesCount = count($workChair['SCHEDULES']);
-
-    /* подготовка doctors (заполнение массива workTime) */
-
-    foreach ($workChair['SCHEDULES'] as $schedule)
-    {
-        $counter++;
-        $isLastItem = ($counter == $schedulesCount);
-
-        if($isLastItem || ($schedule['UF_DOCTOR_ID'] != $prevDoctorId))
+    $schedule[] = [
+        'chair' => [
+            'id' => $workChair['ID'],
+            'name' => $workChair['NAME']
+        ],
+        'intervals' => $workChair['DOCTORS_SCHEDULE'],
+        'visits' => array_map(function($visit)
         {
-            if($prevDoctorId)
-            {
-                if($isLastItem)
-                {
-                    $endDateTime = new \DateTime();
-                    $endDateTime->setTimestamp($schedule['TIME']->getTimestamp());
-                    $endDateTime->modify('+' . $schedule['DURATION'] . ' minute');
+            $visit['TIME_START'] = $visit['TIME_START']->format('H:i');
+            $visit['TIME_END'] = $visit['TIME_END']->format('H:i');
+            return $visit;
 
-                    $endTime = $endDateTime->format('H:i');
-                }
-                else
-                {
-                    $endTime = $schedule['TIME']->format('H:i');
-                }
-
-                // записываем интервал
-                $doctors[$prevDoctorId]['workTime'][] = [
-                    'startTime' => $intervalStartTime->format('H:i'),
-                    'endTime' => $endTime,
-                    'roomId' => $workChairId
-                ];
-            }
-
-            $intervalStartTime = $schedule['TIME'];
-        }
-
-        $prevDoctorId = $schedule['UF_DOCTOR_ID'];
-    }
-
-    /* заполнение mainDoctors */
-
-    if($workChair['MAIN_DOCTORS'][0])
-    {
-        $arResult['JS_PARAMS']['mainDoctors'][] = [
-            'roomId' => $workChairId,
-            'doctorId' => $workChair['MAIN_DOCTORS'][0],
-            'halfDayNum' => 1
-        ];
-    }
-
-    if($workChair['MAIN_DOCTORS'][1])
-    {
-        $arResult['JS_PARAMS']['mainDoctors'][] = [
-            'roomId' => $workChairId,
-            'doctorId' => $workChair['MAIN_DOCTORS'][1],
-            'halfDayNum' => 2
-        ];
-    }
-
-    /* заполнение rooms */
-    $arResult['JS_PARAMS']['rooms'][] = [
-        'id' => $workChairId,
-        'name' => $workChair['NAME']
+        }, $workChair['VISITS'])
     ];
-
-    /* подготовока patients (заполнение массива visits) */
-
-    foreach ($workChair['VISITS'] as $visit)
-    {
-        $patients[$visit['UF_PATIENT_ID']]['visits'][] = [
-            'timeFrom' => $visit['TIME_START']->format('H:i'),
-            'timeTo' => $visit['TIME_END']->format('H:i'),
-            'roomId' => $workChairId,
-            'doctorId' => $visit['UF_DOCTOR_ID']
-        ];
-    }
 }
 
-/* заполнение doctors */
-
-foreach ($doctors as $doctorId => &$interval)
+$doctors = array_map(function($doctor)
 {
-    $interval['id'] = $doctorId;
-    $interval['name'] = NewSmile\Helpers::getFio($arResult['DOCTORS'][$doctorId]);
-    $interval['color'] = substr($arResult['DOCTORS'][$doctorId]['COLOR'], 1);
-}
+    return [
+        'id' => $doctor['ID'],
+        'fio' => \Mmit\NewSmile\Helpers::getFio($doctor),
+        'color' => $doctor['COLOR']
+    ];
+}, $arResult['DOCTORS']);
 
-unset($interval);
-
-$arResult['JS_PARAMS']['doctors'] = array_values($doctors);
-
-/* заполнение patients */
-
-foreach ($patients as $patientId => &$patient)
+$patients = array_map(function($patient)
 {
-    $patientInfo =& $arResult['PATIENTS'][$patientId];
+    return [
+        'name' => $patient['NAME'],
+        'lastName' => $patient['LAST_NAME'],
+        'secondName' => $patient['SECOND_NAME'],
+        'age' => NewSmile\Date\Helper::getAge($patient['PERSONAL_BIRTHDAY']),
+        'phone' => $patient['PERSONAL_PHONE'],
+        'cardNumber' => $patient['NUMBER'],
+        'statuses' => []
+    ];
+}, $arResult['PATIENTS']);
 
-    $patient['id'] = $arResult['PATIENTS'][$patientId]['NUMBER'];
-    $patient['info']['fullName'] = $patientInfo['LAST_NAME'] . ' ' . $patientInfo['NAME'] . ' ' . $patientInfo['SECOND_NAME'];
-    $patient['info']['age'] = NewSmile\Date\Helper::getAge($patientInfo['PERSONAL_BIRTHDAY'], true);
-    $patient['info']['phone'] = $patientInfo['PERSONAL_PHONE'];
-}
+$curDate = new \DateTime($arResult['THIS_DATE']);
 
-unset($patient);
-unset($patientInfo);
+$arResult['JS_PARAMS'] = [
+    'timeLimits' => [
+        'start' => $arResult['SCHEDULE_START_TIME'],
+        'end' => $arResult['SCHEDULE_END_TIME'],
+    ],
 
-$arResult['JS_PARAMS']['patients'] = array_values($patients);
+    'curDate' => $arResult['THIS_DATE'],
+    'curDateTitle' => NewSmile\Date\Helper::date('l_ru - d F_ru_gen', $curDate->getTimestamp()),
+    'startTime' => $arResult['START_TIME'],
+    'endTime' => $arResult['END_TIME'],
 
+    'schedule' => $schedule,
+    'doctors' => $doctors,
+    'patients' => $patients,
+];

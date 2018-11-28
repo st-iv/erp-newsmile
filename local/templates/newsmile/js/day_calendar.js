@@ -459,7 +459,7 @@
 									}
 								});
 								self._popupOpen = true;
-								//console.log(popper);
+
 								popper.update();
 
 								$(document).on('mousedown.dclndrpopup', function(e){

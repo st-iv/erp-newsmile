@@ -109,16 +109,20 @@ class Visit extends Controller
             'new' => [
                 'PARAMS' => [
                     'service_id' => [
-                        'TITLE' => 'id услуги'
+                        'TITLE' => 'id услуги',
+                        'REQUIRED' => false
                     ],
                     'date' => [
-                        'TITLE' => 'желаемая дата приема'
+                        'TITLE' => 'желаемая дата приема',
+                        'REQUIRED' => false
                     ],
                     'near_future' => [
-                        'TITLE' => 'флаг записи на ближайшее время'
+                        'TITLE' => 'флаг записи на ближайшее время',
+                        'REQUIRED' => false
                     ],
                     'comment' => [
-                        'TITLE' => 'комментарий'
+                        'TITLE' => 'комментарий',
+                        'REQUIRED' => false
                     ]
                 ]
             ],

@@ -10,7 +10,7 @@ class NewVisitRequest extends Notice
 {
     protected function getParamsList()
     {
-        return ['SERVICE_ID', 'PATIENT_ID', 'DATE', 'NEAR_FUTURE', 'COMMENT'];
+        return [];
     }
     
     protected function extendParams()
@@ -46,6 +46,11 @@ class NewVisitRequest extends Notice
         if($this->params['NEAR_FUTURE'])
         {
             $this->params['DATE'] = 'ближайшее время';
+        }
+
+        if(!$this->params['DATE'])
+        {
+            $this->params['DATE'] = '(дата не указана)';
         }
     }
 }

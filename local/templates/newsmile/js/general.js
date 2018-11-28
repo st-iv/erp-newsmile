@@ -15,6 +15,44 @@ var General = (function()
         return result;
     }
 
+    function getFio(person)
+    {
+        var fio = person.lastName + ' ' + person.name[0].toUpperCase() + '.';
+        if(person.secondName)
+        {
+            fio += ' ' + person.secondName[0].toUpperCase() + '.';
+        }
+
+        return fio;
+    }
+
+    function getFullName(person)
+    {
+        var fullName = person.lastName + ' ' + person.name;
+        if(person.secondName)
+        {
+            fullName += ' ' + person.secondName;
+        }
+
+        return fullName;
+    }
+
+    function getCountString(number, variants)
+    {
+        if(number === 1)
+        {
+            return variants[0];
+        }
+        else if((number >= 2) && (number <= 4))
+        {
+            return variants[1];
+        }
+        else
+        {
+            return variants[2];
+        }
+    }
+
     var Date = (function()
     {
         function formatTime(ts)
@@ -44,15 +82,83 @@ var General = (function()
             return time;
         }
 
+        function getDurationString(intervalStart, intervalEnd)
+        {
+            if((typeof intervalStart === 'string') || (typeof intervalEnd === 'string'))
+            {
+                var curMoment = moment();
+                var strDate = curMoment.format('YYYY-MM-DD');
+
+                if(typeof intervalStart === 'string')
+                {
+                    intervalStart = moment(strDate + ' ' + intervalStart);
+                }
+
+                if(typeof intervalEnd === 'string')
+                {
+                    intervalEnd = moment(strDate + ' ' + intervalEnd);
+                }
+            }
+
+            var diff = intervalEnd.diff(intervalStart);
+
+            var minutes = Math.floor(diff / 60000);
+            var hours = Math.floor(minutes / 60);
+            minutes -= hours * 60;
+
+            var result = '';
+
+            if(hours)
+            {
+                result += hours + ' ' + getCountString(hours, ['час', 'часа', 'часов']);
+            }
+
+            if(minutes)
+            {
+                result += ' ' + minutes + ' ' + getCountString(minutes, ['минута', 'минуты', 'минут']);
+            }
+
+            return result;
+        }
+
         return {
             formatTime: formatTime,
             formatMinutes: formatMinutes,
+            getDurationString: getDurationString,
         }
+    })();
+
+    var Color = (function()
+    {
+        function lighten(initColor, value){
+            var color = tinycolor(initColor),
+                coef = 1 - Math.pow((color.getBrightness() / 255), 3);
+
+            return color.lighten(value * coef).toString();
+        }
+
+        function darken(initColor, value){
+            var color = tinycolor(initColor),
+                coef = color.getBrightness() / 255;
+
+            return color.darken(value * coef).toString();
+        }
+
+        return {
+            lighten: lighten,
+            darken: darken,
+        };
     })();
 
     return {
         Date: Date,
+        Color: Color,
+
         getParamsObject: getParamsObject,
+        getFio: getFio,
+        getFullName: getFullName,
+        getCountString: getCountString,
+
         sessid: sessid,
         postFormAction: postFormAction
     }
