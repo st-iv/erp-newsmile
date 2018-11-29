@@ -6,7 +6,7 @@ use Bitrix\Main\Loader;
 use Mmit\NewSmile\Error;
 use Mmit\NewSmile\Helpers;
 use Mmit\NewSmile\Notice\Data\NoticeTable;
-use Mmit\NewSmile\RoleTable;
+use Mmit\NewSmile\Access\RoleTable;
 
 abstract class Notice
 {

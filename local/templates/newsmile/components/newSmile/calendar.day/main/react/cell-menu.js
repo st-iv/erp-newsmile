@@ -35,6 +35,8 @@ class CalendarDayCellMenu extends React.Component
 
     processAction(actionCode, variantCode = '', e)
     {
+
+
         console.log('processAction');
         console.log(actionCode);
         console.log(variantCode);

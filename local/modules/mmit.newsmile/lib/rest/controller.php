@@ -8,11 +8,12 @@ use Mmit\NewSmile\Config;
 use Mmit\NewSmile\Error;
 use Mmit\NewSmile\Helpers;
 use Mmit\NewSmile\Rest\Entity\Auth;
+use Mmit\NewSmile;
+use Mmit\NewSmile\Command;
 
 class Controller
 {
     protected $request;
-    const ENTITY_CONTROLLER_INTERFACE = __NAMESPACE__ . '\\Entity\\Controller';
 
     public function __construct()
     {
@@ -24,46 +25,48 @@ class Controller
         $error = null;
         $responseData = null;
         $entity = $this->request['entity'];
+        $command = $this->request['action'];
 
-        if(strlen($entity) > 0)
+        if(strlen($entity))
         {
-            /* проверка авторизационного токена */
-            if($entity != 'auth')
+            if(strlen($command))
             {
-               if($this->request['token'])
-               {
-                   $authController = new Auth();
-                   $authController->authorize($this->request['token']);
-                   $error = $authController->getError();
-               }
-               else
-               {
-                   $error = new Error('Не указан авторизационный токен', 'TOKEN_IS_NOT_SPECIFIED');
-               }
-            }
+                $error = $this->checkAuth();
 
-            if(!$error)
-            {
-                /* подключение контроллера указанной операции */
-
-                $entityControllerClass = __NAMESPACE__ . '\\Entity\\' . Helpers::getCamelCase($entity);
-
-                if(class_exists($entityControllerClass) && is_subclass_of($entityControllerClass, static::ENTITY_CONTROLLER_INTERFACE))
+                if(!$error)
                 {
-                    /**
-                     * @var \Mmit\NewSmile\Rest\Entity\Controller $entityController
-                     */
-                    $entityController = new $entityControllerClass();
-                    $entityController->process($this->request['action']);
-                    $error = $entityController->getError();
-                    $responseData = $entityController->getResponseData();
-                }
-                else
-                {
-                    $error = new Error('Сущность ' . $this->request['entity'] . ' не поддерживается', 'ENTITY_IS_NOT_SUPPORTED');
+                    /* поиск и запуск команды */
+                    $commandNamespace = Helpers::getNamespace(Command\Base::class) . '\\' . Helpers::getCamelCase($entity);
+                    $commandClass = $commandNamespace . '\\' . Helpers::getCamelCase($this->request['action']);
+
+                    if(class_exists($commandClass) && is_subclass_of($commandClass, Command\Base::class))
+                    {
+                        /**
+                         * @var Command\Base $command
+                         */
+
+                        try
+                        {
+                            $command = new $commandClass($this->request);
+                            $command->execute();
+                            $responseData = $command->getResult();
+                            $error = $command->getError();
+                        }
+                        catch(Error $e)
+                        {
+                            $error = $e;
+                        }
+                    }
+                    else
+                    {
+                        $error = new Error('Команда ' . $entity . '.' . $this->request['action'] . ' не поддерживается');
+                    }
                 }
             }
-
+            else
+            {
+                $error = new Error('Не указана команда', 'COMMAND_IS_NOT_SPECIFIED');
+            }
         }
         else
         {
@@ -90,6 +93,34 @@ class Controller
         }
 
         echo json_encode($response, JSON_UNESCAPED_UNICODE | JSON_NUMERIC_CHECK);
+    }
+
+    /**
+     * Проверка авторизационного токена и авторизация
+     */
+    public function checkAuth()
+    {
+        $error = null;
+
+        if(($this->request['entity'] != 'auth') && !NewSmile\Application::getInstance()->getUser()->isAuthorized())
+        {
+            if($this->request['token'])
+            {
+                $authorizeCommand = new Command\Auth\Authorize([
+                    'token' => $this->request['token'],
+                    'get_user_info' => false
+                ]);
+
+                $authorizeCommand->execute();
+                $error = $authorizeCommand->getError();
+            }
+            else
+            {
+                $error = new Error('Не указан авторизационный токен', 'TOKEN_IS_NOT_SPECIFIED');
+            }
+        }
+
+        return $error;
     }
 
     public static function installSefRule($restSection)

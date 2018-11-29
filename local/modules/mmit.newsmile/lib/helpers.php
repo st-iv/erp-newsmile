@@ -187,10 +187,10 @@ class Helpers
         }, $snakeCaseStr);
     }
 
-    public static function getSnakeCase($camelCaseStr, $bUpper = true)
+    public static function getSnakeCase($camelCaseStr, $bUpper = true, $separator = '_')
     {
         $camelCaseStr[0] = strtolower($camelCaseStr[0]);
-        $result = preg_replace('/([A-Z])/', '_$1', $camelCaseStr);
+        $result = preg_replace('/([A-Z])/', $separator . '$1', $camelCaseStr);
 
         if($bUpper)
         {
@@ -236,5 +236,11 @@ class Helpers
         }
 
         return $result;
+    }
+
+    public static function getNamespace($className)
+    {
+
+        return preg_replace('/\\\\[A-Za-z0-9]+$/', '', $className);
     }
 }

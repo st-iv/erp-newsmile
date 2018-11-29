@@ -7,7 +7,7 @@ use Bitrix\Main\Type\DateTime;
 use Bitrix\Main\UserTable;
 use Mmit\NewSmile\Helpers;
 use Mmit\NewSmile\PatientCardTable;
-use Mmit\NewSmile\RoleTable;
+use Mmit\NewSmile\Access\RoleTable;
 use Mmit\NewSmile\Service\ServiceTable;
 use Mmit\NewSmile\VisitTable;
 use Mmit\NewSmile\Date;

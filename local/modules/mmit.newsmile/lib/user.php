@@ -24,26 +24,29 @@ class User
             $userId = $GLOBALS['USER']->GetID();
         }
 
-        $this->id = $userId;
-        $this->loadRoles();
-
-        if($this->is('patient'))
+        if($userId)
         {
-            $this->entity = PatientCardTable::getEntity();
-        }
-        elseif($this->is('doctor'))
-        {
-            $this->entity = DoctorTable::getEntity();
-        }
+            $this->id = $userId;
+            $this->loadRoles();
 
-        $this->loadData();
+            if($this->is('patient'))
+            {
+                $this->entity = PatientCardTable::getEntity();
+            }
+            elseif($this->is('doctor'))
+            {
+                $this->entity = DoctorTable::getEntity();
+            }
+
+            $this->loadData();
+        }
     }
 
-    public function loadRoles()
+    protected function loadRoles()
     {
         if(!isset($this->roles))
         {
-            $dbUser = UserTable::getByPrimary($GLOBALS['USER']->GetID(), [
+            $dbUser = UserTable::getByPrimary($this->id, [
                 'select' => ['UF_ROLES']
             ]);
 
@@ -58,7 +61,7 @@ class User
         }
     }
 
-    public function loadData()
+    protected function loadData()
     {
         if(!isset($this->data) && (isset($this->entity)))
         {
@@ -91,8 +94,47 @@ class User
         return $id;
     }
 
-    public function is($roleName)
+    /**
+     * Проверяет соответствие пользователя указанным ролям
+     * @param string|array $roles - код роли, либо массив кодов
+     * @param bool $bAndLogic - в случае, если первый параметр - массив, этот флаг определяет логику сравнения. При значении
+     * true - будет проверено, обладает ли пользователь всеми ролями из указанных в массиве, иначе будет достаточно только
+     * одной роли из массива
+     *
+     * @return bool
+     */
+    public function is($roles, $bAndLogic = false)
     {
-        return isset($this->roles[$roleName]);
+        if(is_array($roles))
+        {
+            $diff = array_diff($roles, $this->roles);
+
+            if($bAndLogic)
+            {
+                $result = (count($diff) == 0);
+            }
+            else
+            {
+                $result = (count($roles) > count($diff));
+            }
+        }
+        else
+        {
+            $result = isset($this->roles[$roles]);
+        }
+
+        return $result;
+    }
+
+    public function getRoles()
+    {
+        return array_keys($this->roles);
+    }
+
+    public function isAuthorized()
+    {
+        global $USER;
+
+        return ($this->id == $USER->GetID()) && $USER->IsAuthorized();
     }
 }

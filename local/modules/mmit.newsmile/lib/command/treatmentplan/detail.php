@@ -1,65 +1,17 @@
 <?
 
-namespace Mmit\NewSmile\Rest\Entity;
+namespace Mmit\NewSmile\Command\TreatmentPlan;
 
-use Bitrix\Main\ORM\Objectify\EntityObject;
-use Bitrix\Main\Type\Collection;
 use Mmit\NewSmile\Application;
+use Mmit\NewSmile\Command\Base;
 use Mmit\NewSmile\Helpers;
 use Mmit\NewSmile\Service\ServiceTable;
 use Mmit\NewSmile\TreatmentPlanItemTable;
 use Mmit\NewSmile\TreatmentPlanTable;
 
-class TreatmentPlan extends Controller
+class Detail extends Base
 {
-    protected function processList()
-    {
-        $offset = $this->getParam('offset');
-        $limit = $this->getParam('limit');
-        $sortBy = $this->getParam('sort_by');
-        $sortOrder = $this->getParam('sort_order');
-
-        $queryParams = [
-            'select' => [
-                'ID',
-                'NAME',
-                'DATE_CREATE'
-            ],
-            'filter' => [
-                'PATIENT_ID' => Application::getInstance()->getUser()->getId()
-            ],
-            'count_total' => true
-        ];
-
-        if($offset)
-        {
-            $queryParams['offset'] = $offset;
-        }
-
-        if($limit)
-        {
-            $queryParams['limit'] = $limit;
-        }
-
-        if($sortBy && $sortOrder)
-        {
-            $queryParams['order'] = [
-                strtoupper($sortBy) => $sortOrder
-            ];
-        }
-
-        $dbTreatmentPlans = TreatmentPlanTable::getList($queryParams);
-
-        $this->responseData['total_count'] = $dbTreatmentPlans->getCount();
-
-        while($plan = $dbTreatmentPlans->fetch())
-        {
-            $plan['DATE_CREATE'] = $plan['DATE_CREATE']->format('d.m.Y');
-            $this->responseData['plan_list'][] = Helpers::strtolowerKeys($plan);
-        }
-    }
-
-    protected function processDetail()
+    public function execute()
     {
         $serviceTree = ServiceTable::get1LvlTree();
         $services = [];
@@ -73,7 +25,7 @@ class TreatmentPlan extends Controller
             }
         }
 
-        $plan = $this->getPlan($this->getParam('id'));
+        $plan = $this->getPlan($this->params['id']);
 
         if(!$plan)
         {
@@ -123,7 +75,7 @@ class TreatmentPlan extends Controller
             unset($itemListRecord);
         }
 
-        $this->responseData = [
+        $this->result = [
             'id' => $plan['ID'],
             'name' => $plan['NAME'],
             'date_create' => $plan['DATE_CREATE']->format('d.m.Y'),
@@ -179,37 +131,18 @@ class TreatmentPlan extends Controller
         return $plan ?: [];
     }
 
-    protected function getActionsMap()
+    public function getParamsMap()
     {
         return [
-            'list' => [
-                'PARAMS' => [
-                    'offset' => [
-                        'TITLE' => 'смещение выборки от начала',
-                        'REQUIRED' => false
-                    ],
-                    'limit' => [
-                        'TITLE' => 'ограничение количества',
-                        'REQUIRED' => false
-                    ],
-                    'sort_by' => [
-                        'TITLE' => 'поле для сортировки',
-                        'REQUIRED' => false
-                    ],
-                    'sort_order' => [
-                        'TITLE' => 'направление сортировки',
-                        'REQUIRED' => false
-                    ]
-                ]
-            ],
-
-            'detail' => [
-                'PARAMS' => [
-                    'id' => [
-                        'TITLE' => 'id плана лечения'
-                    ]
-                ]
+            'id' => [
+                'TITLE' => 'id плана лечения',
+                'REQUIRED' => true
             ]
         ];
+    }
+    
+    public function getName()
+    {
+        return 'Получить детальную информацию по плану лечения';
     }
 }

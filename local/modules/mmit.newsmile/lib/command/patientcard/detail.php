@@ -1,22 +1,18 @@
 <?
 
-namespace Mmit\NewSmile\Rest\Entity;
+
+namespace Mmit\NewSmile\Command\PatientCard;
 
 use Mmit\NewSmile\Application;
+use Mmit\NewSmile\Command\Base;
 use Mmit\NewSmile\DoctorTable;
 use Mmit\NewSmile\Helpers;
 use Mmit\NewSmile\PatientCardTable;
-use Mmit\NewSmile\Status\ToothTable;
 
-class PatientCard extends Controller
+class Detail extends Base
 {
-    public function processDetail()
+    public function execute()
     {
-        if(!$this->checkMethod('GET'))
-        {
-            return;
-        }
-
         $dbPatientCard = PatientCardTable::getByPrimary(Application::getInstance()->getUser()->getId(), [
             'select' => [
                 'NAME',
@@ -56,19 +52,17 @@ class PatientCard extends Controller
         unset($patientCard['DOCTORS_ID']);
         $patientCard['SMS_NOTICE'] = $patientCard['SMS_NOTICE'] ?: false;
 
-        $this->responseData = Helpers::strtolowerKeys($patientCard);
-        $this->responseData['doctor_list'] = $doctors;
+        $this->result = Helpers::strtolowerKeys($patientCard);
+        $this->result['doctor_list'] = $doctors;
     }
 
-    protected function getDefaultAction()
+    public function getParamsMap()
     {
-        return 'detail';
+        return [];
     }
 
-    protected function getActionsMap()
+    public function getName()
     {
-        return [
-            'detail' => []
-        ];
+        return 'Получить детальную информацию о пациенте';
     }
 }

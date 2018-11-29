@@ -4,6 +4,7 @@
 namespace Mmit\NewSmile;
 
 use Bitrix\Main\EventManager;
+use Mmit\NewSmile\Access;
 
 class Application
 {
@@ -17,6 +18,11 @@ class Application
      * @var User
      */
     protected $user;
+
+    /**
+     * @var Access\Controller
+     */
+    protected $accessController;
 
     protected function __construct()
     {
@@ -84,6 +90,16 @@ class Application
         }
 
         return $this->user;
+    }
+
+    public function getAccessController()
+    {
+        if (!isset($this->accessController))
+        {
+            $this->accessController = new Access\Controller();
+        }
+
+        return $this->accessController;
     }
 
     public function clearUser()

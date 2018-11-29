@@ -1,42 +1,35 @@
 <?
 
-namespace Mmit\NewSmile\Rest\Entity;
+namespace Mmit\NewSmile\Command\Doctor;
 
+use Mmit\NewSmile\Command\Base;
 use Mmit\NewSmile\DoctorSpecializationTable;
 use Mmit\NewSmile\DoctorTable;
 use Mmit\NewSmile\Helpers;
 use Mmit\NewSmile\Scheduler;
-use Mmit\NewSmile\ScheduleTemplateTable;
 
-class Doctor extends Controller
+class GetList extends Base 
 {
-    protected $doctorsSchedule;
-
-    protected function processList()
+    public function execute()
     {
-        $offset = $this->getParam('offset');
-        $limit = $this->getParam('limit');
-        $sortBy = $this->getParam('sort_by');
-        $sortOrder = $this->getParam('sort_order');
-
         $queryParams = [
             'select' => ['NAME', 'LAST_NAME', 'SECOND_NAME', 'ID']
         ];
 
-        if($offset)
+        if($this->params['offset'])
         {
-            $queryParams['offset'] = $offset;
+            $queryParams['offset'] = $this->params['offset'];
         }
 
-        if($limit)
+        if($this->params['limit'])
         {
-            $queryParams['limit'] = $limit;
+            $queryParams['limit'] = $this->params['limit'];
         }
 
-        if($sortBy && $sortOrder)
+        if($this->params['sort_by'] && $this->params['sort_order'])
         {
             $queryParams['order'] = [
-                $sortBy => $sortOrder
+                $this->params['sort_by'] => $this->params['sort_order']
             ];
         }
 
@@ -62,7 +55,7 @@ class Doctor extends Controller
             $doctor['specialization'] = DoctorSpecializationTable::getSpecName($specializations[$doctorId]);
             $doctor['work_schedule'] = $workSchedule[$doctorId];
 
-            $this->responseData[] = $doctor;
+            $this->result[] = $doctor;
         }
     }
 
@@ -84,30 +77,30 @@ class Doctor extends Controller
         return $specializations;
     }
 
-
-    protected function getActionsMap()
+    public function getParamsMap()
     {
         return [
-            'list' => [
-                'PARAMS' => [
-                    'offset' => [
-                        'TITLE' => 'смещение выборки от начала',
-                        'REQUIRED' => false
-                    ],
-                    'limit' => [
-                        'TITLE' => 'ограничение количества',
-                        'REQUIRED' => false
-                    ],
-                    'sort_by' => [
-                        'TITLE' => 'поле для сортировки',
-                        'REQUIRED' => false
-                    ],
-                    'sort_order' => [
-                        'TITLE' => 'направление сортировки',
-                        'REQUIRED' => false
-                    ]
-                ]
+            'offset' => [
+                'TITLE' => 'смещение выборки от начала',
+                'REQUIRED' => false
+            ],
+            'limit' => [
+                'TITLE' => 'ограничение количества',
+                'REQUIRED' => false
+            ],
+            'sort_by' => [
+                'TITLE' => 'поле для сортировки',
+                'REQUIRED' => false
+            ],
+            'sort_order' => [
+                'TITLE' => 'направление сортировки',
+                'REQUIRED' => false
             ]
         ];
+    }
+
+    public function getName()
+    {
+        return 'Получить список врачей';
     }
 }

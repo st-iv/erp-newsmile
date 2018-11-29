@@ -22,6 +22,10 @@ class CalendarDayComponent extends NewSmile\Component\AdvancedComponent
      * @var \DateTime
      */
     protected $thisDateTime;
+    /**
+     * @var NewSmile\Access\Controller
+     */
+    protected $accessController;
 
     protected function prepareParams(array $arParams)
     {
@@ -365,12 +369,23 @@ class CalendarDayComponent extends NewSmile\Component\AdvancedComponent
         return $unitedIntervals;
     }
 
+    protected function writeOperations()
+    {
+        if($this->accessController->isOperationAllowed('schedule', 'change-doctor'))
+        {
+            $this->arResult['OPERATIONS']['schedule'] = [
+                'NAME' => 'Изменить врача'
+            ];
+        }
+    }
+
 	public function execute()
 	{
 		try
 		{
             if (!Loader::includeModule('mmit.newSmile')) die();
 
+            $this->accessController = NewSmile\Application::getInstance()->getAccessController();
 			$this->getResult();
 			$this->includeComponentTemplate();
 		}

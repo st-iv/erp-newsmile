@@ -1,13 +1,14 @@
 <?
 
-namespace Mmit\NewSmile\Rest\Entity;
 
-use Mmit\NewSmile\Helpers;
+namespace Mmit\NewSmile\Command\Service;
+
+use Mmit\NewSmile\Command\Base;
 use Mmit\NewSmile;
 
-class Service extends Controller
+class GetList extends Base
 {
-    protected function processList()
+    public function execute()
     {
         $tree = NewSmile\Service\ServiceTable::get1LvlTree();
 
@@ -16,7 +17,7 @@ class Service extends Controller
             foreach ($firstLvlGroup['SERVICES'] as &$service)
             {
                 unset($service['GROUP_ID']);
-                $service = Helpers::strtolowerKeys($service);
+                $service = NewSmile\Helpers::strtolowerKeys($service);
             }
 
             $firstLvlGroup['service_list'] = $firstLvlGroup['SERVICES'];
@@ -25,7 +26,7 @@ class Service extends Controller
             unset($firstLvlGroup['SERVICES']);
             unset($service);
 
-            $this->responseData['category_list'][] = Helpers::strtolowerKeys($firstLvlGroup);
+            $this->result['category_list'][] = NewSmile\Helpers::strtolowerKeys($firstLvlGroup);
         }
     }
 
@@ -41,11 +42,13 @@ class Service extends Controller
         return $result;
     }
 
-    protected function getActionsMap()
+    public function getParamsMap()
     {
+        return [];
+    }
 
-        return [
-            'list' => []
-        ];
+    public function getName()
+    {
+        return 'Получить список услуг';
     }
 }

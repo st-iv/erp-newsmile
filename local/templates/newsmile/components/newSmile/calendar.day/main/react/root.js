@@ -85,7 +85,7 @@ class CalendarDayMain extends React.Component
         const patients = this.props.patients;
 
         return (
-            <div className="dayCalendar_cont">
+            <div className="dayCalendar_cont" onContextMenu={this.blockEvent}>
                 <div className="dayCalendar_header">
                     <span>{this.props.curDateTitle}</span>
                 </div>
@@ -111,5 +111,11 @@ class CalendarDayMain extends React.Component
                 </div>
             </div>
         )
+    }
+
+    blockEvent(e)
+    {
+        e.stopPropagation();
+        e.preventDefault();
     }
 }

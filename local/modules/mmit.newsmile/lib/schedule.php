@@ -13,6 +13,7 @@ use Bitrix\Main\Localization\Loc;
 use Bitrix\Main\ORM\Event;
 use Bitrix\Main\Type\Date;
 use Bitrix\Main\Type\DateTime;
+use Mmit\NewSmile\Access\AccessibleEntity;
 
 Loc::loadMessages(__FILE__);
 

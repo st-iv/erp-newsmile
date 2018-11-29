@@ -1,15 +1,16 @@
 <?
 
 
-namespace Mmit\NewSmile\Rest\Entity;
+namespace Mmit\NewSmile\Command\TeethMap;
 
 use Mmit\NewSmile\Application;
+use Mmit\NewSmile\Command\Base;
 use Mmit\NewSmile\PatientCardTable;
 use Mmit\NewSmile\Status\ToothTable;
 
-class TeethMap extends Controller
+class Detail extends Base
 {
-    protected function processDetail()
+    public function execute()
     {
         $dbPatientCard = PatientCardTable::getByPrimary(Application::getInstance()->getUser()->getId(), [
             'select' => ['TEETH_MAP']
@@ -37,7 +38,7 @@ class TeethMap extends Controller
             $jawCode = (isset($upperJawTooth[$toothGroupNum]) ? 'upper' : 'lower') . '_jaw';
             $ageCode = (($toothGroupNum > 4) ? 'child' : 'parent');
 
-            $this->responseData[$jawCode][$ageCode][] = [
+            $this->result[$jawCode][$ageCode][] = [
                 'number' => $toothNumber,
                 'status' => $status['CODE'],
                 'status_decode' => $status['NAME'],
@@ -49,7 +50,7 @@ class TeethMap extends Controller
         /* полный список статусов зубов */
         foreach ($toothStatuses as $toothStatus)
         {
-            $this->responseData['status_list'][] = [
+            $this->result['status_list'][] = [
                 'id' => $toothStatus['ID'],
                 'code' => $toothStatus['CODE'],
                 'decode' => $toothStatus['NAME']
@@ -59,46 +60,20 @@ class TeethMap extends Controller
         /* полный список групп статусов зубов */
         foreach ($statusesGroupsNames as $groupCode => $groupName)
         {
-            $this->responseData['status_group_list'][] = [
+            $this->result['status_group_list'][] = [
                 'code' => $groupCode,
                 'decode' => $groupName
             ];
         }
     }
 
-    protected function processStatusList()
+    public function getParamsMap()
     {
-        $dbToothStatuses = ToothTable::getList();
-
-        while($status = $dbToothStatuses->fetch())
-        {
-            $this->responseData['status_list'][] = [
-                'id' => $status['ID'],
-                'code' => $status['CODE'],
-                'decode' => $status['NAME']
-            ];
-        }
+        return [];
     }
 
-    protected function processStatusGroupList()
+    public function getName()
     {
-        $groups = ToothTable::getEnumVariants('GROUP');
-
-        foreach ($groups as $code => $name)
-        {
-            $this->responseData['status_group_list'][] = [
-                'code' => $code,
-                'decode' => $name,
-            ];
-        }
-    }
-
-    protected function getActionsMap()
-    {
-        return [
-            'detail' => [],
-            'status-list' => [],
-            'status-group-list' => [],
-        ];
+        return 'Получить детальную информацию по карте зубов';
     }
 }
