@@ -3,6 +3,7 @@
 
 namespace Mmit\NewSmile\Command;
 
+use Mmit\NewSmile\Application;
 use Mmit\NewSmile\Error;
 use Mmit\NewSmile\Helpers;
 
@@ -42,6 +43,47 @@ abstract class Base
                 $this->params[$paramCode] = $paramInfo['DEFAULT'];
             }
         }
+    }
+
+    /**
+     * Проверяет, возможно ли выполнение команды текущим пользователем на данный момент
+     * @return bool
+     */
+    protected function isAvailable()
+    {
+        $result = false;
+        $operations = $this->getOperations();
+
+        if(!$operations)
+        {
+            $result = true;
+        }
+        else
+        {
+            $accessController = Application::getInstance()->getAccessController();
+            $entityCode = $this->getEntityCode();
+
+            foreach ($operations as $operationCode)
+            {
+                if($accessController->isOperationAllowed($entityCode, $operationCode))
+                {
+                    $result = true;
+                    break;
+                }
+            }
+        }
+
+        return $result;
+    }
+
+    /**
+     * Определяет, частью каких операций является данная команда. Для возможности выполнения команды у пользователя
+     * должно быть
+     * @return array
+     */
+    protected function getOperations()
+    {
+        return [];
     }
 
     /**

@@ -22,7 +22,8 @@ class ToothTable extends Status implements ExtendedFieldsDescriptor
             'HEALTHY' => 'здоровый',
             'SICK' => 'больной',
             'CURED' => 'вылеченный',
-            'MISSING' => 'отсутствует'
+            'MISSING' => 'отсутствует',
+            'NOT_DEFINED' => 'не определен',
         ]
     ];
 

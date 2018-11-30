@@ -53,7 +53,7 @@ class GetList extends Base
 
         while($visit = $dbVisit->fetch())
         {
-            $this->result[] = [
+            $this->result['visit_list'][] = [
                 'id' => $visit['ID'],
                 'date' => $visit['TIME_START']->format('d.m.Y H:i:s'),
                 'doctor' => NewSmile\Helpers::getFio($visit, 'DOCTOR_'),

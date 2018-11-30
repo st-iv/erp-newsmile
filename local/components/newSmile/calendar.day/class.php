@@ -369,14 +369,13 @@ class CalendarDayComponent extends NewSmile\Component\AdvancedComponent
         return $unitedIntervals;
     }
 
-    protected function writeOperations()
+    protected function getAllowedCommands()
     {
-        if($this->accessController->isOperationAllowed('schedule', 'change-doctor'))
-        {
-            $this->arResult['OPERATIONS']['schedule'] = [
-                'NAME' => 'Изменить врача'
-            ];
-        }
+        $fullCommandsList = [
+            new NewSmile\Command\Schedule\ChangeDoctor()
+        ];
+
+        //$this->arResult['COMMANDS'] =
     }
 
 	public function execute()

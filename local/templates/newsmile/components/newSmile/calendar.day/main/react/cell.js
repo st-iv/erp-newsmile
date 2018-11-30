@@ -6,10 +6,10 @@ class CalendarDayCell extends React.Component
     popperSettings = {
         placement: 'bottom-start',
         modifiers: {
-            preventOverflow: {
+            /*preventOverflow: {
                 enabled: true,
                 boundariesElement: document.body
-            },
+            },*/
             offset: {
                 enabled: true
             }
