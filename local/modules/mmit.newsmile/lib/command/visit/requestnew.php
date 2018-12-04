@@ -8,7 +8,9 @@ use Mmit\NewSmile\Application;
 
 class RequestNew extends Base
 {
-    public function execute()
+    protected static $name = 'Запросить запись на прием';
+
+    protected function doExecute()
     {
         try
         {
@@ -48,10 +50,5 @@ class RequestNew extends Base
                 'REQUIRED' => false
             ]
         ];
-    }
-
-    public function getName()
-    {
-        return 'Запросить запись на прием';
     }
 }

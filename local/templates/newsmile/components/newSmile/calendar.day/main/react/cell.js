@@ -47,15 +47,26 @@ class CalendarDayCell extends React.Component
     {
         if(this.state.isHovered || this.state.showActions)
         {
+            const isVisit = !!this.props.patient;
+            const commands = this.getCommands();
+
             const popper = (
                 <ReactPopper.Popper {...this.popperSettings}>
                     {({ ref, style, placement, arrowProps }) => (
                         <div ref={ref} style={style} x-placement={placement} className="dayCalendar_popup">
 
-                            {this.state.showActions && this.props.actions && (
-                                <CalendarDayCellMenu actions={this.props.actions} onShowActionVariants={this.setShowDetailInfo.bind(this, false)}
+                            {this.state.showActions && this.props.commands && (
+                                <CalendarDayCellMenu commands={commands}
+                                                     onShowActionVariants={this.setShowDetailInfo.bind(this, false)}
                                                      onHideActionVariants={this.setShowDetailInfo.bind(this, true)}
-                                                     onAction={this.handleMenuAction.bind(this)}/>
+                                                     onCommandExec={this.handleMenuAction.bind(this)}
+                                                     onCommandResult={this.props.onUpdate}
+                                                     timeStart={this.props.timeStart}
+                                                     timeEnd={this.props.timeEnd}
+                                                     chairId={this.props.chairId}
+                                                     date={this.props.date}
+
+                                />
                             )}
 
                             {this.needShowDetailInfo() && (
@@ -172,6 +183,35 @@ class CalendarDayCell extends React.Component
         }
 
         return height;
+    }
+
+    getCommands()
+    {
+        let result = [];
+        let visitCommands = [];
+        let isVisit = !!this.props.patient;
+
+        for(let entityCode in this.props.commands)
+        {
+            let entityCommands = this.props.commands[entityCode];
+
+            entityCommands.forEach(commandCode =>
+            {
+                if(visitCommands.indexOf(commandCode) !== -1)
+                {
+                    if(isVisit)
+                    {
+                        result.push(commandCode);
+                    }
+                }
+                else if(!isVisit)
+                {
+                    result.push(commandCode);
+                }
+            });
+        }
+
+        return result;
     }
 
     setHover(isHover)

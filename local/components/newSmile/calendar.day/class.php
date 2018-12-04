@@ -11,7 +11,8 @@ use Bitrix\Main\Loader,
     Mmit\NewSmile\DoctorTable,
     Mmit\NewSmile\PatientCardTable,
     Mmit\NewSmile\WorkChairTable,
-    Bitrix\Main\ORM\Query\Query;
+    Bitrix\Main\ORM\Query\Query,
+    Mmit\NewSmile\Command;
 
 class CalendarDayComponent extends NewSmile\Component\AdvancedComponent
 {
@@ -143,6 +144,9 @@ class CalendarDayComponent extends NewSmile\Component\AdvancedComponent
 
         $this->arResult['START_TIME'] = urldecode($this->request['TIME_FROM']) ?: $this->arResult['SCHEDULE_START_TIME'];
         $this->arResult['END_TIME'] = urldecode($this->request['TIME_TO']) ?: $this->arResult['SCHEDULE_END_TIME'];
+
+
+        $this->arResult['COMMANDS'] = $this->getAllowedCommands();
 	}
 
 	protected function getScheduleFilter()
@@ -371,21 +375,41 @@ class CalendarDayComponent extends NewSmile\Component\AdvancedComponent
 
     protected function getAllowedCommands()
     {
+        $result = [];
+
         $fullCommandsList = [
-            new NewSmile\Command\Schedule\ChangeDoctor()
+            Command\Schedule\ChangeDoctor::class
         ];
 
-        //$this->arResult['COMMANDS'] =
+
+        foreach ($fullCommandsList as $commandClass)
+        {
+            /**
+             * @var Command\Base $commandClass
+             */
+
+            if($commandClass::isAvailableForUser())
+            {
+                $result[] = $commandClass::getCode();
+            }
+        }
+
+        return $result;
     }
 
 	public function execute()
 	{
 		try
 		{
-            if (!Loader::includeModule('mmit.newSmile')) die();
+            /*if (!Loader::includeModule('mmit.newSmile')) die();
 
             $this->accessController = NewSmile\Application::getInstance()->getAccessController();
-			$this->getResult();
+			$this->getResult();*/
+
+            $command = new Command\Schedule\GetDayInfo();
+            $command->execute();
+            $this->arResult = $command->getResult();
+
 			$this->includeComponentTemplate();
 		}
 		catch (Exception $e)

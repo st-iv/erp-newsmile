@@ -253,7 +253,6 @@ class Scheduler
 
     /**
      * Сохраняет в бд внесенные изменения
-     * @throws \Exception
      */
     public function save()
     {

@@ -8,5 +8,5 @@
 ?>
 
 <div class="main_content_center">
-    <?$component->renderReactComponent($arResult['JS_PARAMS'])?>
+    <?$component->renderReactComponent($arResult)?>
 </div>

@@ -68,7 +68,7 @@ class Application
                 ReactDOM.render(
                     React.createElement(
                         <?=$componentName?>,
-                        <?=($componentData['PROPS'] ? \CUtil::PhpToJSObject($componentData['PROPS'], false, false, true) : 'null')?>
+                        <?=($componentData['PROPS'] ? json_encode($componentData['PROPS'], JSON_UNESCAPED_UNICODE | JSON_NUMERIC_CHECK) : 'null')?>
                     ),
                     document.getElementById('<?=$componentData['ROOT_ID']?>')
                 );

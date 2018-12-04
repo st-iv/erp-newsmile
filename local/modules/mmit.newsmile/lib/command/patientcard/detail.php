@@ -11,7 +11,9 @@ use Mmit\NewSmile\PatientCardTable;
 
 class Detail extends Base
 {
-    public function execute()
+    protected static $name = 'Получить детальную информацию о пациенте';
+
+    protected function doExecute()
     {
         $dbPatientCard = PatientCardTable::getByPrimary(Application::getInstance()->getUser()->getId(), [
             'select' => [
@@ -59,10 +61,5 @@ class Detail extends Base
     public function getParamsMap()
     {
         return [];
-    }
-
-    public function getName()
-    {
-        return 'Получить детальную информацию о пациенте';
     }
 }

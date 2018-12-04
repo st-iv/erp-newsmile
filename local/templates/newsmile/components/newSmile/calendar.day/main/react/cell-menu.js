@@ -1,30 +1,108 @@
 class CalendarDayCellMenu extends React.Component
 {
+    constructor(props)
+    {
+        super(props);
+        this.state = {
+            commands: null
+        };
+
+        this.specifyCommandsList();
+    }
+
+    specifyCommandsList()
+    {
+        let commands = this.props.commands.map(commandCode =>
+        {
+            let commandInfo = {};
+
+            commandInfo.code = commandCode;
+            commandInfo.params = {
+                timeStart: this.props.timeStart,
+                timeEnd: this.props.timeEnd,
+                chairId: this.props.chairId,
+                date: this.props.date,
+            };
+
+            switch(commandCode)
+            {
+                case 'schedule/change-doctor':
+                    commandInfo.varyParam = 'doctorId';
+                    break;
+
+                case 'visit/add':
+                    commandInfo.varyParam = 'patientId';
+                    break;
+            }
+
+            return commandInfo;
+        });
+
+        let commandData = {
+            'commands': commands
+        };
+
+        let command = new ServerCommand('command/get-list', commandData, response =>
+        {
+            if(response)
+            {
+                console.log(response);
+                let hasAvailableCommands = false;
+
+                response.forEach(command =>
+                {
+                    if(command.available)
+                    {
+                        hasAvailableCommands = true;
+                    }
+                });
+
+                if(hasAvailableCommands)
+                {
+                    this.setState({
+                        commands: response
+                    });
+                }
+            }
+        });
+
+        command.exec();
+    }
+
     render()
     {
-        return (
-            <div className="dClndr_popup_menu" onClick={this.blockEvent} onContextMenu={this.blockEvent}>
-                <ul className="dClndr_pmenu1">
+        console.log('render!');
 
-                    {this.props.actions.map(action =>
-                        <li className={action.variants ? 'dClndr_phasmenu' : ''} onMouseEnter={this.props.onShowActionVariants}
-                            onMouseLeave={this.props.onHideActionVariants}
-                            onClick={action.variants ? null : this.processAction.bind(this, action.code)} key={action.code}>
+        if(this.state.commands)
+        {
+            return (
+                <div className="dClndr_popup_menu" onClick={this.blockEvent} onContextMenu={this.blockEvent}>
+                    <ul className="dClndr_pmenu1">
 
-                            {action.title}
+                        {this.state.commands.map(command =>
+                            <li className={command.variants ? 'dClndr_phasmenu' : ''} onMouseEnter={this.props.onShowActionVariants}
+                                onMouseLeave={this.props.onHideActionVariants}
+                                onClick={command.variants ? null : this.processCommand.bind(this, command.code)} key={command.code}>
 
-                            <ul className="dClndr_psubmenu">
-                                {action.variants && action.variants.map(variant =>
-                                    <li onClick={this.processAction.bind(this, action.code, variant.code)} key={action.code + '_' + variant.code}>
-                                        {variant.title}
-                                    </li>
-                                )}
-                            </ul>
-                        </li>
-                    )}
-                </ul>
-            </div>
-        );
+                                {command.name}
+
+                                <ul className="dClndr_psubmenu">
+                                    {command.variants && command.variants.map(variant =>
+                                        <li onClick={this.processCommand.bind(this, command.code, variant.code)} key={command.code + '_' + variant.code}>
+                                            {variant.name}
+                                        </li>
+                                    )}
+                                </ul>
+                            </li>
+                        )}
+                    </ul>
+                </div>
+            );
+        }
+        else
+        {
+            return null;
+        }
     }
 
     blockEvent(e)
@@ -33,14 +111,47 @@ class CalendarDayCellMenu extends React.Component
         e.preventDefault();
     }
 
-    processAction(actionCode, variantCode = '', e)
+    processCommand(commandCode, variantCode = '', e)
     {
+        if(this.props.onCommandExec)
+        {
+            this.props.onCommandExec(commandCode);
+        }
 
+        if(commandCode === 'schedule/change-doctor')
+        {
+            this.processScheduleChangeDoctor(commandCode, variantCode);
+        }
+    }
 
-        console.log('processAction');
-        console.log(actionCode);
-        console.log(variantCode);
+    onCommandDone(commandCode, result = null)
+    {
+        if(this.props.onCommandResult)
+        {
+            this.props.onCommandResult(commandCode, result);
+        }
+    }
 
-        this.props.onAction(actionCode, variantCode);
+    processScheduleChangeDoctor(commandCode, variantCode)
+    {
+        let data = {
+            timeStart: this.props.timeStart,
+            timeEnd: this.props.timeEnd,
+            chairId: this.props.chairId,
+            date: this.props.date,
+            doctorId: variantCode
+        };
+
+        let command = new ServerCommand(commandCode, data, response =>
+        {
+            console.log('change doctor response!', response);
+
+            if(response.success)
+            {
+                this.onCommandDone(commandCode);
+            }
+        });
+
+        command.exec();
     }
 }

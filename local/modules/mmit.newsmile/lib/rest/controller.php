@@ -7,7 +7,6 @@ use Bitrix\Main\UrlRewriter;
 use Mmit\NewSmile\Config;
 use Mmit\NewSmile\Error;
 use Mmit\NewSmile\Helpers;
-use Mmit\NewSmile\Rest\Entity\Auth;
 use Mmit\NewSmile;
 use Mmit\NewSmile\Command;
 

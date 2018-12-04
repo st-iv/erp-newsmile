@@ -10,7 +10,9 @@ use Mmit\NewSmile\Error;
 
 class RequestChangeDate extends Base
 {
-    public function execute()
+    protected static $name = 'Запросить перенос приема';
+
+    protected function doExecute()
     {
         try
         {
@@ -40,10 +42,5 @@ class RequestChangeDate extends Base
                 'REQUIRED' => true
             ]
         ];
-    }
-
-    public function getName()
-    {
-        return 'Запросить перенос приема';
     }
 }

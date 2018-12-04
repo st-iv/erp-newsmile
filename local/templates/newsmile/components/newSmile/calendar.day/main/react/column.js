@@ -3,26 +3,19 @@ class CalendarDayColumn extends React.Component
     constructor(props)
     {
         super(props);
-
-        this.schedule = Object.assign({}, this.props.schedule);
-
-        this.schedule.intervals = this.addEmptyIntervals(this.schedule.intervals);
-
-        this.cells = this.getCells();
-        this.defineMainDoctors();
     }
 
-    defineMainDoctors()
+    defineMainDoctors(cells)
     {
         /* определяем массив mainDoctors */
 
         let votes = [];
 
-        for(let time in this.cells)
+        for(let time in cells)
         {
-            if(!this.cells.hasOwnProperty(time)) continue;
+            if(!cells.hasOwnProperty(time)) continue;
 
-            let cell = this.cells[time];
+            let cell = cells[time];
 
             if(!cell.doctorId) continue;
 
@@ -53,7 +46,7 @@ class CalendarDayColumn extends React.Component
                 if(doctorsVotes[doctorId] > maxVotes)
                 {
                     maxVotes = doctorsVotes[doctorId];
-                    this.mainDoctors[halfDayNum] = doctorId;
+                    this.mainDoctors[halfDayNum] = Number(doctorId);
                 }
             }
         });
@@ -102,9 +95,9 @@ class CalendarDayColumn extends React.Component
      * Из посещений и интервалов собирает единый массив - массив ячеек, который используется для вывода
      * @returns object
      */
-    getCells()
+    getCells(schedule)
     {
-        let intervals = this.schedule.intervals.slice();
+        let intervals = schedule.intervals.slice();
 
         let interval;
         let intervalEndTime;
@@ -133,15 +126,18 @@ class CalendarDayColumn extends React.Component
 
             if(interval)
             {
+                let duration = ((this.props.timeLine[time] === 'half') ? 15 : 30);
+
                 result[time] = {
                     timeStart: time,
+                    timeEnd: moment.add(duration, 'minute').format('HH:mm'),
                     doctorId: interval.DOCTOR_ID,
                     halfDayNum: interval.halfDayNum
                 };
             }
         }
 
-        this.writeVisitsSize();
+        this.writeVisitsSize(schedule);
 
 
         /* затем добавляем приемы, заменяя интервалы, на которые они приходятся */
@@ -160,7 +156,7 @@ class CalendarDayColumn extends React.Component
                 continue;
             }
 
-            visit = this.schedule.visits[time];
+            visit = schedule.visits[time];
             let cell = result[time];
 
             if(visit)
@@ -180,15 +176,15 @@ class CalendarDayColumn extends React.Component
     /**
      * Определение размеров приемов (в количестве строк таймлайна)
      */
-    writeVisitsSize()
+    writeVisitsSize(schedule)
     {
         let timeLine = Object.keys(this.props.timeLine);
 
-        for(let timeStart in this.schedule.visits)
+        for(let timeStart in schedule.visits)
         {
-            if(!this.schedule.visits.hasOwnProperty(timeStart)) continue;
+            if(!schedule.visits.hasOwnProperty(timeStart)) continue;
 
-            let visit = this.schedule.visits[timeStart];
+            let visit = schedule.visits[timeStart];
             let timeEnd = visit.TIME_END;
 
             let startIndex = timeLine.indexOf(timeStart);
@@ -210,12 +206,22 @@ class CalendarDayColumn extends React.Component
 
     render()
     {
+        // get cells from schedule
+
+        let schedule = Object.assign({}, this.props.schedule);
+        schedule.intervals = this.addEmptyIntervals(schedule.intervals);
+
+        let cells = this.getCells(schedule);
+        this.defineMainDoctors(cells);
+
+        console.log(cells);
+
         const doctors = this.props.doctors;
         const isOneMainDoctor = (this.mainDoctors[0]) && (this.mainDoctors[0] === this.mainDoctors[1]);
 
         return (
             <div className="dayCalendar_column">
-                <div className="dayCalendar_roomName">{this.schedule.chair.name}</div>
+                <div className="dayCalendar_roomName">{this.props.schedule.chair.name}</div>
 
                 {this.mainDoctors.map((mainDoctorId, index) =>
                     <div className={'dayCalendar_doctor ' + (isOneMainDoctor ? 'sameD' : '') + (mainDoctorId ? '' : ' emptyD')}
@@ -225,51 +231,31 @@ class CalendarDayColumn extends React.Component
                     </div>
                 )}
 
-                {this.renderCells()}
+                {this.renderCells(cells)}
 
             </div>
         );
     }
 
-    renderCells()
+    renderCells(cells)
     {
         let result = [];
 
         for(let time in this.props.timeLine)
         {
-            if(!this.props.timeLine.hasOwnProperty(time) || !this.cells[time]) continue;
+            if(!this.props.timeLine.hasOwnProperty(time) || !cells[time]) continue;
 
-            let cellProps = Object.assign({}, this.cells[time]);
+            let cellProps = Object.assign({}, cells[time]);
 
             cellProps.doctor = (cellProps.doctorId ? this.props.doctors[cellProps.doctorId] : null);
             cellProps.patient = (cellProps.patientId ? this.props.patients[cellProps.patientId] : null);
             cellProps.isMainDoctor = (this.mainDoctors[cellProps.halfDayNum] === cellProps.doctorId);
-            cellProps.key = cellProps.timeStart;
 
-            cellProps.actions = [
-                {
-                    title: 'Изменить врача',
-                    code: 'changeDoctor',
-                    variants: [
-                        {
-                            code: 1,
-                            title: 'Груничев'
-                        },
-                        {
-                            code: 4,
-                            title: 'Иванова'
-                        },
-                        {
-                            code: 5,
-                            title: 'Столяров'
-                        },
-                    ]
-                },
-                {
-                    title: 'Разделить интервал',
-                    code: 'splitInterval'
-                }
-            ];
+            cellProps.key = cellProps.timeStart;
+            cellProps.commands = this.props.commands;
+            cellProps.date = this.props.date;
+            cellProps.chairId = this.props.chairId;
+            cellProps.onUpdate = this.props.updateData;
 
             result.push(
                 <CalendarDayCell {...cellProps}/>
@@ -278,4 +264,17 @@ class CalendarDayColumn extends React.Component
 
         return result;
     }
+/*
+    updateSchedule(newSchedule)
+    {
+        let schedule = Object.assign({}, newSchedule);
+        schedule.intervals = this.addEmptyIntervals(schedule.intervals);
+
+        let cells = this.getCells(schedule);
+        this.defineMainDoctors(cells);
+        
+        this.setState({
+            cells: this.getCells(schedule)
+        });
+    }*/
 }

@@ -11,7 +11,9 @@ use Mmit\NewSmile\TreatmentPlanTable;
 
 class Detail extends Base
 {
-    public function execute()
+    protected static $name = 'Получить детальную информацию по плану лечения';
+
+    protected function doExecute()
     {
         $serviceTree = ServiceTable::get1LvlTree();
         $services = [];
@@ -139,10 +141,5 @@ class Detail extends Base
                 'REQUIRED' => true
             ]
         ];
-    }
-    
-    public function getName()
-    {
-        return 'Получить детальную информацию по плану лечения';
     }
 }

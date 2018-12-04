@@ -8,7 +8,9 @@ use Mmit\NewSmile\Status\ToothTable;
 
 class GetStatusList extends Base
 {
-    public function execute()
+    protected static $name = 'Получить список статусов зубов';
+
+    protected function doExecute()
     {
         $dbToothStatuses = ToothTable::getList();
 
@@ -25,10 +27,5 @@ class GetStatusList extends Base
     public function getParamsMap()
     {
         return [];
-    }
-
-    public function getName()
-    {
-        return 'Получить список статусов зубов';
     }
 }

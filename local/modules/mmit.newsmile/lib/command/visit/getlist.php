@@ -10,7 +10,9 @@ use Mmit\NewSmile\Command\Base,
 
 class GetList extends Base
 {
-    public function execute()
+    protected static $name = 'Получить список приемов';
+
+    protected function doExecute()
     {
         $filter = [
             'PATIENT_ID' => Application::getInstance()->getUser()->getId()
@@ -81,10 +83,5 @@ class GetList extends Base
                 'REQUIRED' => false
             ]
         ];
-    }
-
-    public function getName()
-    {
-        return 'Получить список приемов';
     }
 }

@@ -11,9 +11,15 @@ class CalendarDayMain extends React.Component
             end: this.getMoment(props.timeLimits.end),
         };
 
+        this.state = {
+            schedule: this.props.schedule
+        };
+
         this.timeLimits.half = this.getHalfTime(this.timeLimits.start, this.timeLimits.end);
 
-        this.timeLine = this.getTimeLine();
+        console.log(props);
+
+        this.setData(this.props, true);
     }
 
     getHalfTime(startTime, endTime)
@@ -32,7 +38,7 @@ class CalendarDayMain extends React.Component
 
     getMoment(time)
     {
-        return moment(this.props.curDate + ' ' + time);
+        return moment(this.props.date + ' ' + time);
     }
 
     getTimeLine()
@@ -49,7 +55,7 @@ class CalendarDayMain extends React.Component
         }
 
         /* затем по расписанию врачей (intervals) и приемам (visits) добавляем половинные интервалы (15 минут) */
-        this.props.schedule.forEach(chairSchedule =>
+        this.state.schedule.forEach(chairSchedule =>
         {
             chairSchedule.intervals.concat(Object.values(chairSchedule.visits)).forEach(interval =>
             {
@@ -80,33 +86,45 @@ class CalendarDayMain extends React.Component
 
     render()
     {
-        const schedule = this.props.schedule;
-        const doctors = this.props.doctors;
-        const patients = this.props.patients;
+        const timeLine = this.getTimeLine();
+        const timeLineNode = React.createRef();
 
         return (
             <div className="dayCalendar_cont" onContextMenu={this.blockEvent}>
                 <div className="dayCalendar_header">
-                    <span>{this.props.curDateTitle}</span>
+                    <span>{this.props.dateTitle}</span>
                 </div>
 
                 <div className="dayCalendar_body">
-                    {schedule.map(chairSchedule =>
-                        <CalendarDayColumn schedule={chairSchedule} doctors={doctors} patients={patients} key={chairSchedule.chair.id}
+                    {this.state.schedule.map(chairSchedule =>
+                        <CalendarDayColumn schedule={chairSchedule} doctors={this.doctors} patients={this.patients} key={chairSchedule.chair.id}
                                            getMoment={this.getMoment.bind(this)} timeLimits={this.timeLimits}
                                            startTime={this.props.startTime} endTime={this.props.endTime}
-                                           timeLine={this.timeLine}/>
+                                           commands={this.props.commands}
+                                           date={this.props.date}
+                                           chairId={chairSchedule.chair.id}
+                                           timeLine={timeLine}
+                                           updateData={this.updateData.bind(this)}
+                        />
                     )}
 
                     {['dayCalendar_leftTl', 'dayCalendar_rightTl'].map(className =>
-                        <div className={className} key={className}>
-                            {Object.keys(this.timeLine).map(time =>
-                                <div className={'dayCalendar_timeItem ' + (this.timeLine[time] === 'half' ? 'littleTI' : '')}
+                        <div ref={timeLineNode} className={className} key={className}>
+                            {Object.keys(timeLine).map(time =>
+                                <div className={'dayCalendar_timeItem ' + (timeLine[time] === 'half' ? 'littleTI' : '')}
                                      key={time}>
                                     <span>{time}</span>
                                 </div>
                             )}
                         </div>
+                    )}
+
+                    {this.props.isCurDay && (
+                        <CalendarDayCurTime serverTimestamp={this.props.curServerTimestamp}
+                                            timeLine={timeLine}
+                                            timeLineNode={timeLineNode}
+                                            getMoment={this.getMoment.bind(this)}
+                        />
                     )}
                 </div>
             </div>
@@ -118,4 +136,38 @@ class CalendarDayMain extends React.Component
         e.stopPropagation();
         e.preventDefault();
     }
+
+    updateData()
+    {
+        let data = {
+            date: this.props.date,
+            timeFrom: this.props.startTime,
+            timeTo: this.props.endTime
+        };
+
+        let command = new ServerCommand('schedule/get-day-info', data, response =>
+        {
+            this.setData(response);
+
+            console.log(response, 'updateData!');
+        });
+
+        command.exec();
+    }
+
+    setData(data, bInitial = false)
+    {
+        this.doctors = data.doctors;
+        this.patients = data.patients;
+
+        if(!bInitial)
+        {
+            this.setState({
+                schedule: data.schedule
+            });
+        }
+    }
+
+    getCurServer
+
 }

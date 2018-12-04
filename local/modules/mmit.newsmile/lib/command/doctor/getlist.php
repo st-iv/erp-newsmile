@@ -10,7 +10,9 @@ use Mmit\NewSmile\Scheduler;
 
 class GetList extends Base 
 {
-    public function execute()
+    protected static $name = 'Получить список врачей';
+
+    protected function doExecute()
     {
         $queryParams = [
             'select' => ['NAME', 'LAST_NAME', 'SECOND_NAME', 'ID']
@@ -97,10 +99,5 @@ class GetList extends Base
                 'REQUIRED' => false
             ]
         ];
-    }
-
-    public function getName()
-    {
-        return 'Получить список врачей';
     }
 }

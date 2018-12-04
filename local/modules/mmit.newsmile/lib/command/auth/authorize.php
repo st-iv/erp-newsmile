@@ -7,7 +7,9 @@ use Mmit\NewSmile\Application;
 
 class Authorize extends Base
 {
-    public function execute()
+    protected static $name = 'Авторизация по токену';
+
+    protected function doExecute()
     {
         $userId = Sms\TokenTable::getUserByToken($this->params['token']);
         if ($userId)
@@ -41,10 +43,5 @@ class Authorize extends Base
                 'DEFAULT' => true
             ]
         ];
-    }
-
-    public function getName()
-    {
-        return 'Авторизация по токену';
     }
 }

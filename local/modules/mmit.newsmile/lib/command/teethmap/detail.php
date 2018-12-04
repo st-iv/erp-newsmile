@@ -10,7 +10,9 @@ use Mmit\NewSmile\Status\ToothTable;
 
 class Detail extends Base
 {
-    public function execute()
+    protected static $name = 'Получить детальную информацию по карте зубов';
+
+    protected function doExecute()
     {
         $dbPatientCard = PatientCardTable::getByPrimary(Application::getInstance()->getUser()->getId(), [
             'select' => ['TEETH_MAP']
@@ -70,10 +72,5 @@ class Detail extends Base
     public function getParamsMap()
     {
         return [];
-    }
-
-    public function getName()
-    {
-        return 'Получить детальную информацию по карте зубов';
     }
 }

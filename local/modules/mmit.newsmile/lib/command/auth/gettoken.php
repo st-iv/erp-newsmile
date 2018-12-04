@@ -8,7 +8,9 @@ use Mmit\NewSmile\Sms,
 
 class GetToken extends Base
 {
-    public function execute()
+    protected static $name = 'Получить токен авторизации';
+
+    protected function doExecute()
     {
         $phone = $this->params['phone'];
         $code = $this->params['code'];
@@ -72,10 +74,5 @@ class GetToken extends Base
                 'REQUIRED' => true
             ]
         ];
-    }
-
-    public function getName()
-    {
-        return 'Получить токен авторизации';
     }
 }

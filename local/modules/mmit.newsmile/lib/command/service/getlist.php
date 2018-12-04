@@ -8,7 +8,9 @@ use Mmit\NewSmile;
 
 class GetList extends Base
 {
-    public function execute()
+    protected static $name = 'Получить список услуг';
+
+    protected function doExecute()
     {
         $tree = NewSmile\Service\ServiceTable::get1LvlTree();
 
@@ -45,10 +47,5 @@ class GetList extends Base
     public function getParamsMap()
     {
         return [];
-    }
-
-    public function getName()
-    {
-        return 'Получить список услуг';
     }
 }

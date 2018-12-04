@@ -7,7 +7,9 @@ use Mmit\NewSmile\Status\ToothTable;
 
 class GetStatusGroupList extends Base
 {
-    public function execute()
+    protected static $name = 'Получить список групп статусов зубов';
+
+    protected function doExecute()
     {
         $groups = ToothTable::getEnumVariants('GROUP');
 
@@ -23,10 +25,5 @@ class GetStatusGroupList extends Base
     public function getParamsMap()
     {
         return [];
-    }
-
-    public function getName()
-    {
-        return 'Получить список групп статусов зубов';
     }
 }

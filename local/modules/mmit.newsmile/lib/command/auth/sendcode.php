@@ -8,8 +8,9 @@ use Mmit\NewSmile\Error;
 class SendCode extends Base
 {
     protected $isTestMode = true;
+    protected static $name = 'Отправить смс-код';
 
-    public function execute()
+    protected function doExecute()
     {
         try
         {
@@ -38,10 +39,5 @@ class SendCode extends Base
                 'REQUIRED' => true
             ]
         ];
-    }
-
-    public function getName()
-    {
-        return 'Отправить смс-код';
     }
 }

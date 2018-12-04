@@ -5,7 +5,6 @@ use Mmit\NewSmile;
 $schedule = [];
 $doctors = [];
 
-
 foreach ($arResult['WORK_CHAIR'] as $workChairId => $workChair)
 {
     $schedule[] = [
@@ -62,4 +61,8 @@ $arResult['JS_PARAMS'] = [
     'schedule' => $schedule,
     'doctors' => $doctors,
     'patients' => $patients,
+
+    'commands' => $arResult['COMMANDS']
 ];
+
+

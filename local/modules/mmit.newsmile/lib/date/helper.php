@@ -3,6 +3,7 @@
 namespace Mmit\NewSmile\Date;
 
 
+use Bitrix\Main\ArgumentException;
 use Bitrix\Main\Type\Date;
 use Bitrix\Main\Type\DateTime;
 
@@ -229,4 +230,64 @@ class Helper
         return abs(($dateA->getTimestamp() - $dateB->getTimestamp()) / 60);
     }
 
+    public static function isBefore($dateA, $dateB, $bAndEqual = false)
+    {
+        $compareResult = static::compareDates($dateA, $dateB);
+
+        return (($compareResult === -1) && (!$bAndEqual || ($compareResult === 0)));
+    }
+
+    public static function isAfter($dateA, $dateB, $bAndEqual = false)
+    {
+        $compareResult = static::compareDates($dateA, $dateB);
+
+        return (($compareResult === 1) && (!$bAndEqual || ($compareResult === 0)));
+    }
+
+    public static function isEqual($dateA, $dateB)
+    {
+        return (static::compareDates($dateA, $dateB) === 0);
+    }
+
+    protected static function compareDates($dateA, $dateB)
+    {
+        if(is_string($dateA))
+        {
+            $timestampA = strtotime($dateA);
+        }
+        elseif($dateA instanceof \DateTime || $dateA instanceof Date)
+        {
+            $timestampA = $dateA->getTimestamp();
+        }
+        else
+        {
+            throw new ArgumentException('В качестве аргумента dateA функции сравнения дат ожидается DateTime, Date или строка', 'dateA');
+        }
+
+        if(is_string($dateB))
+        {
+            $timestampB = strtotime($dateB);
+        }
+        elseif($dateB instanceof \DateTime || $dateB instanceof Date)
+        {
+            $timestampB = $dateB->getTimestamp();
+        }
+        else
+        {
+            throw new ArgumentException('В качестве аргумента dateB функции сравнения дат ожидается DateTime, Date или строка', 'dateB');
+        }
+
+        $result = 0;
+
+        if($timestampA > $timestampB)
+        {
+            $result = 1;
+        }
+        elseif($timestampA < $timestampB)
+        {
+            $result = -1;
+        }
+
+        return $result;
+    }
 }

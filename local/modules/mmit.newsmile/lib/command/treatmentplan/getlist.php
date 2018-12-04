@@ -10,7 +10,9 @@ use Mmit\NewSmile\TreatmentPlanTable;
 
 class GetList extends Base
 {
-    public function execute()
+    protected static $name = 'Получить список планов лечения';
+
+    protected function doExecute()
     {
         $queryParams = [
             'select' => [
@@ -72,10 +74,5 @@ class GetList extends Base
                 'REQUIRED' => false
             ]
         ];
-    }
-
-    public function getName()
-    {
-        return 'Получить список планов лечения';
     }
 }
