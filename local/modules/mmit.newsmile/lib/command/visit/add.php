@@ -3,12 +3,15 @@
 
 namespace Mmit\NewSmile\Command\Visit;
 
+use Bitrix\Main\Diag\Debug;
 use Bitrix\Main\Type\DateTime;
 use Mmit\NewSmile\Command\Base;
 use Mmit\NewSmile\Config;
+use Mmit\NewSmile\Error;
 use Mmit\NewSmile\Helpers;
 use Mmit\NewSmile\PatientCardTable;
 use Mmit\NewSmile\ScheduleTable;
+use Mmit\NewSmile\VisitTable;
 
 class Add extends Base
 {
@@ -16,7 +19,26 @@ class Add extends Base
 
     protected function doExecute()
     {
-        // TODO: Implement doExecute() method.
+        Debug::writeToFile('visit add exec!');
+
+        $timeStart = new DateTime($this->params['date'] . ' ' . $this->params['timeStart'], 'Y-m-d H:i');
+        $timeEnd = new DateTime($this->params['date'] . ' ' . $this->params['timeEnd'], 'Y-m-d H:i');
+
+        $addResult = VisitTable::add([
+            'TIME_START' => $timeStart,
+            'TIME_END' => $timeEnd,
+            'PATIENT_ID' => $this->params['patientId'],
+            'WORK_CHAIR_ID' => $this->params['chairId']
+        ]);
+
+        if(!$addResult->isSuccess())
+        {
+            throw new Error(implode(';', $addResult->getErrorMessages()), 'VISIT_ADD_ERROR');
+        }
+        else
+        {
+            Debug::writeToFile('visit add exec success!!');
+        }
     }
 
     protected function checkAvailable()
@@ -43,7 +65,6 @@ class Add extends Base
             'filter' => [
                 '>=TIME' => DateTime::createFromPhp($startTime),
                 '<TIME' => DateTime::createFromPhp($endTime),
-                'CLINIC_ID' => Config::getClinicId(),
             ],
             'select' => ['DOCTOR_ID', 'PATIENT_ID']
         ]);
@@ -88,7 +109,7 @@ class Add extends Base
         return $isAllowed;
     }
 
-    protected function getPatients($except)
+    protected function getPatients(array $except)
     {
         $dbPatients = PatientCardTable::getList([
             'filter' => [

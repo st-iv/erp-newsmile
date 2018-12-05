@@ -58,7 +58,7 @@
         )
     );?>
 
-    <div class="container-fluid">
+    <div class="container-fluid" id="body">
         <div class="row main_header">
             <div class="header_clock" data-ts="<?=time()?>000" id="header-clock"><?=date('H:i')?></div>
 

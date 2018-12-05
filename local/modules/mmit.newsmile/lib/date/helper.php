@@ -249,6 +249,17 @@ class Helper
         return (static::compareDates($dateA, $dateB) === 0);
     }
 
+    /**
+     * Сравнивает даты
+     * @param \DateTime|Date $dateA
+     * @param \DateTime|Date $dateB
+     * @return bool
+     */
+    public static function isEqualDates($dateA, $dateB)
+    {
+        return ($dateA->format('d.m.Y') == $dateB->format('d.m.Y'));
+    }
+
     protected static function compareDates($dateA, $dateB)
     {
         if(is_string($dateA))

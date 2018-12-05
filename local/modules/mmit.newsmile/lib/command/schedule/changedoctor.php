@@ -24,8 +24,6 @@ class ChangeDoctor extends Base
             'DOCTOR_ID' => $this->params['doctorId']
         ]);
         $scheduler->save();
-
-        $this->result['success'] = true;
     }
 
     protected function checkAvailable()

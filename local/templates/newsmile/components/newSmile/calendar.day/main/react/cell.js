@@ -49,13 +49,14 @@ class CalendarDayCell extends React.Component
         {
             const isVisit = !!this.props.patient;
             const commands = this.getCommands();
+            console.log(commands);
 
             const popper = (
                 <ReactPopper.Popper {...this.popperSettings}>
                     {({ ref, style, placement, arrowProps }) => (
                         <div ref={ref} style={style} x-placement={placement} className="dayCalendar_popup">
 
-                            {this.state.showActions && this.props.commands && (
+                            {this.state.showActions && !!commands.length && (
                                 <CalendarDayCellMenu commands={commands}
                                                      onShowActionVariants={this.setShowDetailInfo.bind(this, false)}
                                                      onHideActionVariants={this.setShowDetailInfo.bind(this, true)}

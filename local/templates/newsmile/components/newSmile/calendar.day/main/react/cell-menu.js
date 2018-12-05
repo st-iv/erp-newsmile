@@ -118,10 +118,36 @@ class CalendarDayCellMenu extends React.Component
             this.props.onCommandExec(commandCode);
         }
 
-        if(commandCode === 'schedule/change-doctor')
+        let command = new ServerCommand(commandCode, this.getCommandData(commandCode, variantCode), response =>
         {
-            this.processScheduleChangeDoctor(commandCode, variantCode);
+            this.onCommandDone(commandCode);
+        });
+
+        command.exec();
+
+    }
+
+    getCommandData(commandCode, variantCode)
+    {
+        let data = {
+            timeStart: this.props.timeStart,
+            timeEnd: this.props.timeEnd,
+            chairId: this.props.chairId,
+            date: this.props.date
+        };
+
+        switch(commandCode)
+        {
+            case 'schedule/change-doctor':
+                data.doctorId = variantCode;
+                break;
+
+            case 'visit/add':
+                data.patientId = variantCode;
+                break;
         }
+
+        return data;
     }
 
     onCommandDone(commandCode, result = null)
@@ -130,28 +156,5 @@ class CalendarDayCellMenu extends React.Component
         {
             this.props.onCommandResult(commandCode, result);
         }
-    }
-
-    processScheduleChangeDoctor(commandCode, variantCode)
-    {
-        let data = {
-            timeStart: this.props.timeStart,
-            timeEnd: this.props.timeEnd,
-            chairId: this.props.chairId,
-            date: this.props.date,
-            doctorId: variantCode
-        };
-
-        let command = new ServerCommand(commandCode, data, response =>
-        {
-            console.log('change doctor response!', response);
-
-            if(response.success)
-            {
-                this.onCommandDone(commandCode);
-            }
-        });
-
-        command.exec();
     }
 }
