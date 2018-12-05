@@ -34,7 +34,6 @@ class GetDayInfo extends Base
         $this->result = [
             'timeLimits' => $timeLimits,
 
-            'date' => $this->params['date'],
             'dateTitle' => Date\Helper::date('l_ru - j F_ru_gen', $curDateTime->getTimestamp()),
 
             'startTime' => $this->timeFrom,

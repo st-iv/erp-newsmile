@@ -112,22 +112,6 @@ class CalendarComponent extends \CBitrixComponent
 
         $this->endDay = strtotime('Sunday this week', $dateToTs);
     }
-
-	protected function setCalendar($intCurrentDate)
-    {
-        $arResult = array();
-        $currentMonday = strtotime('Monday this week', $intCurrentDate);
-        $this->startDay = date('Y.m.d', $currentMonday);
-        for ($w = 0; $w < 5; $w++) {
-            for ($d = 0; $d < 7; $d++) {
-                $difference = mktime(0,0,0,0,$d + $w * 7,0) - mktime(0,0,0,0,0,0);
-                $arResult[$w][$d] = date('Y-m-d', $currentMonday + $difference );
-            }
-        }
-        $this->endDay = date('Y.m.d', $currentMonday + $difference);
-
-        return $arResult;
-    }
 	
 	/**
 	 * выполняет логику работы компонента

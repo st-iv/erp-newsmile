@@ -1,4 +1,4 @@
-class CalendarDayCell extends React.Component
+class ScheduleDayCell extends React.Component
 {
     defaultCellHeight = 22;
     defaultCellMargin = 2;
@@ -57,7 +57,7 @@ class CalendarDayCell extends React.Component
                         <div ref={ref} style={style} x-placement={placement} className="dayCalendar_popup">
 
                             {this.state.showActions && !!commands.length && (
-                                <CalendarDayCellMenu commands={commands}
+                                <ScheduleDayCellMenu commands={commands}
                                                      onShowActionVariants={this.setShowDetailInfo.bind(this, false)}
                                                      onHideActionVariants={this.setShowDetailInfo.bind(this, true)}
                                                      onCommandExec={this.handleMenuAction.bind(this)}
@@ -71,7 +71,7 @@ class CalendarDayCell extends React.Component
                             )}
 
                             {this.needShowDetailInfo() && (
-                                <CalendarDayCellDetailInfo patient={this.props.patient}
+                                <ScheduleDayCellDetailInfo patient={this.props.patient}
                                                            timeStart={this.props.timeStart}
                                                            timeEnd={this.props.timeEnd}/>
                             )}

@@ -243,4 +243,37 @@ class Helpers
 
         return preg_replace('/\\\\[A-Za-z0-9]+$/', '', $className);
     }
+
+    /**
+     * Для всех файлов в указанной паапке вызывает переданный обработчик
+     * @param string $directory
+     * @param callable $callback - в качестве аргумента получает абсолютный путь к файлу в папке
+     */
+    public static function scanDir($directory, $callback)
+    {
+        // Привести каталог в канонизированный абсолютный путь
+        $directory=realpath($directory);
+
+        if ($d=opendir($directory))
+        {
+            while($fname=readdir($d)) {
+                if ($fname=='.' || $fname=='..') {
+                    continue;
+                }
+
+
+                if (is_dir($directory.DIRECTORY_SEPARATOR.$fname)) {
+                    static::scanDir($directory.DIRECTORY_SEPARATOR.$fname, $callback);
+                }
+                else
+                {
+                    // Передать путь файла в callback-функцию
+                    if ($callback!=null && is_callable($callback)) {
+                        $callback($directory.DIRECTORY_SEPARATOR.$fname);
+                    }
+                }
+            }
+            closedir($d);
+        }
+    }
 }

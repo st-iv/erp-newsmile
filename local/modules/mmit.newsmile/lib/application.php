@@ -5,6 +5,7 @@ namespace Mmit\NewSmile;
 
 use Bitrix\Main\EventManager;
 use Mmit\NewSmile\Access;
+use Mmit\NewSmile\Command;
 
 class Application
 {
@@ -50,6 +51,28 @@ class Application
 
     }
 
+
+    public function renderReactComponent($componentName, array $data = [])
+    {
+
+        $rootId = 'react-render-' . Helpers::getSnakeCase($componentName);
+
+
+        array_walk_recursive($data, function(&$value, $key)
+        {
+            if($value instanceof Command\Base)
+            {
+                $value->execute();
+                $value = $value->getResult();
+            }
+        });
+
+        $this->addReactRoot($componentName, $rootId, $data);
+        ?>
+        <div id="<?=$rootId?>"></div>
+        <?
+    }
+
     public function addReactRoot($componentName, $rootId, $props = [])
     {
         $this->reactRenderPoints[$componentName] = [
@@ -58,10 +81,12 @@ class Application
         ];
     }
 
-    public function renderReactComponents()
+    public function includeReact()
     {
         if($this->reactRenderPoints)
         {
+            $this->includeReactComponents();
+
             ?>
             <script type="text/babel">
                 <?foreach ($this->reactRenderPoints as $componentName => $componentData):?>
@@ -76,6 +101,21 @@ class Application
             </script>
             <?
         }
+
+    }
+
+    protected function includeReactComponents()
+    {
+        $includeCode = '';
+        $docRootPathLength = strlen($_SERVER['DOCUMENT_ROOT']);
+
+        Helpers::scanDir($_SERVER['DOCUMENT_ROOT'] . SITE_TEMPLATE_PATH . '/js/react', function($filePath) use (&$includeCode, $docRootPathLength)
+        {
+            $relPath = substr($filePath, $docRootPathLength);
+            $includeCode .= '<script type="text/babel" src="' . $relPath . '"></script>';
+        });
+
+        echo $includeCode;
     }
 
     /**

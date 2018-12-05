@@ -157,7 +157,7 @@ class Helper
         return $result;
     }
 
-    public static function formatTimeInterval($seconds, $format = self::TIME_INTERVAL_FORMAT_COLON)
+    public static function formatTimeInterval($seconds, $bWithSeconds = true, $format = self::TIME_INTERVAL_FORMAT_COLON)
     {
         $result = '';
 
@@ -187,7 +187,7 @@ class Helper
                 $result .= $minutes . ' ' . static::getWordByNumber($minutes, ['минута', 'минуты', 'минут']);
             }
 
-            if($seconds)
+            if($seconds && $bWithSeconds)
             {
                 $result .= ($result ? ' ' : '');
                 $result .= ' ' . $seconds . ' ' . static::getWordByNumber($seconds, ['секунда', 'секунды', 'секунд']);
@@ -195,7 +195,7 @@ class Helper
         }
         elseif ($format == self::TIME_INTERVAL_FORMAT_COLON)
         {
-            $result = $time->format('H:i:s');
+            $result = $time->format('H:i' . ($bWithSeconds ? ':s' : ''));
         }
 
 

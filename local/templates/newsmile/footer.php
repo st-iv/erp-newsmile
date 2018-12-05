@@ -1,4 +1,8 @@
 <?if(!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED !== true) die();?>
+<?
+$application = \Mmit\NewSmile\Application::getInstance();
+?>
+
     </div>
 
     <script src="https://unpkg.com/react@16/umd/react.development.js" crossorigin data-skip-moving="true"></script>
@@ -7,7 +11,7 @@
     <?
     \Bitrix\Main\Page\Asset::getInstance()->addJs('https://unpkg.com/babel-standalone@6/babel.min.js');
     $APPLICATION->ShowProperty('REACT_COMPONENTS');
-    \Mmit\NewSmile\Application::getInstance()->renderReactComponents();
+    $application->includeReact();
     ?>
 </body>
 </html>
