@@ -446,8 +446,3 @@
             return result;
         };
 })(jQuery,window,document);
-
-function test123()
-{
-
-}

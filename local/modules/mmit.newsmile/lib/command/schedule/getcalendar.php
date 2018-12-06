@@ -57,8 +57,8 @@ class GetCalendar extends Command\Base
         foreach ($counter as $date => $countInfo)
         {
             $this->result['dateData'][$date] = array(
-                'generalTime' => NewSmile\Date\Helper::formatTimeInterval($countInfo['GENERAL'] * 60, false),
-                'engagedTime' => NewSmile\Date\Helper::formatTimeInterval($countInfo['ENGAGED'] * 60, false),
+                'generalTime' => $countInfo['GENERAL'],
+                'engagedTime' => $countInfo['ENGAGED'],
                 'patientsCount' => count($countInfo['PATIENTS']),
             );
         }

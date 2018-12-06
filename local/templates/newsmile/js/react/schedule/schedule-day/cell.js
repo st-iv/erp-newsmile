@@ -49,7 +49,6 @@ class ScheduleDayCell extends React.Component
         {
             const isVisit = !!this.props.patient;
             const commands = this.getCommands();
-            console.log(commands);
 
             const popper = (
                 <ReactPopper.Popper {...this.popperSettings}>
@@ -61,7 +60,7 @@ class ScheduleDayCell extends React.Component
                                                      onShowActionVariants={this.setShowDetailInfo.bind(this, false)}
                                                      onHideActionVariants={this.setShowDetailInfo.bind(this, true)}
                                                      onCommandExec={this.handleMenuAction.bind(this)}
-                                                     onCommandResult={this.props.onUpdate}
+                                                     onCommandResult={() => this.props.onUpdate()}
                                                      timeStart={this.props.timeStart}
                                                      timeEnd={this.props.timeEnd}
                                                      chairId={this.props.chairId}

@@ -153,4 +153,9 @@ class Add extends Base
             ]
         ];
     }
+
+    protected static function getOperations()
+    {
+        return ['add'];
+    }
 }

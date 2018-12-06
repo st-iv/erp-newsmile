@@ -1,5 +1,7 @@
 class ScheduleDayCurTime extends React.Component
 {
+    refreshInterval = 20;
+
     constructor(props)
     {
         super(props);
@@ -24,7 +26,7 @@ class ScheduleDayCurTime extends React.Component
                 top: this.getTopValue(),
                 active: this.isActive()
             });
-        }, 60000);
+        }, this.refreshInterval * 1000);
     }
 
     componentWillUnmount()
@@ -44,7 +46,6 @@ class ScheduleDayCurTime extends React.Component
         {
             return null;
         }
-
     }
 
     isActive()
@@ -67,7 +68,6 @@ class ScheduleDayCurTime extends React.Component
     getTopValue()
     {
         let curServerMoment = this.getCurServerMoment();
-        console.log(Date.now() - this.serverTimeDiff);
         let timeLineIndex = 0;
         let cellPassedPart = 0;
         let isStandardInterval = true;
@@ -99,7 +99,7 @@ class ScheduleDayCurTime extends React.Component
         let timeLineCellPosition = $curTimeLineCell.position();
         let timeLinePosition = $timeLine.position();
 
-        return timeLinePosition.top + timeLineCellPosition.top + (cellHeight * cellPassedPart);
+        return timeLinePosition.top + timeLineCellPosition.top + (cellHeight * cellPassedPart) + 2;
     }
 
     getCurServerMoment()

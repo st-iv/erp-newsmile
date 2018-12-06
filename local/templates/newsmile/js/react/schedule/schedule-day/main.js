@@ -6,16 +6,6 @@ class ScheduleDay extends React.Component
     {
         super(props);
 
-        this.timeLimits = {
-            start: this.getMoment(props.timeLimits.start),
-            end: this.getMoment(props.timeLimits.end),
-        };
-
-        this.timeLimits.half = this.getHalfTime(this.timeLimits.start, this.timeLimits.end);
-
-        console.log(props);
-        console.log('schedule day!!!');
-
         this.setData(this.props, true);
     }
 
@@ -85,6 +75,12 @@ class ScheduleDay extends React.Component
     {
         const timeLine = this.getTimeLine();
         const timeLineNode = React.createRef();
+        let timeLimits = {
+            start: this.getMoment(this.props.timeLimits.start),
+            end: this.getMoment(this.props.timeLimits.end),
+        };
+
+        timeLimits.half = this.getHalfTime(timeLimits.start, timeLimits.end);
 
         return (
             <div className="dayCalendar_cont" onContextMenu={this.blockEvent}>
@@ -95,13 +91,13 @@ class ScheduleDay extends React.Component
                 <div className="dayCalendar_body">
                     {this.props.schedule.map(chairSchedule =>
                         <ScheduleDayColumn schedule={chairSchedule} doctors={this.doctors} patients={this.patients} key={chairSchedule.chair.id}
-                                           getMoment={this.getMoment.bind(this)} timeLimits={this.timeLimits}
+                                           getMoment={this.getMoment.bind(this)} timeLimits={timeLimits}
                                            startTime={this.props.startTime} endTime={this.props.endTime}
                                            commands={this.props.commands}
                                            date={this.props.date}
                                            chairId={chairSchedule.chair.id}
                                            timeLine={timeLine}
-                                           updateData={this.props.update}
+                                           update={this.props.update}
                         />
                     )}
 

@@ -4,10 +4,9 @@ class Schedule extends React.Component
         selectedDate: this.props.initialDate,
         timeFrom: this.props.scheduleDay.startTime,
         timeTo: this.props.scheduleDay.endTime,
-        scheduleDay: Object.assign({}, this.props.scheduleDay)
+        scheduleDay: Object.assign({}, this.props.scheduleDay),
+        calendarData: Object.assign({}, this.props.calendar.data),
     };
-
-
 
     render()
     {
@@ -16,7 +15,11 @@ class Schedule extends React.Component
             <div className="row main_content">
                 <div className="main_content_left">
                     <div className="left_calendar_cont">
-                        <Calendar {...this.props.calendar} setSelectedDate={this.setSelectedDate.bind(this)} curDate={this.state.selectedDate}/>
+                        <Calendar colorsScheme={this.props.calendar.colorsScheme}
+                                  data={this.state.calendarData}
+                                  setSelectedDate={this.setSelectedDate.bind(this)}
+                                  load={this.loadCalendar.bind(this)}
+                                  curDate={this.state.selectedDate}/>
                     </div>
                 </div>
                 <div className="main_content_center">
@@ -54,6 +57,27 @@ class Schedule extends React.Component
                 scheduleDay: response
             });
         });
+
+        command.exec();
+
+        console.log('update!');
+    }
+
+    loadCalendar(startDate, endDate)
+    {
+        let data = {
+            dateFrom: startDate,
+            dateTo: endDate
+        };
+
+        let command = new ServerCommand('schedule/get-calendar', data, response =>
+        {
+            this.setState({
+                calendarData: response
+            });
+        });
+
+        console.log('loadCalendar!');
 
         command.exec();
     }

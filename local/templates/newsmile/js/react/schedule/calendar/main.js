@@ -8,13 +8,21 @@ class Calendar extends React.Component
             scrollAmount: 123
         },
         snapAmount: 41,
-        callbacks: {}
+        callbacks: {
+            onTotalScroll: () => {this.limitPosition = 'bottom'},
+            onTotalScrollBack: () => {this.limitPosition = 'top'},
+            onScroll: () => {this.limitPosition = ''}
+        }
     };
+
+    $body = null;
+    $root = null;
+    limitPosition = '';
 
     render()
     {
         return (
-            <div id="left-calendar">
+            <div id="left-calendar" ref={ref => {this.$root = $(ref)}}>
                 <div className="custCalendar_header">
                     <div>Пн</div>
                     <div>Вт</div>
@@ -33,10 +41,10 @@ class Calendar extends React.Component
                 </div>
 
                 <div className="custCalendar_controls_right">
-                    <div className="custCalendar_month_up day_tooltip"/>
-                    <div className="custCalendar_week_up day_tooltip"/>
-                    <div className="custCalendar_week_down day_tooltip"/>
-                    <div className="custCalendar_month_down day_tooltip"/>
+                    <div className="custCalendar_month_up day_tooltip" onClick={this.monthUpHandler.bind(this)} data-toggle="tooltip" data-html="true" title="<div>На месяц назад</div>"/>
+                    <div className="custCalendar_week_up day_tooltip" onClick={this.weekUpHandler.bind(this)} data-toggle="tooltip" data-html="true" title="<div>На неделю назад</div>"/>
+                    <div className="custCalendar_week_down day_tooltip" onClick={this.weekDownHandler.bind(this)} data-toggle="tooltip" data-html="true" title="<div>На неделю вперёд</div>"/>
+                    <div className="custCalendar_month_down day_tooltip" onClick={this.monthDownHandler.bind(this)} data-toggle="tooltip" data-html="true" title="<div>На месяц вперёд</div>"/>
                 </div>
 
                 <div className="custCalendar_controls_bottom">
@@ -82,44 +90,17 @@ class Calendar extends React.Component
         return result;
     }
 
-    renderDay(date, day, month, dayData)
-    {
-        const defaultDayData = {
-            generalTime: '00:00',
-            engagedTime: '00:00',
-            patientCount: 0
-        };
-
-        dayData = Object.assign({}, defaultDayData, dayData);
-
-        let dayClassName = 'custCalendar_day';
-
-        const color = this.getColor(dayData.generalTime - dayData.engagedTime);
-
-        let dayStyle = {
-            backgroundColor: '#' + color.background,
-            color: '#' + color.text
-        };
-
-        if(this.state.selectedDate === date)
-        {
-            dayClassName += ' day_current active';
-        }
-
-        return (
-            <div className={dayClassName} key={date} onClick={this.selectDay.bind(this)}>
-                <div className="custCalendar_day_content" style={dayStyle}>
-                    <div className="custCalendar_day_d">{day}</div>
-                    <div className="custCalendar_day_m">{this.months[month]}</div>
-                </div>
-            </div>
-        );
-    }
-
     componentDidMount()
     {
-        console.log('test!');
         this.$body.mCustomScrollbar(this.scrollbarConfig);
+        this.$root.tooltip({
+            selector: '.day_tooltip'
+        });
+    }
+
+    componentDidUpdate()
+    {
+        this.$body.mCustomScrollbar('update');
     }
 
     getColor(freeMinutes)
@@ -142,5 +123,73 @@ class Calendar extends React.Component
 
         return color;
     };
+
+    monthUpHandler()
+    {
+        if(this.limitPosition === 'top')
+        {
+            this.onScrollEnd(this.limitPosition, 'month');
+        }
+        else
+        {
+            this.$body.mCustomScrollbar('scrollTo', '+=205');
+        }
+    }
+
+    monthDownHandler()
+    {
+        if(this.limitPosition === 'bottom')
+        {
+            this.onScrollEnd(this.limitPosition, 'month');
+        }
+        else
+        {
+            this.$body.mCustomScrollbar('scrollTo', '-=205');
+        }
+    }
+
+    weekUpHandler()
+    {
+        if(this.limitPosition === 'top')
+        {
+            this.onScrollEnd(this.limitPosition, 'week');
+        }
+        else
+        {
+            this.$body.mCustomScrollbar('scrollTo', '+=41');
+        }
+    }
+
+    weekDownHandler()
+    {
+        if(this.limitPosition === 'bottom')
+        {
+            this.onScrollEnd(this.limitPosition, 'week');
+        }
+        else
+        {
+            this.$body.mCustomScrollbar('scrollTo', '-=41');
+        }
+    }
+
+
+    onScrollEnd(direction, unit)
+    {
+        /*let loadWeeksCount = ((unit === 'week') ? 1 : 4);
+        let loadStartDate, loadEndDate;
+
+        if(direction === 'top')
+        {
+            loadEndDate = moment(this.props.data.dateTo);
+            loadStartDate = moment(this.props.data.dateFrom).add('-' + loadWeeksCount, 'w');
+        }
+        else
+        {
+            loadStartDate = moment(this.props.data.dateFrom);
+            loadEndDate = moment(this.props.data.dateTo).add('+' + loadWeeksCount - 1, 'w');
+        }
+
+        this.props.load(loadStartDate.format('YYYY-MM-DD'), loadEndDate.format('YYYY-MM-DD'));*/
+    }
 }
 

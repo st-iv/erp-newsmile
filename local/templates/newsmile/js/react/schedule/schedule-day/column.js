@@ -255,7 +255,7 @@ class ScheduleDayColumn extends React.Component
             cellProps.commands = this.props.commands;
             cellProps.date = this.props.date;
             cellProps.chairId = this.props.chairId;
-            cellProps.onUpdate = this.props.updateData;
+            cellProps.onUpdate = this.props.update;
 
             result.push(
                 <ScheduleDayCell {...cellProps}/>
@@ -264,17 +264,4 @@ class ScheduleDayColumn extends React.Component
 
         return result;
     }
-/*
-    updateSchedule(newSchedule)
-    {
-        let schedule = Object.assign({}, newSchedule);
-        schedule.intervals = this.addEmptyIntervals(schedule.intervals);
-
-        let cells = this.getCells(schedule);
-        this.defineMainDoctors(cells);
-        
-        this.setState({
-            cells: this.getCells(schedule)
-        });
-    }*/
 }
