@@ -1,3 +1,8 @@
+import React from 'react'
+import Calendar from './calendar/main'
+import ScheduleDay from './schedule-day/main'
+
+
 class Schedule extends React.Component
 {
     state = {
@@ -10,7 +15,6 @@ class Schedule extends React.Component
 
     render()
     {
-        console.log(this.props, 'schedule!');
         return (
             <div className="row main_content">
                 <div className="main_content_left">
@@ -77,8 +81,8 @@ class Schedule extends React.Component
             });
         });
 
-        console.log('loadCalendar!');
-
         command.exec();
     }
 }
+
+export default Schedule

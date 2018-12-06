@@ -1,4 +1,9 @@
-class ScheduleDayCell extends React.Component
+import React from 'react'
+import {Popper, Reference, Manager} from 'react-popper'
+import CellMenu from './cell-menu'
+import CellDetailInfo from './cell-detail-info'
+
+class Cell extends React.Component
 {
     defaultCellHeight = 22;
     defaultCellMargin = 2;
@@ -51,12 +56,12 @@ class ScheduleDayCell extends React.Component
             const commands = this.getCommands();
 
             const popper = (
-                <ReactPopper.Popper {...this.popperSettings}>
+                <Popper {...this.popperSettings}>
                     {({ ref, style, placement, arrowProps }) => (
                         <div ref={ref} style={style} x-placement={placement} className="dayCalendar_popup">
 
                             {this.state.showActions && !!commands.length && (
-                                <ScheduleDayCellMenu commands={commands}
+                                <CellMenu commands={commands}
                                                      onShowActionVariants={this.setShowDetailInfo.bind(this, false)}
                                                      onHideActionVariants={this.setShowDetailInfo.bind(this, true)}
                                                      onCommandExec={this.handleMenuAction.bind(this)}
@@ -70,7 +75,7 @@ class ScheduleDayCell extends React.Component
                             )}
 
                             {this.needShowDetailInfo() && (
-                                <ScheduleDayCellDetailInfo patient={this.props.patient}
+                                <CellDetailInfo patient={this.props.patient}
                                                            timeStart={this.props.timeStart}
                                                            timeEnd={this.props.timeEnd}/>
                             )}
@@ -78,17 +83,17 @@ class ScheduleDayCell extends React.Component
                             <div className="dClndr_parrow"></div>
                         </div>
                     )}
-                </ReactPopper.Popper>
+                </Popper>
             );
 
             return (
-                <ReactPopper.Manager>
-                    <ReactPopper.Reference>
+                <Manager>
+                    <Reference>
                         {({ ref }) => (
                             this.renderCell(ref, popper)
                         )}
-                    </ReactPopper.Reference>
-                </ReactPopper.Manager>
+                    </Reference>
+                </Manager>
             );
         }
         else
@@ -274,3 +279,5 @@ class ScheduleDayCell extends React.Component
         });
     }
 }
+
+export default Cell

@@ -1,4 +1,6 @@
-//import React from 'react'
+import React from 'react'
+import CurTime from './cur-time'
+import Column from './column'
 
 class ScheduleDay extends React.Component
 {
@@ -90,7 +92,7 @@ class ScheduleDay extends React.Component
 
                 <div className="dayCalendar_body">
                     {this.props.schedule.map(chairSchedule =>
-                        <ScheduleDayColumn schedule={chairSchedule} doctors={this.doctors} patients={this.patients} key={chairSchedule.chair.id}
+                        <Column schedule={chairSchedule} doctors={this.doctors} patients={this.patients} key={chairSchedule.chair.id}
                                            getMoment={this.getMoment.bind(this)} timeLimits={timeLimits}
                                            startTime={this.props.startTime} endTime={this.props.endTime}
                                            commands={this.props.commands}
@@ -113,7 +115,7 @@ class ScheduleDay extends React.Component
                     )}
 
                     {this.props.isCurDay && (
-                        <ScheduleDayCurTime serverTimestamp={this.props.curServerTimestamp}
+                        <CurTime serverTimestamp={this.props.curServerTimestamp}
                                             timeLine={timeLine}
                                             timeLineNode={timeLineNode}
                                             getMoment={this.getMoment.bind(this)}
@@ -130,24 +132,6 @@ class ScheduleDay extends React.Component
         e.preventDefault();
     }
 
-    updateData()
-    {
-        /*let data = {
-            date: this.props.date,
-            timeFrom: this.props.startTime,
-            timeTo: this.props.endTime
-        };
-
-        let command = new ServerCommand('schedule/get-day-info', data, response =>
-        {
-            this.setData(response);
-
-            console.log(response, 'updateData!');
-        });
-
-        command.exec();*/
-    }
-
     setData(data, bInitial = false)
     {
         this.doctors = data.doctors;
@@ -160,7 +144,6 @@ class ScheduleDay extends React.Component
             });
         }
     }
-
-    getCurServer
-
 }
+
+export default ScheduleDay

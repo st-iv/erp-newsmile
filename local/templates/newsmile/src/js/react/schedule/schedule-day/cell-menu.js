@@ -1,4 +1,6 @@
-class ScheduleDayCellMenu extends React.Component
+import React from 'react'
+
+class CellMenu extends React.Component
 {
     constructor(props)
     {
@@ -158,3 +160,5 @@ class ScheduleDayCellMenu extends React.Component
         }
     }
 }
+
+export default CellMenu

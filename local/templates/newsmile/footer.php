@@ -5,12 +5,9 @@ $application = \Mmit\NewSmile\Application::getInstance();
 
     </div>
 
-    <script src="https://unpkg.com/react@16/umd/react.development.js" crossorigin data-skip-moving="true"></script>
-    <script src="https://unpkg.com/react-dom@16/umd/react-dom.development.js" crossorigin data-skip-moving="true"></script>
-
     <?
-    \Bitrix\Main\Page\Asset::getInstance()->addJs('https://unpkg.com/babel-standalone@6/babel.min.js');
-    $APPLICATION->ShowProperty('REACT_COMPONENTS');
+    //\Bitrix\Main\Page\Asset::getInstance()->addJs('https://unpkg.com/babel-standalone@6/babel.min.js');
+    //$APPLICATION->ShowProperty('REACT_COMPONENTS');
     $application->includeReact();
     ?>
 </body>

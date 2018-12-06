@@ -1,3 +1,6 @@
+import React from 'react'
+import Day from './day'
+
 class Calendar extends React.Component
 {
     months = ['янв', 'фев', 'мар', 'апр', 'май', 'июн', 'июл', 'авг', 'сен', 'окт', 'ноя', 'дек'];
@@ -71,7 +74,7 @@ class Calendar extends React.Component
             let date = startDate.format('YYYY-MM-DD');
 
             result.push(
-                <CalendarDay date={date}
+                <Day date={date}
                              day={startDate.date()}
                              curMonth={this.months[monthIndex]}
                              dayData={data.dateData[curDateString]}
@@ -193,3 +196,4 @@ class Calendar extends React.Component
     }
 }
 
+export default Calendar

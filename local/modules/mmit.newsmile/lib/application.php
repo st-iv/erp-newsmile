@@ -85,10 +85,8 @@ class Application
     {
         if($this->reactRenderPoints)
         {
-            $this->includeReactComponents();
-
             ?>
-            <script type="text/babel">
+            <script>
                 <?foreach ($this->reactRenderPoints as $componentName => $componentData):?>
                 ReactDOM.render(
                     React.createElement(
@@ -102,20 +100,6 @@ class Application
             <?
         }
 
-    }
-
-    protected function includeReactComponents()
-    {
-        $includeCode = '';
-        $docRootPathLength = strlen($_SERVER['DOCUMENT_ROOT']);
-
-        Helpers::scanDir($_SERVER['DOCUMENT_ROOT'] . SITE_TEMPLATE_PATH . '/js/react', function($filePath) use (&$includeCode, $docRootPathLength)
-        {
-            $relPath = substr($filePath, $docRootPathLength);
-            $includeCode .= '<script type="text/babel" src="' . $relPath . '"></script>';
-        });
-
-        echo $includeCode;
     }
 
     /**

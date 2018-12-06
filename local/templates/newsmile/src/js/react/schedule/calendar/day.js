@@ -1,4 +1,6 @@
-class CalendarDay extends React.Component
+import React from 'react'
+
+class Day extends React.Component
 {
     render()
     {
@@ -53,3 +55,5 @@ class CalendarDay extends React.Component
         };
     }
 }
+
+export default Day

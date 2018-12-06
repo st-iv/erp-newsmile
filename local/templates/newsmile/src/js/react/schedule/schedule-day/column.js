@@ -1,4 +1,7 @@
-class ScheduleDayColumn extends React.Component
+import React from 'react'
+import Cell from './cell'
+
+class Column extends React.Component
 {
     constructor(props)
     {
@@ -258,10 +261,12 @@ class ScheduleDayColumn extends React.Component
             cellProps.onUpdate = this.props.update;
 
             result.push(
-                <ScheduleDayCell {...cellProps}/>
+                <Cell {...cellProps}/>
             );
         }
 
         return result;
     }
 }
+
+export default Column

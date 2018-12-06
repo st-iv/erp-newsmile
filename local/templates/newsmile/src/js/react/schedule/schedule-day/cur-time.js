@@ -1,4 +1,6 @@
-class ScheduleDayCurTime extends React.Component
+import React from 'react'
+
+class CurTime extends React.Component
 {
     refreshInterval = 20;
 
@@ -107,3 +109,5 @@ class ScheduleDayCurTime extends React.Component
         return moment(Date.now() - this.serverTimeDiff);
     }
 }
+
+export default CurTime

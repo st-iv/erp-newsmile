@@ -1,4 +1,6 @@
-function ScheduleDayCellDetailInfo(props)
+import React from 'react'
+
+function CellDetailInfo(props)
 {
     const patient = props.patient;
 
@@ -31,3 +33,5 @@ function ScheduleDayCellDetailInfo(props)
         </div>
     )
 }
+
+export default CellDetailInfo
