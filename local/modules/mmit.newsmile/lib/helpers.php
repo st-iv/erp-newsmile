@@ -149,7 +149,7 @@ class Helpers
 
     public static function getFio(array $person, $keyPrefix = '')
     {
-        $fio = $person[$keyPrefix . 'LAST_NAME'];
+        $fio = $person[$keyPrefix . 'LAST_NAME'] ?: '';
         if($person[$keyPrefix . 'NAME'])
         {
             $fio .= ' ' . mb_substr($person[$keyPrefix . 'NAME'], 0 , 1) . '.';

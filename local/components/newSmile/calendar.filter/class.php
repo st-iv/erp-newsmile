@@ -10,16 +10,13 @@ use Bitrix\Main\Loader,
     Mmit\NewSmile\DoctorTable,
     Mmit\NewSmile\PatientCardTable,
     Mmit\NewSmile\WorkChairTable,
-    \Mmit\NewSmile,
+    Mmit\NewSmile,
     Bitrix\Main\ORM\Query\Query,
     Bitrix\Main\Entity\ExpressionField,
     Bitrix\Main\DB;
 
 class CalendarFilterComponent extends \CBitrixComponent
 {
-    private $FILTER_NAME = '';
-
-
     public function onPrepareComponentParams($arParams)
     {
         if(!($arParams['FILTER'] instanceof Bitrix\Main\ORM\Query\Filter\ConditionTree))

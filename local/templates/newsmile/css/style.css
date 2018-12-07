@@ -1465,3 +1465,116 @@ ul.dClndr_psubmenu {
 	border-radius: 2px;
 	background-color: rgba(250, 0, 76, 0.3);
 }
+
+/* CUSTOM  */
+
+/* filter start */
+
+.filter-select .filter-select__control {
+	border-radius: 3px;
+	border: 1px solid rgb(234, 234, 236);
+	outline: none;
+	width: 253px;
+	height: 42px;
+	padding-left: 20px;
+}
+
+.filter-select .filter-select__control--is-focused {
+	box-shadow: none;
+}
+
+.filter-select .filter-select__control:hover {
+	border-color: rgb(234, 234, 236);
+}
+
+.filter-select .filter-select__indicator-separator {
+	display: none;
+}
+
+.filter-select .filter-select__placeholder, .filter-select__control .filter-select__single-value {
+	display: flex;
+	align-items: center;
+	font-family: 'Rubik', 'Arial';
+	font-size: 13px;
+	color: #4f5965;
+}
+
+.filter-select .filter-select__value-container {
+	padding: 0;
+}
+
+.filter-select .filter-select__dropdown-indicator svg {
+	display: none;
+}
+
+.filter-select .filter-select__dropdown-indicator {
+	background-image: url(../svg/filter_arrow_down.svg);
+	background-repeat: no-repeat;
+	background-position: center;
+	background-size: 9px auto;
+	margin-right: 12px;
+}
+
+.filter-select .filter-select__menu {
+	margin-top: 0;
+	border-radius: 0;
+	z-index: 100;
+	background-color: #fff;
+	box-shadow: none;
+	border: 1px solid #eaeaec;
+	border-top: none;
+}
+
+.filter-select .filter-select__menu-list {
+	padding: 0;
+}
+
+.filter-select .filter-select__option {
+	padding: 0 20px;
+	display: flex;
+	align-items: center;
+	height: 30px;
+	font-family: 'Rubik', 'Arial';
+	font-size: 13px;
+	color: #4f5965;
+}
+
+.filter-select .filter-select__option
+{
+	background-color: transparent;
+}
+.filter-select .filter-select__option--is-selected {
+	background-color: transparent;
+}
+
+.filter-select .filter-select__option--is-focused {
+	background-color: rgb(244, 245, 246);
+}
+
+.filter-select--opened .filter-select__dropdown-indicator {
+	background-image: url(../svg/filter_arrow_up.svg);
+}
+
+.filter-select--opened .filter-select__control {
+	border-bottom-right-radius: 0;
+	border-bottom-left-radius: 0;
+}
+
+.specializations-select {
+	margin-right: 7px;
+}
+
+.filter-select.doctors-select .value-color {
+	width: 16px;
+	height: 12px;
+	border-radius: 2px;
+	margin-right: 11px;
+}
+
+.filter-select.doctors-select .filter-select__single-value {
+	margin-left: 27px;
+}
+
+.filter-select .filter-select__value-container .value-color {
+	margin-bottom: 2px;
+}

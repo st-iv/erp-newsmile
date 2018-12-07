@@ -1,6 +1,7 @@
 import React from 'react'
 import Calendar from './calendar/main'
 import ScheduleDay from './schedule-day/main'
+import Filter from './filter/main'
 
 
 class Schedule extends React.Component
@@ -15,19 +16,26 @@ class Schedule extends React.Component
 
     render()
     {
+        console.log(this.props, 'schedule props!');
+
         return (
-            <div className="row main_content">
-                <div className="main_content_left">
-                    <div className="left_calendar_cont">
-                        <Calendar colorsScheme={this.props.calendar.colorsScheme}
-                                  data={this.state.calendarData}
-                                  setSelectedDate={this.setSelectedDate.bind(this)}
-                                  load={this.loadCalendar.bind(this)}
-                                  curDate={this.state.selectedDate}/>
+            <div>
+                <Filter doctors={this.props.doctors.list}/>
+
+                <div className="row main_content">
+                    <div className="main_content_left">
+                        <div className="left_calendar_cont">
+                            <Calendar colorsScheme={this.props.calendar.colorsScheme}
+                                      data={this.state.calendarData}
+                                      setSelectedDate={this.setSelectedDate.bind(this)}
+                                      load={this.loadCalendar.bind(this)}
+                                      curDate={this.state.selectedDate}/>
+                        </div>
                     </div>
-                </div>
-                <div className="main_content_center">
-                    <ScheduleDay {...this.state.scheduleDay} date={this.state.selectedDate} update={this.updateDaySchedule.bind(this)}/>
+
+                    <div className="main_content_center">
+                        <ScheduleDay {...this.state.scheduleDay} date={this.state.selectedDate} update={this.updateDaySchedule.bind(this)}/>
+                    </div>
                 </div>
             </div>
         );

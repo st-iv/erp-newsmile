@@ -9,13 +9,6 @@ $application = NewSmile\Application::getInstance();
 ?>
 <?
 \Bitrix\Main\Loader::includeModule('mmit.newsmile');
-
-$filter = $APPLICATION->IncludeComponent(
-    "newSmile:calendar.filter",
-    "",
-    array()
-);
-
 ?>
     <?
     $application->renderReactComponent('Schedule', [
@@ -44,7 +37,12 @@ $filter = $APPLICATION->IncludeComponent(
             'data' => new Command\Schedule\GetCalendar()
         ],
         'scheduleDay' => new Command\Schedule\GetDayInfo(),
-        'initialDate' => date('Y-m-d')
+        'initialDate' => date('Y-m-d'),
+
+        'doctors' => new Command\Doctor\GetList([
+            'select' => ['ID', 'NAME', 'COLOR', 'LAST_NAME', 'SECOND_NAME'],
+            'get-specialization' => true
+        ])
     ]);
     ?>
 <?

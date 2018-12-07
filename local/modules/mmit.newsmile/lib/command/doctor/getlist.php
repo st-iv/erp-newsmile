@@ -15,7 +15,8 @@ class GetList extends Base
     protected function doExecute()
     {
         $queryParams = [
-            'select' => ['NAME', 'LAST_NAME', 'SECOND_NAME', 'ID']
+            'select' => $this->params['select'],
+            'count_total' => true
         ];
 
         if($this->params['offset'])
@@ -35,9 +36,13 @@ class GetList extends Base
             ];
         }
 
+        /* запрос врачей */
+
         $dbDoctors = DoctorTable::getList($queryParams);
         $doctorsIds = [];
         $doctors = [];
+
+        $this->result['total_count'] = $dbDoctors->getCount();
 
         while($doctor = $dbDoctors->fetch())
         {
@@ -45,19 +50,43 @@ class GetList extends Base
             $doctors[] = $doctor;
         }
 
-        $specializations = $this->getSpecializations($doctorsIds);
-        $workSchedule = Scheduler::getDoctorsSchedule();
+        /* получение списка специальностей */
+
+        $specializations = null;
+
+        if($this->params['get-specialization'])
+        {
+            $specializations = $this->getSpecializations($doctorsIds);
+        }
+
+        /* получение расписания */
+
+        $workSchedule = null;
+
+        if($this->params['get-schedule'])
+        {
+            $workSchedule = Scheduler::getDoctorsSchedule();
+        }
+
+        /* объединение данных */
 
         foreach ($doctors as $doctor)
         {
-            $doctorId = $doctor['ID'];
-            unset($doctor['ID']);
-
+            $doctor['fio'] = Helpers::getFio($doctor);
             $doctor = Helpers::strtolowerKeys($doctor);
-            $doctor['specialization'] = DoctorSpecializationTable::getSpecName($specializations[$doctorId]);
-            $doctor['work_schedule'] = $workSchedule[$doctorId];
 
-            $this->result[] = $doctor;
+            if(isset($specializations))
+            {
+                $doctor['specialization'] = DoctorSpecializationTable::getSpecName($specializations[$doctor['id']]);
+                $doctor['specialization_code'] = $specializations[$doctor['id']];
+            }
+
+            if(isset($workSchedule))
+            {
+                $doctor['work_schedule'] = $workSchedule[$doctor['id']];
+            }
+
+            $this->result['list'][] = $doctor;
         }
     }
 
@@ -97,6 +126,20 @@ class GetList extends Base
             'sort_order' => [
                 'TITLE' => 'направление сортировки',
                 'REQUIRED' => false
+            ],
+            'select' => [
+                'TITLE' => 'поля для выборки',
+                'REQUIRED' => false,
+                'DEFAULT' => ['NAME', 'LAST_NAME', 'SECOND_NAME', 'ID'],
+                'OPERATION' => 'read-full-info'
+            ],
+            'get-schedule' => [
+                'TITLE' => 'флаг запроса расписания',
+                'DEFAULT' => false
+            ],
+            'get-specialization' => [
+                'TITLE' => 'флаг запроса специальности',
+                'DEFAULT' => false
             ]
         ];
     }

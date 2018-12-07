@@ -26,16 +26,29 @@ abstract class Base
 
     public function __construct($params = [])
     {
+        $this->accessController = Application::getInstance()->getAccessController();
         $this->setParams($params);
     }
 
     protected function setParams($params)
     {
+        $accessController = Application::getInstance()->getAccessController();
+
         foreach ($this->getParamsMap() as $paramCode => $paramInfo)
         {
             if(isset($params[$paramCode]))
             {
-                $this->params[$paramCode] = $params[$paramCode];
+                if($paramInfo['OPERATION'] && !$accessController->isOperationAllowed(static::getEntityCode(), $paramInfo['OPERATION']))
+                {
+                    throw new Error(
+                        'Недостаточно прав для использования параметра ' . $paramCode . ' команды ' . $this->getCode(),
+                        'PARAM_ACCESS_DENIED'
+                    );
+                }
+                else
+                {
+                    $this->params[$paramCode] = $params[$paramCode];
+                }
             }
             else
             {
@@ -230,8 +243,13 @@ abstract class Base
     abstract protected function doExecute();
 
     /**
-     * Возвращает описание параметров команды
-     * @return mixed
+     * Возвращает описание параметров команды. Массив описания каждого параметра может включать следующие ключи:<br>
+     * 1. REQUIRED - параметр является обязательным
+     * 2. TITLE - название параметра
+     * 3. DEFAULT - значение по умолчанию
+     * 4. OPERATION - код операции, доступ к которой необходим для возможности указать значение данного параметра
+     *
+     * @return array
      */
     abstract public function getParamsMap();
 }
