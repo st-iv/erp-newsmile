@@ -20,7 +20,7 @@ class Column extends React.Component
 
             let cell = cells[time];
 
-            if(!cell.doctorId) continue;
+            if(!cell.doctorId || cell.isBlocked) continue;
 
             let timeMoment = this.getMoment(cell.timeStart);
             cell.halfDayNum = timeMoment.isBefore(this.props.timeLimits.half) ? 0 : 1;
@@ -91,6 +91,7 @@ class Column extends React.Component
             prevEndTime = interval.TIME_END;
         });
 
+
         return result;
     }
 
@@ -135,8 +136,13 @@ class Column extends React.Component
                     timeStart: time,
                     timeEnd: moment.add(duration, 'minute').format('HH:mm'),
                     doctorId: interval.DOCTOR_ID,
-                    halfDayNum: interval.halfDayNum
+                    halfDayNum: interval.halfDayNum,
+                    isBlocked: this.isBlockedInterval(interval)
                 };
+
+                if(!this.isBlockedInterval(interval)) {
+                    console.log('not blocked!', interval, this.doctors[interval.DOCTOR_ID]);
+                }
             }
         }
 
@@ -211,15 +217,20 @@ class Column extends React.Component
     {
         // get cells from schedule
 
+        this.doctors = this.getDoctors();
+        
         let schedule = Object.assign({}, this.props.schedule);
         schedule.intervals = this.addEmptyIntervals(schedule.intervals);
 
         let cells = this.getCells(schedule);
+        if(this.isEmptyCells(cells))
+        {
+            return null;
+        }
+
         this.defineMainDoctors(cells);
 
-        console.log(cells);
-
-        const doctors = this.props.doctors;
+        const doctors = this.doctors;
         const isOneMainDoctor = (this.mainDoctors[0]) && (this.mainDoctors[0] === this.mainDoctors[1]);
 
         return (
@@ -250,7 +261,7 @@ class Column extends React.Component
 
             let cellProps = Object.assign({}, cells[time]);
 
-            cellProps.doctor = (cellProps.doctorId ? this.props.doctors[cellProps.doctorId] : null);
+            cellProps.doctor = (cellProps.doctorId ? this.doctors[cellProps.doctorId] : null);
             cellProps.patient = (cellProps.patientId ? this.props.patients[cellProps.patientId] : null);
             cellProps.isMainDoctor = (this.mainDoctors[cellProps.halfDayNum] === cellProps.doctorId);
 
@@ -266,6 +277,45 @@ class Column extends React.Component
         }
 
         return result;
+    }
+
+    isBlockedInterval(interval)
+    {
+        let doctor = this.doctors[interval.DOCTOR_ID];
+        if(!doctor || !Object.keys(doctor).length) return false;
+
+        let isBlockedByDoctor = !!this.props.filter.doctor && (this.props.filter.doctor !== interval.DOCTOR_ID);
+        let isBlockedBySpec = !!this.props.filter.specialization && (this.props.filter.specialization !== doctor.specialization_code);
+
+        return  !!interval.DOCTOR_ID && (isBlockedByDoctor || isBlockedBySpec);
+    }
+    
+    getDoctors()
+    {
+        let result = {};
+        
+        this.props.doctors.forEach(doctor =>
+        {
+            result[doctor.id] = doctor;
+        });
+        
+        return result;
+    }
+
+    isEmptyCells(cells)
+    {
+        let isEmpty = true;
+
+        for(let time in cells)
+        {
+            let cell = cells[time];
+            if (cell.doctorId && !cell.isBlocked) {
+                isEmpty = false;
+                break;
+            }
+        }
+
+        return isEmpty;
     }
 }
 

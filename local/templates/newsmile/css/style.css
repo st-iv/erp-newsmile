@@ -1210,6 +1210,7 @@ body.searchOpen .search_content{
 	margin-top: 2px;
 
 }
+
 .dayCalendar_popup{
 	z-index: 6;
 	top: calc(-50% + 15px) !important;
@@ -1569,12 +1570,9 @@ ul.dClndr_psubmenu {
 	height: 12px;
 	border-radius: 2px;
 	margin-right: 11px;
+	border: 1px solid #e0e0e0;
 }
 
 .filter-select.doctors-select .filter-select__single-value {
 	margin-left: 27px;
-}
-
-.filter-select .filter-select__value-container .value-color {
-	margin-bottom: 2px;
 }

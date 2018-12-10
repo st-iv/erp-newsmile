@@ -1,4 +1,5 @@
 import React from 'react'
+import ReactDOM from 'react-dom'
 import {Popper, Reference, Manager} from 'react-popper'
 import CellMenu from './cell-menu'
 import CellDetailInfo from './cell-detail-info'
@@ -50,9 +51,8 @@ class Cell extends React.Component
 
     render()
     {
-        if(this.state.isHovered || this.state.showActions)
+        if(!this.props.isBlocked && (this.state.isHovered || this.state.showActions))
         {
-            const isVisit = !!this.props.patient;
             const commands = this.getCommands();
 
             const popper = (
@@ -141,6 +141,11 @@ class Cell extends React.Component
         else
         {
             className += ' emptyI';
+        }
+
+        if(this.props.isBlocked)
+        {
+            cellStyle.visibility = 'hidden';
         }
 
         const showPopup = (this.state.isHovered || this.state.showActions);

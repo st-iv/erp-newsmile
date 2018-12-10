@@ -7,8 +7,6 @@ class ScheduleDay extends React.Component
     constructor(props)
     {
         super(props);
-
-        this.setData(this.props, true);
     }
 
     getHalfTime(startTime, endTime)
@@ -92,14 +90,15 @@ class ScheduleDay extends React.Component
 
                 <div className="dayCalendar_body">
                     {this.props.schedule.map(chairSchedule =>
-                        <Column schedule={chairSchedule} doctors={this.doctors} patients={this.patients} key={chairSchedule.chair.id}
-                                           getMoment={this.getMoment.bind(this)} timeLimits={timeLimits}
-                                           startTime={this.props.startTime} endTime={this.props.endTime}
-                                           commands={this.props.commands}
-                                           date={this.props.date}
-                                           chairId={chairSchedule.chair.id}
-                                           timeLine={timeLine}
-                                           update={this.props.update}
+                        <Column schedule={chairSchedule} doctors={this.props.doctors} patients={this.props.patients} key={chairSchedule.chair.id}
+                                getMoment={this.getMoment.bind(this)} timeLimits={timeLimits}
+                                startTime={this.props.startTime} endTime={this.props.endTime}
+                                commands={this.props.commands}
+                                date={this.props.date}
+                                chairId={chairSchedule.chair.id}
+                                timeLine={timeLine}
+                                update={this.props.update}
+                                filter={this.props.filter}
                         />
                     )}
 
@@ -130,19 +129,6 @@ class ScheduleDay extends React.Component
     {
         e.stopPropagation();
         e.preventDefault();
-    }
-
-    setData(data, bInitial = false)
-    {
-        this.doctors = data.doctors;
-        this.patients = data.patients;
-
-        if(!bInitial)
-        {
-            this.setState({
-                schedule: data.schedule
-            });
-        }
     }
 }
 

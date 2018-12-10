@@ -9,6 +9,8 @@ use Mmit\NewSmile;
 use Mmit\NewSmile\Date;
 use Mmit\NewSmile\Command;
 use Bitrix\Main\ORM\Query\Query;
+use Bitrix\Main\DB;
+use Bitrix\Main\ORM\Fields\ExpressionField;
 
 class GetDayInfo extends Base
 {
@@ -43,16 +45,16 @@ class GetDayInfo extends Base
             'isCurDay' => ($this->params['date'] == date('Y-m-d'))
         ];
 
-
-        $schedule = [];
         $patientsIds = [];
+        $schedule = [];
 
         $visits = $this->getVisits();
+        $rawSchedule = $this->getSchedule();
 
-        $chairs = $this->getChairs();
-
-        foreach ($this->getSchedule() as $chairId => $chairSchedule)
+        foreach ($this->getChairs() as $chairId => $chair)
         {
+            if(!$rawSchedule[$chairId]) continue;
+
             $chairVisits = $visits[$chairId];
 
             foreach ($chairVisits as $visit)
@@ -61,8 +63,8 @@ class GetDayInfo extends Base
             }
 
             $schedule[] = [
-                'chair' => $chairs[$chairId],
-                'intervals' => $this->getDoctorsIntervals($chairSchedule),
+                'chair' => $chair,
+                'intervals' => $this->getDoctorsIntervals($rawSchedule[$chairId]),
                 'visits' => $visits[$chairId] ?: []
             ];
         }
@@ -87,6 +89,12 @@ class GetDayInfo extends Base
             'timeTo' => [
                 'TITLE' => 'конечное время выборки',
             ],
+            'doctor' => [
+                'TITLE' => 'id врача',
+            ],
+            'specialization' => [
+                'TITLE' => 'код специальности'
+            ]
         ];
     }
 
@@ -130,6 +138,44 @@ class GetDayInfo extends Base
         $tomorrowDate->modify('tomorrow');
 
         $filter->whereBetween('TIME', \Bitrix\Main\Type\Date::createFromPhp($thisDate), \Bitrix\Main\Type\Date::createFromPhp($tomorrowDate));
+
+        if (!empty($this->params['timeFrom']))
+        {
+            $filter->where(
+                new ExpressionField('TIME_SECONDS', 'TIME_TO_SEC(%s)','TIME'),
+                '>=',
+                new DB\SqlExpression('TIME_TO_SEC(?)', urldecode($this->params['timeFrom']))
+            );
+        }
+
+        if (!empty($this->params['timeTo']))
+        {
+            $filter->where(
+                new ExpressionField('TIME_SECONDS', 'TIME_TO_SEC(%s)','TIME'),
+                '<',
+                new DB\SqlExpression('TIME_TO_SEC(?)', urldecode($this->params['timeTo']))
+            );
+        }
+
+        $doctorId = (int)$this->params['doctor'];
+
+        if ($doctorId)
+        {
+            $filter->where('DOCTOR_ID', $doctorId);
+        }
+
+        if($this->params['specialization'])
+        {
+            $specSubQuery = new Query(NewSmile\DoctorSpecializationTable::getEntity());
+            $specSubQuery->setFilter(array(
+                'SPECIALIZATION' => $this->params['specialization']
+            ));
+            $specSubQuery->setSelect(array('DOCTOR_ID'));
+
+            $filter->whereIn('DOCTOR_ID', $specSubQuery);
+        }
+
+        $filter->where('CLINIC_ID', NewSmile\Config::getClinicId());
 
         return $filter;
     }

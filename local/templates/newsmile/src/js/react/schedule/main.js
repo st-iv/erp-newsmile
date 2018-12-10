@@ -6,12 +6,18 @@ import Filter from './filter/main'
 
 class Schedule extends React.Component
 {
-    state = {
-        selectedDate: this.props.initialDate,
+    defaultFilter = {
         timeFrom: this.props.scheduleDay.startTime,
         timeTo: this.props.scheduleDay.endTime,
+        doctor: null,
+        specialization: null
+    };
+
+    state = {
+        selectedDate: this.props.initialDate,
         scheduleDay: Object.assign({}, this.props.scheduleDay),
         calendarData: Object.assign({}, this.props.calendar.data),
+        filter: Object.assign({}, this.defaultFilter),
     };
 
     render()
@@ -20,7 +26,7 @@ class Schedule extends React.Component
 
         return (
             <div>
-                <Filter doctors={this.props.doctors.list}/>
+                <Filter doctors={this.props.doctors.list} setFilter={filter => this.setState({filter})}/>
 
                 <div className="row main_content">
                     <div className="main_content_left">
@@ -34,7 +40,12 @@ class Schedule extends React.Component
                     </div>
 
                     <div className="main_content_center">
-                        <ScheduleDay {...this.state.scheduleDay} date={this.state.selectedDate} update={this.updateDaySchedule.bind(this)}/>
+                        <ScheduleDay {...this.state.scheduleDay}
+                                     date={this.state.selectedDate}
+                                     update={this.updateDaySchedule.bind(this)}
+                                     filter={this.state.filter}
+                                     doctors={this.props.doctors.list}
+                        />
                     </div>
                 </div>
             </div>
@@ -57,13 +68,15 @@ class Schedule extends React.Component
         }
 
         let data = {
-            date: date,
-            timeFrom: this.state.timeFrom,
-            timeTo: this.state.timeTo
+            date: date
         };
+
+        data = Object.assign(data, this.filter);
 
         let command = new ServerCommand('schedule/get-day-info', data, response =>
         {
+            console.log('update success!', response);
+
             this.setState({
                 selectedDate: date,
                 scheduleDay: response
@@ -71,8 +84,6 @@ class Schedule extends React.Component
         });
 
         command.exec();
-
-        console.log('update!');
     }
 
     loadCalendar(startDate, endDate)

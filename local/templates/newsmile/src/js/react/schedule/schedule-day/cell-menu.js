@@ -48,7 +48,6 @@ class CellMenu extends React.Component
         {
             if(response)
             {
-                console.log(response);
                 let hasAvailableCommands = false;
 
                 response.forEach(command =>
