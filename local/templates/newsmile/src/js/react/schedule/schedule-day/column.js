@@ -63,7 +63,7 @@ class Column extends React.Component
     addEmptyIntervals(intervals)
     {
         let result = [];
-        let prevEndTime = this.props.startTime;
+        let prevEndTime = this.props.filter.timeFrom;
         let count = intervals.length;
 
         intervals.forEach((interval, index) =>
@@ -79,11 +79,11 @@ class Column extends React.Component
 
             result.push(interval);
 
-            if((index === count - 1) && (this.props.endTime !== interval.TIME_END))
+            if((index === count - 1) && (this.props.filter.timeTo !== interval.TIME_END))
             {
                 result.push({
                     TIME_START: interval.TIME_END,
-                    TIME_END: this.props.endTime,
+                    TIME_END: this.props.filter.timeTo,
                     DOCTOR_ID: 0
                 });
             }
@@ -139,10 +139,6 @@ class Column extends React.Component
                     halfDayNum: interval.halfDayNum,
                     isBlocked: this.isBlockedInterval(interval)
                 };
-
-                if(!this.isBlockedInterval(interval)) {
-                    console.log('not blocked!', interval, this.doctors[interval.DOCTOR_ID]);
-                }
             }
         }
 
@@ -182,6 +178,56 @@ class Column extends React.Component
         return resultWithVisits;
     }
 
+    cutSchedule(schedule)
+    {
+        let result = Object.assign({}, schedule);
+        result.intervals = [];
+
+        let timeFrom = this.getMoment(this.props.filter.timeFrom);
+        let timeTo = this.getMoment(this.props.filter.timeTo);
+
+        schedule.intervals.forEach(interval =>
+        {
+            interval = Object.assign({}, interval);
+            let intervalStartTime = this.getMoment(interval.TIME_START);
+            let intervalEndTime = this.getMoment(interval.TIME_END);
+            let isSuitable = true;
+
+            if(intervalStartTime.isBefore(timeFrom))
+            {
+                if(intervalEndTime.isAfter(timeFrom))
+                {
+                    // значит начальным временем из фильтра распилили интервал на части, нужно подменить начальное время интервала
+                    interval.TIME_START = timeFrom.format('HH:mm');
+                }
+                else
+                {
+                    isSuitable = false;
+                }
+            }
+
+            if(intervalEndTime.isAfter(timeTo))
+            {
+                if(intervalStartTime.isBefore(timeTo))
+                {
+                    // значит начальным временем из фильтра распилили интервал на части, нужно подменить начальное время интервала
+                    interval.TIME_END = timeTo.format('HH:mm');
+                }
+                else
+                {
+                    isSuitable = false;
+                }
+            }
+
+            if(isSuitable)
+            {
+                result.intervals.push(interval);
+            }
+        });
+
+        return result;
+    }
+
     /**
      * Определение размеров приемов (в количестве строк таймлайна)
      */
@@ -219,7 +265,9 @@ class Column extends React.Component
 
         this.doctors = this.getDoctors();
         
-        let schedule = Object.assign({}, this.props.schedule);
+        let schedule = this.cutSchedule(this.props.schedule);
+        console.log(Object.assign({}, schedule), 'schedule snap!');
+
         schedule.intervals = this.addEmptyIntervals(schedule.intervals);
 
         let cells = this.getCells(schedule);

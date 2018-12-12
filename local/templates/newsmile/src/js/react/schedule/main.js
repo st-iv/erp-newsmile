@@ -9,8 +9,8 @@ class Schedule extends React.Component
     defaultFilter = {
         timeFrom: this.props.scheduleDay.startTime,
         timeTo: this.props.scheduleDay.endTime,
-        doctor: null,
-        specialization: null
+        doctor: 0,
+        specialization: ''
     };
 
     state = {
@@ -26,7 +26,12 @@ class Schedule extends React.Component
 
         return (
             <div>
-                <Filter doctors={this.props.doctors.list} setFilter={filter => this.setState({filter})}/>
+                <Filter doctors={this.props.doctors.list}
+                        setFilter={filter => this.setState({filter})}
+                        startTime={this.props.scheduleDay.startTime}
+                        endTime={this.props.scheduleDay.endTime}
+                        defaultFilter={this.defaultFilter}
+                />
 
                 <div className="row main_content">
                     <div className="main_content_left">

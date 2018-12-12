@@ -16,6 +16,7 @@ use Mmit\NewSmile\VisitTable;
 class Add extends Base
 {
     protected static $name = 'Записать пациента';
+    protected $recordedPatients;
 
     protected function doExecute()
     {
@@ -34,10 +35,6 @@ class Add extends Base
         if(!$addResult->isSuccess())
         {
             throw new Error(implode(';', $addResult->getErrorMessages()), 'VISIT_ADD_ERROR');
-        }
-        else
-        {
-            Debug::writeToFile('visit add exec success!!');
         }
     }
 
@@ -95,7 +92,6 @@ class Add extends Base
             }
         }
 
-
         if($bVaryPatient)
         {
             $this->variants = $this->getPatients($recordedPatients);
@@ -104,7 +100,6 @@ class Add extends Base
         {
             $isAllowed = $isAllowed && !in_array($this->params['patientId'], $recordedPatients);
         }
-
 
         return $isAllowed;
     }

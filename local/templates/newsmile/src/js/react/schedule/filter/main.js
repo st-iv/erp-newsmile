@@ -1,19 +1,25 @@
 import React from 'react'
 import Select from './select'
 import ColoredSelect from './colored-select'
+import TimeRange from './time-range'
+import PropTypes from 'prop-types'
 
 class Filter extends React.Component
 {
+    static propTypes = {
+        defaultFilter: PropTypes.object.isRequired,
+        startTime: PropTypes.string.isRequired,
+        endTime: PropTypes.string.isRequired,
+        doctors: PropTypes.array.isRequired,
+        setFilter: PropTypes.func
+    };
+
     specializations = this.getSpecializationOptions();
     doctors = this.getDoctors();
 
     state = this.getInitialState();
-    submittedFilter = this.getFilterConfig(this.state);
 
-    static defaultProps =  {
-        defaultDoctor: 0,
-        defaultSpecialization: ''
-    };
+    submittedFilter = this.getFilterConfig(this.state);
 
     render()
     {
@@ -33,6 +39,12 @@ class Filter extends React.Component
                             placeholder="Врач"
                             value={this.state.doctor}
                             onChange={option => this.setState({doctor: option})}
+                    />
+
+                    <TimeRange timeStart={this.props.startTime}
+                               timeEnd={this.props.endTime}
+                               value={[this.state.timeFrom, this.state.timeTo]}
+                               onChange={this.setTimeRange.bind(this)}
                     />
 
                     {!this.isInitialState() && (
@@ -97,7 +109,9 @@ class Filter extends React.Component
     {
         return {
             doctor: state.doctor.value,
-            specialization: state.specialization.value
+            specialization: state.specialization.value,
+            timeFrom: state.timeFrom,
+            timeTo: state.timeTo
         };
     }
 
@@ -122,8 +136,10 @@ class Filter extends React.Component
     getInitialState()
     {
         return {
-            doctor: this.getOptionByValue(this.doctors, this.props.defaultDoctor),
-            specialization: this.getOptionByValue(this.specializations, this.props.defaultSpecialization)
+            doctor: this.getOptionByValue(this.doctors, this.props.defaultFilter.doctor),
+            specialization: this.getOptionByValue(this.specializations, this.props.defaultFilter.specialization),
+            timeFrom: this.props.defaultFilter.timeFrom,
+            timeTo: this.props.defaultFilter.timeTo
         };
     }
 
@@ -155,6 +171,14 @@ class Filter extends React.Component
         });
 
         return result;
+    }
+
+    setTimeRange(timeRange)
+    {
+        this.setState({
+            timeFrom: timeRange[0],
+            timeTo: timeRange[1]
+        });
     }
 }
 

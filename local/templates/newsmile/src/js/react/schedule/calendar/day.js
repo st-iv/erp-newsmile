@@ -49,9 +49,7 @@ class Day extends React.Component
         }
 
         return {
-            title: title,
-            'data-toggle': 'tooltip',
-            'data-html': 'true'
+            'data-tip': title
         };
     }
 }

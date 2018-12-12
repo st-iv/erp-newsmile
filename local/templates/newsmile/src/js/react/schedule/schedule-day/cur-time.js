@@ -17,23 +17,35 @@ class CurTime extends React.Component
 
     componentDidMount()
     {
-        this.setState({
-            top: this.getTopValue(),
-            active: this.isActive()
-        });
+        this.updatePosition();
+        this.interval = setInterval(this.updatePosition.bind(this), this.refreshInterval * 1000);
+    }
 
-        this.interval = setInterval(() =>
+    updatePosition()
+    {
+        if(this.props.timeLineNode && this.props.timeLineNode.current)
         {
+            let topPosition = this.getTopValue();
+
             this.setState({
-                top: this.getTopValue(),
-                active: this.isActive()
+                top: topPosition,
+                active: (topPosition > 0)
             });
-        }, this.refreshInterval * 1000);
+        }
     }
 
     componentWillUnmount()
     {
         clearInterval(this.interval);
+    }
+
+    componentDidUpdate(prevProps, prevState, snapshot)
+    {
+        if(JSON.stringify(prevProps.timeLine) !== JSON.stringify(this.props.timeLine))
+        {
+            // если был обновлен timeLine - нужно обновить позицию линии текущего времени
+            this.updatePosition();
+        }
     }
 
     render()
@@ -73,6 +85,7 @@ class CurTime extends React.Component
         let timeLineIndex = 0;
         let cellPassedPart = 0;
         let isStandardInterval = true;
+        let isTimeLineHit = false;
 
 
         for(let time in this.props.timeLine)
@@ -88,6 +101,7 @@ class CurTime extends React.Component
             if(!startMoment.isAfter(curServerMoment) && endMoment.isAfter(curServerMoment))
             {
                 isStandardInterval = (this.props.timeLine[time] === 'standard');
+                isTimeLineHit = true;
                 cellPassedPart = startMoment.diff(curServerMoment) / startMoment.diff(endMoment);
                 break;
             }
@@ -95,13 +109,21 @@ class CurTime extends React.Component
             timeLineIndex++;
         }
 
-        let $timeLine = $(this.props.timeLineNode.current);
-        let $curTimeLineCell = $(this.props.timeLineNode.current).children().eq(timeLineIndex);
-        let cellHeight = $curTimeLineCell.height();
-        let timeLineCellPosition = $curTimeLineCell.position();
-        let timeLinePosition = $timeLine.position();
+        if(isTimeLineHit)
+        {
+            // если текущее время попало в таймлайн, определяем позицию компонента на таймлайне
+            let $timeLine = $(this.props.timeLineNode.current);
+            let $curTimeLineCell = $(this.props.timeLineNode.current).children().eq(timeLineIndex);
+            let cellHeight = $curTimeLineCell.height();
+            let timeLineCellPosition = $curTimeLineCell.position();
+            let timeLinePosition = $timeLine.position();
 
-        return timeLinePosition.top + timeLineCellPosition.top + (cellHeight * cellPassedPart) + 2;
+            return timeLinePosition.top + timeLineCellPosition.top + (cellHeight * cellPassedPart) + 2;
+        }
+        else
+        {
+            return 0;
+        }
     }
 
     getCurServerMoment()

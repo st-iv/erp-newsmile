@@ -82,6 +82,14 @@ var General = (function()
             return time;
         }
 
+        function getMinutesByTime(time)
+        {
+            var timeParts = time.split(':');
+            var hours = Number(timeParts[0]);
+            var minutes = Number(timeParts[1]);
+            return hours * 60 + minutes;
+        }
+
         function getDurationString(intervalStart, intervalEnd)
         {
             if((typeof intervalStart === 'string') || (typeof intervalEnd === 'string'))
@@ -125,6 +133,7 @@ var General = (function()
             formatTime: formatTime,
             formatMinutes: formatMinutes,
             getDurationString: getDurationString,
+            getMinutesByTime: getMinutesByTime,
         }
     })();
 

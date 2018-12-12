@@ -6,7 +6,6 @@ namespace Mmit\NewSmile\Command;
 use Mmit\NewSmile\Application;
 use Mmit\NewSmile\Error;
 use Mmit\NewSmile\Helpers;
-use Mmit\NewSmile\Orm\Helper;
 
 abstract class Base
 {
@@ -18,7 +17,7 @@ abstract class Base
     protected $result;
 
     protected $varyParam;
-    protected $variants;
+    protected $variants = [];
 
     protected $isTestMode = false;
 
@@ -26,7 +25,6 @@ abstract class Base
 
     public function __construct($params = [])
     {
-        $this->accessController = Application::getInstance()->getAccessController();
         $this->setParams($params);
     }
 
@@ -57,6 +55,10 @@ abstract class Base
         }
     }
 
+    /**
+     * @return bool
+     * @throws Error
+     */
     protected function checkParams()
     {
         foreach ($this->getParamsMap() as $paramCode => $paramInfo)
@@ -114,7 +116,7 @@ abstract class Base
     }
 
     /**
-     * Проверяет, можно ли выполнить команду в данный момент при указанных параметрах
+     * Проверяет, можно ли выполнить команду в данный момент при указанных параметрах. При установленном поле varyParam
      * @return bool
      */
     protected function checkAvailable()
@@ -122,11 +124,21 @@ abstract class Base
         return true;
     }
 
+    /**
+     * Объявляет вариативным параметр с указанным кодом. В зависимости от того, какой параметр объявлен вариативным, формируется
+     * список вариантов выполнения команды.
+     *
+     * @param $varyParam - код параметра
+     */
     public function setVaryParam($varyParam)
     {
         $this->varyParam = $varyParam;
     }
 
+    /**
+     * Получает варианты выполнения команды в зависимости от того, какой параметр объявлен вариативным через метод setVaryParam
+     * @return array
+     */
     public function getVariants()
     {
         $variants = [];
@@ -144,7 +156,7 @@ abstract class Base
 
     /**
      * Определяет, частью каких операций является данная команда. Для возможности выполнения команды у пользователя
-     * должно быть
+     * должно быть ...
      * @return array
      */
     protected static function getOperations()
@@ -227,6 +239,9 @@ abstract class Base
         return static::$name;
     }
 
+    /**
+     * Выполняет команду, если её выполнение доступно при текущих условиях
+     */
     final public function execute()
     {
         if($this->isAvailable())
@@ -238,7 +253,6 @@ abstract class Base
 
     /**
      * Выполняет команду
-     * @return mixed
      */
     abstract protected function doExecute();
 

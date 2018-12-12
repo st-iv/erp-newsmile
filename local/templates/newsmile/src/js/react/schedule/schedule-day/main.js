@@ -31,14 +31,29 @@ class ScheduleDay extends React.Component
     getTimeLine()
     {
         let timeLine = {};
-        let iterTime = this.getMoment(this.props.startTime);
-        let endTime = this.getMoment(this.props.endTime);
+        let iterTime = this.getMoment(this.props.filter.timeFrom);
+        let endTime = this.getMoment(this.props.filter.timeTo);
+        let lastIntervalTime;
 
-        /* сначала таймлайн стандартными интервалами в 30 минут */
+        /*
+        сначала заполняем таймлайн стандартными интервалами в 30 минут, первый и последний интервал обрезаются до половинного
+        в зависимости от фильтра
+         */
         while(iterTime.isBefore(endTime))
         {
-            timeLine[iterTime.format('HH:mm')] = 'standard';
-            iterTime.add(30, 'minutes');
+            let timeDiff = (iterTime.get('minutes') % 30 === 15) ? 15 : 30;
+
+            let time = iterTime.format('HH:mm');
+            timeLine[time] = ((timeDiff === 15) ? 'half' : 'standard');
+
+            iterTime.add(timeDiff, 'minutes');
+            lastIntervalTime = time
+        }
+
+        if(endTime.get('minutes') % 30 === 15)
+        {
+            // последний интервал - половинный, если конечное время из фильтра кратно 15 минутам
+            timeLine[lastIntervalTime] = 'half';
         }
 
         /* затем по расписанию врачей (intervals) и приемам (visits) добавляем половинные интервалы (15 минут) */
@@ -90,9 +105,12 @@ class ScheduleDay extends React.Component
 
                 <div className="dayCalendar_body">
                     {this.props.schedule.map(chairSchedule =>
-                        <Column schedule={chairSchedule} doctors={this.props.doctors} patients={this.props.patients} key={chairSchedule.chair.id}
-                                getMoment={this.getMoment.bind(this)} timeLimits={timeLimits}
-                                startTime={this.props.startTime} endTime={this.props.endTime}
+                        <Column schedule={chairSchedule}
+                                doctors={this.props.doctors}
+                                patients={this.props.patients}
+                                key={chairSchedule.chair.id}
+                                getMoment={this.getMoment.bind(this)}
+                                timeLimits={timeLimits}
                                 commands={this.props.commands}
                                 date={this.props.date}
                                 chairId={chairSchedule.chair.id}
