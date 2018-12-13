@@ -27,7 +27,7 @@ class Schedule extends React.Component
         return (
             <div>
                 <Filter doctors={this.props.doctors.list}
-                        setFilter={filter => this.setState({filter})}
+                        setFilter={this.setFilter.bind(this)}
                         startTime={this.props.scheduleDay.startTime}
                         endTime={this.props.scheduleDay.endTime}
                         defaultFilter={this.defaultFilter}
@@ -91,12 +91,13 @@ class Schedule extends React.Component
         command.exec();
     }
 
-    loadCalendar(startDate, endDate)
+    loadCalendar(startDate = null, endDate = null, filter = null)
     {
-        let data = {
-            dateFrom: startDate,
-            dateTo: endDate
-        };
+        filter = filter || this.state.filter;
+
+        let data = Object.assign({}, filter);
+        data.dateFrom = startDate || this.props.calendar.data.dateFrom;
+        data.dateTo = endDate || this.props.calendar.data.dateTo;
 
         let command = new ServerCommand('schedule/get-calendar', data, response =>
         {
@@ -106,6 +107,14 @@ class Schedule extends React.Component
         });
 
         command.exec();
+
+        console.log('load calendar!');
+    }
+
+    setFilter(filter)
+    {
+        this.setState({filter});
+        this.loadCalendar(null, null, filter);
     }
 }
 

@@ -137,7 +137,7 @@ class Column extends React.Component
                     timeEnd: moment.add(duration, 'minute').format('HH:mm'),
                     doctorId: interval.DOCTOR_ID,
                     halfDayNum: interval.halfDayNum,
-                    isBlocked: this.isBlockedInterval(interval)
+                    isBlocked: interval.isBlocked
                 };
             }
         }
@@ -168,6 +168,7 @@ class Column extends React.Component
             {
                 skipCellsCounter = (visit.size - 1);
                 cell.size = visit.size;
+                cell.timeStart = visit.TIME_START;
                 cell.timeEnd = visit.TIME_END;
                 cell.patientId = visit.PATIENT_ID;
             }
@@ -176,56 +177,6 @@ class Column extends React.Component
         }
 
         return resultWithVisits;
-    }
-
-    cutSchedule(schedule)
-    {
-        let result = Object.assign({}, schedule);
-        result.intervals = [];
-
-        let timeFrom = this.getMoment(this.props.filter.timeFrom);
-        let timeTo = this.getMoment(this.props.filter.timeTo);
-
-        schedule.intervals.forEach(interval =>
-        {
-            interval = Object.assign({}, interval);
-            let intervalStartTime = this.getMoment(interval.TIME_START);
-            let intervalEndTime = this.getMoment(interval.TIME_END);
-            let isSuitable = true;
-
-            if(intervalStartTime.isBefore(timeFrom))
-            {
-                if(intervalEndTime.isAfter(timeFrom))
-                {
-                    // значит начальным временем из фильтра распилили интервал на части, нужно подменить начальное время интервала
-                    interval.TIME_START = timeFrom.format('HH:mm');
-                }
-                else
-                {
-                    isSuitable = false;
-                }
-            }
-
-            if(intervalEndTime.isAfter(timeTo))
-            {
-                if(intervalStartTime.isBefore(timeTo))
-                {
-                    // значит начальным временем из фильтра распилили интервал на части, нужно подменить начальное время интервала
-                    interval.TIME_END = timeTo.format('HH:mm');
-                }
-                else
-                {
-                    isSuitable = false;
-                }
-            }
-
-            if(isSuitable)
-            {
-                result.intervals.push(interval);
-            }
-        });
-
-        return result;
     }
 
     /**
@@ -262,13 +213,13 @@ class Column extends React.Component
     render()
     {
         // get cells from schedule
+        let schedule = Object.assign({}, this.props.schedule);
 
-        this.doctors = this.getDoctors();
-        
-        let schedule = this.cutSchedule(this.props.schedule);
-        console.log(Object.assign({}, schedule), 'schedule snap!');
+        console.log(schedule, 'column schedule!');
 
         schedule.intervals = this.addEmptyIntervals(schedule.intervals);
+
+        console.log(schedule, 'column schedule 2!');
 
         let cells = this.getCells(schedule);
         if(this.isEmptyCells(cells))
@@ -278,7 +229,7 @@ class Column extends React.Component
 
         this.defineMainDoctors(cells);
 
-        const doctors = this.doctors;
+        const doctors = this.props.doctors;
         const isOneMainDoctor = (this.mainDoctors[0]) && (this.mainDoctors[0] === this.mainDoctors[1]);
 
         return (
@@ -309,7 +260,7 @@ class Column extends React.Component
 
             let cellProps = Object.assign({}, cells[time]);
 
-            cellProps.doctor = (cellProps.doctorId ? this.doctors[cellProps.doctorId] : null);
+            cellProps.doctor = (cellProps.doctorId ? this.props.doctors[cellProps.doctorId] : null);
             cellProps.patient = (cellProps.patientId ? this.props.patients[cellProps.patientId] : null);
             cellProps.isMainDoctor = (this.mainDoctors[cellProps.halfDayNum] === cellProps.doctorId);
 
@@ -324,29 +275,6 @@ class Column extends React.Component
             );
         }
 
-        return result;
-    }
-
-    isBlockedInterval(interval)
-    {
-        let doctor = this.doctors[interval.DOCTOR_ID];
-        if(!doctor || !Object.keys(doctor).length) return false;
-
-        let isBlockedByDoctor = !!this.props.filter.doctor && (this.props.filter.doctor !== interval.DOCTOR_ID);
-        let isBlockedBySpec = !!this.props.filter.specialization && (this.props.filter.specialization !== doctor.specialization_code);
-
-        return  !!interval.DOCTOR_ID && (isBlockedByDoctor || isBlockedBySpec);
-    }
-    
-    getDoctors()
-    {
-        let result = {};
-        
-        this.props.doctors.forEach(doctor =>
-        {
-            result[doctor.id] = doctor;
-        });
-        
         return result;
     }
 

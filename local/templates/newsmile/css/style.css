@@ -988,6 +988,9 @@ body.searchOpen .search_content{
 	font-size: 11px;
 	line-height: 10px;
 }
+.custCalendar_day.blocked {
+	cursor: default;
+}
 .tooltip.show{
 	opacity: 1;
 }

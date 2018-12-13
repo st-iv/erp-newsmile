@@ -32,7 +32,7 @@ class Calendar extends React.Component
 
     $body = null;
     $root = null;
-    limitPosition = '';
+    limitPosition = 'top';
 
     render()
     {
@@ -139,11 +139,6 @@ class Calendar extends React.Component
         let newWeeksCount = Math.abs( Math.ceil(newStartDate.diff(newEndDate, 'd') / 7) );
         let weeksDiff = newWeeksCount - prevWeeksCount;
 
-        console.log(weeksDiff, 'weeksDiff!!');
-        console.log(weeksDiff, 'weeksDiff!!');
-        console.log(this.limitPosition , 'weeksDiff!!');
-        console.log(weeksDiff, 'weeksDiff!!');
-
         if(this.limitPosition === 'top' && (weeksDiff > 0))
         {
             this.scrollPosition += weeksDiff * 41;
@@ -161,6 +156,12 @@ class Calendar extends React.Component
             diffPosition += '=' + weeksDiff * 41;
             this.$body.mCustomScrollbar('scrollTo', diffPosition);
         }
+
+        /* обновляем подсказки */
+        ReactTooltip.rebuild();
+
+        console.log('calendar updated!');
+        console.log(this.props);
     }
 
     getColor(freeMinutes)
@@ -170,14 +171,17 @@ class Calendar extends React.Component
             text: '454545'
         };
 
-        let minutesBounds = Object.keys(this.props.colorsScheme);
-
-        for(let i=0; i < minutesBounds.length; i++)
+        if(freeMinutes !== null)
         {
-            if((i == (minutesBounds.length - 1)) || ((freeMinutes > minutesBounds[i]) && (freeMinutes <= minutesBounds[i+1])))
+            let minutesBounds = Object.keys(this.props.colorsScheme);
+
+            for(let i=0; i < minutesBounds.length; i++)
             {
-                color = $.extend(color, this.props.colorsScheme[minutesBounds[i]]);
-                break;
+                if((i == (minutesBounds.length - 1)) || ((freeMinutes >= minutesBounds[i]) && (freeMinutes < minutesBounds[i+1])))
+                {
+                    color = $.extend(color, this.props.colorsScheme[minutesBounds[i]]);
+                    break;
+                }
             }
         }
 

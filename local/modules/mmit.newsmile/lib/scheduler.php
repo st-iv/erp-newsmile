@@ -3,9 +3,11 @@
 namespace Mmit\NewSmile;
 
 
+use Bitrix\Main\ORM\Fields\ExpressionField;
 use Bitrix\Main\Type\Date;
 use Bitrix\Main\Type\DateTime;
 use Mmit\NewSmile\Date\Helper;
+use Mmit\NewSmile;
 
 class Scheduler
 {
@@ -291,7 +293,7 @@ class Scheduler
      *
      * @return bool
      */
-    protected static function isHalfTime($time)
+    public static function isHalfTime($time)
     {
         $standardIntervalMinutes = ScheduleTable::STANDARD_INTERVAL / 60;
         return (int)$time->format('i') % $standardIntervalMinutes == $standardIntervalMinutes / 2;
@@ -337,6 +339,71 @@ class Scheduler
             }
 
             $prevSchedule = $schedule;
+        }
+
+        return $result;
+    }
+
+    public static function getIntervals($parameters = [])
+    {
+        /*$parameters['order'] = [
+            'CLINIC_ID' => 'asc',
+            'WORK_CHAIR_ID' => 'asc',
+            'TIME' => 'asc',
+        ];
+
+        $parameters['select'][] = 'TIME';
+
+        $dbSchedule = ScheduleTable::getList($parameters);
+
+        while($schedule = $dbSchedule->fetch())
+        {
+
+        }*/
+    }
+
+    /**
+     * Проверяет, составлено ли расписание на даты из указанного интервала
+     * @param \DateTime $startDate - начальная дата интервала
+     * @param \DateTime $endDate - конечная дата интервала. Если не указана, то будет проверена только одна дата $startDate
+     */
+    public static function checkAvailability(\DateTime $startDate, \DateTime $endDate = null)
+    {
+        if($endDate)
+        {
+            $endDate->modify('+1 day');
+            $filter = [
+                '>=TIME' => DateTime::createFromPhp($startDate),
+                '<TIME' => DateTime::createFromPhp($endDate)
+            ];
+        }
+        else
+        {
+            $filter = [
+                'TIME' => DateTime::createFromPhp($startDate)
+            ];
+        }
+
+        $dbSchedule = ScheduleTable::getList([
+            'filter' => $filter,
+            'select' => ['DATE']
+        ]);
+
+        $filledDates = [];
+
+        while($schedule = $dbSchedule->fetch())
+        {
+            $filledDates[$schedule['DATE']] = true;
+        }
+
+        $iterDate = clone $startDate;
+        $result = [];
+
+        while(!Helper::isAfter($iterDate, $endDate))
+        {
+            $strIterDate = $iterDate->format('Y-m-d');
+            $result[$strIterDate] = isset($filledDates[$strIterDate]);
+            $iterDate->modify('+1 day');
         }
 
         return $result;

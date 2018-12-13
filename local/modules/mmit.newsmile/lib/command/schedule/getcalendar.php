@@ -5,9 +5,11 @@ namespace Mmit\NewSmile\Command\Schedule;
 
 use Bitrix\Main\ORM\Query\Query;
 use Bitrix\Main\Type\DateTime;
+use Bitrix\Main\DB;
 use Mmit\NewSmile\Command;
 use Mmit\NewSmile\ScheduleTable;
 use Mmit\NewSmile;
+use Bitrix\Main\Entity\ExpressionField;
 
 class GetCalendar extends Command\Base
 {
@@ -29,38 +31,99 @@ class GetCalendar extends Command\Base
 
         $rsSchedule = ScheduleTable::getList(array(
             'filter' => $this->getFilter(),
-            'select' => array('ID', 'PATIENT_ID', 'TIME', 'DURATION')
+            'select' => array('ID', 'PATIENT_ID', 'TIME', 'DURATION', 'DATE'),
+            'order' => [
+                'DATE' => 'asc',
+                'WORK_CHAIR_ID' => 'asc',
+                'TIME' => 'asc'
+            ]
         ));
 
         $counter = array();
+        $schedules = [];
 
-        while ($arSchedule = $rsSchedule->fetch())
+        while ($schedule = $rsSchedule->fetch())
         {
-            if($arSchedule['TIME'])
+            $schedules[$schedule['DATE']][] = $schedule;
+        }
+
+        $timeFrom = new \DateTime($this->params['timeFrom']);
+        $isHalfTimeFrom = $this->params['timeFrom'] && NewSmile\Scheduler::isHalfTime($timeFrom);
+        $isHalfTimeTo = $this->params['timeTo'] && NewSmile\Scheduler::isHalfTime(new \DateTime($this->params['timeTo']));
+
+        foreach($schedules as $date => $dateSchedules)
+        {
+            $dateSchedulesCount = count($dateSchedules);
+            $timeFrom->modify($date);
+
+            foreach ($dateSchedules as $index => $schedule)
             {
-                /**
-                 * @var DateTime $timeObject
-                 */
-                $timeObject = $arSchedule['TIME'];
-                $date = $timeObject->format('Y-m-d');
-
-                $counter[$date]['GENERAL'] += $arSchedule['DURATION'];
-
-                if($arSchedule['PATIENT_ID'])
+                if($schedule['TIME'])
                 {
-                    $counter[$date]['ENGAGED'] += $arSchedule['DURATION'];
-                    $counter[$date]['PATIENTS'][$arSchedule['PATIENT_ID']] = true;
+                    if($isHalfTimeFrom && !$index)
+                    {
+                        // если установлен фильтр по времени и начальное время является половинным (15 или 45 минут),
+                        /*
+                         * Для корректного подсчета доступного и занятого времени фильтр по времени может быть "сдвинут" на 15 минут,
+                         * чтобы захватить все нужные интервалы. Поэтому в этом условии проверяем - не нужно ли пропустить начальный интервал
+                         */
+                        if(NewSmile\Date\Helper::isBefore($schedule['TIME'], $timeFrom))
+                        {
+                            if($schedule['DURATION'] == ScheduleTable::STANDARD_INTERVAL / 120)
+                            {
+                                continue;
+                            }
+                            else
+                            {
+                                // Если попали сюда, значит половинным фильтром по времени был разделен стандартный интервал расписания.
+                                // В таком случае нужно учитывать только половину от этого интервала.
+                                $schedule['DURATION'] = ScheduleTable::STANDARD_INTERVAL / 120;
+                            }
+                        }
+                    }
+
+                    if($isHalfTimeTo && ($dateSchedulesCount === ($index + 1)))
+                    {
+                        // если установлен фильтр по времени и конечное время является половинным (15 или 45 минут),
+                        // то последний выбранный интервал должен считаться как половинный
+                        $schedule['DURATION'] = ScheduleTable::STANDARD_INTERVAL / 120;
+                    }
+
+                    /**
+                     * @var DateTime $timeObject
+                     */
+                    $timeObject = $schedule['TIME'];
+                    $date = $timeObject->format('Y-m-d');
+
+                    $counter[$date]['GENERAL'] += $schedule['DURATION'];
+
+                    if($schedule['PATIENT_ID'])
+                    {
+                        $counter[$date]['ENGAGED'] += $schedule['DURATION'];
+                        $counter[$date]['PATIENTS'][$schedule['PATIENT_ID']] = true;
+                    }
                 }
             }
         }
 
-        foreach ($counter as $date => $countInfo)
+        $availability = NewSmile\Scheduler::checkAvailability(clone $this->dateFrom, clone $this->dateTo);
+
+        foreach ($availability as $date => $isAvailable)
         {
-            $this->result['dateData'][$date] = array(
-                'generalTime' => $countInfo['GENERAL'],
-                'engagedTime' => $countInfo['ENGAGED'],
-                'patientsCount' => count($countInfo['PATIENTS']),
-            );
+            $countInfo = $counter[$date];
+            $dateInfo = [
+                'isAvailable' => $isAvailable,
+                'isEmpty' => !isset($countInfo)
+            ];
+
+            if(isset($countInfo))
+            {
+                $dateInfo['generalTime'] = $countInfo['GENERAL'];
+                $dateInfo['engagedTime'] = $countInfo['ENGAGED'];
+                $dateInfo['patientsCount'] = count($countInfo['PATIENTS']);
+            }
+
+            $this->result['dateData'][$date] = $dateInfo;
         }
     }
 
@@ -91,7 +154,53 @@ class GetCalendar extends Command\Base
 
         $filter->where('TIME', '>=', DateTime::createFromPhp($this->dateFrom));
         $filter->where('TIME', '<', DateTime::createFromPhp($this->dateTo));
-        $filter->whereNot('DOCTOR_ID', false);
+
+        if (!empty($this->params['timeFrom']))
+        {
+            $timeFrom = new \DateTime(urldecode($this->params['timeFrom']));
+
+            if( NewSmile\Scheduler::isHalfTime(new \DateTime($this->params['timeFrom'])) )
+            {
+                $timeFrom->modify('-' . ScheduleTable::STANDARD_INTERVAL / 120 . ' minute');
+            }
+
+            $filter->where(
+                new ExpressionField('TIME_SECONDS', 'TIME_TO_SEC(%s)','TIME'),
+                '>=',
+                new DB\SqlExpression('TIME_TO_SEC(?)', $timeFrom->format('H:i:00'))
+            );
+        }
+
+        if (!empty($this->params['timeTo']))
+        {
+            $filter->where(
+                new ExpressionField('TIME_SECONDS', 'TIME_TO_SEC(%s)','TIME'),
+                '<',
+                new DB\SqlExpression('TIME_TO_SEC(?)', urldecode($this->params['timeTo']))
+            );
+        }
+
+        $doctorId = (int)$this->params['doctor'];
+
+        if($doctorId)
+        {
+            $filter->where('DOCTOR_ID', $doctorId);
+        }
+        else
+        {
+            $filter->whereNot('DOCTOR_ID', false);
+        }
+
+        if($this->params['specialization'])
+        {
+            $specSubQuery = new Query(NewSmile\DoctorSpecializationTable::getEntity());
+            $specSubQuery->setFilter(array(
+                'SPECIALIZATION' => $this->params['specialization']
+            ));
+            $specSubQuery->setSelect(array('DOCTOR_ID'));
+
+            $filter->whereIn('DOCTOR_ID', $specSubQuery);
+        }
 
         return $filter;
     }
@@ -109,6 +218,18 @@ class GetCalendar extends Command\Base
             'weeksCount' => [
                 'TITLE' => 'количество запрашиваемых недель',
                 'DEFAULT' => 8
+            ],
+            'timeFrom' => [
+                'TITLE' => 'начальное время выборки',
+            ],
+            'timeTo' => [
+                'TITLE' => 'конечное время выборки',
+            ],
+            'doctor' => [
+                'TITLE' => 'id врача',
+            ],
+            'specialization' => [
+                'TITLE' => 'код специальности'
             ]
         ];
     }

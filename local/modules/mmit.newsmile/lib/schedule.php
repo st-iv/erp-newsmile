@@ -89,6 +89,7 @@ class ScheduleTable extends Entity\DataManager
                 'default_value' => '30'
 
             )),
+            new Entity\ExpressionField('DATE', 'DATE_FORMAT(%s, "%%Y-%%m-%%d")', 'TIME')
         );
     }
 

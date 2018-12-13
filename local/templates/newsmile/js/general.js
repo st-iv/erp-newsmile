@@ -53,6 +53,16 @@ var General = (function()
         }
     }
 
+    /**
+     * Клонирует массивы и объекты
+     * @param arrayOrObject
+     * @returns {any}
+     */
+    function clone(arrayOrObject)
+    {
+        return JSON.parse(JSON.stringify(arrayOrObject));
+    }
+
     var Date = (function()
     {
         function formatTime(ts)
@@ -167,6 +177,7 @@ var General = (function()
         getFio: getFio,
         getFullName: getFullName,
         getCountString: getCountString,
+        clone: clone,
 
         sessid: sessid,
         postFormAction: postFormAction
