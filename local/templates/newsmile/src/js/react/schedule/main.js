@@ -80,8 +80,6 @@ class Schedule extends React.Component
 
         let command = new ServerCommand('schedule/get-day-info', data, response =>
         {
-            console.log('update success!', response);
-
             this.setState({
                 selectedDate: date,
                 scheduleDay: response
@@ -96,8 +94,8 @@ class Schedule extends React.Component
         filter = filter || this.state.filter;
 
         let data = Object.assign({}, filter);
-        data.dateFrom = startDate || this.props.calendar.data.dateFrom;
-        data.dateTo = endDate || this.props.calendar.data.dateTo;
+        data.dateFrom = startDate || this.state.calendarData.dateFrom;
+        data.dateTo = endDate || this.state.calendarData.dateTo;
 
         let command = new ServerCommand('schedule/get-calendar', data, response =>
         {
@@ -107,8 +105,6 @@ class Schedule extends React.Component
         });
 
         command.exec();
-
-        console.log('load calendar!');
     }
 
     setFilter(filter)

@@ -276,8 +276,11 @@ class ScheduleDay extends React.Component
                 {
                     if(intervalStartTime.isBefore(timeTo))
                     {
-                        // значит конечным временем из фильтра распилили интервал на части, нужно подменить конечное время интервала
-                        interval.TIME_END = timeTo.format('HH:mm');
+                        if(!isVisit)
+                        {
+                            // значит конечным временем из фильтра распилили интервал на части, нужно подменить конечное время интервала
+                            interval.TIME_END = timeTo.format('HH:mm');
+                        }
                     }
                     else
                     {
