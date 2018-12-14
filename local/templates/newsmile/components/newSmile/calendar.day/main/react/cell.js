@@ -30,7 +30,7 @@ class CalendarDayCell extends React.Component
 
     componentDidUpdate(prevProps, prevState)
     {
-        if(prevState.showActions !== this.state.showActions)
+        if(prevState.showContextMenu !== this.state.showActions)
         {
             if(this.state.showActions)
             {
@@ -237,7 +237,7 @@ class CalendarDayCell extends React.Component
         e.preventDefault();
 
         this.setState({
-            showActions: !this.state.showActions
+            showContextMenu: !this.state.showActions
         });
     }
 
@@ -251,7 +251,7 @@ class CalendarDayCell extends React.Component
         if(this.state.showActions)
         {
             this.setState({
-                showActions: false
+                showContextMenu: false
             });
         }
     }
@@ -262,7 +262,7 @@ class CalendarDayCell extends React.Component
         if(cellNode && !cellNode.contains(e.target))
         {
             this.setState({
-                showActions: false
+                showContextMenu: false
             });
         }
     }
@@ -270,7 +270,7 @@ class CalendarDayCell extends React.Component
     handleMenuAction()
     {
         this.setState({
-            showActions: false,
+            showContextMenu: false,
             showDetailInfo: true
         });
     }

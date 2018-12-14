@@ -1,108 +1,57 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
-import {Popper, Reference, Manager} from 'react-popper'
 import CellMenu from './cell-menu'
-import CellDetailInfo from './cell-detail-info'
 
 class Cell extends React.Component
 {
     defaultCellHeight = 22;
     defaultCellMargin = 2;
 
-    popperSettings = {
-        placement: 'bottom-start',
-        modifiers: {
-            preventOverflow: {
-                enabled: true,
-                boundariesElement: document.getElementById('body')
-            },
-            offset: {
-                enabled: true
-            }
-        }
-    };
-
-    state = {
-        isHovered: false,
-        showActions: false,
-        showDetailInfo: true
-    };
-
-    constructor(props)
-    {
-        super(props);
-        this.handleOutsideClick = this.handleOutsideClick.bind(this);
-    }
-
-    componentDidUpdate(prevProps, prevState)
-    {
-        if(prevState.showActions !== this.state.showActions)
-        {
-            if(this.state.showActions)
-            {
-                document.addEventListener('mousedown', this.handleOutsideClick);
-            }
-            else
-            {
-                document.removeEventListener('mousedown', this.handleOutsideClick);
-            }
-        }
-    }
-
     render()
     {
-        if(!this.props.isBlocked && (this.state.isHovered || this.state.showActions))
+        if(this.props.isBlocked)
         {
-            const commands = this.getCommands();
-
-            const popper = (
-                <Popper {...this.popperSettings}>
-                    {({ ref, style, placement, arrowProps }) => (
-                        <div ref={ref} style={style} x-placement={placement} className="dayCalendar_popup">
-
-                            {this.state.showActions && !!commands.length && (
-                                <CellMenu commands={commands}
-                                                     onShowActionVariants={this.setShowDetailInfo.bind(this, false)}
-                                                     onHideActionVariants={this.setShowDetailInfo.bind(this, true)}
-                                                     onCommandExec={this.handleMenuAction.bind(this)}
-                                                     onCommandResult={() => this.props.onUpdate()}
-                                                     timeStart={this.props.timeStart}
-                                                     timeEnd={this.props.timeEnd}
-                                                     chairId={this.props.chairId}
-                                                     date={this.props.date}
-
-                                />
-                            )}
-
-                            {this.needShowDetailInfo() && (
-                                <CellDetailInfo patient={this.props.patient}
-                                                           timeStart={this.props.timeStart}
-                                                           timeEnd={this.props.timeEnd}/>
-                            )}
-
-                            <div className="dClndr_parrow"></div>
-                        </div>
-                    )}
-                </Popper>
-            );
-
             return (
-                <Manager>
-                    <Reference>
-                        {({ ref }) => (
-                            this.renderCell(ref, popper)
-                        )}
-                    </Reference>
-                </Manager>
+                this.renderCell()
             );
         }
         else
         {
-            return this.renderCell();
+            let detailInfo;
+
+            if(!!this.props.patient)
+            {
+                detailInfo = {
+                    patient: General.clone(this.props.patient),
+                    timeStart: this.props.timeStart,
+                    timeEnd: this.props.timeEnd
+                };
+
+                detailInfo.patient.cardNumber = String(detailInfo.patient.cardNumber);
+            }
+            else
+            {
+                detailInfo = null;
+            }
+
+            return (
+                <CellMenu renderCell={this.renderCell.bind(this)}
+                          commands={this.props.commands}
+                          getCellNode={this.getCellNode.bind(this)}
+                          detailInfo={detailInfo}
+                          cellType={!!this.props.patient ? 'visit' : 'schedule'}
+
+                          onCommandResult={this.props.onUpdate}
+                          timeStart={this.props.timeStart}
+                          timeEnd={this.props.timeEnd}
+                          chairId={this.props.chairId}
+                          date={this.props.date}
+                />
+            );
         }
     }
 
-    renderCell(refCallback = null, popup = null)
+    renderCell(mixin = {}, menu = null)
     {
         const doctor = this.props.doctor;
         const patient = this.props.patient;
@@ -148,7 +97,7 @@ class Cell extends React.Component
             cellStyle.visibility = 'hidden';
         }
 
-        const showPopup = (this.state.isHovered || this.state.showActions);
+        /*const showPopup = (this.state.isHovered || this.state.showActions);
 
         if(showPopup)
         {
@@ -163,22 +112,19 @@ class Cell extends React.Component
         if(this.state.showActions)
         {
             className += ' dClndr_pshowmenu';
-        }
+        }*/
 
         let cellAttrs = {
             className: className,
-            style: cellStyle,
-            onMouseEnter: this.setHover.bind(this, true),
-            onMouseLeave: this.setHover.bind(this, false),
-            onContextMenu: this.handleContextMenu.bind(this),
-            onClick: this.handleCellClick.bind(this),
-            ref: refCallback
+            style: cellStyle
         };
+
+        Object.assign(cellAttrs, mixin);
 
         return (
             <div {...cellAttrs}>
                 {cellContent}
-                {popup}
+                {menu}
             </div>
         )
     }
@@ -195,93 +141,9 @@ class Cell extends React.Component
         return height;
     }
 
-    getCommands()
+    getCellNode()
     {
-        let result = [];
-        let visitCommands = [];
-        let isVisit = !!this.props.patient;
-
-        for(let entityCode in this.props.commands)
-        {
-            let entityCommands = this.props.commands[entityCode];
-
-            entityCommands.forEach(commandCode =>
-            {
-                if(visitCommands.indexOf(commandCode) !== -1)
-                {
-                    if(isVisit)
-                    {
-                        result.push(commandCode);
-                    }
-                }
-                else if(!isVisit)
-                {
-                    result.push(commandCode);
-                }
-            });
-        }
-
-        return result;
-    }
-
-    setHover(isHover)
-    {
-        if(this.props.patient)
-        {
-            this.setState({
-                isHovered: isHover
-            });
-        }
-    }
-
-    setShowDetailInfo(showDetailInfo)
-    {
-        this.setState({
-            showDetailInfo: showDetailInfo
-        });
-    }
-
-    handleContextMenu(e)
-    {
-        e.preventDefault();
-
-        this.setState({
-            showActions: !this.state.showActions
-        });
-    }
-
-    needShowDetailInfo()
-    {
-        return (this.props.patient && this.state.showDetailInfo && (this.state.isHovered || this.state.showActions));
-    }
-
-    handleCellClick()
-    {
-        if(this.state.showActions)
-        {
-            this.setState({
-                showActions: false
-            });
-        }
-    }
-
-    handleOutsideClick(e)
-    {
-        const cellNode = ReactDOM.findDOMNode(this);
-        if(cellNode && !cellNode.contains(e.target))
-        {
-            this.setState({
-                showActions: false
-            });
-        }
-    }
-
-    handleMenuAction()
-    {
-        this.setState({
-            showActions: false,
-            showDetailInfo: true
-        });
+        return ReactDOM.findDOMNode(this);
     }
 }
 
