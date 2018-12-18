@@ -1,6 +1,6 @@
 import React from 'react'
-import Select from './select'
-import ColoredSelect from './colored-select'
+import Select from '../../select'
+import ColoredSelect from '../../colored-select'
 import TimeRange from './time-range'
 import PropTypes from 'prop-types'
 

@@ -159,9 +159,6 @@ class Calendar extends React.Component
 
         /* обновляем подсказки */
         ReactTooltip.rebuild();
-
-        console.log('calendar updated!');
-        console.log(this.props);
     }
 
     getColor(freeMinutes)

@@ -17,8 +17,15 @@ use Mmit\NewSmile;
 
 Loc::loadMessages(__FILE__);
 
-class PatientCardTable extends Entity\DataManager
+class PatientCardTable extends Entity\DataManager implements NewSmile\Orm\ExtendedFieldsDescriptor
 {
+    protected static $enumFields = [
+        'PERSONAL_GENDER' => [
+            'MAN' => 'мужской',
+            'WOMAN' => 'женский'
+        ]
+    ];
+
     public static function getTableName()
     {
         return 'm_newsmile_patientcard';
@@ -26,6 +33,8 @@ class PatientCardTable extends Entity\DataManager
 
     public static function getMap()
     {
+        $genders = array_keys(static::getEnumVariants('PERSONAL_GENDER'));
+
         return array(
             new Entity\IntegerField('ID', array(
                 'autocomplete' => true,
@@ -72,14 +81,9 @@ class PatientCardTable extends Entity\DataManager
                     );
                 },
             )),
-            new Entity\StringField('PERSONAL_MOBILE', array(
-                'title' => 'Дополнительный телефон',
-                'default_value' => '',
-                'validation' => function () {
-                    return array(
-                        new Entity\Validator\Length(null, 255),
-                    );
-                },
+            new Entity\TextField('ADDITIONAL_PHONES', array(
+                'title' => 'Дополнительные телефоны',
+                'serialized' => true
             )),
             new Entity\StringField('EMAIL', array(
                 'required' => true,
@@ -103,15 +107,14 @@ class PatientCardTable extends Entity\DataManager
             ),
             new Entity\DateField('PERSONAL_BIRTHDAY',
                 array(
-                    'title' => 'Дата рождения',
-                    'default_value' => Date::createFromTimestamp(0)
+                    'title' => 'Дата рождения'
                 )
             ),
             new Entity\EnumField('PERSONAL_GENDER',
                 array(
                     'title' => 'Пол',
-                    'default_value' => 'Мужской',
-                    'values' => array('Мужской', 'Женский')
+                    'default_value' => $genders[0],
+                    'values' => $genders
                 )
             ),
             new Entity\StringField('PERSONAL_CITY', array(
@@ -423,5 +426,10 @@ class PatientCardTable extends Entity\DataManager
             return $arResult['USER_ID'];
         }
         return 0;
+    }
+
+    public static function getEnumVariants($enumFieldName)
+    {
+        return static::$enumFields[$enumFieldName];
     }
 }

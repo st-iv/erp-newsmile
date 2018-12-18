@@ -3,6 +3,10 @@ namespace Mmit\NewSmile\Orm;
 
 use Bitrix\Main\Diag\Debug;
 use Bitrix\Main\Entity\BooleanField;
+use Bitrix\Main\Entity\DataManager;
+use Bitrix\Main\Entity\EnumField;
+use Bitrix\Main\Entity\ScalarField;
+use \Bitrix\Main\ORM\Fields\Field;
 use Bitrix\Main\Loader;
 use Bitrix\Main\LoaderException;
 use Bitrix\Main\Type\Date;
@@ -204,5 +208,73 @@ class Helper
     public static function isExtendedFieldsDescriptor($className)
     {
         return is_subclass_of($className, 'Mmit\NewSmile\Orm\ExtendedFieldsDescriptor');
+    }
+
+    public static function getFieldsDescription($dataManagerClass)
+    {
+        if(!static::isDataManagerClass($dataManagerClass))
+        {
+            throw new NewSmile\Error($dataManagerClass . ' не является Data Manager');
+        }
+
+        /**
+         * @var DataManager $dataManagerClass
+         */
+
+        $result = [];
+
+        foreach ($dataManagerClass::getEntity()->getFields() as $field)
+        {
+            /**
+             * @var Field $field
+             */
+
+            if(!($field instanceof ScalarField)) continue;
+
+
+            $fieldName = $field->getName();
+
+            $fieldInfo = [
+                'required' => $field->isRequired(),
+                'title' => $field->getTitle(),
+                'name' => $fieldName,
+                'type' => Helper::getFieldType($field)
+            ];
+
+            $defaultValue = $field->getDefaultValue();
+            if(isset($defaultValue) && !is_callable($defaultValue))
+            {
+                $fieldInfo['defaultValue'] = ($defaultValue instanceof Date) ? $defaultValue->format('Y-m-d') : $defaultValue;
+            }
+
+            if($field instanceof EnumField)
+            {
+                if(is_subclass_of($dataManagerClass, ExtendedFieldsDescriptor::class))
+                {
+                    /**
+                     * @var ExtendedFieldsDescriptor $dataManagerClass
+                     */
+                    $variants = $dataManagerClass::getEnumVariants('PERSONAL_GENDER');
+                }
+                else
+                {
+                    $variants = $field->getValues();
+                }
+
+                array_walk($variants, function(&$variantValue, $variantKey)
+                {
+                    $variantValue = [
+                        'code' => $variantKey ?: $variantValue,
+                        'title' => $variantValue
+                    ];
+                });
+
+                $fieldInfo['variants'] = array_values($variants);
+            }
+
+            $result[$fieldName] = $fieldInfo;
+        }
+
+        return $result;
     }
 }

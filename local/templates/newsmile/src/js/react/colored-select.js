@@ -31,7 +31,7 @@ class ColoredSelect extends React.Component
     render()
     {
         return (
-            <Select {...this.props} components={{Option: this.option, ValueContainer: this.valueContainer}}/>
+            <Select {...this.props} className={this.props.className + ' colored-select'} components={{Option: this.option, ValueContainer: this.valueContainer}}/>
         );
     }
 }

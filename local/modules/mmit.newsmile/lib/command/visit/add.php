@@ -20,8 +20,6 @@ class Add extends Base
 
     protected function doExecute()
     {
-        Debug::writeToFile('visit add exec!');
-
         $timeStart = new DateTime($this->params['date'] . ' ' . $this->params['timeStart'], 'Y-m-d H:i');
         $timeEnd = new DateTime($this->params['date'] . ' ' . $this->params['timeEnd'], 'Y-m-d H:i');
 
@@ -94,7 +92,7 @@ class Add extends Base
 
         if($bVaryPatient)
         {
-            $this->variants = $this->getPatients($recordedPatients);
+            //$this->variants = $this->getPatients($recordedPatients);
         }
         else
         {

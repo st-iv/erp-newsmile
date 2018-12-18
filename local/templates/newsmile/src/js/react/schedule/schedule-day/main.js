@@ -167,12 +167,10 @@ class ScheduleDay extends React.Component
 
         let schedule = General.clone(this.props.schedule);
 
-        console.log(schedule);
         let timeLineLimits = this.getTimeLineLimits(schedule);
         schedule = this.filterSchedule(schedule, timeLineLimits);
 
         const timeLine = this.getTimeLine(schedule, timeLineLimits);
-        console.log(timeLine, 'timeLine!!');
         const timeLineNode = React.createRef();
 
         let timeLimits = {
@@ -236,8 +234,6 @@ class ScheduleDay extends React.Component
     {
         let timeFrom = timeLineLimits.startTime;
         let timeTo = timeLineLimits.endTime;
-
-        console.log(General.clone(filteredSchedule), 'filterSchedule!');
 
         filteredSchedule.forEach(chairSchedule =>
         {

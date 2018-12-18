@@ -3,6 +3,9 @@ import {Popper, Reference, Manager} from 'react-popper'
 import PropTypes from 'prop-types'
 import CellContextMenu from './cell-context-menu'
 import CellDetailInfo from './cell-detail-info'
+import Popup from '../../popup'
+import NewVisitForm from '../../new-visit-form/main'
+import PopupManager from '../../popup-manager'
 
 class CellMenu extends React.Component
 {
@@ -12,12 +15,12 @@ class CellMenu extends React.Component
         commands: PropTypes.objectOf(PropTypes.arrayOf(PropTypes.string)).isRequired,
         detailInfo: PropTypes.shape(CellDetailInfo.propTypes),
         cellType: PropTypes.string.isRequired,
-        onCommandExec: PropTypes.func,
         onCommandResult: PropTypes.func,
         timeStart: PropTypes.string,
         timeEnd: PropTypes.string,
         chairId: PropTypes.number,
-        date: PropTypes.string
+        doctorId: PropTypes.number,
+        date: PropTypes.string,
     };
 
     state = {
@@ -66,8 +69,6 @@ class CellMenu extends React.Component
             popupClassName += ' context-menu-shown';
         }
 
-        console.log(this.popperSettings, 'popperSettings!!');
-
         const popper = (
             <Popper {...this.popperSettings}>
                 {({ ref, style, placement, scheduleUpdate }) =>
@@ -81,7 +82,6 @@ class CellMenu extends React.Component
                                                  onShowActionVariants={() => {this.setState({showDetailInfo: false}); this.popperUpdate();}}
                                                  onHideActionVariants={() => this.setState({showDetailInfo: true})}
                                                  onCommandExec={this.handleMenuAction.bind(this)}
-                                                 onCommandResult={() => this.props.onCommandResult()}
                                                  timeStart={this.props.timeStart}
                                                  timeEnd={this.props.timeEnd}
                                                  chairId={this.props.chairId}
@@ -136,11 +136,8 @@ class CellMenu extends React.Component
         if(isShownContextMenu && !wasShownContextMenu && this.popperUpdate)
         {
             this.popperUpdate();
-            console.log('popper update!');
         }
         /**/
-
-        console.log('componentDidUpdate!');
     }
 
     /**
@@ -304,12 +301,80 @@ class CellMenu extends React.Component
         this.setState({isHovered});
     }
 
-    handleMenuAction()
+    showPopup(popupContent)
     {
+        this.setState({popup: popupContent})
+    }
+
+
+    /* ---------------------------- обработка пунктов контекстного меню --------------------------------- */
+
+    handleMenuAction(commandCode, variantCode)
+    {
+        let specificMethodName = 'process' + General.getCamelCase(commandCode);
+
+        if(typeof this[specificMethodName] === 'function')
+        {
+            this[specificMethodName](variantCode);
+        }
+        else
+        {
+            let command = new ServerCommand(commandCode, this.getCommandData(commandCode, variantCode), response =>
+            {
+                this.onCommandDone(commandCode);
+            });
+
+            command.exec();
+        }
+
         this.setState({
             showContextMenu: false,
             showDetailInfo: true
         });
+    }
+
+
+    getCommandData(commandCode, variantCode)
+    {
+        let data = {
+            timeStart: this.props.timeStart,
+            timeEnd: this.props.timeEnd,
+            chairId: this.props.chairId,
+            date: this.props.date
+        };
+
+        switch(commandCode)
+        {
+            case 'schedule/change-doctor':
+                data.doctorId = variantCode;
+                break;
+
+            case 'visit/add':
+                data.patientId = variantCode;
+                break;
+        }
+
+        return data;
+    }
+
+    onCommandDone(commandCode, result = null)
+    {
+        if(this.props.onCommandResult)
+        {
+            this.props.onCommandResult(commandCode, result);
+        }
+    }
+
+    processVisitAdd()
+    {
+        PopupManager.showPopup(
+            <NewVisitForm chairId={this.props.chairId}
+                          timeStart={this.props.timeStart}
+                          timeEnd={this.props.timeEnd}
+                          date={this.props.date}
+                          doctorId={this.props.doctorId}
+            />
+        );
     }
 }
 

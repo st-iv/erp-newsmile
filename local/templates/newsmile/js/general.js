@@ -63,6 +63,40 @@ var General = (function()
         return JSON.parse(JSON.stringify(arrayOrObject));
     }
 
+    function getCamelCase(str, isUpper = true)
+    {
+        if(!str.length) return str;
+
+        /*separators = separators || ['_', '-', '/'];
+        var regExp = new RegExp('[\\' + separators.join('\\') + ']([A-Za-z])', 'g');*/
+
+        var result = str.toLowerCase().replace(/[^A-Z^a-z]([A-Za-z])/g, function(match, p1)
+        {
+            return p1.toUpperCase();
+        });
+
+        if(isUpper)
+        {
+            result = result[0].toUpperCase() + result.substr(1);
+        }
+
+        return result;
+    }
+
+    var lastId = 0;
+
+    function uniqueId(prefix = 'generated-id-')
+    {
+        return ++lastId + prefix;
+    }
+
+    function ucfirst(str)
+    {
+        var f = str.charAt(0).toUpperCase();
+        return f + str.substr(1, str.length-1);
+
+    }
+
     var Date = (function()
     {
         function formatTime(ts)
@@ -90,6 +124,16 @@ var General = (function()
             minutes -= hours * 60;
             time += ':' + ((minutes < 10) ? '0' + minutes : minutes);
             return time;
+        }
+
+        var ruMonthsGen = ['января', 'февраля', 'марта', 'апреля', 'мая', 'июня', 'июля', 'августа', 'сентября', 'октября', 'ноября', 'декабря'];
+        var ruWeekdays = ['Воскресенье', 'Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота'];
+
+        function formatDate(date, format)
+        {
+            var dateMoment = moment(date);
+            format = format.replace('ru_month_gen', ruMonthsGen[dateMoment.get('month')]).replace('ru_weekday', ruWeekdays[dateMoment.get('weekday')]);
+            return dateMoment.format(format);
         }
 
         function getMinutesByTime(time)
@@ -144,6 +188,7 @@ var General = (function()
             formatMinutes: formatMinutes,
             getDurationString: getDurationString,
             getMinutesByTime: getMinutesByTime,
+            formatDate: formatDate
         }
     })();
 
@@ -177,7 +222,10 @@ var General = (function()
         getFio: getFio,
         getFullName: getFullName,
         getCountString: getCountString,
+        getCamelCase: getCamelCase,
         clone: clone,
+        uniqueId: uniqueId,
+        ucfirst: ucfirst,
 
         sessid: sessid,
         postFormAction: postFormAction

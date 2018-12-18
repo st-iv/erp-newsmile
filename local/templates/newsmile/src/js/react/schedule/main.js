@@ -2,6 +2,7 @@ import React from 'react'
 import Calendar from './calendar/main'
 import ScheduleDay from './schedule-day/main'
 import Filter from './filter/main'
+import PopupManager from '../popup-manager'
 
 
 class Schedule extends React.Component
@@ -22,8 +23,6 @@ class Schedule extends React.Component
 
     render()
     {
-        console.log(this.props, 'schedule props!');
-
         return (
             <div>
                 <Filter doctors={this.props.doctors.list}
@@ -53,6 +52,8 @@ class Schedule extends React.Component
                         />
                     </div>
                 </div>
+
+                <PopupManager />
             </div>
         );
     }

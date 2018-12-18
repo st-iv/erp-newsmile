@@ -46,6 +46,7 @@ class Cell extends React.Component
                           timeEnd={this.props.timeEnd}
                           chairId={this.props.chairId}
                           date={this.props.date}
+                          doctorId={this.props.doctorId}
                 />
             );
         }
@@ -145,6 +146,7 @@ class Cell extends React.Component
     {
         return ReactDOM.findDOMNode(this);
     }
+
 }
 
 export default Cell

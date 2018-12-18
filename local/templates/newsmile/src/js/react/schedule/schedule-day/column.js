@@ -215,11 +215,7 @@ class Column extends React.Component
         // get cells from schedule
         let schedule = Object.assign({}, this.props.schedule);
 
-        console.log(schedule, 'column schedule!');
-
         schedule.intervals = this.addEmptyIntervals(schedule.intervals);
-
-        console.log(schedule, 'column schedule 2!');
 
         let cells = this.getCells(schedule);
         if(this.isEmptyCells(cells))
