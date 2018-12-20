@@ -5,6 +5,8 @@ namespace Mmit\NewSmile\Command\TreatmentPlan;
 
 use Mmit\NewSmile\Application;
 use Mmit\NewSmile\Command\Base;
+use Mmit\NewSmile\CommandParam\Integer;
+use Mmit\NewSmile\CommandParam\String;
 use Mmit\NewSmile\Helpers;
 use Mmit\NewSmile\TreatmentPlanTable;
 
@@ -57,22 +59,10 @@ class GetList extends Base
     public function getParamsMap()
     {
         return [
-            'offset' => [
-                'TITLE' => 'смещение выборки от начала',
-                'REQUIRED' => false
-            ],
-            'limit' => [
-                'TITLE' => 'ограничение количества',
-                'REQUIRED' => false
-            ],
-            'sort_by' => [
-                'TITLE' => 'поле для сортировки',
-                'REQUIRED' => false
-            ],
-            'sort_order' => [
-                'TITLE' => 'направление сортировки',
-                'REQUIRED' => false
-            ]
+            new Integer('offset', 'смещение выборки от начала'),
+            new Integer('limit', 'ограничение количества'),
+            new String('sort_by', 'поле для сортировки'),
+            new String('sort_order', 'направление сортировки')
         ];
     }
 }

@@ -5,6 +5,7 @@ namespace Mmit\NewSmile\Command\Command;
 
 use Bitrix\Main\Diag\Debug;
 use Mmit\NewSmile\Command;
+use Mmit\NewSmile\CommandParam\ArrayParam;
 
 class GetList extends Command\Base
 {
@@ -17,10 +18,7 @@ class GetList extends Command\Base
             /**
              * @var Command\Base $command
              */
-            $command = new $commandClass($commandInfo['params']);
-
-            $commandInfo['varyParam'] = $commandInfo['varyParam'] ?: null;
-            $command->setVaryParam($commandInfo['varyParam']);
+            $command = new $commandClass($commandInfo['params'], $commandInfo['varyParam']);
 
             if($command->isAvailable())
             {
@@ -46,10 +44,7 @@ class GetList extends Command\Base
     public function getParamsMap()
     {
         return [
-            'commands' => [
-                'TITLE' => 'список команд',
-                'REQUIRED' => true
-            ]
+            new ArrayParam('commands', 'список команд', '', true)
         ];
     }
 }

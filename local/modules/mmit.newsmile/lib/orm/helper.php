@@ -254,7 +254,7 @@ class Helper
                     /**
                      * @var ExtendedFieldsDescriptor $dataManagerClass
                      */
-                    $variants = $dataManagerClass::getEnumVariants('PERSONAL_GENDER');
+                    $variants = $dataManagerClass::getEnumVariants($fieldName);
                 }
                 else
                 {

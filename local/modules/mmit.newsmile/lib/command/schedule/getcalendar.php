@@ -208,29 +208,19 @@ class GetCalendar extends Command\Base
     public function getParamsMap()
     {
         return [
-            'dateFrom' => [
-                'TITLE' => 'начальная дата',
-                'DEFAULT' => date('Y-m-d')
-            ],
-            'dateTo' => [
-                'TITLE' => 'конечная дата',
-            ],
-            'weeksCount' => [
-                'TITLE' => 'количество запрашиваемых недель',
-                'DEFAULT' => 8
-            ],
-            'timeFrom' => [
-                'TITLE' => 'начальное время выборки',
-            ],
-            'timeTo' => [
-                'TITLE' => 'конечное время выборки',
-            ],
-            'doctor' => [
-                'TITLE' => 'id врача',
-            ],
-            'specialization' => [
-                'TITLE' => 'код специальности'
-            ]
+            new NewSmile\CommandParam\Date('dateFrom', 'начальная дата', '', false, date('Y-m-d')),
+            new NewSmile\CommandParam\Date('dateTo', 'конечная дата'),
+            new NewSmile\CommandParam\Integer(
+                'weeksCount',
+                'количество запрашиваемых недель',
+                '',
+                false,
+                8
+            ),
+            new NewSmile\CommandParam\Time('timeFrom', 'начальное время выборки'),
+            new NewSmile\CommandParam\Time('timeTo', 'конечное время выборки'),
+            new NewSmile\CommandParam\Integer('doctor', 'id врача'),
+            new NewSmile\CommandParam\String('specialization', 'код специальности')
         ];
     }
 }

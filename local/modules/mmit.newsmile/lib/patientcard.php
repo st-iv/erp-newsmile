@@ -23,6 +23,12 @@ class PatientCardTable extends Entity\DataManager implements NewSmile\Orm\Extend
         'PERSONAL_GENDER' => [
             'MAN' => 'мужской',
             'WOMAN' => 'женский'
+        ],
+        'SOURCE' => [
+            'INTERNET_ADVERTISING' => 'Реклама в интернете',
+            'FRIENDS_RECOMMENDATION' => 'Рекомендация друзей',
+            'INTUITION' => 'Интуиция привела',
+            'RANDOM' => 'Наткнулся случайно'
         ]
     ];
 
@@ -113,22 +119,31 @@ class PatientCardTable extends Entity\DataManager implements NewSmile\Orm\Extend
             new Entity\EnumField('PERSONAL_GENDER',
                 array(
                     'title' => 'Пол',
-                    'default_value' => $genders[0],
                     'values' => $genders
                 )
             ),
             new Entity\StringField('PERSONAL_CITY', array(
                     'title' => 'Город',
-                    'default_value' => '',
+                )
+            ),
+            new Entity\TextField('PERSONAL_STREET', array(
+                    'title' => 'Улица',
+                )
+            ),
+            new Entity\TextField('PERSONAL_HOME', array(
+                    'title' => 'Дом',
+                )
+            ),
+            new Entity\TextField('PERSONAL_HOUSING', array(
+                    'title' => 'Корпус',
+                )
+            ),
+            new Entity\TextField('PERSONAL_APARTMENT', array(
+                    'title' => 'Квартира',
                 )
             ),
             new Entity\StringField('PERSONAL_ZIP', array(
                     'title' => 'Почтовый индекс',
-                    'default_value' => '',
-                )
-            ),
-            new Entity\TextField('PERSONAL_STREET', array(
-                    'title' => 'Улица дом',
                     'default_value' => '',
                 )
             ),
@@ -263,10 +278,10 @@ class PatientCardTable extends Entity\DataManager implements NewSmile\Orm\Extend
                     'default_value' => ''
                 )
             ),
-            new Entity\StringField('SOURCE',
+            new Entity\EnumField('SOURCE',
                 array(
-                    'title' => 'Источник',
-                    'default_value' => ''
+                    'title' => 'Откуда узнал',
+                    'values' => array_keys(static::getEnumVariants('SOURCE'))
                 )
             ),
             new Entity\EnumField('ARCHIVE',

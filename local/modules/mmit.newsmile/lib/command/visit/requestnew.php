@@ -3,6 +3,9 @@
 namespace Mmit\NewSmile\Command\Visit;
 
 use Mmit\NewSmile\Command\Base;
+use Mmit\NewSmile\CommandParam\Bool;
+use Mmit\NewSmile\CommandParam\Integer;
+use Mmit\NewSmile\CommandParam\String;
 use Mmit\NewSmile\Notice;
 use Mmit\NewSmile\Application;
 
@@ -33,22 +36,10 @@ class RequestNew extends Base
     public function getParamsMap()
     {
         return [
-            'service_id' => [
-                'TITLE' => 'id услуги',
-                'REQUIRED' => false
-            ],
-            'date' => [
-                'TITLE' => 'желаемая дата приема',
-                'REQUIRED' => false
-            ],
-            'near_future' => [
-                'TITLE' => 'флаг записи на ближайшее время',
-                'REQUIRED' => false
-            ],
-            'comment' => [
-                'TITLE' => 'комментарий',
-                'REQUIRED' => false
-            ]
+            new Integer('service_id', 'id услуги'),
+            new String('date', 'желаемая дата приема'),
+            new Bool('near_future', 'флаг записи на ближайшее время'),
+            new String('comment', 'комментарий')
         ];
     }
 }

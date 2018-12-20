@@ -2,6 +2,7 @@
 
 namespace Mmit\NewSmile\Command\Auth;
 
+use Mmit\NewSmile\CommandParam\String;
 use Mmit\NewSmile\Sms;
 use Mmit\NewSmile\Error;
 
@@ -34,10 +35,7 @@ class SendCode extends Base
     public function getParamsMap()
     {
         return [
-            'phone' => [
-                'TITLE' => 'телефон',
-                'REQUIRED' => true
-            ]
+            new String('phone', 'телефон', '', true)
         ];
     }
 }

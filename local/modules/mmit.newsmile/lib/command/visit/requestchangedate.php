@@ -5,6 +5,8 @@ namespace Mmit\NewSmile\Command\Visit;
 
 use Mmit\NewSmile\Application;
 use Mmit\NewSmile\Command\Base;
+use Mmit\NewSmile\CommandParam\Integer;
+use Mmit\NewSmile\CommandParam\String;
 use Mmit\NewSmile\Notice;
 use Mmit\NewSmile\Error;
 
@@ -33,14 +35,8 @@ class RequestChangeDate extends Base
     public function getParamsMap()
     {
         return [
-            'new_date' => [
-                'TITLE' => 'новая дата приема',
-                'REQUIRED' => true
-            ],
-            'id' => [
-                'TITLE' => 'id приема',
-                'REQUIRED' => true
-            ]
+            new String('new_date', 'новая дата приема', '', true),
+            new Integer('id', 'id приема', '', true),
         ];
     }
 }

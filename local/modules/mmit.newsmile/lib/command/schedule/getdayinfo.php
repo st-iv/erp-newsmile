@@ -78,11 +78,7 @@ class GetDayInfo extends Base
     public function getParamsMap()
     {
         return [
-            'date' => [
-                'TITLE' => 'дата',
-                'REQUIRED' => true,
-                'DEFAULT' => date('Y-m-d')
-            ],
+            new NewSmile\CommandParam\Date('date', 'дата', '', false, date('Y-m-d'))
         ];
     }
 

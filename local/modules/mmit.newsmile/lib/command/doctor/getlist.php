@@ -2,7 +2,12 @@
 
 namespace Mmit\NewSmile\Command\Doctor;
 
+use Bitrix\Main\Entity\IntegerField;
 use Mmit\NewSmile\Command\Base;
+use Mmit\NewSmile\CommandParam\ArrayParam;
+use Mmit\NewSmile\CommandParam\Bool;
+use Mmit\NewSmile\CommandParam\Integer;
+use Mmit\NewSmile\CommandParam\String;
 use Mmit\NewSmile\DoctorSpecializationTable;
 use Mmit\NewSmile\DoctorTable;
 use Mmit\NewSmile\Helpers;
@@ -111,36 +116,19 @@ class GetList extends Base
     public function getParamsMap()
     {
         return [
-            'offset' => [
-                'TITLE' => 'смещение выборки от начала',
-                'REQUIRED' => false
-            ],
-            'limit' => [
-                'TITLE' => 'ограничение количества',
-                'REQUIRED' => false
-            ],
-            'sort_by' => [
-                'TITLE' => 'поле для сортировки',
-                'REQUIRED' => false
-            ],
-            'sort_order' => [
-                'TITLE' => 'направление сортировки',
-                'REQUIRED' => false
-            ],
-            'select' => [
-                'TITLE' => 'поля для выборки',
-                'REQUIRED' => false,
-                'DEFAULT' => ['NAME', 'LAST_NAME', 'SECOND_NAME', 'ID'],
-                'OPERATION' => 'read-full-info'
-            ],
-            'get-schedule' => [
-                'TITLE' => 'флаг запроса расписания',
-                'DEFAULT' => false
-            ],
-            'get-specialization' => [
-                'TITLE' => 'флаг запроса специальности',
-                'DEFAULT' => false
-            ]
+            new Integer('offset', 'смещение выборки от начала'),
+            new Integer('limit', 'ограничение количества'),
+            new String('sort_by', 'поле для сортировки'),
+            new String('sort_order', 'направление сортировки'),
+            (new ArrayParam(
+                'select',
+                'направление сортировки',
+                '',
+                false,
+                ['NAME', 'LAST_NAME', 'SECOND_NAME', 'ID']
+            ))->setOperations('read-full-info'),
+            new Bool('get-schedule', 'флаг запроса расписания', '', false, false),
+            new Bool('get-specialization', 'флаг запроса специальности', '', false, false),
         ];
     }
 }

@@ -21,10 +21,28 @@ class Controller
 
     public function process()
     {
-        $error = null;
-        $responseData = null;
         $entity = $this->request['entity'];
         $command = $this->request['action'];
+
+        if(isset($this->request['help']))
+        {
+            $this->renderHelpPage($entity, $command);
+        }
+        else
+        {
+            $this->executeCommand($entity, $command);
+        }
+    }
+
+    protected function renderHelpPage($entity, $command)
+    {
+        // подумать как можно это реализовать
+    }
+
+    protected function executeCommand($entity, $command)
+    {
+        $error = null;
+        $responseData = null;
 
         if(strlen($entity))
         {

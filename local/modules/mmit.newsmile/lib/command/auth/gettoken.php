@@ -2,6 +2,7 @@
 
 namespace Mmit\NewSmile\Command\Auth;
 
+use Mmit\NewSmile\CommandParam\String;
 use Mmit\NewSmile\Sms,
     Mmit\NewSmile\Config,
     Mmit\NewSmile\Error;
@@ -65,14 +66,8 @@ class GetToken extends Base
     public function getParamsMap()
     {
         return [
-            'phone' => [
-                'TITLE' => 'телефон',
-                'REQUIRED' => true
-            ],
-            'code' => [
-                'TITLE' => 'код подтверждения',
-                'REQUIRED' => true
-            ]
+            new String('phone', 'телефон', '', true),
+            new String('code', 'код подтверждения', '', true),
         ];
     }
 }

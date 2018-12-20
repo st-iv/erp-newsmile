@@ -70,18 +70,9 @@ class GetList extends Base
     public function getParamsMap()
     {
         return [
-            'offset' =>  [
-                'TITLE' => 'смещение выборки от начала',
-                'REQUIRED' => false
-            ],
-            'limit' => [
-                'TITLE' => 'ограничение количества',
-                'REQUIRED' => false
-            ],
-            'is_active' => [
-                'TITLE' => 'флаг выборки только будущих приемов',
-                'REQUIRED' => false
-            ]
+            new NewSmile\CommandParam\Integer('offset', 'смещение выборки от начала'),
+            new NewSmile\CommandParam\Integer('limit', 'ограничение количества'),
+            new NewSmile\CommandParam\Bool('is_active', 'флаг выборки только будущих приемов'),
         ];
     }
 }

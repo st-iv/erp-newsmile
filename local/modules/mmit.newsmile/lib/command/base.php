@@ -23,56 +23,30 @@ abstract class Base
 
     protected static $name = '';
 
-    public function __construct($params = [])
+    public function __construct($params = [], $varyParam = null)
     {
+        $this->varyParam = $varyParam;
         $this->setParams($params);
     }
 
     protected function setParams($params)
     {
-        $accessController = Application::getInstance()->getAccessController();
-
-        foreach ($this->getParamsMap() as $paramCode => $paramInfo)
+        foreach (static::getParamsMap() as $param)
         {
-            if(isset($params[$paramCode]))
+            /**
+             * @var \Mmit\NewSmile\CommandParam\Base $param
+             */
+            
+            $paramCode = $param->getCode();
+            $param->setCommand($this);
+            
+            if($paramCode != $this->varyParam)
             {
-                if($paramInfo['OPERATION'] && !$accessController->isOperationAllowed(static::getEntityCode(), $paramInfo['OPERATION']))
-                {
-                    throw new Error(
-                        'Недостаточно прав для использования параметра ' . $paramCode . ' команды ' . $this->getCode(),
-                        'PARAM_ACCESS_DENIED'
-                    );
-                }
-                else
-                {
-                    $this->params[$paramCode] = $params[$paramCode];
-                }
-            }
-            else
-            {
-                $this->params[$paramCode] = $paramInfo['DEFAULT'];
+                $param->setDefaultEntityCode(static::getEntityCode());
+                $param->setRawValue($params[$paramCode]);
+                $this->params[$paramCode] = $param->getFormattedValue();
             }
         }
-    }
-
-    /**
-     * @return bool
-     * @throws Error
-     */
-    protected function checkParams()
-    {
-        foreach ($this->getParamsMap() as $paramCode => $paramInfo)
-        {
-            if($paramInfo['REQUIRED'] && !isset($this->params[$paramCode]) && ($paramCode !== $this->varyParam))
-            {
-                throw new Error(
-                    'Не указан обязательный параметр ' . $paramCode . ' для команды ' . $this->getCode(),
-                    'REQUIRED_PARAM_NOT_DEFINED'
-                );
-            }
-        }
-
-        return true;
     }
 
     /**
@@ -112,7 +86,7 @@ abstract class Base
      */
     final public function isAvailable()
     {
-        return static::isAvailableForUser() && $this->checkParams() && $this->checkAvailable();
+        return static::isAvailableForUser() && $this->checkAvailable();
     }
 
     /**
@@ -251,10 +225,12 @@ abstract class Base
     }
 
 
+
     /**
      * Выполняет команду
      */
     abstract protected function doExecute();
+
 
     /**
      * Возвращает описание параметров команды. Массив описания каждого параметра может включать следующие ключи:<br>

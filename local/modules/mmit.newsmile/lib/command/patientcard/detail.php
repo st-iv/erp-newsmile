@@ -21,7 +21,7 @@ class Detail extends Base
                 'LAST_NAME',
                 'SECOND_NAME',
                 'phone' => 'PERSONAL_PHONE',
-                'phone2' => 'PERSONAL_MOBILE',
+                'phone2' => 'ADDITIONAL_PHONES',
                 'EMAIL',
                 'SMS_NOTICE',
                 'card_number' => 'NUMBER',
@@ -53,6 +53,7 @@ class Detail extends Base
 
         unset($patientCard['DOCTORS_ID']);
         $patientCard['SMS_NOTICE'] = $patientCard['SMS_NOTICE'] ?: false;
+        $patientCard['phone2'] = implode(', ', $patientCard['phone2']);
 
         $this->result = Helpers::strtolowerKeys($patientCard);
         $this->result['doctor_list'] = $doctors;

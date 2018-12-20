@@ -5,6 +5,9 @@ namespace Mmit\NewSmile\Command\Visit;
 use Bitrix\Main\Type\DateTime;
 use Mmit\NewSmile\Command\Base;
 use Mmit\NewSmile\Command;
+use Mmit\NewSmile\CommandParam\Date;
+use Mmit\NewSmile\CommandParam\Integer;
+use Mmit\NewSmile\CommandParam\Time;
 use Mmit\NewSmile\Config;
 use Mmit\NewSmile\DoctorTable;
 use Mmit\NewSmile\Error;
@@ -17,8 +20,7 @@ class GetAddFormInfo extends Base
 {
     protected function doExecute()
     {
-        $changeDoctorCommand = new Command\Schedule\ChangeDoctor($this->params);
-        $changeDoctorCommand->setVaryParam('doctorId');
+        $changeDoctorCommand = new Command\Schedule\ChangeDoctor($this->params, 'doctorId');
 
         $doctors = [];
 
@@ -109,22 +111,10 @@ class GetAddFormInfo extends Base
     public function getParamsMap()
     {
         return [
-            'timeStart' => [
-                'TITLE' => 'начальное время приема',
-                'REQUIRED' => true
-            ],
-            'timeEnd' => [
-                'TITLE' => 'конечное время приема',
-                'REQUIRED' => true
-            ],
-            'date' => [
-                'TITLE' => 'дата приема',
-                'REQUIRED' => true
-            ],
-            'chairId' => [
-                'TITLE' => 'id кресла',
-                'REQUIRED' => true
-            ],
+            new Time('timeStart', 'начальное время приема', '', true),
+            new Time('timeEnd', 'конечное время приема', '', true),
+            new Date('date', 'дата приема', '', true),
+            new Integer('chairId', 'id кресла', '', true)
         ];
     }
 

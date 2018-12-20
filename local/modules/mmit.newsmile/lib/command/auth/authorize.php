@@ -4,6 +4,7 @@ namespace Mmit\NewSmile\Command\Auth;
 
 use Mmit\NewSmile\Sms;
 use Mmit\NewSmile\Application;
+use Mmit\NewSmile\CommandParam;
 
 class Authorize extends Base
 {
@@ -35,13 +36,14 @@ class Authorize extends Base
     public function getParamsMap()
     {
         return [
-            'token' => [
-                'TITLE' => 'токен авторизации'
-            ],
-            'get_user_info' => [
-                'TITLE' => 'флаг запроса краткой информации о пользователе',
-                'DEFAULT' => true
-            ]
+            new CommandParam\String('token', 'токен авторизации'),
+            new CommandParam\Bool(
+                'get_user_info',
+                'флаг запроса краткой информации о пользователе',
+                '',
+                false,
+                true
+            )
         ];
     }
 }
