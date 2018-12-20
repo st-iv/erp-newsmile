@@ -5,6 +5,8 @@ import ColoredSelect from '../colored-select'
 import TextInput from './text-input'
 import RadioInput from './radio-input'
 import PhoneInput from "./phone-input";
+import Select from "./select";
+import Scrollbars from '../scrollbars'
 
 class NewVisitForm extends React.Component
 {
@@ -19,10 +21,11 @@ class NewVisitForm extends React.Component
         doctors: [],
         doctor: {},
         fields: null,
-        additionalPhonesCount: 0
+        additionalPhonesCount: 0,
+        addFormScrollHeight: 0
     };
 
-    addPhoneButtonRef = React.createRef();
+    //formWrapperRef = React.createRef();
 
     constructor(props)
     {
@@ -33,7 +36,7 @@ class NewVisitForm extends React.Component
     render()
     {
         return (
-            <div>
+            <div className="new-visit">
                 <header className="new-visit__header">
                     <h2 className="new-visit__title">Новый прием</h2>
 
@@ -71,44 +74,10 @@ class NewVisitForm extends React.Component
 
     renderAddForm()
     {
-        return (
+        return (//this.setState({addFormScrollHeight: ref.clientHeight})   /*ref={ref => this.setState({addFormScrollHeight: ref.clientHeight})}*/
             <form className="new-visit__form form">
                 <div className="form__fields-wrapper">
-                    <div className="form__scroll-area">
-
-                        <div className="form__block">
-                            <TextInput {...this.state.fields.NUMBER}/>
-                        </div>
-
-                        <div className="form__block">
-                            <TextInput {...this.state.fields.LAST_NAME}/>
-                            <TextInput {...this.state.fields.NAME}/>
-                            <TextInput {...this.state.fields.SECOND_NAME}/>
-                        </div>
-
-                        <div className="form__block">
-                            <TextInput {...this.state.fields.PERSONAL_BIRTHDAY} mask="99.99.9999"/>
-                            <RadioInput {...this.state.fields.PERSONAL_GENDER}/>
-                        </div>
-
-                        <div className="form__block form__block--phone">
-                            <div className="form__fields form__fields--phone">
-                                <TextInput {...this.state.fields.PARENTS}/>
-                                <PhoneInput {...this.state.fields.PERSONAL_PHONE}
-                                            mask="+7 (999) 999 99 99"
-                                            maskChar="-"
-                                            alwaysShowMask
-                                            labelClassName="form__label--phones"
-                                            addButtonContainerRef={this.addPhoneButtonRef}
-                                            additionalInputsName="ADDITIONAL_PHONES"
-                                            required
-                                />
-                            </div>
-                        </div>
-
-                        <div className="form__add-field-btn-cont" ref={this.addPhoneButtonRef}/>
-
-                    </div>
+                    {this.renderAddFormFields()}
                 </div>
 
                 <div className="form__btns-wrapper">
@@ -117,6 +86,80 @@ class NewVisitForm extends React.Component
                 </div>
             </form>
         );
+    }
+
+    renderAddFormFields()
+    {
+        return (
+            <Scrollbars>
+                <div className="form__scroll-area">
+
+                    <div className="form__block">
+                        <TextInput {...this.state.fields.NUMBER}/>
+                    </div>
+
+                    <div className="form__block">
+                        <TextInput {...this.state.fields.LAST_NAME}/>
+                        <TextInput {...this.state.fields.NAME}/>
+                        <TextInput {...this.state.fields.SECOND_NAME}/>
+                    </div>
+
+                    <div className="form__block">
+                        <TextInput {...this.state.fields.PERSONAL_BIRTHDAY} mask="99.99.9999"/>
+                        <RadioInput {...this.state.fields.PERSONAL_GENDER}/>
+                    </div>
+
+                    <div className="form__block form__block--phone">
+                        <div className="form__fields form__fields--phone">
+                            <TextInput {...this.state.fields.PARENTS}/>
+                            <PhoneInput {...this.state.fields.PERSONAL_PHONE}
+                                        mask="+7 (999) 999 99 99"
+                                        maskChar="-"
+                                        alwaysShowMask
+                                        additionalInputsName="ADDITIONAL_PHONES"
+                                        additionalInputsCount={this.state.additionalPhonesCount}
+                                        required
+                            />
+                        </div>
+
+                        <button className="form__add-field-btn" onClick={this.addPhoneInput.bind(this)}>
+                                    <span className="form__btn-label">
+                                        <svg className="form__btn-icon" id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg"
+                                             viewBox="0 0 19.16 19.16">
+                                            <title>plus</title>
+                                            <line x1="2" y1="2" x2="17.16" y2="17.16" fill="none" strokeLinecap="round" strokeMiterlimit="10"
+                                                  strokeWidth="2"/>
+                                            <line x1="17.16" y1="2" x2="2" y2="17.16" fill="none" strokeLinecap="round" strokeMiterlimit="10" strokeWidth="2"/>
+                                        </svg>
+                                        Добавить телефон
+                                    </span>
+                        </button>
+                    </div>
+
+                    <div className="form__block">
+                        <TextInput {...this.state.fields.PERSONAL_CITY}/>
+                        <TextInput {...this.state.fields.PERSONAL_STREET}/>
+                    </div>
+
+                    <div className="form__block">
+                        <TextInput {...this.state.fields.PERSONAL_HOME}/>
+                        <TextInput {...this.state.fields.PERSONAL_HOUSING}/>
+                        <TextInput {...this.state.fields.PERSONAL_APARTMENT}/>
+                    </div>
+
+                    <div className="form__block form__block--select">
+                        <Select {...this.state.fields.SOURCE} isMulti hideSelectedOptions={false} placeholder=""/>
+                    </div>
+                </div>
+            </Scrollbars>
+        );
+    }
+
+    componentDidMount()
+    {
+        /*this.setState({
+            addFormScrollHeight: this.formWrapperRef.current.clientHeight
+        })*///
     }
 
     loadData()
@@ -160,6 +203,15 @@ class NewVisitForm extends React.Component
         });
 
         command.exec();
+    }
+
+    addPhoneInput(e)
+    {
+        this.setState({
+            additionalPhonesCount: this.state.additionalPhonesCount + 1
+        });
+
+        e.preventDefault();
     }
 }
 

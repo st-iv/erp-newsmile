@@ -19,11 +19,8 @@ class TextInput extends React.Component
 
     static defaultProps = {
         defaultValue: '',
-        value: '',
         required: false,
         mask: '',
-        labelClassName: '',
-        inputOnly: false
     };
 
     state = {
@@ -44,6 +41,7 @@ class TextInput extends React.Component
             onChange: e => this.setState({value: e.target.value}),
         });
 
+        delete inputProps.defaultValue;
 
 
         let labelClassName = 'form__label' + (this.state.isActive ? ' form__label--focus' : '');

@@ -41,7 +41,7 @@ class Cell extends React.Component
                           detailInfo={detailInfo}
                           cellType={!!this.props.patient ? 'visit' : 'schedule'}
 
-                          onCommandResult={this.props.onUpdate}
+                          onCommandResult={() => this.props.onUpdate()}
                           timeStart={this.props.timeStart}
                           timeEnd={this.props.timeEnd}
                           chairId={this.props.chairId}

@@ -1,5 +1,4 @@
 import React from 'react'
-import ReactDOM from 'react-dom'
 import PropTypes from 'prop-types'
 import InputMask from 'react-input-mask'
 
@@ -17,33 +16,27 @@ class PhoneInput extends React.Component
         maskChar: PropTypes.string,
 
         additionalInputsName: PropTypes.string.isRequired,
-        addButtonContainerRef: PropTypes.any
+        additionalInputsCount: PropTypes.number
     };
 
     static defaultProps = {
         defaultValue: '',
-        value: '',
         required: false,
         mask: '',
-        inputOnly: false
-    };
-
-    state = {
-        value: this.props.value && this.props.defaultValue,
         additionalInputsCount: 0
     };
 
     render()
     {
-        const inputClass = 'form__input' + (this.props.required ? ' form__input--required' : '');
+        const inputClass = 'form__input form__input--phone' + (this.props.required ? ' form__input--required' : '');
         const wrapperClass = 'form__wrapper' + (this.props.required ? ' form__wrapper--required' : '');
         const inputProps = $.extend({}, this.props, {
             className: inputClass,
-            type: 'text',
-            value: this.state.value,
+            type: 'text'
         });
 
-        console.log(this.props.addButtonContainerRef, ' this.props.addButtonContainerRef!');
+        delete inputProps.additionalInputsName;
+        delete inputProps.additionalInputsCount;
 
         return (
             <label className={wrapperClass} htmlFor={this.props.name}>
@@ -58,14 +51,6 @@ class PhoneInput extends React.Component
                 )}
 
                 {this.renderAdditionalInputs(inputProps)}
-
-                {this.props.addButtonContainerRef
-                    ? ReactDOM.createPortal(
-                        this.renderAddButton(),
-                        this.props.addButtonContainerRef.current
-                    )
-                    : this.renderAddButton()
-                }
             </label>
         );
     }
@@ -76,43 +61,20 @@ class PhoneInput extends React.Component
         let additionalInputsProps = $.extend({}, mainInputProps);
         additionalInputsProps.name = this.props.additionalInputsName + '[]';
 
-        for(let i = 0; i < this.state.additionalInputsCount; i++)
+        delete additionalInputsProps.required;
+
+        for(let i = 0; i < this.props.additionalInputsCount; i++)
         {
             result.push(
                 this.props.mask ? (
-                    <InputMask {...additionalInputsProps}/>
+                    <InputMask {...additionalInputsProps} key={i}/>
                 ) : (
-                    <input {...additionalInputsProps}/>
+                    <input {...additionalInputsProps} key={i}/>
                 )
             );
         }
-    }
 
-    renderAddButton()
-    {
-        return (
-            <button className="form__add-field-btn" onClick={this.addPhoneInput.bind(this)}>
-                <span className="form__btn-label">
-                    <svg className="form__btn-icon" id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg"
-                         viewBox="0 0 19.16 19.16">
-                        <title>plus</title>
-                        <line x1="2" y1="2" x2="17.16" y2="17.16" fill="none" strokeLinecap="round" strokeMiterlimit="10"
-                              strokeWidth="2"/>
-                        <line x1="17.16" y1="2" x2="2" y2="17.16" fill="none" strokeLinecap="round" strokeMiterlimit="10" strokeWidth="2"/>
-                    </svg>
-                    Добавить телефон
-                </span>
-            </button>
-        );
-    }
-
-    addPhoneInput(e)
-    {
-        this.setState({
-            additionalInputsCount: this.state.additionalInputsCount + 1
-        });
-
-        e.preventDefault();
+        return result;
     }
 }
 
