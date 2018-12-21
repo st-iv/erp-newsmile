@@ -9,10 +9,32 @@ var General = (function()
         serializedParams.split('&').forEach(function(keyValuePair)
         {
             var pairArray = keyValuePair.split('=');
-            result[pairArray[0]] = pairArray[1];
+            var paramName = pairArray[0];
+            var paramValue = decodeURI(pairArray[1]);
+            
+            if(result[paramName])
+            {
+                if(Array.isArray(result[paramName]))
+                {
+                    result[paramName].push(paramValue);
+                }
+                else
+                {
+                    result[paramName] = [result[paramName], paramValue];
+                }
+            }
+            else
+            {
+                result[paramName] = paramValue;
+            }
         });
 
         return result;
+    }
+
+    function serializeInObject(formNode)
+    {
+        return getParamsObject($(formNode).serialize());
     }
 
     function getFio(person)
@@ -226,6 +248,7 @@ var General = (function()
         clone: clone,
         uniqueId: uniqueId,
         ucfirst: ucfirst,
+        serializeInObject: serializeInObject,
 
         sessid: sessid,
         postFormAction: postFormAction

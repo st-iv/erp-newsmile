@@ -233,11 +233,12 @@ class Helper
 
 
             $fieldName = $field->getName();
+            $fieldNameCamelCase = NewSmile\Helpers::getCamelCase($fieldName, false);
 
             $fieldInfo = [
                 'required' => $field->isRequired(),
                 'title' => $field->getTitle(),
-                'name' => $fieldName,
+                'name' => $fieldNameCamelCase,
                 'type' => Helper::getFieldType($field)
             ];
 
@@ -272,7 +273,7 @@ class Helper
                 $fieldInfo['variants'] = array_values($variants);
             }
 
-            $result[$fieldName] = $fieldInfo;
+            $result[$fieldNameCamelCase] = $fieldInfo;
         }
 
         return $result;

@@ -21,6 +21,7 @@ class TextInput extends React.Component
         defaultValue: '',
         required: false,
         mask: '',
+        maskChar: '_'
     };
 
     state = {
@@ -74,7 +75,7 @@ class TextInput extends React.Component
 
     isEmpty(value)
     {
-        return (!value || (value === this.props.mask.replace(/[*9a]/g, '_')));
+        return (!value || (value === this.props.mask.replace(/[*9a]/g, this.props.maskChar)));
     }
 
 

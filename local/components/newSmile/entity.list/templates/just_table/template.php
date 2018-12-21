@@ -20,7 +20,7 @@
                     {
                         echo implode('; ', $value);
                     }
-                    else
+                    elseif($value !== null)
                     {
                         switch($field['TYPE'])
                         {

@@ -92,7 +92,6 @@ class PatientCardTable extends Entity\DataManager implements NewSmile\Orm\Extend
                 'serialized' => true
             )),
             new Entity\StringField('EMAIL', array(
-                'required' => true,
                 'title' => 'Email',
                 'validation' => function () {
                     return array(

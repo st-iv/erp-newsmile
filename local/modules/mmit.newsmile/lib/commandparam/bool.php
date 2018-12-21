@@ -6,16 +6,13 @@ class Bool extends Base
 {
     protected function formatValue($value)
     {
-        if(!is_bool($value))
+        if(is_string($value))
         {
-            if(is_string($value))
-            {
-                $value = ($value == 'true');
-            }
-            else
-            {
-                $this->sayBadValueType(['bool', 'string']);
-            }
+            $value = ($value == 'true');
+        }
+        else
+        {
+            $value = ($value == true);
         }
 
         return $value;

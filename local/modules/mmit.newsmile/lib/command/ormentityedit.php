@@ -79,16 +79,20 @@ abstract class OrmEntityEdit extends Base
                 $class = CommandParam\DateTime::class;
                 break;
 
+            case 'boolean':
+                $class = CommandParam\Bool::class;
+                break;
+
             default:
-                throw new Error('Не поддерживаемый тип поля orm сущности: ' . $fieldType, 'NOT_SUPPORTED_FIELD_TYPE');
+                throw new Error('Неподдерживаемый тип поля orm сущности: ' . $fieldType, 'NOT_SUPPORTED_FIELD_TYPE');
         }
 
         return new $class(
-            Helpers::getCamelCase($field->getName()),
+            Helpers::getCamelCase($field->getName(), false),
             $field->getTitle(),
             '',
-            $field->isRequired(),
-            $field->getDefaultValue()
+            $field->isRequired()/*,
+            $field->getDefaultValue()*/
         );
     }
 

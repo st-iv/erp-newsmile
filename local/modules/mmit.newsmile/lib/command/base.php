@@ -44,7 +44,12 @@ abstract class Base
             {
                 $param->setDefaultEntityCode(static::getEntityCode());
                 $param->setRawValue($params[$paramCode]);
-                $this->params[$paramCode] = $param->getFormattedValue();
+                $formattedValue = $param->getFormattedValue();
+
+                if(isset($formattedValue))
+                {
+                    $this->params[$paramCode] = $formattedValue;
+                }
             }
         }
     }
@@ -222,6 +227,22 @@ abstract class Base
         {
             $this->doExecute();
         }
+    }
+
+    protected function getParamsMapAssoc()
+    {
+        $result = [];
+
+        foreach($this->getParamsMap() as $param)
+        {
+            /**
+             * @var \Mmit\NewSmile\CommandParam\Base $param
+             */
+
+            $result[$param->getCode()] = $param;
+        }
+
+        return $result;
     }
 
 

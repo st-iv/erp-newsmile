@@ -2,6 +2,7 @@
 
 namespace Mmit\NewSmile\CommandParam;
 
+use Bitrix\Main\Diag\Debug;
 use Mmit\NewSmile\Application;
 use Mmit\NewSmile\Error;
 
@@ -83,11 +84,9 @@ abstract class Base
     {
         if($this->isAllowed())
         {
-            if(isset($rawValue))
-            {
-                $this->rawValue = $rawValue;
-            }
-            elseif($this->required)
+            $this->rawValue = $rawValue;
+
+            if($this->required && (!isset($rawValue) || ($rawValue === '')))
             {
                 throw new Error(
                     'Не указано значение обязательного параметра ' . $this->code . ($this->command ? ' команды ' . $this->command->getCode() : ''),
@@ -119,7 +118,10 @@ abstract class Base
      */
     final public function getFormattedValue()
     {
-        if(isset($this->rawValue))
+        Debug::writeToFile($this->getCode(), 'code!');
+        Debug::dumpToFile($this->rawValue, 'raw value!!');
+
+        if(isset($this->rawValue) && ($this->rawValue !== ''))
         {
             $result = $this->formatValue($this->rawValue);
         }
@@ -129,7 +131,7 @@ abstract class Base
         }
         else
         {
-            $result = $this->rawValue;
+            $result = null;
         }
 
         return $result;

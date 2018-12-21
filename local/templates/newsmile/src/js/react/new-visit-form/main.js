@@ -22,10 +22,16 @@ class NewVisitForm extends React.Component
         doctor: {},
         fields: null,
         additionalPhonesCount: 0,
-        addFormScrollHeight: 0
+        addFormScrollHeight: 0,
     };
 
-    //formWrapperRef = React.createRef();
+    formRef = React.createRef();
+
+    maskedInputsMaskChars = {
+        personalBirthday: '_',
+        personalPhone: '-',
+        additionalPhones: '-'
+    };
 
     constructor(props)
     {
@@ -74,8 +80,8 @@ class NewVisitForm extends React.Component
 
     renderAddForm()
     {
-        return (//this.setState({addFormScrollHeight: ref.clientHeight})   /*ref={ref => this.setState({addFormScrollHeight: ref.clientHeight})}*/
-            <form className="new-visit__form form">
+        return (
+            <form className="new-visit__form form" onSubmit={this.handleSubmit.bind(this)} ref={this.formRef}>
                 <div className="form__fields-wrapper">
                     {this.renderAddFormFields()}
                 </div>
@@ -95,28 +101,28 @@ class NewVisitForm extends React.Component
                 <div className="form__scroll-area">
 
                     <div className="form__block">
-                        <TextInput {...this.state.fields.NUMBER}/>
+                        <TextInput {...this.state.fields.number}/>
                     </div>
 
                     <div className="form__block">
-                        <TextInput {...this.state.fields.LAST_NAME}/>
-                        <TextInput {...this.state.fields.NAME}/>
-                        <TextInput {...this.state.fields.SECOND_NAME}/>
+                        <TextInput {...this.state.fields.lastName}/>
+                        <TextInput {...this.state.fields.name}/>
+                        <TextInput {...this.state.fields.secondName}/>
                     </div>
 
                     <div className="form__block">
-                        <TextInput {...this.state.fields.PERSONAL_BIRTHDAY} mask="99.99.9999"/>
-                        <RadioInput {...this.state.fields.PERSONAL_GENDER}/>
+                        <TextInput {...this.state.fields.personalBirthday} mask="99.99.9999" maskChar={this.maskedInputsMaskChars.personalBirthday}/>
+                        <RadioInput {...this.state.fields.personalGender}/>
                     </div>
 
                     <div className="form__block form__block--phone">
                         <div className="form__fields form__fields--phone">
-                            <TextInput {...this.state.fields.PARENTS}/>
-                            <PhoneInput {...this.state.fields.PERSONAL_PHONE}
+                            <TextInput {...this.state.fields.parents}/>
+                            <PhoneInput {...this.state.fields.personalPhone}
                                         mask="+7 (999) 999 99 99"
-                                        maskChar="-"
+                                        maskChar={this.maskedInputsMaskChars.personalPhone}
                                         alwaysShowMask
-                                        additionalInputsName="ADDITIONAL_PHONES"
+                                        additionalInputsName="additionalPhones"
                                         additionalInputsCount={this.state.additionalPhonesCount}
                                         required
                             />
@@ -137,18 +143,18 @@ class NewVisitForm extends React.Component
                     </div>
 
                     <div className="form__block">
-                        <TextInput {...this.state.fields.PERSONAL_CITY}/>
-                        <TextInput {...this.state.fields.PERSONAL_STREET}/>
+                        <TextInput {...this.state.fields.personalCity}/>
+                        <TextInput {...this.state.fields.personalStreet}/>
                     </div>
 
                     <div className="form__block">
-                        <TextInput {...this.state.fields.PERSONAL_HOME}/>
-                        <TextInput {...this.state.fields.PERSONAL_HOUSING}/>
-                        <TextInput {...this.state.fields.PERSONAL_APARTMENT}/>
+                        <TextInput {...this.state.fields.personalHome}/>
+                        <TextInput {...this.state.fields.personalHousing}/>
+                        <TextInput {...this.state.fields.personalApartment}/>
                     </div>
 
                     <div className="form__block form__block--select">
-                        <Select {...this.state.fields.SOURCE} isMulti hideSelectedOptions={false} placeholder=""/>
+                        <Select {...this.state.fields.source} isMulti hideSelectedOptions={false} placeholder=""/>
                     </div>
                 </div>
             </Scrollbars>
@@ -210,6 +216,41 @@ class NewVisitForm extends React.Component
         this.setState({
             additionalPhonesCount: this.state.additionalPhonesCount + 1
         });
+
+        e.preventDefault();
+    }
+
+    handleSubmit(e)
+    {
+        let data = General.serializeInObject(this.formRef.current);
+        let newData = {};
+
+        for(let fieldName in data)
+        {
+            let maskChar = this.maskedInputsMaskChars[fieldName];
+            let fieldValue = data[fieldName];
+
+            console.log(fieldValue, 'fieldValue!!');
+
+            if((maskChar !== undefined) && fieldValue.indexOf(maskChar) !== -1) continue;
+
+            if((fieldName === 'personalBirthday') && fieldValue.length)
+            {
+                fieldValue = moment(fieldValue).format('YYYY-MM-DD');
+            }
+
+            newData[fieldName] = fieldValue;
+        }
+
+        delete newData.source; // TODO remove this shit
+
+
+        let command = new ServerCommand('patient-card/add', newData, response =>
+        {
+            console.log(response, 'success response!!!')
+        });
+
+        command.exec();
 
         e.preventDefault();
     }
