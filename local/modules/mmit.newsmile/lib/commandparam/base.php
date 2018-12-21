@@ -82,25 +82,32 @@ abstract class Base
      */
     public function setRawValue($rawValue)
     {
-        if($this->isAllowed())
+        if($this->issetValue($rawValue))
         {
-            $this->rawValue = $rawValue;
-
-            if($this->required && (!isset($rawValue) || ($rawValue === '')))
+            if($this->isAllowed())
+            {
+                $this->rawValue = $rawValue;
+            }
+            else
             {
                 throw new Error(
-                    'Не указано значение обязательного параметра ' . $this->code . ($this->command ? ' команды ' . $this->command->getCode() : ''),
-                    'REQUIRED_PARAM_NOT_DEFINED'
+                    'Недостаточно прав для использования параметра ' . $this->code . ($this->command ? ' команды ' . $this->command->getCode() : ''),
+                    'PARAM_ACCESS_DENIED'
                 );
             }
         }
-        else
+        elseif($this->required)
         {
             throw new Error(
-                'Недостаточно прав для использования параметра ' . $this->code . ($this->command ? ' команды ' . $this->command->getCode() : ''),
-                'PARAM_ACCESS_DENIED'
+                'Не указано значение обязательного параметра ' . $this->code . ($this->command ? ' команды ' . $this->command->getCode() : ''),
+                'REQUIRED_PARAM_NOT_DEFINED'
             );
         }
+    }
+
+    protected function issetValue($value)
+    {
+        return (isset($value) && ($value !== ''));
     }
 
     /**
