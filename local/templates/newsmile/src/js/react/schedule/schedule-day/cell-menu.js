@@ -367,14 +367,21 @@ class CellMenu extends React.Component
 
     processVisitAdd()
     {
-        PopupManager.showPopup(
+        this.newVisitFormPopupId = PopupManager.showPopup(
             <NewVisitForm chairId={this.props.chairId}
                           timeStart={this.props.timeStart}
                           timeEnd={this.props.timeEnd}
                           date={this.props.date}
                           doctorId={this.props.doctorId}
+                          onSuccessSubmit={this.closeNewVisitForm.bind(this)}
+                          onClose={this.closeNewVisitForm.bind(this)}
             />
         );
+    }
+
+    closeNewVisitForm()
+    {
+        PopupManager.closePopup(this.newVisitFormPopupId);
     }
 }
 

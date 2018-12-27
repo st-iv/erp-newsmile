@@ -1,7 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 
-class RadioInput extends React.Component
+class RadioInput extends React.PureComponent
 {
     static propTypes = {
         name: PropTypes.string.isRequired,
@@ -12,7 +12,8 @@ class RadioInput extends React.Component
         variants: PropTypes.arrayOf(PropTypes.shape({
             code: PropTypes.string,
             title: PropTypes.string
-        })).isRequired
+        })).isRequired,
+        onChange: PropTypes.func.isRequired
     };
 
     render()
@@ -32,6 +33,7 @@ class RadioInput extends React.Component
                                value={variant.code}
                                defaultChecked={variant.code === this.props.defaultValue}
                                key={'input_' + variant.code}
+                               onChange={e => this.props.onChange(e.target.value)}
                         />,
                         <label className="form__radio-label" htmlFor={id} key={'label' + variant.code}>
                             {General.ucfirst(variant.title)}

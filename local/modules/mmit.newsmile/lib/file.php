@@ -91,7 +91,6 @@ class FileTable extends Entity\DataManager implements ExtendedFieldsDescriptor
             if (intval($ar['FILE'])>0)
             {
 
-                Debug::writeToFile($ar['FILE']);
                 \CFile::Delete($ar['FILE']);
             }
         }

@@ -7,12 +7,14 @@
  */
 namespace Mmit\NewSmile;
 
+use Bitrix\Main\Diag\Debug;
 use Bitrix\Main\Entity;
 use Bitrix\Main\Loader;
 use Bitrix\Main\Localization\Loc;
 use Bitrix\Main\ORM\Event;
 use Bitrix\Main\Type\Date;
 use Bitrix\Main\Type\DateTime;
+use Bitrix\Main\UserTable;
 use Mmit\NewSmile;
 
 Loc::loadMessages(__FILE__);
@@ -70,7 +72,7 @@ class PatientCardTable extends Entity\DataManager implements NewSmile\Orm\Extend
                 },
             )),
             new Entity\StringField('SECOND_NAME', array(
-                'required' => true,
+                'required' => false,
                 'title' => 'Отчество',
                 'validation' => function () {
                     return array(
@@ -78,7 +80,7 @@ class PatientCardTable extends Entity\DataManager implements NewSmile\Orm\Extend
                     );
                 },
             )),
-            new Entity\StringField('PERSONAL_PHONE', array(
+            new NewSmile\Orm\Fields\PhoneField('PERSONAL_PHONE', array(
                 'title' => 'Телефон',
                 'default_value' => '',
                 'validation' => function () {
@@ -349,6 +351,64 @@ class PatientCardTable extends Entity\DataManager implements NewSmile\Orm\Extend
         static::deleteSearchIndex($primary['ID']);
     }
 
+
+    public static function onBeforeAdd(Event $event)
+    {
+        $fields = $event->getParameter('fields');
+        return static::onBeforeSave(null, $fields);
+    }
+
+    public static function onBeforeUpdate(Event $event)
+    {
+        $primary = $event->getParameter('primary');
+        $fields = $event->getParameter('fields');
+        $currentFields = static::getByPrimary($primary)->fetch();
+
+        return static::onBeforeSave($primary, array_merge($currentFields, $fields), $currentFields);
+    }
+
+    public static function onBeforeSave($primary, $newFields, $oldFields = [])
+    {
+        $result = new Entity\EventResult();
+        $result->unsetField('USER_ID');
+
+        Debug::writeToFile($newFields, '$newFields');
+
+        if($newFields['PERSONAL_PHONE'] != $oldFields['PERSONAL_PHONE'])
+        {
+            $user = new \CUser();
+
+            if($oldFields)
+            {
+                $user->Update($newFields['USER_ID'], [
+                    'PERSONAL_PHONE' => $newFields['PERSONAL_PHONE'],
+                    'LOGIN' => 'patient_' . $newFields['PERSONAL_PHONE']
+                ]);
+            }
+            else
+            {
+                $login = 'patient_' . $newFields['PERSONAL_PHONE'];
+
+                $userId = $user->Add([
+                    'PERSONAL_PHONE' => $newFields['PERSONAL_PHONE'],
+                    'LOGIN' => $login,
+                    'EMAIL' => $login . '@mail.ru',
+                    'PASSWORD' => md5($login . rand(0, 100000000)),
+                    'UF_ROLES' => ['patient']
+                ]);
+
+                if($userId)
+                {
+                    $result->modifyFields([
+                        'USER_ID' => $userId
+                    ]);
+                }
+            }
+        }
+
+        return $result;
+    }
+
     private static function indexSearch($id, $fields)
     {
         $additionalFields = array();
@@ -385,62 +445,8 @@ class PatientCardTable extends Entity\DataManager implements NewSmile\Orm\Extend
         }
     }
 
-    /**
-     * Метод вовращает массив с информацией о карте клиента, включая информацию пользователя
-     *
-     * @param $id
-     */
-    public static function getArrayById($id)
-    {
-        $rsResult = self::getList(array(
-            'select' => array(
-                '*',
-                'USER_LAST_NAME' => 'USER.LAST_NAME',
-                'USER_NAME' => 'USER.NAME',
-                'USER_SECOND_NAME' => 'USER.SECOND_NAME',
-                'USER_PERSONAL_BIRTHDAY' => 'USER.PERSONAL_BIRTHDAY',
-                'USER_PERSONAL_GENDER' => 'USER.PERSONAL_GENDER',
-                'USER_PERSONAL_PHONE' => 'USER.PERSONAL_PHONE',
-                'USER_PERSONAL_MOBILE' => 'USER.PERSONAL_MOBILE',
-                'USER_EMAIL' => 'USER.EMAIL',
-                'USER_PERSONAL_CITY' => 'USER.PERSONAL_CITY',
-                'USER_PERSONAL_ZIP' => 'USER.PERSONAL_ZIP',
-                'USER_PERSONAL_STREET' => 'USER.PERSONAL_STREET',
-                'USER_PERSONAL_NOTES' => 'USER.PERSONAL_NOTES',
-                'USER_WORK_COMPANY' => 'USER.WORK_COMPANY',
-                'USER_WORK_POSITION' => 'USER.WORK_POSITION',
-            ),
-            'filter' => array(
-                'ID' => $id
-            )
-        ));
-        if ($arResult = $rsResult->fetch()) {
-            return $arResult;
-        }
-        return false;
-    }
 
-    /**
-     * Метод возвращает ID пользователя привязаного к карточке поциента
-     *
-     * @param $id
-     * @return int
-     */
-    public static function getUserIDByID($id)
-    {
-        $rsResult = self::getList(array(
-            'select' => array(
-                'USER_ID'
-            ),
-            'filter' => array(
-                'ID' => $id
-            )
-        ));
-        if ($arResult = $rsResult->fetch()) {
-            return $arResult['USER_ID'];
-        }
-        return 0;
-    }
+
 
     public static function getEnumVariants($enumFieldName)
     {

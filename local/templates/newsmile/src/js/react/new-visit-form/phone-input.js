@@ -1,13 +1,12 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import InputMask from 'react-input-mask'
+import InputMask from '../input-mask'
 
-class PhoneInput extends React.Component
-{
+class PhoneInput extends React.Component {
     static propTypes = {
         name: PropTypes.string.isRequired,
         title: PropTypes.string.isRequired,
-        defaultValue: PropTypes.string,
+        value: PropTypes.array,
         required: PropTypes.bool,
         placeholder: PropTypes.string,
 
@@ -16,15 +15,30 @@ class PhoneInput extends React.Component
         maskChar: PropTypes.string,
 
         additionalInputsName: PropTypes.string.isRequired,
-        additionalInputsCount: PropTypes.number
+        additionalInputsCount: PropTypes.number,
+
+        onChange: PropTypes.func
     };
 
     static defaultProps = {
-        defaultValue: '',
+        value: '',
         required: false,
-        mask: '',
+
+        mask: '+7 (999) 999 99 99',
+        maskChar: '-',
+        alwaysShowMask: true,
+
         additionalInputsCount: 0
     };
+
+    values = [];
+
+    constructor(props)
+    {
+        super(props);
+        this.handleChange = this.handleChange.bind(this);
+    }
+
 
     render()
     {
@@ -32,7 +46,9 @@ class PhoneInput extends React.Component
         const wrapperClass = 'form__wrapper' + (this.props.required ? ' form__wrapper--required' : '');
         const inputProps = $.extend({}, this.props, {
             className: inputClass,
-            type: 'text'
+            type: 'text',
+            onChange: this.handleChange.bind(this, 0),
+            value: this.values[0]
         });
 
         delete inputProps.additionalInputsName;
@@ -44,11 +60,7 @@ class PhoneInput extends React.Component
                     {this.props.title}
                 </span>
 
-                {this.props.mask ? (
-                    <InputMask {...inputProps}/>
-                ) : (
-                    <input {...inputProps}/>
-                )}
+                <InputMask {...inputProps}/>
 
                 {this.renderAdditionalInputs(inputProps)}
             </label>
@@ -63,18 +75,20 @@ class PhoneInput extends React.Component
 
         delete additionalInputsProps.required;
 
-        for(let i = 0; i < this.props.additionalInputsCount; i++)
+        for(let i = 1; i <= this.props.additionalInputsCount; i++)
         {
             result.push(
-                this.props.mask ? (
-                    <InputMask {...additionalInputsProps} key={i}/>
-                ) : (
-                    <input {...additionalInputsProps} key={i}/>
-                )
+                <InputMask {...additionalInputsProps} value={this.values[i]} onChange={this.handleChange.bind(this, i)} key={i}/>
             );
         }
 
         return result;
+    }
+
+    handleChange(index, value)
+    {
+        this.values[index] = value;
+        this.props.onChange && this.props.onChange(this.values.slice());
     }
 }
 

@@ -166,8 +166,6 @@ class FieldValueSaver extends FieldsProcessor
         /*  проходим сейвером по всем полям привязавшейся сущности и получаем массив полей и их значений для всех элементов,
             привязанных к текущему */
 
-        Debug::writeToFile('paramsss!');
-        Debug::writeToFile($params);
         $fieldValueSaver = new static($sourceEntity, $params);
         $fieldValueSaver->setRequest($this->request);
 
@@ -246,7 +244,6 @@ class FieldValueSaver extends FieldsProcessor
                     unset($itemFields[$primaryName]);
                 }
 
-                Debug::writeToFile($sourceDataClass::update($primary, $itemFields)->getErrorMessages());
                 $savedItemsPrimaries[serialize($primary)] = true;
             }
             else
@@ -315,7 +312,7 @@ class FieldValueSaver extends FieldsProcessor
 
         if($this->params['ENTITY_ID'])
         {
-            Debug::writeToFile($dataManager::update($this->params['ENTITY_ID'], $this->updateFields)->getErrorMessages());
+            //Debug::writeToFile($dataManager::update($this->params['ENTITY_ID'], $this->updateFields)->getErrorMessages());
         }
         else
         {

@@ -210,7 +210,17 @@ class Helper
         return is_subclass_of($className, 'Mmit\NewSmile\Orm\ExtendedFieldsDescriptor');
     }
 
-    public static function getFieldsDescription($dataManagerClass)
+    /**
+     * Возвращает описание полей сущности
+     * @param string $dataManagerClass
+     * @param array $fieldsCodes - массив кодов полей, по которым нужно вернуть информацию
+     *
+     * @return array
+     * @throws NewSmile\Error
+     * @throws \Bitrix\Main\ArgumentException
+     * @throws \Bitrix\Main\SystemException
+     */
+    public static function getFieldsDescription($dataManagerClass, $fieldsCodes = [])
     {
         if(!static::isDataManagerClass($dataManagerClass))
         {
@@ -222,6 +232,8 @@ class Helper
          */
 
         $result = [];
+        $fieldsCodes = array_flip($fieldsCodes);
+        Debug::writeToFile($fieldsCodes);
 
         foreach ($dataManagerClass::getEntity()->getFields() as $field)
         {
@@ -229,10 +241,9 @@ class Helper
              * @var Field $field
              */
 
-            if(!($field instanceof ScalarField)) continue;
-
-
             $fieldName = $field->getName();
+            if(!($field instanceof ScalarField) || ($fieldsCodes && !isset($fieldsCodes[$fieldName]))) continue;
+
             $fieldNameCamelCase = NewSmile\Helpers::getCamelCase($fieldName, false);
 
             $fieldInfo = [

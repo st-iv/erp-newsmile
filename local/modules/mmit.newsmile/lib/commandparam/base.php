@@ -119,14 +119,24 @@ abstract class Base
         $this->defaultEntityCode = $entityCode;
     }
 
+    public function setCode($code)
+    {
+        $this->code = $code;
+        return $this;
+    }
+
     /**
      * Возвращает отформатированное значение параметра
      * @return mixed
      */
     final public function getFormattedValue()
     {
-        Debug::writeToFile($this->getCode(), 'code!');
-        Debug::dumpToFile($this->rawValue, 'raw value!!');
+        if($this->getCode() == 'filter')
+        {
+            Debug::writeToFile($this->defaultValue);
+            Debug::writeToFile($this->getCode());
+        }
+
 
         if(isset($this->rawValue) && ($this->rawValue !== ''))
         {

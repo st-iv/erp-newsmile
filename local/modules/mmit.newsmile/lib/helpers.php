@@ -187,6 +187,24 @@ class Helpers
         }, $snakeCaseStr);
     }
 
+    /**
+     * Возвращает массив с ключами, переведенными в camelCase
+     * @param array $array
+     * @param bool $bUpperCase
+     *
+     * @return array
+     */
+    public static function camelCaseKeys(array $array, $bUpperCase = true)
+    {
+        $result = [];
+        foreach ($array as $key => $value)
+        {
+            $result[Helpers::getCamelCase($key, $bUpperCase)] = $value;
+        }
+
+        return $result;
+    }
+
     public static function getSnakeCase($camelCaseStr, $bUpper = true, $separator = '_')
     {
         $camelCaseStr[0] = strtolower($camelCaseStr[0]);
@@ -275,5 +293,10 @@ class Helpers
             }
             closedir($d);
         }
+    }
+
+    public static function preparePhone($phone)
+    {
+        return preg_replace('/[^0-9]/', '', $phone);
     }
 }

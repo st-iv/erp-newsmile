@@ -1,5 +1,4 @@
 import React from 'react'
-import ReactDOM from 'react-dom'
 import PropTypes from 'prop-types'
 import ColoredSelect from '../colored-select'
 import TextInput from './text-input'
@@ -7,6 +6,7 @@ import RadioInput from './radio-input'
 import PhoneInput from "./phone-input";
 import Select from "./select";
 import Scrollbars from '../scrollbars'
+import PatientsTable from './patients-table'
 
 class NewVisitForm extends React.Component
 {
@@ -14,7 +14,10 @@ class NewVisitForm extends React.Component
         timeStart: PropTypes.string.isRequired,
         timeEnd: PropTypes.string.isRequired,
         date: PropTypes.string.isRequired,
-        chairId: PropTypes.number.isRequired
+        chairId: PropTypes.number.isRequired,
+
+        onSuccessSubmit: PropTypes.func,
+        onClose: PropTypes.func
     };
 
     state = {
@@ -23,6 +26,7 @@ class NewVisitForm extends React.Component
         fields: null,
         additionalPhonesCount: 0,
         addFormScrollHeight: 0,
+        values: {}
     };
 
     formRef = React.createRef();
@@ -33,10 +37,20 @@ class NewVisitForm extends React.Component
         additionalPhones: '-'
     };
 
+    patientCardFields = [
+        'name', 'lastName', 'secondName', 'number', 'personalBirthday', 'personalGender', 'parents',
+        'personalPhone', 'additionalPhones', 'personalCity', 'personalStreet', 'personalHome', 'personalHousing',
+        'personalApartment', 'source'
+    ];
+
+    patientsInitialCount = 200;
+
     constructor(props)
     {
         super(props);
         this.loadData();
+
+        this.handleInputChange = this.handleInputChange.bind(this);
     }
 
     render()
@@ -72,63 +86,53 @@ class NewVisitForm extends React.Component
                 </header>
 
                 <main className="new-visit__content">
-                    {this.state.fields && this.renderAddForm()}
+                    {!!this.state.fields && this.renderAddPatientForm()}
+                    {!!this.state.fields && !!this.state.patients && (
+                        <PatientsTable initialPatients={this.state.patients}
+                                       fields={this.state.fields}
+                                       filter={this.state.values}
+                                       filterBy={['number', 'name', 'lastName', 'secondName']}
+                                       allDataLoaded={this.state.allPatientsLoaded}
+                        />
+                    )}
                 </main>
             </div>
         );
     }
 
-    renderAddForm()
+    renderAddPatientForm()
     {
         return (
             <form className="new-visit__form form" onSubmit={this.handleSubmit.bind(this)} ref={this.formRef}>
                 <div className="form__fields-wrapper">
-                    {this.renderAddFormFields()}
-                </div>
+                    <Scrollbars>
+                        <div className="form__scroll-area">
 
-                <div className="form__btns-wrapper">
-                    <button type="submit" className="form__btn form__btn--submit">Создать</button>
-                    <input type="reset" className="form__btn form__btn--clear" value="Отмена"/>
-                </div>
-            </form>
-        );
-    }
+                            <div className="form__block">
+                                <TextInput {...this.addControlledMixin(this.state.fields.number)}/>
+                            </div>
 
-    renderAddFormFields()
-    {
-        return (
-            <Scrollbars>
-                <div className="form__scroll-area">
+                            <div className="form__block">
+                                <TextInput {...this.addControlledMixin(this.state.fields.lastName)}/>
+                                <TextInput {...this.addControlledMixin(this.state.fields.name)}/>
+                                <TextInput {...this.addControlledMixin(this.state.fields.secondName)}/>
+                            </div>
 
-                    <div className="form__block">
-                        <TextInput {...this.state.fields.number}/>
-                    </div>
+                            <div className="form__block">
+                                <TextInput {...this.addControlledMixin(this.state.fields.personalBirthday)} mask="99.99.9999" maskChar={this.maskedInputsMaskChars.personalBirthday}/>
+                                <RadioInput {...this.addControlledMixin(this.state.fields.personalGender)}/>
+                            </div>
 
-                    <div className="form__block">
-                        <TextInput {...this.state.fields.lastName}/>
-                        <TextInput {...this.state.fields.name}/>
-                        <TextInput {...this.state.fields.secondName}/>
-                    </div>
+                            <div className="form__block form__block--phone">
+                                <div className="form__fields form__fields--phone">
+                                    <TextInput {...this.addControlledMixin(this.state.fields.parents)}/>
+                                    <PhoneInput {...this.addControlledMixin(this.state.fields.personalPhone)}
+                                                additionalInputsName="additionalPhones"
+                                                additionalInputsCount={this.state.additionalPhonesCount}
+                                    />
+                                </div>
 
-                    <div className="form__block">
-                        <TextInput {...this.state.fields.personalBirthday} mask="99.99.9999" maskChar={this.maskedInputsMaskChars.personalBirthday}/>
-                        <RadioInput {...this.state.fields.personalGender}/>
-                    </div>
-
-                    <div className="form__block form__block--phone">
-                        <div className="form__fields form__fields--phone">
-                            <TextInput {...this.state.fields.parents}/>
-                            <PhoneInput {...this.state.fields.personalPhone}
-                                        mask="+7 (999) 999 99 99"
-                                        maskChar={this.maskedInputsMaskChars.personalPhone}
-                                        alwaysShowMask
-                                        additionalInputsName="additionalPhones"
-                                        additionalInputsCount={this.state.additionalPhonesCount}
-                                        required
-                            />
-                        </div>
-
-                        <button className="form__add-field-btn" onClick={this.addPhoneInput.bind(this)}>
+                                <button className="form__add-field-btn" onClick={this.addPhoneInput.bind(this)}>
                                     <span className="form__btn-label">
                                         <svg className="form__btn-icon" id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg"
                                              viewBox="0 0 19.16 19.16">
@@ -139,34 +143,35 @@ class NewVisitForm extends React.Component
                                         </svg>
                                         Добавить телефон
                                     </span>
-                        </button>
-                    </div>
+                                </button>
+                            </div>
 
-                    <div className="form__block">
-                        <TextInput {...this.state.fields.personalCity}/>
-                        <TextInput {...this.state.fields.personalStreet}/>
-                    </div>
+                            <div className="form__block">
+                                <TextInput {...this.addControlledMixin(this.state.fields.personalCity)}/>
+                                <TextInput {...this.addControlledMixin(this.state.fields.personalStreet)}/>
+                            </div>
 
-                    <div className="form__block">
-                        <TextInput {...this.state.fields.personalHome}/>
-                        <TextInput {...this.state.fields.personalHousing}/>
-                        <TextInput {...this.state.fields.personalApartment}/>
-                    </div>
+                            <div className="form__block">
+                                <TextInput {...this.addControlledMixin(this.state.fields.personalHome)}/>
+                                <TextInput {...this.addControlledMixin(this.state.fields.personalHousing)}/>
+                                <TextInput {...this.addControlledMixin(this.state.fields.personalApartment)}/>
+                            </div>
 
-                    <div className="form__block form__block--select">
-                        <Select {...this.state.fields.source} isMulti hideSelectedOptions={false} placeholder=""/>
-                    </div>
+                            <div className="form__block form__block--select">
+                                <Select {...this.addControlledMixin(this.state.fields.source)} isMulti hideSelectedOptions={false} placeholder=""/>
+                            </div>
+                        </div>
+                    </Scrollbars>
                 </div>
-            </Scrollbars>
+
+                <div className="form__btns-wrapper">
+                    <button type="submit" className="form__btn form__btn--submit">Создать</button>
+                    <input type="reset" className="form__btn form__btn--clear" value="Отмена" onClick={this.props.onClose}/>
+                </div>
+            </form>
         );
     }
 
-    componentDidMount()
-    {
-        /*this.setState({
-            addFormScrollHeight: this.formWrapperRef.current.clientHeight
-        })*///
-    }
 
     loadData()
     {
@@ -175,6 +180,9 @@ class NewVisitForm extends React.Component
             timeEnd: this.props.timeEnd,
             date: this.props.date,
             chairId: this.props.chairId,
+            fields: this.patientCardFields,
+            patientsCount: this.patientsInitialCount,
+            patientsSelect: PatientsTable.patientsFields
         };
 
         let command = new ServerCommand('visit/get-add-form-info', data, result =>
@@ -203,10 +211,22 @@ class NewVisitForm extends React.Component
                 }
             }
 
+            newState.values = {};
+
+            General.forEachObj(result.fields, field =>
+            {
+                newState.values[field.name] = ((field.defaultValue === undefined) ? '' : field.defaultValue);
+                delete field.defaultValue;
+            });
+
+            newState.values.personalPhone = [];
+
             newState.fields = result.fields;
+            newState.patients = result.patients;
+            newState.allPatientsLoaded = (result.patientsTotalCount === newState.patients.length);
 
             this.setState(newState);
-        });
+        });//
 
         command.exec();
     }
@@ -222,37 +242,46 @@ class NewVisitForm extends React.Component
 
     handleSubmit(e)
     {
-        let data = General.serializeInObject(this.formRef.current);
-        let newData = {};
+        let data = General.clone(this.state.values);
+        data.additionalPhones = data.personalPhone.slice(1);
+        data.personalPhone = data.personalPhone[0];
 
-        for(let fieldName in data)
+        if(data.personalBirthday)
         {
-            let maskChar = this.maskedInputsMaskChars[fieldName];
-            let fieldValue = data[fieldName];
-
-            console.log(fieldValue, 'fieldValue!!');
-
-            if((maskChar !== undefined) && fieldValue.indexOf(maskChar) !== -1) continue;
-
-            if((fieldName === 'personalBirthday') && fieldValue.length)
-            {
-                fieldValue = moment(fieldValue).format('YYYY-MM-DD');
-            }
-
-            newData[fieldName] = fieldValue;
+            data.personalBirthday = General.Date.formatDate(data.personalBirthday, 'YYYY-MM-DD', 'DD.MM.YYYY');
         }
 
-        delete newData.source; // TODO remove this shit
-
-
-        let command = new ServerCommand('patient-card/add', newData, response =>
+        let command = new ServerCommand('patient-card/add', data, response =>
         {
-            console.log(response, 'success response!!!')
+            this.props.onSuccessSubmit && this.props.onSuccessSubmit();
         });
 
-        command.exec();
+        command.exec();//
 
         e.preventDefault();
+    }
+
+    getControlledMixin(fieldName)
+    {
+        return {
+            value: ((this.state.values[fieldName] === undefined) ? '' : this.state.values[fieldName]),
+            onChange: this.handleInputChange.bind(this, fieldName)
+        }
+    }
+
+    addControlledMixin(field)
+    {
+        return Object.assign({}, field, this.getControlledMixin(field.name));
+    }
+
+    handleInputChange(fieldName, value)
+    {
+        let newValues = General.clone(this.state.values);
+        newValues[fieldName] = value;
+
+        this.setState({
+            values: newValues
+        });
     }
 }
 

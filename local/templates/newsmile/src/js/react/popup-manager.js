@@ -39,7 +39,14 @@ class PopupManager extends React.Component
 
     static showPopup(popup)
     {
-        this.instance.addPopup(popup);
+        return this.instance.addPopup(popup);
+    }
+
+    static closePopup(popupIndex)
+    {
+        this.instance.setState({
+            popups: this.instance.state.popups.slice(0, popupIndex)
+        })
     }
 
     addPopup(popupContent)
@@ -47,6 +54,8 @@ class PopupManager extends React.Component
         let popups = this.state.popups.slice();
         popups.push(popupContent);
         this.setState({popups});
+
+        return this.state.popups.length;
     }
 
     removePopup(index)

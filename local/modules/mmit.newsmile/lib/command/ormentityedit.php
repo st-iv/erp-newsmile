@@ -53,39 +53,52 @@ abstract class OrmEntityEdit extends Base
     protected function getParamByField(ScalarField $field)
     {
         $class = null;
-        $fieldType = Helper::getFieldType($field);
 
-        switch($fieldType)
+        if($field->isSerialized())
         {
-            case 'integer':
-                $class = CommandParam\Integer::class;
-                break;
-
-            case 'float':
-                $class = CommandParam\Float::class;
-                break;
-
-            case 'string':
-            case 'text':
-            case 'enum':
-                $class = CommandParam\String::class;
-                break;
-
-            case 'date':
-                $class = CommandParam\Date::class;
-                break;
-
-            case 'datetime':
-                $class = CommandParam\DateTime::class;
-                break;
-
-            case 'boolean':
-                $class = CommandParam\Bool::class;
-                break;
-
-            default:
-                throw new Error('Неподдерживаемый тип поля orm сущности: ' . $fieldType, 'NOT_SUPPORTED_FIELD_TYPE');
+            $class = CommandParam\ArrayParam::class;
         }
+        else
+        {
+            $fieldType = Helper::getFieldType($field);
+
+            switch($fieldType)
+            {
+                case 'integer':
+                    $class = CommandParam\Integer::class;
+                    break;
+
+                case 'float':
+                    $class = CommandParam\Float::class;
+                    break;
+
+                case 'string':
+                case 'text':
+                case 'enum':
+                    $class = CommandParam\String::class;
+                    break;
+
+                case 'date':
+                    $class = CommandParam\Date::class;
+                    break;
+
+                case 'datetime':
+                    $class = CommandParam\DateTime::class;
+                    break;
+
+                case 'boolean':
+                    $class = CommandParam\Bool::class;
+                    break;
+
+                case 'phone':
+                    $class = CommandParam\Phone::class;
+                    break;
+
+                default:
+                    throw new Error('Неподдерживаемый тип поля orm сущности: ' . $fieldType, 'NOT_SUPPORTED_FIELD_TYPE');
+            }
+        }
+
 
         return new $class(
             Helpers::getCamelCase($field->getName(), false),
@@ -97,7 +110,7 @@ abstract class OrmEntityEdit extends Base
     }
 
     /**
-     * Возвращает Entity, по полям которой будет строиться карта параметров
+     * Возвращает Entity, с которой будет работать команда
      * @return Entity
      */
     abstract protected function getOrmEntity();

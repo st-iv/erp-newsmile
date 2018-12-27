@@ -13,7 +13,7 @@ abstract class Base
      * @var Error
      */
     private $error;
-    protected $params;
+    protected $params = [];
     protected $result;
 
     protected $varyParam;
@@ -21,12 +21,18 @@ abstract class Base
 
     protected $isTestMode = false;
 
+    private $isReflectionMode;
+
     protected static $name = '';
 
-    public function __construct($params = [], $varyParam = null)
+    public function __construct($params = [], $varyParam = null, $isReflectionMode = false)
     {
         $this->varyParam = $varyParam;
-        $this->setParams($params);
+        $this->isReflectionMode = $isReflectionMode;
+        if(!$isReflectionMode)
+        {
+            $this->setParams($params);
+        }
     }
 
     protected function setParams($params)
@@ -48,10 +54,22 @@ abstract class Base
 
                 if(isset($formattedValue))
                 {
-                    $this->params[$paramCode] = $formattedValue;
+                    $this->params[$paramCode] = $this->prepareParamValue($paramCode, $formattedValue);
                 }
             }
         }
+    }
+
+    /**
+     * Обрабатывает значение параметра команды перед сохранением в массив params
+     * @param $paramCode
+     * @param $paramValue
+     *
+     * @return mixed
+     */
+    protected function prepareParamValue($paramCode, $paramValue)
+    {
+        return $paramValue;
     }
 
     /**
@@ -91,6 +109,11 @@ abstract class Base
      */
     final public function isAvailable()
     {
+        if($this->isReflectionMode)
+        {
+            $this->sayReflectionModeDisapproves();
+        }
+
         return static::isAvailableForUser() && $this->checkAvailable();
     }
 
@@ -229,7 +252,12 @@ abstract class Base
         }
     }
 
-    protected function getParamsMapAssoc()
+    private function sayReflectionModeDisapproves()
+    {
+        throw new Error('В режиме reflection недоступно полноценное использование команд (' . static::getCode() . ')');
+    }
+
+    public function getParamsMapAssoc()
     {
         $result = [];
 
@@ -245,6 +273,24 @@ abstract class Base
         return $result;
     }
 
+    /**
+     * Возвращает объект параметра с указанным кодом (т.е. именно сам параметр, а не его значение)
+     * @param string $code
+     *
+     * @throws Error
+     * @return \Mmit\NewSmile\CommandParam\Base
+     */
+    protected static function getParam($code)
+    {
+        $command = new static([], null, true);
+        $paramsMap = $command->getParamsMapAssoc();
+        if(!isset($paramsMap[$code]))
+        {
+            throw new Error('У команды ' . $command->getCode() . ' нет параметра ' . $code, 'PARAM_NOT_EXISTS');
+        }
+
+        return $paramsMap[$code];
+    }
 
 
     /**

@@ -2,9 +2,11 @@
 
 namespace Mmit\NewSmile\Command\Visit;
 
+use Bitrix\Main\Diag\Debug;
 use Bitrix\Main\Type\DateTime;
 use Mmit\NewSmile\Command\Base;
 use Mmit\NewSmile\Command;
+use Mmit\NewSmile\CommandParam\ArrayParam;
 use Mmit\NewSmile\CommandParam\Date;
 use Mmit\NewSmile\CommandParam\Integer;
 use Mmit\NewSmile\CommandParam\Time;
@@ -20,9 +22,11 @@ class GetAddFormInfo extends Base
 {
     protected function doExecute()
     {
+        /* список врачей, которых можно назначить на приём, а также назначенного врача */
+
         $changeDoctorCommand = new Command\Schedule\ChangeDoctor($this->params, 'doctorId');
 
-        $doctors = [];
+            $doctors = [];
 
         if($changeDoctorCommand->isAvailable())
         {
@@ -57,7 +61,31 @@ class GetAddFormInfo extends Base
             }, $doctors);
         }
 
-        $this->result['fields'] = Orm\Helper::getFieldsDescription(PatientCardTable::class);
+        /* описание полей сущности пациента */
+
+        $fieldsCodes = array_map(function($fieldCode)
+        {
+            return Helpers::getSnakeCase($fieldCode);
+        }, $this->params['fields']);
+
+        $this->result['fields'] = Orm\Helper::getFieldsDescription(PatientCardTable::class, $fieldsCodes);
+
+
+        /* список пациентов */
+
+        $patientsListCommand = new Command\PatientCard\GetList([
+            'order' => [
+                'lastName' => 'asc'
+            ],
+            'limit' => $this->params['patientsCount'],
+            'countTotal' => true,
+            'select' => $this->params['patientsSelect']
+        ]);
+
+        $patientsListCommand->execute();
+        $patients = $patientsListCommand->getResult();
+        $this->result['patients'] = $patients['list'];
+        $this->result['patientsTotalCount'] = $patients['count'];
     }
 
     protected function getCurrentDoctor()
@@ -114,7 +142,22 @@ class GetAddFormInfo extends Base
             new Time('timeStart', 'начальное время приема', '', true),
             new Time('timeEnd', 'конечное время приема', '', true),
             new Date('date', 'дата приема', '', true),
-            new Integer('chairId', 'id кресла', '', true)
+            new Integer('chairId', 'id кресла', '', true),
+            new ArrayParam(
+                'fields',
+                'используемые поля',
+                'коды полей карточки пациента, по которым нужно вернуть информацию',
+                false,
+                []
+            ),
+            new Integer(
+                'patientsCount',
+                'количество пациентов',
+                '',
+                false,
+                20
+            ),
+            Command\PatientCard\GetList::getParam('select')->setCode('patientsSelect')
         ];
     }
 

@@ -61,18 +61,19 @@ var General = (function()
 
     function getCountString(number, variants)
     {
-        if(number === 1)
+        var units = number % 10;
+        var variantIndex = 2;
+
+        if(units === 1)
         {
-            return variants[0];
+            variantIndex = 0;
         }
-        else if((number >= 2) && (number <= 4))
+        else if((units >= 2) && (units <= 4))
         {
-            return variants[1];
+            variantIndex = 1;
         }
-        else
-        {
-            return variants[2];
-        }
+
+        return number + ' ' + variants[variantIndex];
     }
 
     /**
@@ -119,6 +120,43 @@ var General = (function()
 
     }
 
+    function forEachObj(object, handler)
+    {
+        for(let key in object)
+        {
+            if(object.hasOwnProperty(key))
+            {
+                handler(object[key], key, object);
+            }
+        }
+    }
+
+    function filterObj(object, handler)
+    {
+        const result = {};
+        forEachObj(object, function(value, key, object)
+        {
+            if(handler(value, key, object))
+            {
+                result[key] = value;
+            }
+        });
+
+        return result;
+    }
+
+    function formatPhone(rawPhone)
+    {
+        if(rawPhone.length !== 11)
+        {
+            console.error('Номер телефона должен содержать 11 цифр');
+            return null;
+        }
+
+        return '+' + rawPhone[0] + ' (' + rawPhone.substr(1, 3) + ') ' + rawPhone.substr(4, 3) + ' ' + rawPhone.substr(7, 2) + ' ' + rawPhone.substr(9, 2);
+    }
+
+
     var Date = (function()
     {
         function formatTime(ts)
@@ -151,11 +189,11 @@ var General = (function()
         var ruMonthsGen = ['января', 'февраля', 'марта', 'апреля', 'мая', 'июня', 'июля', 'августа', 'сентября', 'октября', 'ноября', 'декабря'];
         var ruWeekdays = ['Воскресенье', 'Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота'];
 
-        function formatDate(date, format)
+        function formatDate(date, formatTo, formatFrom = null)
         {
-            var dateMoment = moment(date);
-            format = format.replace('ru_month_gen', ruMonthsGen[dateMoment.get('month')]).replace('ru_weekday', ruWeekdays[dateMoment.get('weekday')]);
-            return dateMoment.format(format);
+            var dateMoment = moment(date, formatFrom);
+            formatTo = formatTo.replace('ru_month_gen', ruMonthsGen[dateMoment.get('month')]).replace('ru_weekday', ruWeekdays[dateMoment.get('weekday')]);
+            return dateMoment.format(formatTo);
         }
 
         function getMinutesByTime(time)
@@ -194,15 +232,21 @@ var General = (function()
 
             if(hours)
             {
-                result += hours + ' ' + getCountString(hours, ['час', 'часа', 'часов']);
+                result += getCountString(hours, ['час', 'часа', 'часов']);
             }
 
             if(minutes)
             {
-                result += ' ' + minutes + ' ' + getCountString(minutes, ['минута', 'минуты', 'минут']);
+                result += ' ' + getCountString(minutes, ['минута', 'минуты', 'минут']);
             }
 
             return result;
+        }
+
+        function getAge(birthday)
+        {
+            var yearsCount = moment().diff(moment(birthday), 'y');
+            return getCountString(yearsCount, ['год', 'года', 'лет']);
         }
 
         return {
@@ -210,7 +254,8 @@ var General = (function()
             formatMinutes: formatMinutes,
             getDurationString: getDurationString,
             getMinutesByTime: getMinutesByTime,
-            formatDate: formatDate
+            formatDate: formatDate,
+            getAge: getAge
         }
     })();
 
@@ -249,6 +294,9 @@ var General = (function()
         uniqueId: uniqueId,
         ucfirst: ucfirst,
         serializeInObject: serializeInObject,
+        forEachObj: forEachObj,
+        filterObj: filterObj,
+        formatPhone: formatPhone,
 
         sessid: sessid,
         postFormAction: postFormAction

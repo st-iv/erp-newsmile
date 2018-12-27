@@ -3,6 +3,8 @@
 
 namespace Mmit\NewSmile\CommandParam;
 
+use Bitrix\Main\Diag\Debug;
+
 class ArrayParam extends Base
 {
     protected function formatValue($value)
