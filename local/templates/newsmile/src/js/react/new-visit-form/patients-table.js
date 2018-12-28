@@ -6,7 +6,7 @@ export default class PatientsTable extends React.PureComponent
     static propTypes = {
         initialPatients: PropTypes.array.isRequired,
         fields: PropTypes.object.isRequired,
-        onSelect: PropTypes.func,
+        onChange: PropTypes.func,
         filter: PropTypes.object,
         filterBy: PropTypes.arrayOf(PropTypes.string),
         allDataLoaded: PropTypes.bool
@@ -14,6 +14,7 @@ export default class PatientsTable extends React.PureComponent
 
     state = {
         patients: this.preparePatientsData(this.props.initialPatients),
+        selectedPatientId: null
     };
 
     static defaultProps = {
@@ -28,7 +29,7 @@ export default class PatientsTable extends React.PureComponent
 
     render()
     {
-        const patients = this.state.patients.filter(this.filterPatients.bind(this));
+        const patients = this.state.patients.filter(this.filterPatients.bind(this));//
 
         return (
             <div className="new-visit__table-wrapper">
@@ -45,7 +46,9 @@ export default class PatientsTable extends React.PureComponent
                         <tr className="table__row table__row--empty"/>
 
                             {patients.map(patient => (
-                                <tr className="table__row" key={patient.id} onClick={this.handleRowClick.bind(this, patient)}>
+                                <tr className={'table__row' + ((this.state.selectedPatientId === patient.id) ? ' table__row--active' : '')}
+                                    key={patient.id}
+                                    onClick={this.handleRowClick.bind(this, patient)}>
                                     <td className="table__cell">
                                         <div className="table__container"/>
                                         {patient.number}
@@ -170,9 +173,28 @@ export default class PatientsTable extends React.PureComponent
 
     handleRowClick(patient)
     {
-        if(this.props.onSelect)
+        let selectedPatient;
+
+        if(patient.id === this.state.selectedPatientId)
         {
-            this.props.onSelect(patient);
+            this.setState({
+                selectedPatientId: null
+            });
+
+            selectedPatient = null;
+        }
+        else
+        {
+            this.setState({
+                selectedPatientId: patient.id
+            });
+
+            selectedPatient = patient;
+        }
+
+        if(this.props.onChange)
+        {
+            this.props.onChange(selectedPatient);
         }
     }
 }

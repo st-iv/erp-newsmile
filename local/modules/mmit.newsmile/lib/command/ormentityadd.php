@@ -39,11 +39,14 @@ abstract class OrmEntityAdd extends OrmEntityEdit
             $data[Helpers::getSnakeCase($paramKey)] = $paramValue;
         }
 
-        Debug::dumpToFile($data, 'data!');
+        $dataManager = $this->getOrmEntity()->getDataClass();
+        $addResult = $dataManager::add($data);
 
-        $addResult = PatientCardTable::add($data);
-
-        if(!$addResult->isSuccess())
+        if($addResult->isSuccess())
+        {
+            $this->result['primary'] = Helpers::strtolowerKeys($addResult->getPrimary());
+        }
+        else
         {
             throw new Error(
                 'Ошибка добавления записи: ' . implode('; ', $addResult->getErrorMessages()),

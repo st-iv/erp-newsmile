@@ -34,10 +34,13 @@ abstract class OrmEntityEdit extends Base
         if(!$entity) return [];
 
         $result = [];
-
-        foreach ($entity->getFields() as $field)
+        $fields = array_filter($entity->getFields(), function(Field $field)
         {
-            if(!($field instanceof ScalarField)) continue;
+            return ($field instanceof ScalarField) && $this->filterField($field);
+        });
+
+        foreach ($fields as $field)
+        {
             $result[] = $this->getParamByField($field);
         }
 
@@ -114,4 +117,12 @@ abstract class OrmEntityEdit extends Base
      * @return Entity
      */
     abstract protected function getOrmEntity();
+
+    /**
+     * Возвращает true для полей, к которым команда должна предоставить доступ
+     * @param Field $field
+     *
+     * @return bool
+     */
+    abstract protected function filterField(Field $field);
 }

@@ -9,30 +9,44 @@ var ServerCommand = function(code, data, success = null)
 $.extend(ServerCommand.prototype, {
     exec: function()
     {
-        $.ajax({
-            url: this.restApiUrl + this.code + '/',
-            data: this.data,
-            dataType: 'json',
-            success: this.handleResponse.bind(this)
+        return new Promise((resolve, reject) =>
+        {
+            $.ajax({
+                url: this.restApiUrl + this.code + '/',
+                data: this.data,
+                dataType: 'json',
+                complete: this.handleResponse.bind(this, resolve, reject)
+            });
         });
     },
 
-    handleResponse: function(response)
+    handleResponse: function(resolve, reject, jqXHR, textStatus)
     {
-        if((response.result === 'success') && (response.error === null))
+        console.log(jqXHR, textStatus, 'test!!!');
+
+        let response = jqXHR.responseJSON;
+
+        if(textStatus === 'success' && (response.result === 'success') && (response.error === null))
         {
             if(typeof this.success === 'function')
             {
                 this.success(response.data, this);
             }
+
+            resolve(response.data);
         }
         else
         {
             console.warn('Произошла ошибка при выполнении серверной команды ' + this.code + '.');
 
-            if(response.error && response.error.description)
+            if(response && response.error && response.error.description)
             {
                 console.warn(response.error.description);
+                //reject(response.error);
+            }
+            else
+            {
+                //reject(jqXHR); //TODO вернуть объект error с той же сткруктурой, которую присылает сервер
             }
         }
     }

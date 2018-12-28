@@ -3,6 +3,7 @@
 
 namespace Mmit\NewSmile\Command\PatientCard;
 
+use Bitrix\Main\Entity\Field;
 use Mmit\NewSmile\Command;
 use Mmit\NewSmile\Helpers;
 use Mmit\NewSmile\PatientCardTable;
@@ -13,6 +14,12 @@ class Add extends Command\OrmEntityAdd
     {
         return PatientCardTable::getEntity();
     }
+
+    protected function filterField(Field $field)
+    {
+        return true;
+    }
+
 
     protected function prepareParamValue($paramCode, $paramValue)
     {

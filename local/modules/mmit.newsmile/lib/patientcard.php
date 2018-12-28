@@ -114,7 +114,8 @@ class PatientCardTable extends Entity\DataManager implements NewSmile\Orm\Extend
             ),
             new Entity\DateField('PERSONAL_BIRTHDAY',
                 array(
-                    'title' => 'Дата рождения'
+                    'title' => 'Дата рождения',
+                    'required' => true
                 )
             ),
             new Entity\EnumField('PERSONAL_GENDER',

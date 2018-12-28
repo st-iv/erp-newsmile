@@ -7,7 +7,7 @@ import Popup from '../../popup'
 import NewVisitForm from '../../new-visit-form/main'
 import PopupManager from '../../popup-manager'
 
-class CellMenu extends React.Component
+class CellMenu extends React.PureComponent
 {
     static propTypes = {
         renderCell: PropTypes.func.isRequired,
@@ -21,6 +21,7 @@ class CellMenu extends React.Component
         chairId: PropTypes.number,
         doctorId: PropTypes.number,
         date: PropTypes.string,
+        update: PropTypes.func
     };
 
     state = {
@@ -76,7 +77,6 @@ class CellMenu extends React.Component
                     this.popperUpdate = scheduleUpdate;
                     return (
                         <div ref={ref} style={style} x-placement={placement} className={popupClassName}>
-
                             {this.needShowContextMenu() && (
                                 <CellContextMenu commands={this.state.commands}
                                                  onShowActionVariants={() => {this.setState({showDetailInfo: false}); this.popperUpdate();}}
@@ -86,14 +86,13 @@ class CellMenu extends React.Component
                                                  timeEnd={this.props.timeEnd}
                                                  chairId={this.props.chairId}
                                                  date={this.props.date}
+
                                 />
                             )}
-
                             {this.needShowDetailInfo() && (
                                 <CellDetailInfo {...this.props.detailInfo}/>
                             )}
-
-                            <div className="dClndr_parrow"></div>
+                            <div className="dClndr_parrow"/>
                         </div>
                     );
                 }}
@@ -196,10 +195,21 @@ class CellMenu extends React.Component
             switch(commandCode)
             {
                 case 'schedule/change-doctor':
+                    commandInfo.params = {
+                        timeStart: this.props.timeStart,
+                        timeEnd: this.props.timeEnd,
+                        chairId: this.props.chairId,
+                        date: this.props.date,
+                    };
                     commandInfo.varyParam = 'doctorId';
                     break;
 
                 case 'visit/add':
+                    commandInfo.params = {
+                        timeStart: this.props.date + ' ' + this.props.timeStart,
+                        timeEnd: this.props.date + ' ' + this.props.timeEnd,
+                        workChairId: this.props.chairId,
+                    };
                     commandInfo.varyParam = 'patientId';
                     break;
             }
@@ -373,14 +383,19 @@ class CellMenu extends React.Component
                           timeEnd={this.props.timeEnd}
                           date={this.props.date}
                           doctorId={this.props.doctorId}
-                          onSuccessSubmit={this.closeNewVisitForm.bind(this)}
-                          onClose={this.closeNewVisitForm.bind(this)}
+                          onSuccessSubmit={this.closeNewVisitForm.bind(this, true)}
+                          onClose={this.closeNewVisitForm.bind(this, false)}
             />
         );
     }
 
-    closeNewVisitForm()
+    closeNewVisitForm(bUpdate)
     {
+        if(bUpdate && this.props.update)
+        {
+            this.props.update();
+        }
+
         PopupManager.closePopup(this.newVisitFormPopupId);
     }
 }

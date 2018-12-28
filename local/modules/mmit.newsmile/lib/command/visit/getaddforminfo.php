@@ -37,13 +37,13 @@ class GetAddFormInfo extends Base
             ];
 
             $doctors = array_merge($doctors, $changeDoctorCommand->getVariants());
-            $doctorsIds = [];
 
             $doctors = array_filter($doctors, function($doctor)
             {
                 return ($doctor['code'] == true);
             });
 
+            $doctorsIds = [];
             array_walk($doctors, function($doctor) use (&$doctorsIds)
             {
                 $doctorsIds[] = $doctor['code'];
@@ -56,9 +56,10 @@ class GetAddFormInfo extends Base
                 return [
                     'fio' => $doctor['name'],
                     'color' => $colors[$doctor['code']],
-                    'isCurrent' => ($doctor['code'] == $curDoctor['ID'])
+                    'isCurrent' => ($doctor['code'] == $curDoctor['ID']),
+                    'code' => $doctor['code']
                 ];
-            }, $doctors);
+            }, array_values($doctors));
         }
 
         /* описание полей сущности пациента */

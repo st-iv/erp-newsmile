@@ -1,7 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 
-class CellContextMenu extends React.Component
+class CellContextMenu extends React.PureComponent
 {
     static propTypes = {
         commands: PropTypes.array.isRequired,

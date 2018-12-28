@@ -8,7 +8,7 @@ import Select from "./select";
 import Scrollbars from '../scrollbars'
 import PatientsTable from './patients-table'
 
-class NewVisitForm extends React.Component
+export default class NewVisitForm extends React.Component
 {
     static propTypes = {
         timeStart: PropTypes.string.isRequired,
@@ -26,7 +26,8 @@ class NewVisitForm extends React.Component
         fields: null,
         additionalPhonesCount: 0,
         addFormScrollHeight: 0,
-        values: {}
+        values: {},
+        selectedPatient: null
     };
 
     formRef = React.createRef();
@@ -93,6 +94,7 @@ class NewVisitForm extends React.Component
                                        filter={this.state.values}
                                        filterBy={['number', 'name', 'lastName', 'secondName']}
                                        allDataLoaded={this.state.allPatientsLoaded}
+                                       onChange={this.handlePatientChange.bind(this)}
                         />
                     )}
                 </main>
@@ -109,24 +111,24 @@ class NewVisitForm extends React.Component
                         <div className="form__scroll-area">
 
                             <div className="form__block">
-                                <TextInput {...this.addControlledMixin(this.state.fields.number)}/>
+                                <TextInput {...this.addGeneralInputMixin(this.state.fields.number)}/>
                             </div>
 
                             <div className="form__block">
-                                <TextInput {...this.addControlledMixin(this.state.fields.lastName)}/>
-                                <TextInput {...this.addControlledMixin(this.state.fields.name)}/>
-                                <TextInput {...this.addControlledMixin(this.state.fields.secondName)}/>
+                                <TextInput {...this.addGeneralInputMixin(this.state.fields.lastName)}/>
+                                <TextInput {...this.addGeneralInputMixin(this.state.fields.name)}/>
+                                <TextInput {...this.addGeneralInputMixin(this.state.fields.secondName)}/>
                             </div>
 
                             <div className="form__block">
-                                <TextInput {...this.addControlledMixin(this.state.fields.personalBirthday)} mask="99.99.9999" maskChar={this.maskedInputsMaskChars.personalBirthday}/>
-                                <RadioInput {...this.addControlledMixin(this.state.fields.personalGender)}/>
+                                <TextInput {...this.addGeneralInputMixin(this.state.fields.personalBirthday)} mask="99.99.9999" maskChar={this.maskedInputsMaskChars.personalBirthday}/>
+                                <RadioInput {...this.addGeneralInputMixin(this.state.fields.personalGender)}/>
                             </div>
 
                             <div className="form__block form__block--phone">
                                 <div className="form__fields form__fields--phone">
-                                    <TextInput {...this.addControlledMixin(this.state.fields.parents)}/>
-                                    <PhoneInput {...this.addControlledMixin(this.state.fields.personalPhone)}
+                                    <TextInput {...this.addGeneralInputMixin(this.state.fields.parents)}/>
+                                    <PhoneInput {...this.addGeneralInputMixin(this.state.fields.personalPhone)}
                                                 additionalInputsName="additionalPhones"
                                                 additionalInputsCount={this.state.additionalPhonesCount}
                                     />
@@ -147,18 +149,18 @@ class NewVisitForm extends React.Component
                             </div>
 
                             <div className="form__block">
-                                <TextInput {...this.addControlledMixin(this.state.fields.personalCity)}/>
-                                <TextInput {...this.addControlledMixin(this.state.fields.personalStreet)}/>
+                                <TextInput {...this.addGeneralInputMixin(this.state.fields.personalCity)}/>
+                                <TextInput {...this.addGeneralInputMixin(this.state.fields.personalStreet)}/>
                             </div>
 
                             <div className="form__block">
-                                <TextInput {...this.addControlledMixin(this.state.fields.personalHome)}/>
-                                <TextInput {...this.addControlledMixin(this.state.fields.personalHousing)}/>
-                                <TextInput {...this.addControlledMixin(this.state.fields.personalApartment)}/>
+                                <TextInput {...this.addGeneralInputMixin(this.state.fields.personalHome)}/>
+                                <TextInput {...this.addGeneralInputMixin(this.state.fields.personalHousing)}/>
+                                <TextInput {...this.addGeneralInputMixin(this.state.fields.personalApartment)}/>
                             </div>
 
                             <div className="form__block form__block--select">
-                                <Select {...this.addControlledMixin(this.state.fields.source)} isMulti hideSelectedOptions={false} placeholder=""/>
+                                <Select {...this.addGeneralInputMixin(this.state.fields.source)} isMulti hideSelectedOptions={false} placeholder=""/>
                             </div>
                         </div>
                     </Scrollbars>
@@ -191,24 +193,21 @@ class NewVisitForm extends React.Component
 
             if(result.doctors)
             {
-                newState.doctors = [];
-
-                for(let doctorId in result.doctors)
+                newState.doctors = result.doctors.map(doctor =>
                 {
-                    let doctor = result.doctors[doctorId];
                     let doctorOption = {
                         label: doctor.fio,
                         color: doctor.color,
-                        value: doctorId,
+                        value: doctor.code,
                     };
-
-                    newState.doctors.push(doctorOption);
 
                     if(doctor.isCurrent)
                     {
                         newState.doctor = doctorOption;
                     }
-                }
+
+                    return doctorOption;
+                });
             }
 
             newState.values = {};
@@ -240,38 +239,69 @@ class NewVisitForm extends React.Component
         e.preventDefault();
     }
 
-    handleSubmit(e)
-    {
-        let data = General.clone(this.state.values);
-        data.additionalPhones = data.personalPhone.slice(1);
-        data.personalPhone = data.personalPhone[0];
-
-        if(data.personalBirthday)
-        {
-            data.personalBirthday = General.Date.formatDate(data.personalBirthday, 'YYYY-MM-DD', 'DD.MM.YYYY');
-        }
-
-        let command = new ServerCommand('patient-card/add', data, response =>
-        {
-            this.props.onSuccessSubmit && this.props.onSuccessSubmit();
-        });
-
-        command.exec();//
-
-        e.preventDefault();
-    }
-
-    getControlledMixin(fieldName)
+    getGeneralInputMixin(fieldName)
     {
         return {
             value: ((this.state.values[fieldName] === undefined) ? '' : this.state.values[fieldName]),
-            onChange: this.handleInputChange.bind(this, fieldName)
+            onChange: this.handleInputChange.bind(this, fieldName),
+            disabled: (this.state.selectedPatient !== null)
         }
     }
 
-    addControlledMixin(field)
+    addGeneralInputMixin(field)
     {
-        return Object.assign({}, field, this.getControlledMixin(field.name));
+        return Object.assign({}, field, this.getGeneralInputMixin(field.name));
+    }
+
+    addPatient()
+    {
+        console.log('add patient!');
+        return new Promise(resolve =>
+        {
+            let data = General.clone(this.state.values);
+            data.additionalPhones = data.personalPhone.slice(1);
+            data.personalPhone = data.personalPhone[0];
+
+            if(data.personalBirthday)
+            {
+                data.personalBirthday = General.Date.formatDate(data.personalBirthday, 'YYYY-MM-DD', 'DD.MM.YYYY');
+            }
+
+            let command = new ServerCommand('patient-card/add', data, response =>
+            {
+                this.props.onSuccessSubmit && this.props.onSuccessSubmit();
+                resolve(response.primary.id);
+            });
+
+            command.exec();
+        });
+    }
+
+    addVisit(patientId)
+    {
+        let command = new ServerCommand('visit/add', {
+            timeStart: this.props.date + ' ' + this.props.timeStart,
+            timeEnd: this.props.date + ' ' + this.props.timeEnd,
+            workChairId: this.props.chairId,
+            patientId: patientId,
+            doctorId: this.state.doctor.value
+        });
+
+        command.exec().then(() => this.props.onSuccessSubmit(), err => {throw err});
+    }
+
+    handleSubmit(e)
+    {
+        if(this.state.selectedPatient === null)
+        {
+            this.addPatient().then(patientId => this.addVisit(patientId));
+        }
+        else
+        {
+            this.addVisit(this.state.selectedPatient.id);
+        }
+
+        e.preventDefault();
     }
 
     handleInputChange(fieldName, value)
@@ -283,6 +313,11 @@ class NewVisitForm extends React.Component
             values: newValues
         });
     }
-}
 
-export default NewVisitForm
+    handlePatientChange(patient)
+    {
+        this.setState({
+            selectedPatient: patient
+        });
+    }
+}

@@ -2016,7 +2016,7 @@ ul.dClndr_psubmenu {
     height: 50px;
 }
 
-.table__row:hover {
+.table__row:hover, .table__row--active {
     background-color: #f1f2f3;
 }
 

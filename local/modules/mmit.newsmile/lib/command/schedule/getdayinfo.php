@@ -289,7 +289,7 @@ class GetDayInfo extends Base
                 'secondName' => $patient['SECOND_NAME'],
                 'phone' => $patient['PERSONAL_PHONE'],
                 'cardNumber' => $patient['NUMBER'],
-                'age' => Date\Helper::getAge($patient['PERSONAL_BIRTHDAY']),
+                'age' => $patient['PERSONAL_BIRTHDAY'] ? Date\Helper::getAge($patient['PERSONAL_BIRTHDAY']) : '',
             ];
         }
 

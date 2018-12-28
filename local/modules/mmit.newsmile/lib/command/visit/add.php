@@ -4,39 +4,26 @@
 namespace Mmit\NewSmile\Command\Visit;
 
 use Bitrix\Main\Diag\Debug;
+use Bitrix\Main\Entity\Field;
 use Bitrix\Main\Type\DateTime;
-use Mmit\NewSmile\Command\Base;
-use Mmit\NewSmile\CommandParam\Date;
-use Mmit\NewSmile\CommandParam\Integer;
-use Mmit\NewSmile\CommandParam\Time;
-use Mmit\NewSmile\Config;
-use Mmit\NewSmile\Error;
-use Mmit\NewSmile\Helpers;
-use Mmit\NewSmile\PatientCardTable;
+use Mmit\NewSmile\Command\OrmEntityAdd;
+use Mmit\NewSmile\Command\TeethMap\Detail;
 use Mmit\NewSmile\ScheduleTable;
 use Mmit\NewSmile\VisitTable;
 
-class Add extends Base
+class Add extends OrmEntityAdd
 {
     protected static $name = 'Записать пациента';
     protected $recordedPatients;
 
-    protected function doExecute()
+    protected function getOrmEntity()
     {
-        $timeStart = new DateTime($this->params['date'] . ' ' . $this->params['timeStart'], 'Y-m-d H:i');
-        $timeEnd = new DateTime($this->params['date'] . ' ' . $this->params['timeEnd'], 'Y-m-d H:i');
+        return VisitTable::getEntity();
+    }
 
-        $addResult = VisitTable::add([
-            'TIME_START' => $timeStart,
-            'TIME_END' => $timeEnd,
-            'PATIENT_ID' => $this->params['patientId'],
-            'WORK_CHAIR_ID' => $this->params['chairId']
-        ]);
-
-        if(!$addResult->isSuccess())
-        {
-            throw new Error(implode(';', $addResult->getErrorMessages()), 'VISIT_ADD_ERROR');
-        }
+    protected function filterField(Field $field)
+    {
+        return in_array($field->getName(), ['TIME_START', 'TIME_END', 'PATIENT_ID', 'DOCTOR_ID', 'WORK_CHAIR_ID']);
     }
 
     protected function checkAvailable()
@@ -50,8 +37,8 @@ class Add extends Base
             $bVaryPatient = true;
         }
 
-        $startTime = new \DateTime($this->params['date'] . ' ' . $this->params['timeStart']);
-        $endTime = new \DateTime($this->params['date'] . ' ' . $this->params['timeEnd']);
+        $startTime = new \DateTime($this->params['timeStart']);
+        $endTime = new \DateTime($this->params['timeEnd']);
 
         // проверяем по времени - пациента можно записать только на ещё не прошедшие интервалы расписания
         if(!$endTime->diff(new \DateTime())->invert)
@@ -73,7 +60,7 @@ class Add extends Base
 
         while($schedule = $dbSchedules->fetch())
         {
-            if($schedule['WORK_CHAIR_ID'] == $this->params['chairId'])
+            if($schedule['WORK_CHAIR_ID'] == $this->params['workChairId'])
             {
                 if($schedule['PATIENT_ID'] || !$schedule['DOCTOR_ID'] || (isset($doctorId) && $doctorId != $schedule['DOCTOR_ID']))
                 {
@@ -93,11 +80,7 @@ class Add extends Base
             }
         }
 
-        if($bVaryPatient)
-        {
-            //$this->variants = $this->getPatients($recordedPatients);
-        }
-        else
+        if(!$bVaryPatient)
         {
             $isAllowed = $isAllowed && !in_array($this->params['patientId'], $recordedPatients);
         }
@@ -105,35 +88,6 @@ class Add extends Base
         return $isAllowed;
     }
 
-    protected function getPatients(array $except)
-    {
-        $dbPatients = PatientCardTable::getList([
-            'filter' => [
-                '!ID' => $except
-            ],
-            'select' => ['ID', 'NAME', 'LAST_NAME', 'SECOND_NAME']
-        ]);
-
-        $result = [];
-
-        while($patient = $dbPatients->fetch())
-        {
-            $result[$patient['ID']] = Helpers::getFio($patient);
-        }
-
-        return $result;
-    }
-
-    public function getParamsMap()
-    {
-        return [
-            new Time('timeStart', 'Начало интервала', '', true),
-            new Time('timeEnd', 'Конец интервала', '', true),
-            new Integer('chairId', 'id кресла', '', true),
-            new Date('date', 'дата', '', true),
-            new Integer('patientId', 'id кресла', '', true),
-        ];
-    }
 
     protected static function getOperations()
     {

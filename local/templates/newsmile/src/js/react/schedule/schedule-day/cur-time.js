@@ -69,7 +69,7 @@ class CurTime extends React.Component
         let timeEnd = timeList.pop();
         let timeEndMoment = this.props.getMoment(timeEnd);
         timeEndMoment.add(
-            (this.props.timeLine[timeEnd] === 'standard' ? 30 : 15),
+            (this.props.timeLine[timeEnd].type === 'standard' ? 30 : 15),
             'minute'
         );
 
@@ -87,20 +87,19 @@ class CurTime extends React.Component
         let isStandardInterval = true;
         let isTimeLineHit = false;
 
-
         for(let time in this.props.timeLine)
         {
             let startMoment = this.props.getMoment(time);
             let endMoment = startMoment.clone();
             endMoment.add(
-                (this.props.timeLine[time] === 'standard' ? 30 : 15),
+                (this.props.timeLine[time].type === 'standard' ? 30 : 15),
                 'minute'
             );
 
 
             if(!startMoment.isAfter(curServerMoment) && endMoment.isAfter(curServerMoment))
             {
-                isStandardInterval = (this.props.timeLine[time] === 'standard');
+                isStandardInterval = (this.props.timeLine[time].type === 'standard');
                 isTimeLineHit = true;
                 cellPassedPart = startMoment.diff(curServerMoment) / startMoment.diff(endMoment);
                 break;

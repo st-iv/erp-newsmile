@@ -120,13 +120,25 @@ var General = (function()
 
     }
 
-    function forEachObj(object, handler)
+    function forEachObj(object, handler, from = null, end = null)
     {
+        var bActiveKey = (from === null);
+
         for(let key in object)
         {
-            if(object.hasOwnProperty(key))
+            if((end !== null) && (key === end)) break;
+
+            if(key === from)
             {
-                handler(object[key], key, object);
+                bActiveKey = true;
+            }
+
+            if(bActiveKey)
+            {
+                if(object.hasOwnProperty(key))
+                {
+                    handler(object[key], key, object);
+                }
             }
         }
     }
@@ -145,11 +157,29 @@ var General = (function()
         return result;
     }
 
+    function mapObj(object, handler)
+    {
+        var result = [];
+
+        forEachObj(object, (value, key) =>
+        {
+            result.push(handler(value, key, object));
+        });
+
+        return result;
+    }
+
     function formatPhone(rawPhone)
     {
+        if(typeof rawPhone !== 'string')
+        {
+            rawPhone = String(rawPhone);
+        }
+
         if(rawPhone.length !== 11)
         {
             console.error('Номер телефона должен содержать 11 цифр');
+            console.log(rawPhone);
             return null;
         }
 
@@ -296,6 +326,7 @@ var General = (function()
         serializeInObject: serializeInObject,
         forEachObj: forEachObj,
         filterObj: filterObj,
+        mapObj: mapObj,
         formatPhone: formatPhone,
 
         sessid: sessid,

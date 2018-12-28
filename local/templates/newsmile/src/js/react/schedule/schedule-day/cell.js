@@ -2,7 +2,7 @@ import React from 'react'
 import ReactDOM from 'react-dom'
 import CellMenu from './cell-menu'
 
-class Cell extends React.Component
+class Cell extends React.PureComponent
 {
     defaultCellHeight = 22;
     defaultCellMargin = 2;
@@ -40,8 +40,8 @@ class Cell extends React.Component
                           getCellNode={this.getCellNode.bind(this)}
                           detailInfo={detailInfo}
                           cellType={!!this.props.patient ? 'visit' : 'schedule'}
-
                           onCommandResult={() => this.props.onUpdate()}
+                          update={this.props.onUpdate}
                           timeStart={this.props.timeStart}
                           timeEnd={this.props.timeEnd}
                           chairId={this.props.chairId}
@@ -62,7 +62,7 @@ class Cell extends React.Component
             height: this.getHeight() + 'px'
         };
 
-        let cellContent = '';
+        let cellContent = [];
         let className = 'dayCalendar_interval';
 
         if(doctor)
@@ -74,16 +74,16 @@ class Cell extends React.Component
                 cellStyle.backgroundColor = General.Color.lighten(doctor.color, 30);
                 cellStyle.borderColor = General.Color.lighten(doctor.color, 13);
 
-                cellContent = <span>{General.getFio(patient)}</span>;
+                cellContent.push(<span key="patient-fio">{General.getFio(patient)}</span>);
             }
             else
             {
-                if(!isMainDoctor)
-                {
-                    cellContent = <span className="freedoctor_intrvl">{'Врач - ' + doctor.fio}</span>
-                }
-
                 cellStyle.backgroundColor = General.Color.lighten(doctor.color, 40);
+            }
+
+            if(!isMainDoctor)
+            {
+                cellContent.push(<span className="freedoctor_intrvl" key="doctor-fio">{'Врач - ' + doctor.fio}</span>);
             }
 
             className += ' resrvdI';
@@ -98,23 +98,6 @@ class Cell extends React.Component
             cellStyle.visibility = 'hidden';
         }
 
-        /*const showPopup = (this.state.isHovered || this.state.showActions);
-
-        if(showPopup)
-        {
-            className += ' dClndr_pshowed';
-
-            if(!this.state.showDetailInfo)
-            {
-                className += ' dClndr_submemu_act';
-            }
-        }
-
-        if(this.state.showActions)
-        {
-            className += ' dClndr_pshowmenu';
-        }*/
-
         let cellAttrs = {
             className: className,
             style: cellStyle
@@ -124,20 +107,22 @@ class Cell extends React.Component
 
         return (
             <div {...cellAttrs}>
-                {cellContent}
-                {menu}
+                {cellContent}{menu}
             </div>
         )
     }
 
     getHeight()
     {
-        let height = this.defaultCellHeight;
+        let height = -this.defaultCellMargin;
 
-        if(this.props.doctor)
+        General.forEachObj(this.props.timeLine, timeLineItem =>
         {
-            height = (this.props.size * this.defaultCellHeight + (this.props.size - 1) * this.defaultCellMargin);
-        }
+            let timeLineItemHeight = timeLineItem.height || this.defaultCellHeight;
+            height += timeLineItemHeight + this.defaultCellMargin;
+
+        }, this.props.timeStart, this.props.timeEnd);
+
 
         return height;
     }

@@ -113,33 +113,39 @@ class VisitTable extends Entity\DataManager implements ExtendedFieldsDescriptor
         $result = new Entity\EventResult();
 
         /* выясняем ID врача для приема по интервалам расписания, которые приходятся на прием */
-
-        $dbSchedules = ScheduleTable::getList([
-            'filter' => [
-                '>=TIME' => $fields['TIME_START'],
-                '<TIME' => $fields['TIME_END'],
-                'WORK_CHAIR_ID' => $fields['WORK_CHAIR_ID'],
-                'CLINIC_ID' => $fields['CLINIC_ID'] ?: Config::getClinicId()
-            ]
-        ]);
-
-        $doctorId = null;
-
-        while ($schedule = $dbSchedules->fetch())
+        if(!$fields['DOCTOR_ID'])
         {
-            if(!$schedule['DOCTOR_ID'])
+            $dbSchedules = ScheduleTable::getList([
+                'filter' => [
+                    '>=TIME' => $fields['TIME_START'],
+                    '<TIME' => $fields['TIME_END'],
+                    'WORK_CHAIR_ID' => $fields['WORK_CHAIR_ID'],
+                    'CLINIC_ID' => $fields['CLINIC_ID'] ?: Config::getClinicId()
+                ]
+            ]);
+
+            $doctorId = null;
+
+            while ($schedule = $dbSchedules->fetch())
             {
-                throw new Error('На все интервалы расписания, на которые записывается пациент, должен быть назначен врач!', 'VISIT_NOT_APPOINTED_DOCTOR');
+                if(!$schedule['DOCTOR_ID'])
+                {
+                    throw new Error('На все интервалы расписания, на которые записывается пациент, должен быть назначен врач!', 'VISIT_NOT_APPOINTED_DOCTOR');
+                }
+
+                if(!isset($doctorId))
+                {
+                    $doctorId = $schedule['DOCTOR_ID'];
+                }
+                elseif($doctorId != $schedule['DOCTOR_ID'])
+                {
+                    throw new Error('На все интервалы расписания, на которые записывается пациент, должен быть назначен один и тотже врач!', 'VISIT_DIFFERENT_DOCTORS');
+                }
             }
 
-            if(!isset($doctorId))
-            {
-                $doctorId = $schedule['DOCTOR_ID'];
-            }
-            elseif($doctorId != $schedule['DOCTOR_ID'])
-            {
-                throw new Error('На все интервалы расписания, на которые записывается пациент, должен быть назначен один и тотже врач!', 'VISIT_DIFFERENT_DOCTORS');
-            }
+            $result->modifyFields([
+                'DOCTOR_ID' => $doctorId
+            ]);
         }
 
         /* берем DATE_START (дату приема) с TIME_START и TIME_END */
@@ -150,7 +156,6 @@ class VisitTable extends Entity\DataManager implements ExtendedFieldsDescriptor
         }
 
         $result->modifyFields([
-            'DOCTOR_ID' => $doctorId,
             'DATE_START' => new Date($fields['TIME_START']->format('d.m.Y'))
         ]);
 
@@ -177,7 +182,8 @@ class VisitTable extends Entity\DataManager implements ExtendedFieldsDescriptor
         while($schedule = $dbSchedules->fetch())
         {
             ScheduleTable::update($schedule['ID'], [
-                'PATIENT_ID' => $fields['PATIENT_ID']
+                'PATIENT_ID' => $fields['PATIENT_ID'],
+                'DOCTOR_ID' => $fields['DOCTOR_ID']
             ]);
         }
     }

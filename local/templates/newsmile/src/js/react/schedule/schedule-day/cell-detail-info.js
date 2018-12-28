@@ -1,7 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 
-class CellDetailInfo extends React.Component
+class CellDetailInfo extends React.PureComponent
 {
     static propTypes = {
         timeStart: PropTypes.string.isRequired,
@@ -14,14 +14,6 @@ class CellDetailInfo extends React.Component
             secondName: PropTypes.string
         })
     };
-
-    /*
-    patient={this.this.props.patient}
-                                            timeStart={this.this.props.timeStart}
-                                            timeEnd={this.this.props.timeEnd}
-
-
-    */
 
     render()
     {
@@ -43,11 +35,15 @@ class CellDetailInfo extends React.Component
                     </div>
                     <div className="dClndr_pinfo_number">
                         <div>Карта {patient.cardNumber}</div>
-                        <span></span>
+                        <span/>
                     </div>
-                    <div className="dClndr_pinfo_phone">
-                        <div>{patient.phone}</div>
-                    </div>
+
+                    {!!patient.phone && (
+                        <div className="dClndr_pinfo_phone">
+                            <div>{General.formatPhone(patient.phone)}</div>
+                        </div>
+                    )}
+
                     <div className="dClndr_pinfo_time">
                         <span>{this.props.timeStart} - {this.props.timeEnd}</span>
                         <span>{General.Date.getDurationString(this.props.timeStart, this.props.timeEnd)}</span>
