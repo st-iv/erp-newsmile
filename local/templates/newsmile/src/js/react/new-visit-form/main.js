@@ -39,12 +39,15 @@ export default class NewVisitForm extends React.Component
     };
 
     patientCardFields = [
-        'name', 'lastName', 'secondName', 'number', 'personalBirthday', 'personalGender', 'parents',
+        'id', 'name', 'lastName', 'secondName', 'number', 'personalBirthday', 'personalGender', 'parents',
         'personalPhone', 'additionalPhones', 'personalCity', 'personalStreet', 'personalHome', 'personalHousing',
         'personalApartment', 'source'
     ];
 
+    patientNotEditableFields = ['number'];
+
     patientsInitialCount = 200;
+    valuesSnapshot = this.state.values;
 
     constructor(props)
     {
@@ -91,9 +94,10 @@ export default class NewVisitForm extends React.Component
                     {!!this.state.fields && !!this.state.patients && (
                         <PatientsTable initialPatients={this.state.patients}
                                        fields={this.state.fields}
-                                       filter={this.state.values}
+                                       filter={(this.state.selectedPatient === null) ? this.state.values : {}}
                                        filterBy={['number', 'name', 'lastName', 'secondName']}
                                        allDataLoaded={this.state.allPatientsLoaded}
+                                       selectedPatientId={this.state.selectedPatient ? this.state.selectedPatient.id : null}
                                        onChange={this.handlePatientChange.bind(this)}
                         />
                     )}
@@ -106,6 +110,27 @@ export default class NewVisitForm extends React.Component
     {
         return (
             <form className="new-visit__form form" onSubmit={this.handleSubmit.bind(this)} ref={this.formRef}>
+                <div className="form__top-block">
+                    {(this.state.selectedPatient === null)
+                        ? (
+                            <div className="form__selected-patient">
+                                Выберите пациента<br/>или создайте нового заполнив форму
+                            </div>
+                        )
+                        : (
+                            <div className="form__selected-patient">
+                                <div className="selected-patient__text">Выбран пациент</div>
+                                <div className="selected-patient__fio">
+                                    {this.state.selectedPatient.lastName + ' ' + this.state.selectedPatient.name + ' ' + this.state.selectedPatient.secondName}
+                                </div>
+                                <div className="selected-patient__cancel" onClick={this.handlePatientDeselect.bind(this)}>
+                                    Отменить выбор
+                                </div>
+                            </div>
+                        )
+                    }
+                </div>
+
                 <div className="form__fields-wrapper">
                     <Scrollbars>
                         <div className="form__scroll-area">
@@ -184,7 +209,7 @@ export default class NewVisitForm extends React.Component
             chairId: this.props.chairId,
             fields: this.patientCardFields,
             patientsCount: this.patientsInitialCount,
-            patientsSelect: PatientsTable.patientsFields
+            patientsSelect: this.patientCardFields
         };
 
         let command = new ServerCommand('visit/get-add-form-info', data, result =>
@@ -210,15 +235,7 @@ export default class NewVisitForm extends React.Component
                 });
             }
 
-            newState.values = {};
-
-            General.forEachObj(result.fields, field =>
-            {
-                newState.values[field.name] = ((field.defaultValue === undefined) ? '' : field.defaultValue);
-                delete field.defaultValue;
-            });
-
-            newState.values.personalPhone = [];
+            newState.values = this.getDefaultValues(result.fields);
 
             newState.fields = result.fields;
             newState.patients = result.patients;
@@ -244,7 +261,7 @@ export default class NewVisitForm extends React.Component
         return {
             value: ((this.state.values[fieldName] === undefined) ? '' : this.state.values[fieldName]),
             onChange: this.handleInputChange.bind(this, fieldName),
-            disabled: (this.state.selectedPatient !== null)
+            disabled: (this.state.selectedPatient !== null && (this.patientNotEditableFields.indexOf(fieldName) !== -1))
         }
     }
 
@@ -253,24 +270,28 @@ export default class NewVisitForm extends React.Component
         return Object.assign({}, field, this.getGeneralInputMixin(field.name));
     }
 
-    addPatient()
+    savePatient(id = null)
     {
-        console.log('add patient!');
         return new Promise(resolve =>
         {
             let data = General.clone(this.state.values);
             data.additionalPhones = data.personalPhone.slice(1);
             data.personalPhone = data.personalPhone[0];
 
+            if(id)
+            {
+                data.id = id
+            }
+
             if(data.personalBirthday)
             {
                 data.personalBirthday = General.Date.formatDate(data.personalBirthday, 'YYYY-MM-DD', 'DD.MM.YYYY');
             }
 
-            let command = new ServerCommand('patient-card/add', data, response =>
+            let command = new ServerCommand('patient-card/' + (id ? 'edit' : 'add'), data, response =>
             {
                 this.props.onSuccessSubmit && this.props.onSuccessSubmit();
-                resolve(response.primary.id);
+                resolve(response ? response.primary.id : id);
             });
 
             command.exec();
@@ -290,15 +311,42 @@ export default class NewVisitForm extends React.Component
         command.exec().then(() => this.props.onSuccessSubmit(), err => {throw err});
     }
 
+    getDefaultValues(fields = null)
+    {
+        if(fields === null)
+        {
+            fields = this.state.fields;
+        }
+
+        let values = {};
+
+        General.forEachObj(fields, field =>
+        {
+            values[field.name] = ((field.defaultValue === undefined) ? '' : field.defaultValue);
+            delete field.defaultValue;
+        });
+
+        values.personalPhone = [];
+
+        return values;
+    }
+
     handleSubmit(e)
     {
         if(this.state.selectedPatient === null)
         {
-            this.addPatient().then(patientId => this.addVisit(patientId));
+            this.savePatient().then(patientId => this.addVisit(patientId));
         }
         else
         {
-            this.addVisit(this.state.selectedPatient.id);
+            if(General.isEqualObjects(this.state.values, this.valuesSnapshot))
+            {
+                this.addVisit(this.state.selectedPatient.id);
+            }
+            else
+            {
+                this.savePatient(this.state.selectedPatient.id).then(() => this.addVisit(this.state.selectedPatient.id));
+            }
         }
 
         e.preventDefault();
@@ -316,8 +364,37 @@ export default class NewVisitForm extends React.Component
 
     handlePatientChange(patient)
     {
+        let newState = {
+            selectedPatient: patient,
+            values: {}
+        };
+
+        patient = General.clone(patient);
+
+        General.forEachObj(patient, (fieldValue, fieldCode) =>
+        {
+            if(fieldCode === 'personalBirthday')
+            {
+                fieldValue = General.Date.formatDate(fieldValue, 'DD.MM.YYYY');
+            }
+            else if(fieldCode === 'personalPhone')
+            {
+                fieldValue = [fieldValue];
+            }
+
+            newState.values[fieldCode] = fieldValue;
+        });
+
+        this.valuesSnapshot = Object.assign({}, this.state.values, newState.values);
+
+        this.setState(newState);
+    }
+
+    handlePatientDeselect()
+    {
         this.setState({
-            selectedPatient: patient
+            selectedPatient: null,
+            values: this.getDefaultValues()
         });
     }
 }

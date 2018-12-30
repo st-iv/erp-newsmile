@@ -2,12 +2,12 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import InputMask from '../input-mask'
 
-class TextInput extends React.PureComponent
+class TextInput extends React.Component
 {
     static propTypes = {
         name: PropTypes.string.isRequired,
         title: PropTypes.string.isRequired,
-        value: PropTypes.string,
+        value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
         required: PropTypes.bool,
         placeholder: PropTypes.string,
 
@@ -25,7 +25,7 @@ class TextInput extends React.PureComponent
     };
 
     state = {
-        isActive: !!this.props.value
+        isFocused: !!this.props.value
     };
 
     rawValue = this.props.value || this.props.defaultValue;
@@ -37,7 +37,7 @@ class TextInput extends React.PureComponent
         let inputProps = $.extend({}, this.props, {
             className: inputClass,
             type: 'text',
-            onFocus: () => this.setState({isActive: true}),
+            onFocus: () => this.setState({isFocused: true}),
             onBlur: this.handleBlur.bind(this),
         });
 
@@ -54,7 +54,7 @@ class TextInput extends React.PureComponent
         }
 
 
-        let labelClassName = 'form__label' + (this.state.isActive ? ' form__label--focus' : '');
+        let labelClassName = 'form__label' + ((this.props.value || this.state.isFocused) ? ' form__label--focus' : '');
 
         return (
             <label className={wrapperClass} htmlFor={this.props.name}>
@@ -74,12 +74,9 @@ class TextInput extends React.PureComponent
 
     handleBlur()
     {
-        if(!this.rawValue)
-        {
-            this.setState({
-                isActive: false
-            })
-        }
+        this.setState({
+            isFocused: false
+        })
     }
 
 
@@ -92,7 +89,6 @@ class TextInput extends React.PureComponent
     {
         this.rawValue = rawValue;
         this.props.onChange(value);
-        console.log(value, rawValue, 'test');
     }
 
     handleChange(e)

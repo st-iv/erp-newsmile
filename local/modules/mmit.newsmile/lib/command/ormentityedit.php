@@ -21,108 +21,19 @@ use Mmit\NewSmile\CommandParam;
  * Class OrmEntityAdd
  * @package Mmit\NewSmile\Command
  */
-abstract class OrmEntityEdit extends Base
+abstract class OrmEntityEdit extends OrmEntityWrite
 {
     protected function doExecute()
     {
-        // TODO: Implement doExecute() method.
-    }
+        $dataManager = $this->getOrmEntity()->getDataClass();
+        $updateResult = $dataManager::update($this->params['id'], $this->getFieldsValues());
 
-    public function getParamsMap()
-    {
-        $entity = $this->getOrmEntity();
-        if(!$entity) return [];
-
-        $result = [];
-        $fields = array_filter($entity->getFields(), function(Field $field)
+        if(!$updateResult->isSuccess())
         {
-            return ($field instanceof ScalarField) && $this->filterField($field);
-        });
-
-        foreach ($fields as $field)
-        {
-            $result[] = $this->getParamByField($field);
+            throw new Error(
+                'Ошибка редактирования записи: ' . implode('; ', $updateResult->getErrorMessages()),
+                'UPDATE_RECORD_ERROR'
+            );
         }
-
-        return $result;
     }
-
-    /**
-     * @param ScalarField $field
-     *
-     * @return CommandParam\Base
-     * @throws Error
-     */
-    protected function getParamByField(ScalarField $field)
-    {
-        $class = null;
-
-        if($field->isSerialized())
-        {
-            $class = CommandParam\ArrayParam::class;
-        }
-        else
-        {
-            $fieldType = Helper::getFieldType($field);
-
-            switch($fieldType)
-            {
-                case 'integer':
-                    $class = CommandParam\Integer::class;
-                    break;
-
-                case 'float':
-                    $class = CommandParam\Float::class;
-                    break;
-
-                case 'string':
-                case 'text':
-                case 'enum':
-                    $class = CommandParam\String::class;
-                    break;
-
-                case 'date':
-                    $class = CommandParam\Date::class;
-                    break;
-
-                case 'datetime':
-                    $class = CommandParam\DateTime::class;
-                    break;
-
-                case 'boolean':
-                    $class = CommandParam\Bool::class;
-                    break;
-
-                case 'phone':
-                    $class = CommandParam\Phone::class;
-                    break;
-
-                default:
-                    throw new Error('Неподдерживаемый тип поля orm сущности: ' . $fieldType, 'NOT_SUPPORTED_FIELD_TYPE');
-            }
-        }
-
-
-        return new $class(
-            Helpers::getCamelCase($field->getName(), false),
-            $field->getTitle(),
-            '',
-            $field->isRequired()/*,
-            $field->getDefaultValue()*/
-        );
-    }
-
-    /**
-     * Возвращает Entity, с которой будет работать команда
-     * @return Entity
-     */
-    abstract protected function getOrmEntity();
-
-    /**
-     * Возвращает true для полей, к которым команда должна предоставить доступ
-     * @param Field $field
-     *
-     * @return bool
-     */
-    abstract protected function filterField(Field $field);
 }

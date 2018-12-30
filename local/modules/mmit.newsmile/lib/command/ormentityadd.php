@@ -11,36 +11,12 @@ use Mmit\NewSmile\Error;
 use Mmit\NewSmile\Helpers;
 use Mmit\NewSmile\PatientCardTable;
 
-abstract class OrmEntityAdd extends OrmEntityEdit
+abstract class OrmEntityAdd extends OrmEntityWrite
 {
     protected function doExecute()
     {
-        $data = [];
-
-        $paramsMap = $this->getParamsMapAssoc();
-
-        foreach ($this->params as $paramKey => $paramValue)
-        {
-            /**
-             * @var \Mmit\NewSmile\CommandParam\Base $param
-             */
-            $param = $paramsMap[$paramKey];
-
-            if($param instanceof Date)
-            {
-                $paramValue = new \Bitrix\Main\Type\Date($paramValue, 'Y-m-d');
-            }
-            elseif($param instanceof DateTime)
-            {
-                $paramValue = new \Bitrix\Main\Type\DateTime($paramValue, 'Y-m-d H:i:s');
-            }
-
-
-            $data[Helpers::getSnakeCase($paramKey)] = $paramValue;
-        }
-
         $dataManager = $this->getOrmEntity()->getDataClass();
-        $addResult = $dataManager::add($data);
+        $addResult = $dataManager::add($this->getFieldsValues());
 
         if($addResult->isSuccess())
         {

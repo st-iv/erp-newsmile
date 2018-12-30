@@ -186,6 +186,24 @@ var General = (function()
         return '+' + rawPhone[0] + ' (' + rawPhone.substr(1, 3) + ') ' + rawPhone.substr(4, 3) + ' ' + rawPhone.substr(7, 2) + ' ' + rawPhone.substr(9, 2);
     }
 
+    function isEqualObjects(obj1, obj2)
+    {
+        var result = true;
+
+        for (var key in obj1)
+        {
+            if(!obj1.hasOwnProperty(key)) continue;
+
+            if(obj1[key] !== obj2[key])
+            {
+                result = false;
+                break;
+            }
+        }
+
+        return result;
+    }
+
 
     var Date = (function()
     {
@@ -327,6 +345,7 @@ var General = (function()
         forEachObj: forEachObj,
         filterObj: filterObj,
         mapObj: mapObj,
+        isEqualObjects: isEqualObjects,
         formatPhone: formatPhone,
 
         sessid: sessid,

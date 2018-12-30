@@ -9,7 +9,8 @@ export default class PatientsTable extends React.PureComponent
         onChange: PropTypes.func,
         filter: PropTypes.object,
         filterBy: PropTypes.arrayOf(PropTypes.string),
-        allDataLoaded: PropTypes.bool
+        allDataLoaded: PropTypes.bool,
+        selectedPatientId: PropTypes.number
     };
 
     state = {
@@ -34,7 +35,6 @@ export default class PatientsTable extends React.PureComponent
         return (
             <div className="new-visit__table-wrapper">
                 <div className="table__scroll-area">
-                    <div className="table__clearfix"/>
                     <table className="new-visit__table table">
                         <tbody>
                         <tr className="table__row table__row--first">
@@ -46,7 +46,7 @@ export default class PatientsTable extends React.PureComponent
                         <tr className="table__row table__row--empty"/>
 
                             {patients.map(patient => (
-                                <tr className={'table__row' + ((this.state.selectedPatientId === patient.id) ? ' table__row--active' : '')}
+                                <tr className={'table__row' + ((this.props.selectedPatientId === patient.id) ? ' table__row--active' : '')  }
                                     key={patient.id}
                                     onClick={this.handleRowClick.bind(this, patient)}>
                                     <td className="table__cell">
@@ -58,7 +58,7 @@ export default class PatientsTable extends React.PureComponent
                                         {patient.personalBirthday}
                                         <span className="table__age">{patient.age}</span>
                                     </td>
-                                    <td className="table__cell">{patient.personalPhoneFormatted}</td>
+                                    <td className="table__cell">{patient.personalPhoneFormatted || (<span className="table__not-phone"/>)}</td>
                                 </tr>
                             ))}
 
@@ -84,7 +84,7 @@ export default class PatientsTable extends React.PureComponent
         {
             this.allDataLoaded = this.props.allDataLoaded;
             this.setState({
-                patients: this.props.initialPatients
+                patients: this.preparePatientsData(this.props.initialPatients)
             });
         }
     }
@@ -150,7 +150,7 @@ export default class PatientsTable extends React.PureComponent
             select: this.constructor.patientsFields,
             countTotal: true
         };
-
+//
         let command = new ServerCommand('patient-card/get-list', data, result =>
         {
             if(Array.isArray(result.list))
@@ -161,12 +161,10 @@ export default class PatientsTable extends React.PureComponent
                 }
 
                 this.setState({
-                    patients: result.list
+                    patients: this.preparePatientsData(result.list)
                 });
             }
         });
-
-        console.log('patients table loads data!');
 
         command.exec();
     }
@@ -175,19 +173,19 @@ export default class PatientsTable extends React.PureComponent
     {
         let selectedPatient;
 
-        if(patient.id === this.state.selectedPatientId)
+        if(patient.id === this.props.selectedPatientId)
         {
-            this.setState({
+            /*this.setState({
                 selectedPatientId: null
-            });
+            });*/
 
             selectedPatient = null;
         }
         else
         {
-            this.setState({
+            /*this.setState({
                 selectedPatientId: patient.id
-            });
+            })*/
 
             selectedPatient = patient;
         }

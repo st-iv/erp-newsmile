@@ -10,7 +10,7 @@ use Mmit\NewSmile\CommandParam;
 use Mmit\NewSmile\Error;
 use Mmit\NewSmile\Helpers;
 
-abstract class OrmGetList extends Base
+abstract class OrmGetList extends OrmRead
 {
     // TODO нужно обязать дочерние классы детально описывать схему доступа к полям сущности
 
@@ -29,22 +29,7 @@ abstract class OrmGetList extends Base
 
         while($row = $dbRows->fetch())
         {
-            foreach ($row as $fieldName => &$fieldValue)
-            {
-                if($fieldValue instanceof DateTime)
-                {
-                    $fieldValue = $fieldValue->format('Y-m-d H:i:s');
-                }
-                elseif($fieldValue instanceof Date)
-                {
-                    $fieldValue = $fieldValue->format('Y-m-d');
-                }
-            }
-
-            unset($fieldValue);
-
-
-            $this->result['list'][] = Helpers::camelCaseKeys($row, false);
+            $this->result['list'][] = $this->prepareRow($row);
 
             if($queryParams['count_total'])
             {
@@ -131,10 +116,4 @@ abstract class OrmGetList extends Base
             )
         ];
     }
-
-    /**
-     * Возвращает Entity, с которой будет работать команда
-     * @return Entity
-     */
-    abstract protected function getOrmEntity();
 }
