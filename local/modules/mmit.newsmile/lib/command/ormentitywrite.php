@@ -2,6 +2,7 @@
 
 namespace Mmit\NewSmile\Command;
 
+use Bitrix\Main\Diag\Debug;
 use Bitrix\Main\Entity\Field;
 use Bitrix\Main\Entity\ScalarField;
 use Bitrix\Main\ORM\Entity;
@@ -17,7 +18,7 @@ abstract class OrmEntityWrite extends Base
         $result = [];
 
         $paramsMap = $this->getParamsMapAssoc();
-
+        Debug::writeToFile($this->params, 'params');
         foreach ($this->params as $paramKey => $paramValue)
         {
             /**
@@ -92,6 +93,10 @@ abstract class OrmEntityWrite extends Base
                 case 'text':
                 case 'enum':
                     $class = CommandParam\String::class;
+                    break;
+
+                case 'multipleenum':
+                    $class = CommandParam\ArrayParam::class;
                     break;
 
                 case 'date':

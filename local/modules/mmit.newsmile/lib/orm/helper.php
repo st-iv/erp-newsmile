@@ -259,7 +259,7 @@ class Helper
                 $fieldInfo['defaultValue'] = ($defaultValue instanceof Date) ? $defaultValue->format('Y-m-d') : $defaultValue;
             }
 
-            if($field instanceof EnumField)
+            if($field instanceof EnumField || $field instanceof NewSmile\Orm\Fields\MultipleEnumField)
             {
                 if(is_subclass_of($dataManagerClass, ExtendedFieldsDescriptor::class))
                 {

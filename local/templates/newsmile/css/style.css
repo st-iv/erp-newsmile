@@ -2133,7 +2133,7 @@ ul.dClndr_psubmenu {
 
 .form__btns-wrapper::before {
     content: '';
-    width: calc(100% + 26px);
+    width: 100%; /* CHANGED */
     height: 1px;
     position: absolute;
     background-color: #e5e6e7;
@@ -2850,4 +2850,10 @@ input[type=radio].visually-hidden {
 	cursor: pointer;
 	display: inline-block;
 	font-size: 13px;
+}
+
+.new-visit__table {
+	font-size: 0.824rem;
+	color: #4F5966;
+	line-height: 1.5;
 }

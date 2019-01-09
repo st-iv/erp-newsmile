@@ -256,18 +256,18 @@ export default class NewVisitForm extends React.Component
         e.preventDefault();
     }
 
-    getGeneralInputMixin(fieldName)
+    getGeneralInputMixin(field)
     {
         return {
-            value: ((this.state.values[fieldName] === undefined) ? '' : this.state.values[fieldName]),
-            onChange: this.handleInputChange.bind(this, fieldName),
-            disabled: (this.state.selectedPatient !== null && (this.patientNotEditableFields.indexOf(fieldName) !== -1))
+            value: ((this.state.values[field.name] === undefined) ? '' : this.state.values[field.name]),
+            onChange: this.handleInputChange.bind(this, field),
+            disabled: (this.state.selectedPatient !== null && (this.patientNotEditableFields.indexOf(field.name) !== -1))
         }
     }
 
     addGeneralInputMixin(field)
     {
-        return Object.assign({}, field, this.getGeneralInputMixin(field.name));
+        return Object.assign({}, field, this.getGeneralInputMixin(field));
     }
 
     savePatient(id = null)
@@ -277,6 +277,7 @@ export default class NewVisitForm extends React.Component
             let data = General.clone(this.state.values);
             data.additionalPhones = data.personalPhone.slice(1);
             data.personalPhone = data.personalPhone[0];
+            data.source = data.source.map(source => (source.value));
 
             if(id)
             {
@@ -352,10 +353,10 @@ export default class NewVisitForm extends React.Component
         e.preventDefault();
     }
 
-    handleInputChange(fieldName, value)
+    handleInputChange(field, value)
     {
         let newValues = General.clone(this.state.values);
-        newValues[fieldName] = value;
+        newValues[field.name] = value;
 
         this.setState({
             values: newValues
@@ -373,6 +374,10 @@ export default class NewVisitForm extends React.Component
 
         General.forEachObj(patient, (fieldValue, fieldCode) =>
         {
+            let field = this.state.fields[fieldCode];
+
+            if(!field) return;
+
             if(fieldCode === 'personalBirthday')
             {
                 fieldValue = General.Date.formatDate(fieldValue, 'DD.MM.YYYY');
@@ -380,6 +385,20 @@ export default class NewVisitForm extends React.Component
             else if(fieldCode === 'personalPhone')
             {
                 fieldValue = [fieldValue];
+            }
+
+            if((field.type === 'multipleenum') && Array.isArray(fieldValue))
+            {
+                let variantsMap = {};
+                field.variants.forEach(variant =>
+                {
+                    variantsMap[variant.code] = variant.title;
+                });
+
+                fieldValue = fieldValue.map(value => ({
+                    label: variantsMap[value],
+                    value
+                }));
             }
 
             newState.values[fieldCode] = fieldValue;

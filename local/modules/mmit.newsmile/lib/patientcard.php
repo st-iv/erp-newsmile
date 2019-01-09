@@ -280,7 +280,7 @@ class PatientCardTable extends Entity\DataManager implements NewSmile\Orm\Extend
                     'default_value' => ''
                 )
             ),
-            new Entity\EnumField('SOURCE',
+            new NewSmile\Orm\Fields\MultipleEnumField('SOURCE',
                 array(
                     'title' => 'Откуда узнал',
                     'values' => array_keys(static::getEnumVariants('SOURCE'))

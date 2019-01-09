@@ -6,8 +6,7 @@ class Select extends React.Component
 {
     state = {
         isActive: false,
-        isOpened: false,
-        value: []
+        isOpened: false
     };
 
     selectRef = React.createRef();
@@ -22,7 +21,7 @@ class Select extends React.Component
             };
         });
 
-        const labelClassName = 'form__label' + (this.state.isActive ? ' form__label--focus' : '');
+        const labelClassName = 'form__label' + ((this.state.isActive || this.props.value) ? ' form__label--focus' : '');
         const uniqueId = General.uniqueId(this.props.name);
         const selectClassName = 'select' + (this.state.isOpened ? ' select--opened' : '');
 
@@ -45,8 +44,8 @@ class Select extends React.Component
                              onMenuClose={() => this.setState({isOpened: false})}
                              menuIsOpen={this.state.isOpened}
 
-                             value={this.state.values}
-                             onChange={value => this.setState({value})}
+                             value={this.props.value}
+                             onChange={this.handleChange.bind(this)}
                 />
             </label>
         );
@@ -59,9 +58,17 @@ class Select extends React.Component
 
     handleBlur()
     {
-        if(!this.state.value.length)
+        if(!this.props.value.length)
         {
             this.setState({isActive: false});
+        }
+    }
+
+    handleChange(value)
+    {
+        if(this.props.onChange)
+        {
+            this.props.onChange(value);
         }
     }
 }

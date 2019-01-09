@@ -45,8 +45,6 @@ class Config
                 $allOptions[$option[0]] = $option[1];
             }
         }
-
-        pr($allOptions);
     }
 
     public static function getOptionsPageConfig()
