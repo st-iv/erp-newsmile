@@ -5,8 +5,17 @@ namespace Mmit\NewSmile;
 use Bitrix\Main\UserTable;
 use Mmit\NewSmile\Status\PatientTable;
 
+/**
+ * Представляет пользователя Newsmile. Каждому пользователю newsmile соответствует пользователь битрикс,
+ * и пользователи в из таблиц модуля Newsmile - в зависимости от роли (PatientCardTable, DoctorTable...)
+ * Class User
+ * @package Mmit\NewSmile
+ */
 class User
 {
+    /**
+     * @var int id пользователя Bitrix
+     */
     protected $id;
     protected $data;
 
@@ -81,7 +90,10 @@ class User
         return $this->data[$name];
     }
 
-
+    /**
+     * Получает id пользователя newsmile
+     * @return int
+     */
     public function getId()
     {
         $id = $this->id;
@@ -136,5 +148,31 @@ class User
         global $USER;
 
         return ($this->id == $USER->GetID()) && $USER->IsAuthorized();
+    }
+
+    public function getBitrixUserFields(array $select)
+    {
+        if($this->isAuthorized())
+        {
+            $result = UserTable::getByPrimary($this->id, [
+                'select' => $select
+            ])->fetchAll();
+        }
+        else
+        {
+            throw new Error('Невозможно чтение полей пользователя - пользователь не авторизован', 'USER_NOT_AUTHORIZED');
+        }
+
+        return $result[0];
+    }
+
+    public function setBitrixUserFields(array $fields)
+    {
+        global $USER;
+        $isSuccess = $USER->Update($USER->GetID(), $fields);
+        if(!$isSuccess)
+        {
+            throw new Error('Ошибка обновления полей пользователя: ' . $USER->LAST_ERROR, 'USER_UPDATE_ERROR');
+        }
     }
 }
