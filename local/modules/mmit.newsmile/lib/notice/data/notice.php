@@ -9,7 +9,7 @@ use Mmit\NewSmile\Helpers;
 use Mmit\NewSmile\PatientCardTable;
 use Mmit\NewSmile\Access\RoleTable;
 use Mmit\NewSmile\Service\ServiceTable;
-use Mmit\NewSmile\VisitTable;
+use Mmit\NewSmile\Visit\VisitTable;
 use Mmit\NewSmile\Date;
 
 class NoticeTable extends Entity\DataManager

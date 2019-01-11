@@ -54,7 +54,7 @@ class mmit_newsmile extends CModule
         $this->installDBUser();
         if (Loader::includeModule($this->MODULE_ID))
         {
-            NewSmile\VisitTable::getEntity()->createDbTable();
+            NewSmile\Visit\VisitTable::getEntity()->createDbTable();
             NewSmile\InvoiceTable::getEntity()->createDbTable();
             NewSmile\InvoiceItemTable::getEntity()->createDbTable();
             NewSmile\Status\VisitTable::getEntity()->createDbTable();
@@ -91,7 +91,8 @@ class mmit_newsmile extends CModule
             NewSmile\Access\Operation\OperationTable::getEntity()->createDbTable();
             NewSmile\Access\RoleTable::getEntity()->createDbTable();
             NewSmile\Access\RoleOperationTable::getEntity()->createDbTable();
-            NewSmile\VisitRequestTable::getEntity()->createDbTable();
+            NewSmile\Visit\VisitRequestTable::getEntity()->createDbTable();
+            NewSmile\Visit\ChangeDateRequestTable::getEntity()->createDbTable();
 
             $this->testInstallDB();
         }
@@ -189,7 +190,7 @@ class mmit_newsmile extends CModule
         if (Loader::includeModule($this->MODULE_ID))
         {
             $connection = Application::getInstance()->getConnection();
-            $connection->dropTable(NewSmile\VisitTable::getTableName());
+            $connection->dropTable(NewSmile\Visit\VisitTable::getTableName());
             $connection->dropTable(NewSmile\InvoiceTable::getTableName());
             $connection->dropTable(NewSmile\InvoiceItemTable::getTableName());
             $connection->dropTable(NewSmile\Status\VisitTable::getTableName());
@@ -226,7 +227,8 @@ class mmit_newsmile extends CModule
             $connection->dropTable(NewSmile\Access\Operation\OperationTable::getTableName());
             $connection->dropTable(NewSmile\Access\RoleTable::getTableName());
             $connection->dropTable(NewSmile\Access\RoleOperationTable::getTableName());
-            $connection->dropTable(NewSmile\VisitRequestTable::getTableName());
+            $connection->dropTable(NewSmile\Visit\VisitRequestTable::getTableName());
+            $connection->dropTable(NewSmile\Visit\ChangeDateRequestTable::getTableName());
         }
     }
 

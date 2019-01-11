@@ -5,14 +5,17 @@
  * Date: 30.05.2018
  * Time: 16:19
  */
-namespace Mmit\NewSmile;
+namespace Mmit\NewSmile\Visit;
 
 use Bitrix\Main\Entity;
 use Bitrix\Main\Localization\Loc;
 use Bitrix\Main\ORM\Event;
 use Bitrix\Main\Type\Date;
+use Mmit\NewSmile\Config;
+use Mmit\NewSmile\Error;
 use Mmit\NewSmile\Orm\ExtendedFieldsDescriptor;
 use Mmit\NewSmile;
+use Mmit\NewSmile\ScheduleTable;
 
 Loc::loadMessages(__FILE__);
 

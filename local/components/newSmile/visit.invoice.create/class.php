@@ -7,7 +7,7 @@ use Bitrix\Main\Loader,
     Bitrix\Catalog\PriceTable,
     Bitrix\Main\Type\DateTime,
     Mmit\NewSmile\TreatmentPlanTable,
-    Mmit\NewSmile\VisitTable,
+    Mmit\NewSmile\Visit\VisitTable,
     Mmit\NewSmile\DoctorTable;
 use Mmit\NewSmile\ClinicTable;
 use Mmit\NewSmile\InvoiceItemTable;

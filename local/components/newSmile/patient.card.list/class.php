@@ -5,7 +5,7 @@ use Bitrix\Main\Loader,
     Mmit\NewSmile\PatientCardTable,
     Mmit\NewSmile\DoctorTable,
     Mmit\NewSmile\Status,
-    Mmit\NewSmile\VisitTable;
+    Mmit\NewSmile\Visit\VisitTable;
 
 class PatientCardListComponent extends \CBitrixComponent
 {

@@ -3,6 +3,10 @@
 
 namespace Mmit\NewSmile\Command;
 
+use Bitrix\Main\Entity\AddResult;
+use Bitrix\Main\Entity\DeleteResult;
+use Bitrix\Main\Entity\UpdateResult;
+use Bitrix\Main\ORM\Data\Result;
 use Mmit\NewSmile\Application;
 use Mmit\NewSmile\Error;
 use Mmit\NewSmile\Helpers;
@@ -256,6 +260,37 @@ abstract class Base
     {
         throw new Error('В режиме reflection недоступно полноценное использование команд (' . static::getCode() . ')');
     }
+
+    protected function tellAboutOrmResult(Result $result, $entityTitle = 'записи')
+    {
+        if(!$result->isSuccess())
+        {
+            $operationType = null;
+            $errorCode = null;
+
+            if($result instanceof AddResult)
+            {
+                $operationType = 'добавления';
+                $errorCode = 'ORM_ADD_ERROR';
+            }
+            elseif ($result instanceof UpdateResult)
+            {
+                $operationType = 'обновления';
+                $errorCode = 'ORM_UPDATE_ERROR';
+            }
+            elseif ($result instanceof DeleteResult)
+            {
+                $operationType = 'удаления';
+                $errorCode = 'ORM_DELETE_ERROR';
+            }
+
+            throw new Error(
+                sprintf('Ошибка %s %s: %s', $operationType, $entityTitle, implode(', ', $result->getErrorMessages())),
+                $errorCode
+            );
+        }
+    }
+
 
     public function getParamsMapAssoc()
     {

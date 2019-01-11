@@ -12,7 +12,7 @@ use Bitrix\Main\Loader,
     Bitrix\Main\Type\DateTime,
     Bitrix\Main\Type\Date,
     Bitrix\Main\Config\Option,
-    Mmit\NewSmile\VisitTable,
+    Mmit\NewSmile\Visit\VisitTable,
     Mmit\NewSmile\ScheduleTable,
     Mmit\NewSmile\WorkChairTable;
 

@@ -5,7 +5,7 @@ namespace Mmit\NewSmile\Notice;
 use Mmit\NewSmile\Helpers;
 use Mmit\NewSmile\PatientCardTable;
 use Mmit\NewSmile\Service\ServiceTable;
-use Mmit\NewSmile\VisitRequestTable;
+use Mmit\NewSmile\Visit\VisitRequestTable;
 
 class NewVisitRequest extends Notice
 {

@@ -1,10 +1,11 @@
 <?
 
-namespace Mmit\NewSmile;
+namespace Mmit\NewSmile\Visit;
 
 use Bitrix\Main\Entity\DataManager;
 use Bitrix\Main\Entity;
 use Mmit\NewSmile\Orm\ExtendedFieldsDescriptor;
+use Mmit\NewSmile\PatientCardTable;
 use Mmit\NewSmile\Service\ServiceTable;
 
 class VisitRequestTable extends DataManager implements ExtendedFieldsDescriptor

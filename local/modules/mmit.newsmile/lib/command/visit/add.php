@@ -9,7 +9,7 @@ use Bitrix\Main\Type\DateTime;
 use Mmit\NewSmile\Command\OrmEntityAdd;
 use Mmit\NewSmile\Command\TeethMap\Detail;
 use Mmit\NewSmile\ScheduleTable;
-use Mmit\NewSmile\VisitTable;
+use Mmit\NewSmile\Visit\VisitTable;
 
 class Add extends OrmEntityAdd
 {

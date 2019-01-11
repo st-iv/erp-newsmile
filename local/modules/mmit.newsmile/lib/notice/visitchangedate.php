@@ -6,7 +6,7 @@ namespace Mmit\NewSmile\Notice;
 use Mmit\NewSmile\Error;
 use Mmit\NewSmile\Helpers;
 use Mmit\NewSmile\PatientCardTable;
-use Mmit\NewSmile\VisitTable;
+use Mmit\NewSmile\Visit\VisitTable;
 
 class VisitChangeDate extends Notice
 {

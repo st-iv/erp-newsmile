@@ -181,7 +181,7 @@ class GetDayInfo extends Base
     {
         $result = [];
 
-        $rsVisit = NewSmile\VisitTable::getList(array(
+        $rsVisit = NewSmile\Visit\VisitTable::getList(array(
             'order' => array(
                 'TIME_START' => 'ASC'
             ),

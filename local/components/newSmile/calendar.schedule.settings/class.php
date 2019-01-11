@@ -4,7 +4,7 @@ if(!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED !== true) die();
 use Bitrix\Main\Loader,
     Bitrix\Main\Type\Date,
     Bitrix\Main\Config\Option,
-    Mmit\NewSmile\VisitTable,
+    Mmit\NewSmile\Visit\VisitTable,
     Mmit\NewSmile\ScheduleTemplateTable,
     Mmit\NewSmile\DoctorTable,
     Mmit\NewSmile\WorkChairTable;

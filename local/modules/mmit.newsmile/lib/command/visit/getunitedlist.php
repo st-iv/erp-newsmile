@@ -8,9 +8,10 @@ use Mmit\NewSmile\Command\Base,
     Bitrix\Main\Type\DateTime,
     Mmit\NewSmile;
 
-class GetList extends Base
+class GetUnitedList extends Base
 {
     protected static $name = 'Получить список приемов';
+    protected static $dateChangeRequests;
 
     protected function doExecute()
     {
@@ -81,7 +82,7 @@ class GetList extends Base
             $filter[$filterKey] = 'WAITING';
         }
 
-        $dbVisitRequests = NewSmile\VisitRequestTable::getList([
+        $dbVisitRequests = NewSmile\Visit\VisitRequestTable::getList([
             'filter' => $filter,
             'select' => [
                 '*',
@@ -89,18 +90,21 @@ class GetList extends Base
             ]
         ]);
 
-        $statusesTitles = NewSmile\VisitRequestTable::getEnumVariants('STATUS');
+        $statusesTitles = NewSmile\Visit\VisitRequestTable::getEnumVariants('STATUS');
 
         while($visitRequest = $dbVisitRequests->fetch())
         {
              $visitRequestInfo = [
-                'id' => 'request_' . $visitRequest['ID'],
+                'id' => $visitRequest['ID'],
                 'date' => $visitRequest['DATE'] ? $visitRequest['DATE']->format('d.m.Y H:i:s') : null,
                 'doctor' => null,
                 'is_active' => $visitRequest['STATUS'] == 'WAITING',
                 'status' => $statusesTitles[$visitRequest['STATUS']],
+                'status_code' => $visitRequest['STATUS'],
                 'is_visit_request' => true,
                 'is_near_future' => $visitRequest['NEAR_FUTURE'] == true,
+                'is_date_change_queried' => null,
+                'new_date' => null
              ];
 
              if($visitRequest['SERVICE_ID'])
@@ -132,6 +136,8 @@ class GetList extends Base
     protected function getVisits()
     {
         $result = [];
+
+        /* запрос информации по приёмам */
 
         $filter = [
             'PATIENT_ID' => Application::getInstance()->getUser()->getId()
@@ -165,25 +171,63 @@ class GetList extends Base
             $queryParams['limit'] = $limit;
         }
 
-        $statusesTitles = NewSmile\VisitTable::getEnumVariants('STATUS');
+        $statusesTitles = NewSmile\Visit\VisitTable::getEnumVariants('STATUS');
 
-        $dbVisit = NewSmile\VisitTable::getList($queryParams);
+        $dbVisit = NewSmile\Visit\VisitTable::getList($queryParams);
+
+        /* подготовка выходного массива */
 
         while($visit = $dbVisit->fetch())
         {
+            $dateChangeInfo = $this->getDateChangeInfo($visit['ID']);
+
             $result[] = [
-                'id' => 'visit_' . $visit['ID'],
+                'id' => $visit['ID'],
                 'date' => $visit['TIME_START']->format('d.m.Y H:i:s'),
                 'doctor' => NewSmile\Helpers::getFio($visit, 'DOCTOR_'),
                 'is_active' => ($visit['TIME_END']->getTimestamp() >= time()),
                 'status' => $statusesTitles[$visit['STATUS']],
+                'status_code' => $visit['STATUS'],
                 'is_visit_request' => false,
                 'service' => null,
                 'is_near_future' => null,
+                'is_date_change_queried' => $dateChangeInfo['IS_QUERIED'],
+                'new_date' => $dateChangeInfo['NEW_DATE']
             ];
         }
 
         return $result;
+    }
+
+    /**
+     * Возвращает дату, на которую запрошен перенос указанного приёма. Если
+     * @param int $visitId - id приёма
+     *
+     * @return array
+     * @throws \Bitrix\Main\ArgumentException
+     * @throws \Bitrix\Main\ObjectPropertyException
+     * @throws \Bitrix\Main\SystemException
+     */
+    protected function getDateChangeInfo($visitId)
+    {
+        if(!isset(static::$dateChangeRequests))
+        {
+            $dbChangeDateRequests = NewSmile\Visit\ChangeDateRequestTable::getList();
+            static::$dateChangeRequests = [];
+
+            while($changeDateRequest = $dbChangeDateRequests->fetch())
+            {
+                static::$dateChangeRequests[$changeDateRequest['VISIT_ID']] = [
+                    'NEW_DATE' => ($changeDateRequest['NEW_DATE'] ? $changeDateRequest['NEW_DATE']->format('d.m.Y H:i:s') : null),
+                    'IS_QUERIED' => true
+                ];
+            }
+        }
+
+        return static::$dateChangeRequests[$visitId] ?: [
+            'NEW_DATE' => null,
+            'IS_QUERIED' => false
+        ];
     }
 
     public function getParamsMap()

@@ -2,7 +2,7 @@
 
 namespace Mmit\NewSmile\Notice;
 
-use Mmit\NewSmile\VisitTable;
+use Mmit\NewSmile\Visit\VisitTable;
 use Mmit\NewSmile\Date;
 
 class VisitFinished extends Notice
