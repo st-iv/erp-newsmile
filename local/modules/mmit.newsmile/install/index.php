@@ -91,6 +91,7 @@ class mmit_newsmile extends CModule
             NewSmile\Access\Operation\OperationTable::getEntity()->createDbTable();
             NewSmile\Access\RoleTable::getEntity()->createDbTable();
             NewSmile\Access\RoleOperationTable::getEntity()->createDbTable();
+            NewSmile\VisitRequestTable::getEntity()->createDbTable();
 
             $this->testInstallDB();
         }
@@ -225,6 +226,7 @@ class mmit_newsmile extends CModule
             $connection->dropTable(NewSmile\Access\Operation\OperationTable::getTableName());
             $connection->dropTable(NewSmile\Access\RoleTable::getTableName());
             $connection->dropTable(NewSmile\Access\RoleOperationTable::getTableName());
+            $connection->dropTable(NewSmile\VisitRequestTable::getTableName());
         }
     }
 

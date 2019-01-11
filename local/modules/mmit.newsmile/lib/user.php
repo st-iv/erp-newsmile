@@ -107,6 +107,15 @@ class User
     }
 
     /**
+     * Возвращает id пользователя битрикс
+     * @return int
+     */
+    public function getBitrixId()
+    {
+        return $this->id;
+    }
+
+    /**
      * Проверяет соответствие пользователя указанным ролям
      * @param string|array $roles - код роли, либо массив кодов
      * @param bool $bAndLogic - в случае, если первый параметр - массив, этот флаг определяет логику сравнения. При значении
@@ -150,9 +159,19 @@ class User
         return ($this->id == $USER->GetID()) && $USER->IsAuthorized();
     }
 
+    /**
+     * Возвращает массив полей пользователя Битрикс
+     * @param array $select - массив кодов полей для выборки
+     *
+     * @return array
+     * @throws Error
+     * @throws \Bitrix\Main\ArgumentException
+     * @throws \Bitrix\Main\ObjectPropertyException
+     * @throws \Bitrix\Main\SystemException
+     */
     public function getBitrixUserFields(array $select)
     {
-        if($this->isAuthorized())
+        if($this->id)
         {
             $result = UserTable::getByPrimary($this->id, [
                 'select' => $select
@@ -160,7 +179,7 @@ class User
         }
         else
         {
-            throw new Error('Невозможно чтение полей пользователя - пользователь не авторизован', 'USER_NOT_AUTHORIZED');
+            throw new Error('Невозможно чтение полей пользователя - пользователь не зарегистрирован', 'USER_NOT_REGISTERED');
         }
 
         return $result[0];

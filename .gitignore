@@ -10,3 +10,5 @@ sitemap*.xml
 local/templates/newsmile/webpack.config.js
 local/templates/newsmile/package.json
 local/templates/newsmile/package-lock.json
+composer.phar
+

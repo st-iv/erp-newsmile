@@ -18,7 +18,7 @@ abstract class OrmEntityWrite extends Base
         $result = [];
 
         $paramsMap = $this->getParamsMapAssoc();
-        Debug::writeToFile($this->params, 'params');
+
         foreach ($this->params as $paramKey => $paramValue)
         {
             /**
@@ -122,12 +122,23 @@ abstract class OrmEntityWrite extends Base
 
 
         return new $class(
-            Helpers::getCamelCase($field->getName(), false),
+            $this->getParamNameByField($field),
             $field->getTitle(),
             '',
             $field->isRequired()/*,
             $field->getDefaultValue()*/
         );
+    }
+
+    /**
+     * Получает имя параметра команды, соответствующего указанному полю
+     * @param Field $field
+     *
+     * @return string
+     */
+    protected function getParamNameByField(Field $field)
+    {
+        return Helpers::getCamelCase($field->getName(), false);
     }
 
     /**

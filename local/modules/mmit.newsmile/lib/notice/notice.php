@@ -7,6 +7,8 @@ use Mmit\NewSmile\Error;
 use Mmit\NewSmile\Helpers;
 use Mmit\NewSmile\Notice\Data\NoticeTable;
 use Mmit\NewSmile\Access\RoleTable;
+use Mmit\NewSmile\User;
+use Mmit\NewSmile\Notice\Sender;
 
 abstract class Notice
 {
@@ -42,6 +44,9 @@ abstract class Notice
             'PARAMS' => $this->params
         );
 
+        $extendedNoticeData = $noticeData;
+        NoticeTable::extendNoticeDataByType($extendedNoticeData);
+
         if(!$users)
         {
             $users[] = $GLOBALS['USER']->GetID();
@@ -56,29 +61,46 @@ abstract class Notice
 
             if($addResult->isSuccess())
             {
-                $this->send($addResult->getId(), $userId);
+                $currentNoticeData = $extendedNoticeData;
+                $currentNoticeData['ID'] = $addResult->getId();
+                $this->send($extendedNoticeData, $userId);
             }
         }
     }
 
     /**
      * Отправляет уведомление получателям
-     * @param int $noticeId - id уведомления
+     * @param array $noticeData - данные уведомления
      * @param int $userId - id пользователей-получателей
      *
      * @throws \Bitrix\Main\LoaderException
      */
-    protected function send($noticeId, $userId)
+    protected function send(array $noticeData, $userId)
     {
-        if(!Loader::includeModule('pull')) return;
+        $user = new User($userId);
+        $sendToRoles = array_flip($user->getRoles());
 
-        \CPullStack::AddByUser($userId, array(
-            'module_id' => 'mmit.newsmile',
-            'command' => 'add_notice',
-            'params' => array(
-                'ID' => $noticeId
-            )
-        ));
+        $senders = [];
+
+        if($user->is('patient'))
+        {
+            $senders[] = new Sender\Mobile();
+            unset($sendToRoles['patient']);
+        }
+
+        if(count($sendToRoles))
+        {
+            $senders[] = new Sender\Browser();
+        }
+
+        foreach ($senders as $sender)
+        {
+            /**
+             * @var Sender\Sender $sender
+             */
+
+            $sender->send($noticeData, $user);
+        }
     }
 
     /**
@@ -104,6 +126,9 @@ abstract class Notice
         $users = array_unique($users);
     }
 
+    /**
+     * Расширяет набор параметров уведомления на основе параметров
+     */
     protected function extendParams()
     {
         return;

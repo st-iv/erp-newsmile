@@ -5,52 +5,52 @@ namespace Mmit\NewSmile\Notice;
 use Mmit\NewSmile\Helpers;
 use Mmit\NewSmile\PatientCardTable;
 use Mmit\NewSmile\Service\ServiceTable;
+use Mmit\NewSmile\VisitRequestTable;
 
 class NewVisitRequest extends Notice
 {
     protected function getParamsList()
     {
-        return [];
+        return ['VISIT_REQUEST_ID'];
     }
     
     protected function extendParams()
     {
-        if($this->params['SERVICE_ID'])
-        {
-            $dbService = ServiceTable::getByPrimary($this->params['SERVICE_ID'], [
-                'select' => ['NAME']
-            ]);
+        if(!$this->params['VISIT_REQUEST_ID']) return;
 
-            if($service = $dbService->fetch())
-            {
-                $this->params['SERVICE'] = $service['NAME'];
-            }
+        $visitRequest = VisitRequestTable::getByPrimary($this->params['VISIT_REQUEST_ID'], [
+            'select' => [
+                '*',
+                'PATIENT_NAME' => 'PATIENT.NAME',
+                'PATIENT_LAST_NAME' => 'PATIENT.LAST_NAME',
+                'PATIENT_SECOND_NAME' => 'PATIENT.SECOND_NAME',
+                'SERVICE_NAME' => 'SERVICE.NAME',
+            ]
+        ])->fetch();
+
+        if($visitRequest['SERVICE_ID'])
+        {
+            $this->params['SERVICE'] = $visitRequest['SERVICE_NAME'];
         }
         else
         {
             $this->params['SERVICE'] = 'услуга не указана';
         }
 
-        if($this->params['PATIENT_ID'])
+        if($visitRequest['PATIENT_ID'])
         {
-            $dbPatient = PatientCardTable::getByPrimary($this->params['PATIENT_ID'], [
-                'select' => ['LAST_NAME', 'NAME', 'SECOND_NAME']
-            ]);
-
-            if($patient = $dbPatient->fetch())
-            {
-                $this->params['PATIENT'] = Helpers::getFio($patient);
-            }
+            $this->params['PATIENT'] = Helpers::getFio($visitRequest, 'PATIENT_');
         }
 
-        if($this->params['NEAR_FUTURE'])
+        if($visitRequest['NEAR_FUTURE'])
         {
             $this->params['DATE'] = 'ближайшее время';
         }
-
-        if(!$this->params['DATE'])
+        else
         {
-            $this->params['DATE'] = '(дата не указана)';
+            $this->params['DATE'] = $visitRequest['DATE'] ?: '(дата не указана)';
         }
+
+        $this->params['COMMENT'] = $visitRequest['COMMENT'];
     }
 }

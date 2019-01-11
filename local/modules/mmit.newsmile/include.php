@@ -1,5 +1,5 @@
 <?php
-global $USER;
+/*global $USER;
 if (!empty($USER) && $USER->IsAuthorized()) {
     $rsUser = \Bitrix\Main\UserTable::getList([
         'filter' => [
@@ -19,4 +19,4 @@ if (!empty($USER) && $USER->IsAuthorized()) {
     }
 } else {
     $_SESSION['CLINIC_ID'] = 1;
-}
+}*/

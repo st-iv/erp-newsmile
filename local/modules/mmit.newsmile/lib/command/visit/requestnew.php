@@ -2,44 +2,44 @@
 
 namespace Mmit\NewSmile\Command\Visit;
 
-use Mmit\NewSmile\Command\Base;
-use Mmit\NewSmile\CommandParam\Bool;
-use Mmit\NewSmile\CommandParam\Integer;
-use Mmit\NewSmile\CommandParam\String;
+use Bitrix\Main\Entity\Field;
+use Mmit\NewSmile\Command\OrmEntityAdd;
+use Mmit\NewSmile\Helpers;
 use Mmit\NewSmile\Notice;
 use Mmit\NewSmile\Application;
+use Mmit\NewSmile\VisitRequestTable;
 
-class RequestNew extends Base
+class RequestNew extends OrmEntityAdd
 {
-    protected static $name = 'Запросить запись на прием';
-
     protected function doExecute()
     {
-        try
-        {
-            $notice = new Notice\NewVisitRequest([
-                'SERVICE_ID' => $this->params['service_id'],
-                'DATE' => $this->params['date'],
-                'NEAR_FUTURE' => $this->params['near_future'] === 'true',
-                'COMMENT' => $this->params['comment'],
-                'PATIENT_ID' => Application::getInstance()->getUser()->getId()
-            ]);
+        parent::doExecute();
 
-            $notice->push(['admin']);
-        }
-        catch(\Error $e)
-        {
-            $this->setError($e);
-        }
+        $notice = new Notice\NewVisitRequest([
+            'VISIT_REQUEST_ID' => $this->result['primary']['id']
+        ]);
+        $notice->push(['admin']);
     }
 
-    public function getParamsMap()
+    protected function getOrmEntity()
     {
-        return [
-            new Integer('service_id', 'id услуги'),
-            new String('date', 'желаемая дата приема'),
-            new Bool('near_future', 'флаг записи на ближайшее время'),
-            new String('comment', 'комментарий')
-        ];
+        return VisitRequestTable::getEntity();
+    }
+
+    protected function filterField(Field $field)
+    {
+        return !in_array($field->getName(), ['PATIENT_ID', 'STATUS']);
+    }
+
+    protected function getParamNameByField(Field $field)
+    {
+        return strtolower($field->getName());
+    }
+
+    protected function getFieldsValues()
+    {
+        $values = parent::getFieldsValues();
+        $values['PATIENT_ID'] = Application::getInstance()->getUser()->getId();
+        return $values;
     }
 }

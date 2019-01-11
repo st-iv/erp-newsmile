@@ -6,7 +6,7 @@ use Mmit\NewSmile\Application;
 use Mmit\NewSmile\Command\Base;
 use Mmit\NewSmile\CommandParam;
 
-class SetFirebaseToken extends Base
+class SetNotificationToken extends Base
 {
     protected function doExecute()
     {
@@ -29,9 +29,9 @@ class SetFirebaseToken extends Base
     {
         return [
             new CommandParam\String(
-                'firebase_token',
-                'firebase токен',
-                'Токен firebase конкретного экземпляра мобильного приложения',
+                'notification_token',
+                'токен для получения уведомлений',
+                'Токен конкретного экземпляра мобильного приложения',
                 true
             )
         ];

@@ -1,0 +1,23 @@
+<?
+
+
+namespace Mmit\NewSmile\Notice\Sender;
+
+use Bitrix\Main\Loader;
+use Mmit\NewSmile\User;
+
+class Browser implements Sender
+{
+    public function send(array $noticeData, User $user)
+    {
+        if(!Loader::includeModule('pull')) return;
+
+        \CPullStack::AddByUser($user->getBitrixId(), array(
+            'module_id' => 'mmit.newsmile',
+            'command' => 'add_notice',
+            'params' => array(
+                'ID' => $noticeData['ID']
+            )
+        ));
+    }
+}

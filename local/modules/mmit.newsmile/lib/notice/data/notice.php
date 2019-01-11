@@ -84,7 +84,7 @@ class NoticeTable extends Entity\DataManager
      * @throws \Bitrix\Main\ObjectPropertyException
      * @throws \Bitrix\Main\SystemException
      */
-    public static function  extendNoticeDataByType(array &$noticeData)
+    public static function extendNoticeDataByType(array &$noticeData)
     {
         $typeInfo = TypeTable::getTypeInfo($noticeData['TYPE_ID']);
 

@@ -13,6 +13,7 @@ function pr($var, $bDump = false)
         {
             print_r($var);
         }
-        ?></pre>
+        ?>
+    </pre>
     <?
 }

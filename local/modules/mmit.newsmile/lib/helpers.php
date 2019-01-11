@@ -256,6 +256,24 @@ class Helpers
         return $result;
     }
 
+    /**
+     * Приводит ключи массива к нижнему регистру
+     * @param array $array
+     *
+     * @return array
+     */
+    public static function strtoupperKeys(array $array)
+    {
+        $result = [];
+
+        foreach ($array as $key => $value)
+        {
+            $result[strtoupper($key)] = $value;
+        }
+
+        return $result;
+    }
+
     public static function getNamespace($className)
     {
 
