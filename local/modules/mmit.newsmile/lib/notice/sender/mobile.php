@@ -84,5 +84,7 @@ class Mobile implements Sender
         }
 
         curl_multi_close($multiChannel);
+
+
     }
 }

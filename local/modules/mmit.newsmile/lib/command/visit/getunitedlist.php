@@ -22,11 +22,30 @@ class GetUnitedList extends Base
 
         usort($this->result['visit_list'], function($visitA, $visitB) use ($sortOrder)
         {
-            if((!$visitA['date'] && $visitB['date']) || ($visitA['date'] > $visitB['date']))
+            if($this->params['is_active'])
+            {
+                $sortByA = 'timestamp';
+                $sortByB = 'timestamp';
+            }
+            else
+            {
+                $sortByA = ($visitA['is_visit_request'] ? 'create_timestamp' : 'timestamp');
+                $sortByB = ($visitB['is_visit_request'] ? 'create_timestamp' : 'timestamp');
+            }
+
+            if(!$visitA[$sortByA] && $visitB[$sortByB])
+            {
+                $result = -1;
+            }
+            else if(!$visitB[$sortByB] && $visitA[$sortByA])
             {
                 $result = 1;
             }
-            else if((!$visitB['date'] && $visitA['date']) || ($visitB['date'] > $visitA['date']))
+            else if($visitA[$sortByA] > $visitB[$sortByB])
+            {
+                $result = 1;
+            }
+            else if(($visitB[$sortByB] > $visitA[$sortByA]))
             {
                 $result = -1;
             }
@@ -38,10 +57,13 @@ class GetUnitedList extends Base
             return $result * (($sortOrder == 'asc') ? 1 : -1);
         });
 
+
         /* list position */
         foreach ($this->result['visit_list'] as $index => &$visit)
         {
             $visit['list_position'] = $index;
+            unset($visit['timestamp']);
+            unset($visit['create_timestamp']);
         }
 
         unset($visit);
@@ -72,14 +94,7 @@ class GetUnitedList extends Base
 
         if(isset($this->params['is_active']))
         {
-            $filterKey = 'STATUS';
-
-            if(!$this->params['is_active'])
-            {
-                $filterKey = '!' . $filterKey;
-            }
-
-            $filter[$filterKey] = 'WAITING';
+            $filter['STATUS'] = ($this->params['is_active'] ? 'WAITING' : 'CANCELED');
         }
 
         $dbVisitRequests = NewSmile\Visit\VisitRequestTable::getList([
@@ -104,7 +119,10 @@ class GetUnitedList extends Base
                 'is_visit_request' => true,
                 'is_near_future' => $visitRequest['NEAR_FUTURE'] == true,
                 'is_date_change_queried' => null,
-                'new_date' => null
+                'new_date' => null,
+                'timestamp' => $visitRequest['DATE'] ? $visitRequest['DATE']->getTimestamp() : null,
+                'create_timestamp' => $visitRequest['DATE_CREATE']->getTimestamp(),
+                'date_create' => $visitRequest['DATE_CREATE']->format('d.m.Y H:i:s'),
              ];
 
              if($visitRequest['SERVICE_ID'])
@@ -145,8 +163,24 @@ class GetUnitedList extends Base
 
         if(isset($this->params['is_active']))
         {
-            $filterKey = ($this->params['is_active'] ? '>=' : '<') . 'TIME_END';
-            $filter[$filterKey] = new DateTime();
+
+            if($this->params['is_active'])
+            {
+                $filter['!STATUS'] = 'CANCELED';
+                $filter['>=TIME_END'] = new DateTime();
+            }
+            else
+            {
+                $filter[] = [
+                    'LOGIC' => 'OR',
+                    [
+                        '<TIME_END' => new DateTime(),
+                    ],
+                    [
+                        'STATUS' => 'CANCELED'
+                    ]
+                ];
+            }
         }
 
         $limit = $this->params['limit'];
@@ -161,7 +195,8 @@ class GetUnitedList extends Base
                 'DOCTOR_NAME' => 'DOCTOR.NAME',
                 'DOCTOR_LAST_NAME' =>'DOCTOR.LAST_NAME',
                 'DOCTOR_SECOND_NAME' =>'DOCTOR.SECOND_NAME',
-                'STATUS'
+                'STATUS',
+                'TIMESTAMP_X'
             ],
             'offset' => $offset
         ];
@@ -192,7 +227,10 @@ class GetUnitedList extends Base
                 'service' => null,
                 'is_near_future' => null,
                 'is_date_change_queried' => $dateChangeInfo['IS_QUERIED'],
-                'new_date' => $dateChangeInfo['NEW_DATE']
+                'new_date' => $dateChangeInfo['NEW_DATE'],
+                'timestamp' => $visit['TIME_START']->getTimestamp(),
+                'date_create' => $visit['TIMESTAMP_X']->format('d.m.Y H:i:s'),
+                'create_timestamp' => $visit['TIMESTAMP_X']->getTimestamp()
             ];
         }
 

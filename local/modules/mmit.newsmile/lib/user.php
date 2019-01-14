@@ -147,6 +147,11 @@ class User
         return $result;
     }
 
+    public function isOnly($roles)
+    {
+        return $this->is($roles) && (count($this->roles) == count($roles));
+    }
+
     public function getRoles()
     {
         return array_keys($this->roles);

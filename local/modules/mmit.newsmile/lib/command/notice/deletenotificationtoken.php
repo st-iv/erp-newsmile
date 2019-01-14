@@ -6,7 +6,7 @@ use Mmit\NewSmile\Application;
 use Mmit\NewSmile\Command\Base;
 use Mmit\NewSmile\CommandParam;
 
-class SetNotificationToken extends Base
+class DeleteNotificationToken extends Base
 {
     protected function doExecute()
     {
@@ -14,16 +14,18 @@ class SetNotificationToken extends Base
 
         $userInfo = $user->getBitrixUserFields(['UF_FIREBASE_TOKEN']);
         $firebaseTokens = (is_array($userInfo['UF_FIREBASE_TOKEN']) ? $userInfo['UF_FIREBASE_TOKEN'] : []);
+        $tokenIndex = array_search($this->params['notification_token'], $firebaseTokens);
 
-        if(!in_array($this->params['notification_token'], $firebaseTokens))
+        if($tokenIndex !== false)
         {
-            $firebaseTokens[] = $this->params['notification_token'];
+            unset($firebaseTokens[$tokenIndex]);
 
             $user->setBitrixUserFields([
                 'UF_FIREBASE_TOKEN' => $firebaseTokens
             ]);
         }
     }
+
 
     public function getParamsMap()
     {

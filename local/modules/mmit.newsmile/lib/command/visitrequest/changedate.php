@@ -4,6 +4,7 @@
 namespace Mmit\NewSmile\Command\VisitRequest;
 
 use Bitrix\Main\Type\DateTime;
+use Mmit\NewSmile\Application;
 use Mmit\NewSmile\Command\Base;
 use Mmit\NewSmile\Error;
 use Mmit\NewSmile\Notice;

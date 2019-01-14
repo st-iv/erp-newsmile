@@ -2,6 +2,7 @@
 
 namespace Mmit\NewSmile\Notice;
 
+use Bitrix\Main\Diag\Debug;
 use Bitrix\Main\Loader;
 use Mmit\NewSmile\Error;
 use Mmit\NewSmile\Helpers;
@@ -56,14 +57,21 @@ abstract class Notice
         {
             $currentNoticeData = $noticeData;
             $currentNoticeData['USER_ID'] = $userId;
+            $user = new User($userId);
+            $isPatient = $user->isOnly(['patient']);
+            $addResult = null;
 
-            $addResult = NoticeTable::add($currentNoticeData);
 
-            if($addResult->isSuccess())
+            if(!$isPatient)
+            {
+                $addResult = NoticeTable::add($currentNoticeData);
+            }
+
+            if($isPatient || ($addResult && $addResult->isSuccess()))
             {
                 $currentNoticeData = $extendedNoticeData;
                 $currentNoticeData['ID'] = $addResult->getId();
-                $this->send($extendedNoticeData, $userId);
+                $this->send($extendedNoticeData, $user);
             }
         }
     }
@@ -71,13 +79,12 @@ abstract class Notice
     /**
      * Отправляет уведомление получателям
      * @param array $noticeData - данные уведомления
-     * @param int $userId - id пользователей-получателей
+     * @param User $user - id пользователей-получателей
      *
      * @throws \Bitrix\Main\LoaderException
      */
-    protected function send(array $noticeData, $userId)
+    protected function send(array $noticeData, User $user)
     {
-        $user = new User($userId);
         $sendToRoles = array_flip($user->getRoles());
 
         $senders = [];

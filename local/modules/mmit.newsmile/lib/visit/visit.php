@@ -28,7 +28,8 @@ class VisitTable extends Entity\DataManager implements ExtendedFieldsDescriptor
         'STATUS' => [
             'NEW' => 'Новый',
             'WAITING' => 'Пациент ожидает',
-            'FINISHED' => 'Прием завершен'
+            'FINISHED' => 'Завершен',
+            'CANCELED' => 'Отменен'
         ]
     ];
 

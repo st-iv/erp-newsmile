@@ -261,6 +261,13 @@ abstract class Base
         throw new Error('В режиме reflection недоступно полноценное использование команд (' . static::getCode() . ')');
     }
 
+    /**
+     * Проверяет результат операции с ORM сущностью и вывыводит ошибки, если таковые имеются
+     * @param Result $result
+     * @param string $entityTitle
+     *
+     * @throws Error
+     */
     protected function tellAboutOrmResult(Result $result, $entityTitle = 'записи')
     {
         if(!$result->isSuccess())

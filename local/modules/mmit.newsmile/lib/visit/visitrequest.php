@@ -4,6 +4,7 @@ namespace Mmit\NewSmile\Visit;
 
 use Bitrix\Main\Entity\DataManager;
 use Bitrix\Main\Entity;
+use Bitrix\Main\Type\DateTime;
 use Mmit\NewSmile\Orm\ExtendedFieldsDescriptor;
 use Mmit\NewSmile\PatientCardTable;
 use Mmit\NewSmile\Service\ServiceTable;
@@ -32,6 +33,10 @@ class VisitRequestTable extends DataManager implements ExtendedFieldsDescriptor
                 'autocomplete' => true,
                 'primary' => true,
                 'title' => 'ID',
+            )),
+            new Entity\DatetimeField('DATE_CREATE', array(
+                'title' => 'Дата создания',
+                'default_value' => new DateTime()
             )),
             new Entity\ReferenceField('SERVICE',
                 ServiceTable::class,

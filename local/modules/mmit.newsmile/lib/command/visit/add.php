@@ -8,6 +8,7 @@ use Bitrix\Main\Entity\Field;
 use Bitrix\Main\Type\DateTime;
 use Mmit\NewSmile\Command\OrmEntityAdd;
 use Mmit\NewSmile\Command\TeethMap\Detail;
+use Mmit\NewSmile\Notice\NewVisitAdded;
 use Mmit\NewSmile\ScheduleTable;
 use Mmit\NewSmile\Visit\VisitTable;
 
@@ -24,6 +25,17 @@ class Add extends OrmEntityAdd
     protected function filterField(Field $field)
     {
         return in_array($field->getName(), ['TIME_START', 'TIME_END', 'PATIENT_ID', 'DOCTOR_ID', 'WORK_CHAIR_ID']);
+    }
+
+    protected function doExecute()
+    {
+        parent::doExecute();
+
+        $notice = new NewVisitAdded([
+            'VISIT_ID' => $this->result['primary']['id']
+        ]);
+
+        $notice->push([$this->params['patientId']]);
     }
 
     protected function checkAvailable()

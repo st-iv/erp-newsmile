@@ -1,6 +1,7 @@
 <?
 namespace Mmit\NewSmile\Notice\Data;
 
+use Bitrix\Main\Diag\Debug;
 use Bitrix\Main\Entity;
 use Bitrix\Main\Loader;
 use Bitrix\Main\Type\DateTime;
@@ -86,7 +87,7 @@ class NoticeTable extends Entity\DataManager
      */
     public static function extendNoticeDataByType(array &$noticeData)
     {
-        $typeInfo = TypeTable::getTypeInfo($noticeData['TYPE_ID']);
+        $typeInfo = TypeTable::getTypeInfo($noticeData['TYPE_ID'] ?: $noticeData['TYPE']);
 
         $noticeData = array_merge($noticeData, $typeInfo);
         $noticeData['TYPE'] = $noticeData['CODE'];
