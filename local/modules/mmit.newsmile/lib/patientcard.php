@@ -89,9 +89,8 @@ class PatientCardTable extends Entity\DataManager implements NewSmile\Orm\Extend
                     );
                 },
             )),
-            new Entity\TextField('ADDITIONAL_PHONES', array(
-                'title' => 'Дополнительные телефоны',
-                'serialized' => true
+            new NewSmile\Orm\Fields\PhoneField('ADDITIONAL_PHONE', array(
+                'title' => 'Резервный телефон',
             )),
             new Entity\StringField('EMAIL', array(
                 'title' => 'Email',

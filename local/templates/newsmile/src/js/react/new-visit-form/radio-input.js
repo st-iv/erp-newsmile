@@ -18,8 +18,10 @@ class RadioInput extends React.PureComponent
 
     render()
     {
+        const wrapperClass = 'form__wrapper form__wrapper--radio' + (this.props.disabled ? ' form__wrapper--disabled' : '');
+
         return (
-            <label className="form__wrapper form__wrapper--radio">
+            <label className={wrapperClass}>
                 <span className="form__label form__label--focus">{this.props.title}</span>
 
                 {this.props.variants.map(variant =>

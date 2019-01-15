@@ -29,8 +29,8 @@ class GetUnitedList extends Base
             }
             else
             {
-                $sortByA = ($visitA['is_visit_request'] ? 'create_timestamp' : 'timestamp');
-                $sortByB = ($visitB['is_visit_request'] ? 'create_timestamp' : 'timestamp');
+                $sortByA = ((($visitA['date'] === null) || $visitA['is_near_future']) ? 'create_timestamp' : 'timestamp');
+                $sortByB = ((($visitB['date'] === null) || $visitB['is_near_future']) ? 'create_timestamp' : 'timestamp');
             }
 
             if(!$visitA[$sortByA] && $visitB[$sortByB])

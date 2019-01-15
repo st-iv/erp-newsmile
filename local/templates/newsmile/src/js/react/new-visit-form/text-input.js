@@ -33,7 +33,9 @@ class TextInput extends React.Component
     render()
     {
         const inputClass = 'form__input' + (this.props.required ? ' form__input--required' : '');
-        const wrapperClass = 'form__wrapper' + (this.props.required ? ' form__wrapper--required' : '');
+        let wrapperClass = 'form__wrapper' + (this.props.required ? ' form__wrapper--required' : '');
+        wrapperClass += (this.props.disabled ? ' form__wrapper--disabled' : '');
+
         let inputProps = $.extend({}, this.props, {
             className: inputClass,
             type: 'text',

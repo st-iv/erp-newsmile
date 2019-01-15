@@ -186,22 +186,38 @@ var General = (function()
         return '+' + rawPhone[0] + ' (' + rawPhone.substr(1, 3) + ') ' + rawPhone.substr(4, 3) + ' ' + rawPhone.substr(7, 2) + ' ' + rawPhone.substr(9, 2);
     }
 
-    function isEqualObjects(obj1, obj2)
+    function isEqual(var1, var2)
     {
         var result = true;
 
-        for (var key in obj1)
+        if((typeof var1 === 'object') && (typeof var2 === 'object'))
         {
-            if(!obj1.hasOwnProperty(key)) continue;
-
-            if(obj1[key] !== obj2[key])
+            for (var key in var1)
             {
-                result = false;
-                break;
+                if(!var1.hasOwnProperty(key)) continue;
+
+                if(!isEqual(var1[key], var2[key]))
+                {
+                    result = false;
+                    break;
+                }
             }
+        }
+        else
+        {
+            result = var1 === var2;
         }
 
         return result;
+    }
+
+    function isEqualArrays(ar1, ar2)
+    {
+        var result = true;
+        ar1.forEach(function(element1, index)
+        {
+            var element2 = ar2[index];
+        });
     }
 
 
@@ -345,7 +361,7 @@ var General = (function()
         forEachObj: forEachObj,
         filterObj: filterObj,
         mapObj: mapObj,
-        isEqualObjects: isEqualObjects,
+        isEqual: isEqual,
         formatPhone: formatPhone,
 
         sessid: sessid,
