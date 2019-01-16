@@ -12,6 +12,7 @@ use Mmit\NewSmile\Command;
 
 class Controller
 {
+    const TEMPLATES_FOLDER = __DIR__ . '/templates';
     protected $request;
 
     public function __construct()
@@ -37,6 +38,8 @@ class Controller
     protected function renderHelpPage($entity, $command)
     {
         // подумать как можно это реализовать
+        include static::TEMPLATES_FOLDER . '/header.php';
+        include static::TEMPLATES_FOLDER . '/footer.php';
     }
 
     protected function executeCommand($entity, $command)
