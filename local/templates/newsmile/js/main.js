@@ -331,12 +331,12 @@ function cloneBlock($clonedBlock) {
 // @param numTimeout - время на открытие и закрытие элемента
 
 function closeElement ($element, strActiveClass, strCloseClass, numTimeout) {
-    if ($($element).hasClass(strActiveClass) == true) {
+    /*if ($($element).hasClass(strActiveClass) == true) {
         $($element).addClass(strCloseClass);
         setTimeout(function(){
             $($element).removeClass(strActiveClass);
             $($element).removeClass(strCloseClass);
         }, numTimeout);
-    }
+    }*/
 }
 

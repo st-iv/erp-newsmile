@@ -15,9 +15,14 @@ export default class NewVisitForm extends React.Component
         timeEnd: PropTypes.string.isRequired,
         date: PropTypes.string.isRequired,
         chairId: PropTypes.number.isRequired,
+        freezeTimeout: PropTypes.number,
 
         onSuccessSubmit: PropTypes.func,
         onClose: PropTypes.func
+    };
+
+    static defaultProps = {
+        freezeTimeout: 0
     };
 
     state = {
@@ -45,7 +50,7 @@ export default class NewVisitForm extends React.Component
     constructor(props)
     {
         super(props);
-        this.loadData();
+        this.loadData(this.props.freezeTimeout);
 
         this.handleInputChange = this.handleInputChange.bind(this);
     }
@@ -185,7 +190,7 @@ export default class NewVisitForm extends React.Component
     }
 
 
-    loadData()
+    loadData(minimalLoadTime = 0)
     {
         let data = {
             timeStart: this.props.timeStart,
@@ -197,39 +202,55 @@ export default class NewVisitForm extends React.Component
             patientsSelect: this.patientCardFields
         };
 
+        let loadStartTs = Date.now();
+
         let command = new ServerCommand('visit/get-add-form-info', data, result =>
         {
-            let newState = {};
+            let needWaitTime = minimalLoadTime - (Date.now() - loadStartTs);
 
-            if(result.doctors)
+            if(needWaitTime > 0)
             {
-                newState.doctors = result.doctors.map(doctor =>
-                {
-                    let doctorOption = {
-                        label: doctor.fio,
-                        color: doctor.color,
-                        value: doctor.code,
-                    };
-
-                    if(doctor.isCurrent)
-                    {
-                        newState.doctor = doctorOption;
-                    }
-
-                    return doctorOption;
-                });
+                setTimeout(this.processData.bind(this, result), needWaitTime);
             }
-
-            newState.values = this.getDefaultValues(result.fields);
-
-            newState.fields = result.fields;
-            newState.patients = result.patients;
-            newState.allPatientsLoaded = (result.patientsTotalCount === newState.patients.length);
-
-            this.setState(newState);
+            else
+            {
+                this.processData(result);
+            }
         });
 
         command.exec();
+    }
+
+    processData(data)
+    {
+        let newState = {};
+
+        if(data.doctors)
+        {
+            newState.doctors = data.doctors.map(doctor =>
+            {
+                let doctorOption = {
+                    label: doctor.fio,
+                    color: doctor.color,
+                    value: doctor.code,
+                };
+
+                if(doctor.isCurrent)
+                {
+                    newState.doctor = doctorOption;
+                }
+
+                return doctorOption;
+            });
+        }
+
+        newState.values = this.getDefaultValues(data.fields);
+
+        newState.fields = data.fields;
+        newState.patients = data.patients;
+        newState.allPatientsLoaded = (data.patientsTotalCount === newState.patients.length);
+
+        this.setState(newState);
     }
 
     getGeneralInputMixin(field)

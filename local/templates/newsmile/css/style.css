@@ -1910,7 +1910,7 @@ ul.dClndr_psubmenu {
     right: 0;
 }
 
-.popup-enter-active .popup__wrapper{
+/*.popup-enter-active .popup__wrapper{
     animation-name: slideLeft;
     animation-duration: 400ms;
 }
@@ -1918,7 +1918,26 @@ ul.dClndr_psubmenu {
 .popup-leave-active .popup__wrapper{
     animation-name: slideRight;
     animation-duration: 400ms;
+}*/
+
+.popup-enter .popup__wrapper {
+    /*transform: translateX(100%);*/
 }
+
+.popup-enter.popup-enter-active .popup__wrapper {
+    animation-name: slideLeft;
+    animation-duration: 400ms;
+}
+
+.popup-leave.popup-leave-active .popup__wrapper {
+    animation-name: slideRight;
+    animation-duration: 400ms;
+}
+
+.popup-leave .popup__wrapper {
+    transform: translateX(100%);
+}
+
 
 .new-visit__header {
     display: flex;
@@ -2311,6 +2330,7 @@ ul.dClndr_psubmenu {
     padding-top: 36px;
     padding-bottom: 20px;
     height: calc(100% - 201px);
+	transition: height .3s ease-out;
 }
 
 .new-visit__form.selected-patient .form__fields-wrapper {
@@ -2590,6 +2610,9 @@ input[type=radio].visually-hidden {
 	height: 12px;
 	border-radius: 2px;
 	margin-right: 11px;
+}
+
+.filter-select.colored-select .value-color.value-color--white {
 	border: 1px solid #e0e0e0;
 }
 
@@ -2851,6 +2874,7 @@ input[type=radio].visually-hidden {
 	align-items: center;
 	justify-content: center;
 	background-color: #f5f5f5;
+	transition: height .3s ease-out;
 }
 
 .new-visit__form.selected-patient .form__top-block {

@@ -34,13 +34,15 @@ class CellContextMenu extends React.PureComponent
 
                                 {command.name}
 
-                                <ul className="dClndr_psubmenu">
-                                    {this.commandsWithVariants[command.code] && command.variants && command.variants.map(variant =>
-                                        <li onClick={this.processCommand.bind(this, command.code, variant.code)} key={command.code + '_' + variant.code}>
-                                            {variant.name}
-                                        </li>
-                                    )}
-                                </ul>
+                                {this.commandsWithVariants[command.code] && (
+                                    <ul className="dClndr_psubmenu">
+                                        {this.commandsWithVariants[command.code] && command.variants && command.variants.map(variant =>
+                                            <li onClick={this.processCommand.bind(this, command.code, variant.code)} key={command.code + '_' + variant.code}>
+                                                {variant.name}
+                                            </li>
+                                        )}
+                                    </ul>
+                                )}
                             </li>
                         )}
                     </ul>

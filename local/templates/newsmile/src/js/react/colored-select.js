@@ -6,9 +6,11 @@ class ColoredSelect extends React.Component
 {
     option = (props) =>
     {
+        const valueColorClass = 'value-color' + (this.isWhiteColor(props.data.color) ? ' value-color--white' : '');
+
         return (
             <components.Option {...props}>
-                <div className="value-color" style={{backgroundColor: props.data.color}}/>
+                <div className={valueColorClass} style={{backgroundColor: props.data.color}}/>
                 {props.children}
             </components.Option>
         );
@@ -17,11 +19,12 @@ class ColoredSelect extends React.Component
     valueContainer = (props) =>
     {
         const value = props.getValue()[0];
+        const valueColorClass = 'value-color' + (this.isWhiteColor(value.color) ? ' value-color--white' : '');
 
         return (
             <components.ValueContainer {...props}>
                 {!!value && (
-                    <div className="value-color" style={{backgroundColor: value.color}}/>
+                    <div className={valueColorClass} style={{backgroundColor: value.color}}/>
                 )}
                 {props.children}
             </components.ValueContainer>
@@ -33,6 +36,11 @@ class ColoredSelect extends React.Component
         return (
             <Select {...this.props} className={this.props.className + ' colored-select'} components={{Option: this.option, ValueContainer: this.valueContainer}}/>
         );
+    }
+
+    isWhiteColor(color)
+    {
+        return !color || !!color.match(/#fff(fff)?/i)
     }
 }
 
