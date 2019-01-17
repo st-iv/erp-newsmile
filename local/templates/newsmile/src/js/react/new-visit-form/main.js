@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 import ColoredSelect from '../colored-select'
 import TextInput from './text-input'
 import RadioInput from './radio-input'
-import AdditionalInput from "./additional-input";
+import AdditionalTextInput from "./additional-text-input";
 import Select from "./select";
 import Scrollbars from '../scrollbars'
 import PatientsTable from './patients-table'
@@ -117,7 +117,7 @@ export default class NewVisitForm extends React.Component
                 </div>
 
                 <div className="form__fields-wrapper">
-                    <Scrollbars>
+                    <Scrollbars verticalScrollSide="left">
                         <div className="form__scroll-area">
 
                             <div className="form__block">
@@ -143,9 +143,11 @@ export default class NewVisitForm extends React.Component
                                 <div className="form__block">
                                     <TextInput mask="+7 (999) 999 99 99" maskChar="-" {...this.addGeneralInputMixin(this.state.fields.personalPhone)}/>
 
-                                    <AdditionalInput buttonTitle="Добавить телефон" updateKey={this.state.selectedPatient} isActive={additionalPhoneProps !== ''}>
-                                        <TextInput mask="+7 (999) 999 99 99" maskChar="-" {...additionalPhoneProps}/>
-                                    </AdditionalInput>
+                                    <AdditionalTextInput buttonTitle="Добавить телефон"
+                                                         updateKey={this.state.selectedPatient}
+                                                         mask="+7 (999) 999 99 99"
+                                                         maskChar="-"
+                                                         {...additionalPhoneProps} />
                                 </div>
                             </div>
 
@@ -249,7 +251,7 @@ export default class NewVisitForm extends React.Component
         return new Promise(resolve =>
         {
             let data = General.clone(this.state.values);
-            data.source = data.source.map(source => (source.value));
+            data.source = data.source ? data.source.map(source => (source.value)) : [];
 
             if(id)
             {
@@ -365,6 +367,11 @@ export default class NewVisitForm extends React.Component
                     label: variantsMap[value],
                     value
                 }));
+            }
+
+            if((field.type === 'phone') && fieldValue)
+            {
+                fieldValue = General.formatPhone(fieldValue);
             }
 
             newState.values[fieldCode] = fieldValue;

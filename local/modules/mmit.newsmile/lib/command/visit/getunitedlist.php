@@ -20,42 +20,14 @@ class GetUnitedList extends Base
 
         /* сортировка */
 
-        usort($this->result['visit_list'], function($visitA, $visitB) use ($sortOrder)
+        if($this->params['is_active'])
         {
-            if($this->params['is_active'])
-            {
-                $sortByA = 'timestamp';
-                $sortByB = 'timestamp';
-            }
-            else
-            {
-                $sortByA = ((($visitA['date'] === null) || $visitA['is_near_future']) ? 'create_timestamp' : 'timestamp');
-                $sortByB = ((($visitB['date'] === null) || $visitB['is_near_future']) ? 'create_timestamp' : 'timestamp');
-            }
-
-            if(!$visitA[$sortByA] && $visitB[$sortByB])
-            {
-                $result = -1;
-            }
-            else if(!$visitB[$sortByB] && $visitA[$sortByA])
-            {
-                $result = 1;
-            }
-            else if($visitA[$sortByA] > $visitB[$sortByB])
-            {
-                $result = 1;
-            }
-            else if(($visitB[$sortByB] > $visitA[$sortByA]))
-            {
-                $result = -1;
-            }
-            else
-            {
-                $result = 0;
-            }
-
-            return $result * (($sortOrder == 'asc') ? 1 : -1);
-        });
+            $this->sortActive($this->result['visit_list']);
+        }
+        else
+        {
+            $this->sortArchive($this->result['visit_list']);
+        }
 
 
         /* list position */
@@ -141,6 +113,71 @@ class GetUnitedList extends Base
         }
 
         return $result;
+    }
+
+    protected function sortActive(&$list)
+    {
+        $sortOrder = $this->params['order'];
+
+        usort($list, function($visitA, $visitB) use ($sortOrder)
+        {
+            if(!$visitA['is_near_future'] && $visitB['is_near_future'])
+            {
+                $result = 1;
+            }
+            else if(!$visitB['is_near_future'] && $visitA['is_near_future'])
+            {
+                $result = -1;
+            }
+            else if(!$visitA['timestamp'] && $visitB['timestamp'])
+            {
+                $result = -1;
+            }
+            else if(!$visitB['timestamp'] && $visitA['timestamp'])
+            {
+                $result = 1;
+            }
+            else if($visitA['timestamp'] > $visitB['timestamp'])
+            {
+                $result = 1;
+            }
+            else if($visitA['timestamp'] < $visitB['timestamp'])
+            {
+                $result = -1;
+            }
+            else
+            {
+                $result = 0;
+            }
+
+            return $result * (($sortOrder == 'asc') ? 1 : -1);
+        });
+    }
+
+    protected function sortArchive(&$list)
+    {
+        $sortOrder = $this->params['order'];
+
+        usort($list, function($visitA, $visitB) use ($sortOrder)
+        {
+            $sortByA = ((($visitA['date'] === null) || $visitA['is_near_future']) ? 'create_timestamp' : 'timestamp');
+            $sortByB = ((($visitB['date'] === null) || $visitB['is_near_future']) ? 'create_timestamp' : 'timestamp');
+
+            if($visitA[$sortByA] > $visitB[$sortByB])
+            {
+                $result = 1;
+            }
+            else if(($visitB[$sortByB] > $visitA[$sortByA]))
+            {
+                $result = -1;
+            }
+            else
+            {
+                $result = 0;
+            }
+
+            return $result * (($sortOrder == 'asc') ? 1 : -1);
+        });
     }
 
     /**

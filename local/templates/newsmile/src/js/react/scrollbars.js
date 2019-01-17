@@ -1,8 +1,19 @@
 import React from 'react'
+import PropTypes from 'prop-types'
 import { Scrollbars as CustomScrollbars } from 'react-custom-scrollbars'
 
 export default class Scrollbars extends React.Component
 {
+    static propTypes = {
+        verticalScrollSide: PropTypes.oneOf(['left', 'right']),
+        className: PropTypes.string
+    };
+
+    static defaultProps = {
+        verticalScrollSide: 'right',
+        className: ''
+    };
+
     constructor(props)
     {
         super(props);
@@ -20,6 +31,9 @@ export default class Scrollbars extends React.Component
 
         props.renderTrackVertical = this.renderTrackVertical.bind(this);
         props.renderTrackHorizontal = this.renderTrackHorizontal.bind(this);
+        props.className = 'custom-scroll__container ' + this.props.className;
+
+        delete props.verticalScrollSide;
 
         return (
             <CustomScrollbars {...props}/>
@@ -36,14 +50,11 @@ export default class Scrollbars extends React.Component
 
     renderTrackVertical({ style, ...props })
     {
-        const trackStyle = {
-            bottom: '2px',
-            top: '2px',
-            left: '6px'
-        };
+        let className = 'custom-scroll__track custom-scroll__track--vertical';
+        className += (this.props.verticalScrollSide === 'right') ? ' custom-scroll__track--right' : ' custom-scroll__track--left';
 
         return (
-            <div style={{ ...style, ...trackStyle }} className="custom-scroll__track custom-scroll__track--vertical"
+            <div style={{ ...style }} className={className}
                  {...props}/>
         );
     }

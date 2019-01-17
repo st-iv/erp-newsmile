@@ -101,8 +101,7 @@ class PatientCardTable extends Entity\DataManager implements NewSmile\Orm\Extend
                 },
             )),
             new Entity\IntegerField('USER_ID', array(
-                'title' => 'Пользователь',
-                'default_value' => 0
+                'title' => 'Пользователь'
             )),
             new Entity\ReferenceField('USER',
                 'Bitrix\Main\User',
@@ -370,9 +369,6 @@ class PatientCardTable extends Entity\DataManager implements NewSmile\Orm\Extend
     public static function onBeforeSave($primary, $newFields, $oldFields = [])
     {
         $result = new Entity\EventResult();
-        $result->unsetField('USER_ID');
-
-        Debug::writeToFile($newFields, '$newFields');
 
         if($newFields['PERSONAL_PHONE'] != $oldFields['PERSONAL_PHONE'])
         {
@@ -385,7 +381,7 @@ class PatientCardTable extends Entity\DataManager implements NewSmile\Orm\Extend
                     'LOGIN' => 'patient_' . $newFields['PERSONAL_PHONE']
                 ]);
             }
-            else
+            elseif(!$newFields['USER_ID'])
             {
                 $login = 'patient_' . $newFields['PERSONAL_PHONE'];
 

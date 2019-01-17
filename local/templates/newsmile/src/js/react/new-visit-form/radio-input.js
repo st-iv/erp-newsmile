@@ -33,7 +33,7 @@ class RadioInput extends React.PureComponent
                                id={id}
                                name={this.props.name}
                                value={variant.code}
-                               defaultChecked={variant.code === this.props.defaultValue}
+                               checked={variant.code === this.props.value}
                                key={'input_' + variant.code}
                                onChange={e => this.props.onChange(e.target.value)}
                                disabled={this.props.disabled}

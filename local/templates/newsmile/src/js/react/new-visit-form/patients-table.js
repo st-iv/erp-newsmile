@@ -1,5 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
+import Scrollbars from '../scrollbars'
 
 export default class PatientsTable extends React.PureComponent
 {
@@ -34,39 +35,41 @@ export default class PatientsTable extends React.PureComponent
 
         return (
             <div className="new-visit__table-wrapper">
-                <div className="table__scroll-area">
-                    <table className="new-visit__table table">
-                        <tbody>
-                        <tr className="table__row table__row--first">
-                            <td className="table__cell">{this.props.fields.number.title}</td>
-                            <td className="table__cell">Пациент</td>
-                            <td className="table__cell">{this.props.fields.personalBirthday.title}</td>
-                            <td className="table__cell">{this.props.fields.personalPhone.title}</td>
-                        </tr>
-                        <tr className="table__row table__row--empty"/>
+                <Scrollbars>
+                    <div className="table__scroll-area">
+                        <table className="new-visit__table table">
+                            <tbody>
+                            <tr className="table__row table__row--first">
+                                <td className="table__cell">{this.props.fields.number.title}</td>
+                                <td className="table__cell">Пациент</td>
+                                <td className="table__cell">{this.props.fields.personalBirthday.title}</td>
+                                <td className="table__cell">{this.props.fields.personalPhone.title}</td>
+                            </tr>
+                            <tr className="table__row table__row--empty"/>
 
-                            {patients.map(patient => (
-                                <tr className={'table__row' + ((this.props.selectedPatientId === patient.id) ? ' table__row--active' : '')  }
-                                    key={patient.id}
-                                    onClick={this.handleRowClick.bind(this, patient)}>
-                                    <td className="table__cell">
-                                        <div className="table__container"/>
-                                        {patient.number}
-                                    </td>
-                                    <td className="table__cell">{patient.lastName} {patient.name} {patient.secondName}</td>
-                                    <td className="table__cell">
-                                        {patient.personalBirthday}
-                                        <span className="table__age">{patient.age}</span>
-                                    </td>
-                                    <td className="table__cell">{patient.personalPhoneFormatted || (<span className="table__not-phone"/>)}</td>
-                                </tr>
-                            ))}
+                                {patients.map(patient => (
+                                    <tr className={'table__row' + ((this.props.selectedPatientId === patient.id) ? ' table__row--active' : '')  }
+                                        key={patient.id}
+                                        onClick={this.handleRowClick.bind(this, patient)}>
+                                        <td className="table__cell">
+                                            <div className="table__container"/>
+                                            {patient.number}
+                                        </td>
+                                        <td className="table__cell">{patient.lastName} {patient.name} {patient.secondName}</td>
+                                        <td className="table__cell">
+                                            {patient.personalBirthday}
+                                            <span className="table__age">{patient.age}</span>
+                                        </td>
+                                        <td className="table__cell">{patient.personalPhoneFormatted || (<span className="table__not-phone"/>)}</td>
+                                    </tr>
+                                ))}
 
-                        <tr className="table__row table__row--empty"/>
-                        <tr className="table__row"/>
-                        </tbody>
-                    </table>
-                </div>
+                            <tr className="table__row table__row--empty"/>
+                            <tr className="table__row"/>
+                            </tbody>
+                        </table>
+                    </div>
+                </Scrollbars>
             </div>
         );
     }

@@ -2116,6 +2116,7 @@ ul.dClndr_psubmenu {
 
 .table__scroll-area {
     display: flex;
+	margin-left: 24px;
 }
 
 .table__clearfix {
@@ -2906,4 +2907,22 @@ input[type=radio].visually-hidden {
 	font-size: 0.824rem;
 	color: #4F5966;
 	line-height: 1.5;
+}
+
+.custom-scroll__track.custom-scroll__track--vertical {
+	bottom: 2px;
+	top: 2px;
+}
+
+.custom-scroll__track.custom-scroll__track--vertical.custom-scroll__track--left {
+	left: 6px;
+}
+
+.custom-scroll__track.custom-scroll__track--vertical.custom-scroll__track--right {
+	right: 6px;
+}
+
+.new-visit__table-wrapper .custom-scroll__container {
+	margin-left: -24px;
+	width: calc(100% + 24px) !important;
 }
