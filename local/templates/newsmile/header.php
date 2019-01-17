@@ -43,7 +43,6 @@
     $asset->addJs(SITE_TEMPLATE_PATH . '/js/jquery.magnific-popup.js');
     //$asset->addJs(SITE_TEMPLATE_PATH . '/js/popup.js');
     $asset->addJs(SITE_TEMPLATE_PATH . '/js/main.js');
-    $asset->addJs(SITE_TEMPLATE_PATH . '/js/server.js');
     ?>
 </head>
 <body data-sessid="<?=bitrix_sessid()?>" data-post-form-action="<?=POST_FORM_ACTION_URI?>">

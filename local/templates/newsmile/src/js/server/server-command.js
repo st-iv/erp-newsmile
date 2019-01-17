@@ -1,13 +1,15 @@
-var ServerCommand = function(code, data, success = null)
+export default class ServerCommand
 {
-    this.restApiUrl = '/api/rest/';
-    this.code = code;
-    this.data = data;
-    this.success = success;
-};
+    restApiUrl = '/api/rest/';
 
-$.extend(ServerCommand.prototype, {
-    exec: function()
+    constructor(code, data, success = null)
+    {
+        this.code = code;
+        this.data = data;
+        this.success = success;
+    }
+
+    exec()
     {
         return new Promise((resolve, reject) =>
         {
@@ -18,12 +20,10 @@ $.extend(ServerCommand.prototype, {
                 complete: this.handleResponse.bind(this, resolve, reject)
             });
         });
-    },
+    }
 
-    handleResponse: function(resolve, reject, jqXHR, textStatus)
+    handleResponse(resolve, reject, jqXHR, textStatus)
     {
-        console.log(jqXHR, textStatus, 'test!!!');
-
         let response = jqXHR.responseJSON;
 
         if(textStatus === 'success' && (response.result === 'success') && (response.error === null))
@@ -47,7 +47,7 @@ $.extend(ServerCommand.prototype, {
             else
             {
                 //reject(jqXHR); //TODO вернуть объект error с той же сткруктурой, которую присылает сервер
-            }
+            }//
         }
     }
-});
+}

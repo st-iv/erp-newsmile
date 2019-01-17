@@ -7,6 +7,7 @@ import AdditionalTextInput from "./additional-text-input";
 import Select from "./select";
 import Scrollbars from '../scrollbars'
 import PatientsTable from './patients-table'
+import ServerCommand from 'js/server/server-command'
 
 export default class NewVisitForm extends React.Component
 {

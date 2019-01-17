@@ -1,6 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import Scrollbars from '../scrollbars'
+import ServerCommand from 'js/server/server-command'
 
 export default class PatientsTable extends React.PureComponent
 {
