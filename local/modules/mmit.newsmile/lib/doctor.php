@@ -153,7 +153,7 @@ class DoctorTable extends Entity\DataManager
 
         NewSmile\Orm\Helper::indexSearch(
             $id,
-            'doctor',
+            static::getEntity(),
             array(Helpers::getFio($fields)),
             $additionalFields
         );
@@ -161,6 +161,6 @@ class DoctorTable extends Entity\DataManager
 
     protected static function deleteSearchIndex($id)
     {
-        NewSmile\Orm\Helper::deleteSearchIndex($id, 'doctor');
+        NewSmile\Orm\Helper::deleteSearchIndex($id, static::getEntity());
     }
 }

@@ -28,6 +28,7 @@ abstract class Base
     private $isReflectionMode;
 
     protected static $name = '';
+    protected static $description = '';
 
     public function __construct($params = [], $varyParam = null, $isReflectionMode = false)
     {
@@ -209,6 +210,11 @@ abstract class Base
     protected static function getEntityCode()
     {
         return static::getCodeFor(false);
+    }
+
+    public static function getNamespace()
+    {
+        return __NAMESPACE__;
     }
 
     private static function getCodeFor($bCommand)

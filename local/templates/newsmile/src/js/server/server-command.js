@@ -8,7 +8,6 @@ export default class ServerCommand
         this.data = data;
         this.success = success;
     }
-
     exec()
     {
         return new Promise((resolve, reject) =>
@@ -17,14 +16,15 @@ export default class ServerCommand
                 url: this.restApiUrl + this.code + '/',
                 data: this.data,
                 dataType: 'json',
-                complete: this.handleResponse.bind(this, resolve, reject)
+                complete: this._handleResponse.bind(this, resolve, reject)
             });
         });
     }
 
-    handleResponse(resolve, reject, jqXHR, textStatus)
+    _handleResponse(resolve, reject, jqXHR, textStatus)
     {
         let response = jqXHR.responseJSON;
+        let self = this.constructor;
 
         if(textStatus === 'success' && (response.result === 'success') && (response.error === null))
         {
@@ -42,12 +42,18 @@ export default class ServerCommand
             if(response && response.error && response.error.description)
             {
                 console.warn(response.error.description);
-                //reject(response.error);
+                reject(response.error);
             }
             else
             {
-                //reject(jqXHR); //TODO вернуть объект error с той же сткруктурой, которую присылает сервер
+                reject(jqXHR); //TODO вернуть объект error с той же структурой, которую присылает сервер
             }//
+        }
+
+        if(this.queueCode && self.queues[this.queueCode])
+        {
+            let nextQueueItem = self.queues[this.queueCode].pop();
+            nextQueueItem.command._send(nextQueueItem.resolve, nextQueueItem.reject);
         }
     }
 }

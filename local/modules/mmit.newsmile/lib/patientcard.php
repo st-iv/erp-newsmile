@@ -421,7 +421,7 @@ class PatientCardTable extends Entity\DataManager implements NewSmile\Orm\Extend
 
         NewSmile\Orm\Helper::indexSearch(
             $id,
-            'patientcard',
+            static::getEntity(),
             array(Helpers::getFio($fields)),
             $additionalFields
         );
@@ -429,7 +429,7 @@ class PatientCardTable extends Entity\DataManager implements NewSmile\Orm\Extend
 
     protected static function deleteSearchIndex($id)
     {
-        NewSmile\Orm\Helper::deleteSearchIndex($id, 'patientcard');
+        NewSmile\Orm\Helper::deleteSearchIndex($id, static::getEntity());
     }
 
     public static function indexSearchAll()

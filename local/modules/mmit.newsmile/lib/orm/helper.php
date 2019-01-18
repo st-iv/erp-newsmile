@@ -6,6 +6,7 @@ use Bitrix\Main\Entity\BooleanField;
 use Bitrix\Main\Entity\DataManager;
 use Bitrix\Main\Entity\EnumField;
 use Bitrix\Main\Entity\ScalarField;
+use Bitrix\Main\ORM\Entity;
 use \Bitrix\Main\ORM\Fields\Field;
 use Bitrix\Main\Loader;
 use Bitrix\Main\LoaderException;
@@ -72,23 +73,22 @@ class Helper
     }
 
     /**
-     * Добавляет запись в поисковый индекс в формате, необходимом для возможности раздельного поиска по некоторым полям. Этот
-     * формат поддерживает компонент newsmile:search.title
+     * Добавляет запись в поисковый индекс в формате, необходимом для возможности раздельного поиска по определённым полям
      *
      * @param int $id - id записи
-     * @param string $category - код категории, как правило, отдельный для каждой сущности. Этот код категории будет использоваться
-     * в компоненте newsmile:search.title
+     * @param Entity $entity - объект сущности
      * @param array $mainFields - основной набор полей, для которых будет создана общая запись в поисковом индексе
      * @param array $additionalFields - дополнительные поля, для которых будут созданы отдельные записи в поисковом индексе.
      * По ним можно будет группировать результаты поиска
      *
      * @throws LoaderException
      */
-    public static function indexSearch($id, $category, array $mainFields, array $additionalFields = array())
+    public static function indexSearch($id, $entity, array $mainFields, array $additionalFields = array())
     {
         Loader::includeModule('search');
 
         $mainSearchTitle = implode(' ', $mainFields);
+        $category = static::getSearchCategory($entity);
 
         \CSearch::Index(
             "mmit.newsmile",
@@ -129,20 +129,26 @@ class Helper
     /**
      * Удаляет поисковый индекс элемента с указанным id в указанной категории
      * @param string $id
-     * @param string $category
+     * @param Entity $entity
      *
      * @throws \Bitrix\Main\LoaderException
      */
-    public static function deleteSearchIndex($id, $category)
+    public static function deleteSearchIndex($id, $entity)
     {
         Loader::includeModule('search');
 
         \CSearch::DeleteIndex(
             'mmit.newsmile',
             false,
-            $category,
+            static::getSearchCategory($entity),
             $id
         );
+    }
+
+    public static function getSearchCategory(Entity $entity)
+    {
+        $shortClassName = NewSmile\Helpers::getShortClassName($entity->getDataClass());
+        return strtolower(preg_replace('/Table$/', '', $shortClassName));
     }
 
     public static function filterResultArray(array $resultArray, array $filter)
@@ -233,7 +239,6 @@ class Helper
 
         $result = [];
         $fieldsCodes = array_flip($fieldsCodes);
-        Debug::writeToFile($fieldsCodes);
 
         foreach ($dataManagerClass::getEntity()->getFields() as $field)
         {
@@ -288,5 +293,17 @@ class Helper
         }
 
         return $result;
+    }
+
+    /**
+     * Возвращает пространство имён команд, работающих с указаной ORM сущностью
+     * @param Entity $entity
+     *
+     * @return string
+     */
+    public static function getCommandNamespaceByEntity(Entity $entity)
+    {
+        $shortClassName = NewSmile\Helpers::getShortClassName($entity->getDataClass());
+        return NewSmile\Command\Base::getNamespace() . '\\' . preg_replace('/Table$/', '', $shortClassName);
     }
 }

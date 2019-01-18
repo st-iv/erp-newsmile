@@ -1,5 +1,7 @@
 <?if(!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED !== true) die();?>
 <?
+use Mmit\NewSmile\Application;
+
 \Bitrix\Main\Loader::includeModule('mmit.newsmile');
 ?>
 <?$asset = \Bitrix\Main\Page\Asset::getInstance();?>
@@ -75,7 +77,7 @@
             );
             ?>
 
-            <?$APPLICATION->IncludeComponent(
+            <?/*$APPLICATION->IncludeComponent(
                 "newSmile:search.title",
                 "header",
                 array(
@@ -95,7 +97,13 @@
                         )
                     )
                 )
-            );?>
+            );*/
+            Application::getInstance()->renderReactComponent('Search', [
+                'useLanguageGuess' => true,
+                'minQueryLength' => 3,
+                'topCount' => 200
+            ], 'header-search-root');
+            ?>
             <div class="header_place">
                 <div class="place_current">
                     <div class="place_current_city">Иркутск</div>
