@@ -178,11 +178,13 @@ class mmit_newsmile extends CModule
     public function registerDependences()
     {
         RegisterModuleDependences('pull', 'OnGetDependentModule', $this->MODULE_ID, 'Mmit\NewSmile\DependencesManager', 'getPullDependenceData');
+        NewSmile\Search\Manager::registerDependences();
     }
 
     public function unRegisterDependences()
     {
         UnRegisterModuleDependences('pull', 'OnGetDependentModule', $this->MODULE_ID, 'Mmit\NewSmile\DependencesManager', 'getPullDependenceData');
+        NewSmile\Search\Manager::unRegisterDependences();
     }
 
     public function uninstallDB()

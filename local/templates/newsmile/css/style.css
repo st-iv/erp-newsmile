@@ -591,7 +591,10 @@ body.notifOpen .notif_amnt{
 	line-height: 24px;
 	width: 180px;
 	border-radius: 2px;
-	text-align: center;
+	text-align: center
+}
+.search_item_dname span {
+	color: #00d6d6;
 }
 .search_item_dage{
 	width: 80px;

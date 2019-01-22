@@ -26,8 +26,6 @@ export default class ResultCategory extends React.PureComponent
 
     render()
     {
-        if(!(this.props.code === 'patientcard')) return null;
-
         return (
             <div className={'search_res_' + ((this.props.code === 'patientcard') ? 'patients' : 'doctors')}>
                 <div className="search_res_title">
@@ -94,9 +92,32 @@ export default class ResultCategory extends React.PureComponent
 
     renderDoctorCategory()
     {
+        let items = this.uniteSubcategories(this.props.subcategories);
+        console.log('items', items);
+
         return (
             <div className="search_res_list">
                 <div className="search_res_cont">
+                    {General.mapObj(items, item =>
+                    {
+                        return (
+                            <div className="search_res_item_doct">
+                                <div className="search_item_dname" style={{backgroundColor: item.color}}>
+                                    {(item.entries.main && this.prepareSearchEntry(item.entries.main)) || General.getFio(item)}
+                                </div>
+
+                                <div className="search_item_dage">
+                                    {General.Date.getAge(item.personalBirthday)}
+                                </div>
+
+                                {item.entries.personal_phone && (
+                                    <div className="search_item_dphone">
+                                        {this.preparePhoneEntry(item.entries.personal_phone)}
+                                    </div>
+                                )}
+                            </div>
+                        );
+                    })}
                 </div>
             </div>
         );
@@ -126,6 +147,47 @@ export default class ResultCategory extends React.PureComponent
         });
 
         result.push(searchEntry.substr(endIndexes.pop() + 4));
+
+        return result;
+    }
+
+    preparePhoneEntry(searchEntry)
+    {
+        let regexp = /<b>([^<]*)<\/b>/ig;
+        let match;
+
+        let rawPhone = searchEntry.replace('<b>', '');
+        rawPhone = rawPhone.replace('</b>', '');
+        let formattedPhone = General.formatPhone(rawPhone);
+
+
+        while(match = regexp.exec(searchEntry))
+        {
+            formattedPhone = General.String.insert('<b>', formattedPhone, General.getPhoneNumFormattedPos(match.index + 3));
+            formattedPhone = General.String.insert('</b>', formattedPhone, General.getPhoneNumFormattedPos(match.index + match[0].length - 4));
+        }
+
+        return this.prepareSearchEntry(formattedPhone);
+    }
+
+    uniteSubcategories(subcategories)
+    {
+        let result = {};
+        subcategories = General.clone(subcategories);
+
+        General.forEachObj(subcategories, (subcategoryItems, subcategoryCode) =>
+        {
+            General.forEachObj(subcategoryItems, item =>
+            {
+                if(!(item.id in result))
+                {
+                    item.entries = {};
+                    result[item.id] = item;
+                }
+
+                result[item.id].entries[subcategoryCode] = item.searchEntry;
+            });
+        });
 
         return result;
     }

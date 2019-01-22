@@ -173,7 +173,7 @@ var General = (function()
     {
         if(typeof rawPhone !== 'string')
         {
-            rawPhone = String(rawPhone);
+            rawPhone = window.String(rawPhone);
         }
 
         if(rawPhone.length !== 11)
@@ -184,6 +184,17 @@ var General = (function()
         }
 
         return '+' + rawPhone[0] + ' (' + rawPhone.substr(1, 3) + ') ' + rawPhone.substr(4, 3) + ' ' + rawPhone.substr(7, 2) + ' ' + rawPhone.substr(9, 2);
+    }
+
+    /**
+     * Возвращает позицию цифры телефона с определённым номером в отформатированном варианте телефона.
+     * @param numNumber
+     * @returns {*}
+     */
+    function getPhoneNumFormattedPos(numNumber)
+    {
+        let char = (numNumber === 10) ? '_' : String(numNumber);
+        return formatPhone('0123456789_').indexOf(char);
     }
 
     function isEqual(var1, var2)
@@ -345,9 +356,22 @@ var General = (function()
         };
     })();
 
+    var String = (function()
+    {
+        function insert(substr, target, pos)
+        {
+            return target.substr(0, pos) + substr + target.substr(pos);
+        }
+
+        return {
+            insert: insert
+        }
+    })();
+
     return {
         Date: Date,
         Color: Color,
+        String: String,
 
         getParamsObject: getParamsObject,
         getFio: getFio,
@@ -363,6 +387,7 @@ var General = (function()
         mapObj: mapObj,
         isEqual: isEqual,
         formatPhone: formatPhone,
+        getPhoneNumFormattedPos: getPhoneNumFormattedPos,
 
         sessid: sessid,
         postFormAction: postFormAction

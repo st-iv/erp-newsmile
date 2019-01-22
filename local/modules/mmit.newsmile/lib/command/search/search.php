@@ -12,6 +12,7 @@ use Mmit\NewSmile\DoctorTable;
 use Mmit\NewSmile\Error;
 use Mmit\NewSmile\Orm\Helper;
 use Mmit\NewSmile\PatientCardTable;
+use Mmit\NewSmile\Search\Manager as SearchManager;
 
 class Search extends Base
 {
@@ -220,18 +221,6 @@ class Search extends Base
     }
 
     /**
-     * Возвращает GetList команды проиндексированных ORM сущностей системы
-     *
-     * @return Entity[]
-     * @throws \Bitrix\Main\ArgumentException
-     * @throws \Bitrix\Main\SystemException
-     */
-    protected function getSearchableEntities()
-    {
-        return [PatientCardTable::getEntity(), DoctorTable::getEntity()];
-    }
-
-    /**
      * Возвращает класс GetList команды по коду поисковой категории
      * @param string $categoryCode
      *
@@ -241,9 +230,9 @@ class Search extends Base
     {
         if(!isset($this->categoriesEntitiesMap))
         {
-            foreach ($this->getSearchableEntities() as $entity)
+            foreach (SearchManager::getSearchableEntities() as $entity)
             {
-                $this->categoriesEntitiesMap[Helper::getSearchCategory($entity)] = Helper::getCommandNamespaceByEntity($entity) . '\\GetList';
+                $this->categoriesEntitiesMap[SearchManager::getSearchCategory($entity)] = Helper::getCommandNamespaceByEntity($entity) . '\\GetList';
             }
         }
 

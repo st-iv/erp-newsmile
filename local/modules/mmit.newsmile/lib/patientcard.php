@@ -19,7 +19,7 @@ use Mmit\NewSmile;
 
 Loc::loadMessages(__FILE__);
 
-class PatientCardTable extends Entity\DataManager implements NewSmile\Orm\ExtendedFieldsDescriptor
+class PatientCardTable extends Entity\DataManager implements NewSmile\Orm\ExtendedFieldsDescriptor, NewSmile\Search\Searchable
 {
     protected static $enumFields = [
         'PERSONAL_GENDER' => [
@@ -328,26 +328,14 @@ class PatientCardTable extends Entity\DataManager implements NewSmile\Orm\Extend
         );
     }
 
-    public static function onAfterAdd(Event $event)
+    public static function getMainIndex($fields)
     {
-        $primary = $event->getParameter('primary');
-        $fields = $event->getParameter('fields');
-
-        static::indexSearch($primary['ID'], $fields);
+        return sprintf('%s %s %s', $fields['LAST_NAME'], $fields['NAME'], $fields['SECOND_NAME']);
     }
 
-    public static function onAfterUpdate(Event $event)
+    public static function getSearchableFields()
     {
-        $primary = $event->getParameter('primary');
-        $fields = $event->getParameter('fields');
-
-        static::indexSearch($primary['ID'], $fields);
-    }
-
-    public static function onAfterDelete(Event $event)
-    {
-        $primary = $event->getParameter('primary');
-        static::deleteSearchIndex($primary['ID']);
+        return ['PERSONAL_PHONE', 'NUMBER'];
     }
 
 
@@ -404,45 +392,6 @@ class PatientCardTable extends Entity\DataManager implements NewSmile\Orm\Extend
 
         return $result;
     }
-
-    private static function indexSearch($id, $fields)
-    {
-        $additionalFields = array();
-
-        if(isset($fields['PERSONAL_PHONE']))
-        {
-            $additionalFields['PERSONAL_PHONE'] = $fields['PERSONAL_PHONE'];
-        }
-
-        if(isset($fields['NUMBER']))
-        {
-            $additionalFields['NUMBER'] = $fields['NUMBER'];
-        }
-
-        NewSmile\Orm\Helper::indexSearch(
-            $id,
-            static::getEntity(),
-            array(Helpers::getFio($fields)),
-            $additionalFields
-        );
-    }
-
-    protected static function deleteSearchIndex($id)
-    {
-        NewSmile\Orm\Helper::deleteSearchIndex($id, static::getEntity());
-    }
-
-    public static function indexSearchAll()
-    {
-        $rsResult = static::getList();
-        while ($arResult = $rsResult->fetch())
-        {
-            static::indexSearch($arResult['ID'], $arResult);
-        }
-    }
-
-
-
 
     public static function getEnumVariants($enumFieldName)
     {
