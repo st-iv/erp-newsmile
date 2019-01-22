@@ -3,6 +3,7 @@ import Calendar from './calendar/main'
 import ScheduleDay from './schedule-day/main'
 import Filter from './filter/main'
 import PopupManager from '../popup-manager'
+import ServerCommand from 'js/server/server-command'
 
 
 class Schedule extends React.Component

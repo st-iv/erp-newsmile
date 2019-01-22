@@ -14,6 +14,7 @@ export default class InputMask extends React.PureComponent
         let props = $.extend({}, this.props);
 
         props.value = (props.value === '') ? this.rawValue : props.value;
+
         delete props.name;
 
         return (
@@ -21,9 +22,14 @@ export default class InputMask extends React.PureComponent
         );
     }
 
-    isEmpty(value)
+    isFilled(value)
     {
-        return (!value || (value.indexOf(this.props.maskChar) !== -1));
+        return (!value.length || (value.indexOf(this.props.maskChar) === -1));
+    }
+
+    isEmpty()
+    {
+        return !this.rawValue.length || (this.rawValue === this.props.mask);
     }
 
     handleChange(e)
@@ -32,6 +38,6 @@ export default class InputMask extends React.PureComponent
 
         // если значение введено не полностью для родительского компонента оно должно быть пустым, чтобы с форм не
         // отправлялась незаполненная маска
-        this.props.onChange(this.isEmpty(e.target.value) ? '' : e.target.value, e.target.value);
+        this.props.onChange(this.isFilled(e.target.value) ? e.target.value : '', e.target.value);
     }
 }

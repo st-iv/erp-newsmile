@@ -39,7 +39,7 @@ $application = NewSmile\Application::getInstance();
         'scheduleDay' => new Command\Schedule\GetDayInfo(),
         'initialDate' => date('Y-m-d'),
 
-        'doctors' => new Command\Doctor\GetList([
+        'doctors' => new Command\Doctor\GetListMobile([
             'select' => ['ID', 'NAME', 'COLOR', 'LAST_NAME', 'SECOND_NAME'],
             'get-specialization' => true
         ])

@@ -18,7 +18,7 @@ use Mmit\NewSmile;
 
 Loc::loadMessages(__FILE__);
 
-class DoctorTable extends Entity\DataManager
+class DoctorTable extends Entity\DataManager implements NewSmile\Search\Searchable
 {
     public static function getTableName()
     {
@@ -110,29 +110,18 @@ class DoctorTable extends Entity\DataManager
         );
     }
 
-    public static function onAfterAdd(Event $event)
+    public static function getMainIndex($fields)
     {
-        $primary = $event->getParameter('primary');
-        $fields = $event->getParameter('fields');
-
-        static::indexSearch($primary['ID'], $fields);
+        return sprintf('%s %s %s', $fields['LAST_NAME'], $fields['NAME'], $fields['SECOND_NAME']);
     }
 
-    public static function onAfterUpdate(Event $event)
+    public static function getSearchableFields()
     {
-        $primary = $event->getParameter('primary');
-        $fields = $event->getParameter('fields');
-
-        static::indexSearch($primary['ID'], $fields);
+        return ['PERSONAL_PHONE'];
     }
 
-    public static function onAfterDelete(Event $event)
-    {
-        $primary = $event->getParameter('primary');
-        static::deleteSearchIndex($primary['ID']);
-    }
 
-    public static function indexSearchAll()
+    /*public static function indexSearchAll()
     {
         $dbDoctors = static::getList();
 
@@ -140,27 +129,6 @@ class DoctorTable extends Entity\DataManager
         {
             static::indexSearch($doctor['ID'], $doctor);
         }
-    }
+    }*/
 
-    protected static function indexSearch($id, array $fields)
-    {
-        $additionalFields = array();
-
-        if(isset($fields['PERSONAL_PHONE']))
-        {
-            $additionalFields['PERSONAL_PHONE'] = $fields['PERSONAL_PHONE'];
-        }
-
-        NewSmile\Orm\Helper::indexSearch(
-            $id,
-            'doctor',
-            array(Helpers::getFio($fields)),
-            $additionalFields
-        );
-    }
-
-    protected static function deleteSearchIndex($id)
-    {
-        NewSmile\Orm\Helper::deleteSearchIndex($id, 'doctor');
-    }
 }

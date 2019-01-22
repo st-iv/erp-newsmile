@@ -21,7 +21,7 @@ class Detail extends Base
                 'LAST_NAME',
                 'SECOND_NAME',
                 'phone' => 'PERSONAL_PHONE',
-                'phone2' => 'ADDITIONAL_PHONES',
+                'phone2' => 'ADDITIONAL_PHONE',
                 'EMAIL',
                 'SMS_NOTICE',
                 'card_number' => 'NUMBER',

@@ -173,7 +173,7 @@ var General = (function()
     {
         if(typeof rawPhone !== 'string')
         {
-            rawPhone = String(rawPhone);
+            rawPhone = window.String(rawPhone);
         }
 
         if(rawPhone.length !== 11)
@@ -186,22 +186,49 @@ var General = (function()
         return '+' + rawPhone[0] + ' (' + rawPhone.substr(1, 3) + ') ' + rawPhone.substr(4, 3) + ' ' + rawPhone.substr(7, 2) + ' ' + rawPhone.substr(9, 2);
     }
 
-    function isEqualObjects(obj1, obj2)
+    /**
+     * Возвращает позицию цифры телефона с определённым номером в отформатированном варианте телефона.
+     * @param numNumber
+     * @returns {*}
+     */
+    function getPhoneNumFormattedPos(numNumber)
+    {
+        let char = (numNumber === 10) ? '_' : window.String(numNumber);
+        return formatPhone('0123456789_').indexOf(char);
+    }
+
+    function isEqual(var1, var2)
     {
         var result = true;
 
-        for (var key in obj1)
+        if((typeof var1 === 'object') && (typeof var2 === 'object'))
         {
-            if(!obj1.hasOwnProperty(key)) continue;
-
-            if(obj1[key] !== obj2[key])
+            for (var key in var1)
             {
-                result = false;
-                break;
+                if(!var1.hasOwnProperty(key)) continue;
+
+                if(!isEqual(var1[key], var2[key]))
+                {
+                    result = false;
+                    break;
+                }
             }
+        }
+        else
+        {
+            result = var1 === var2;
         }
 
         return result;
+    }
+
+    function isEqualArrays(ar1, ar2)
+    {
+        var result = true;
+        ar1.forEach(function(element1, index)
+        {
+            var element2 = ar2[index];
+        });
     }
 
 
@@ -329,9 +356,22 @@ var General = (function()
         };
     })();
 
+    var String = (function()
+    {
+        function insert(substr, target, pos)
+        {
+            return target.substr(0, pos) + substr + target.substr(pos);
+        }
+
+        return {
+            insert: insert
+        }
+    })();
+
     return {
         Date: Date,
         Color: Color,
+        String: String,
 
         getParamsObject: getParamsObject,
         getFio: getFio,
@@ -345,8 +385,9 @@ var General = (function()
         forEachObj: forEachObj,
         filterObj: filterObj,
         mapObj: mapObj,
-        isEqualObjects: isEqualObjects,
+        isEqual: isEqual,
         formatPhone: formatPhone,
+        getPhoneNumFormattedPos: getPhoneNumFormattedPos,
 
         sessid: sessid,
         postFormAction: postFormAction

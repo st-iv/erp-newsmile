@@ -38,7 +38,8 @@ class ChangeDate extends Base
         if($oldDate == $this->params['new_date']) return;
 
         $updateResult = VisitRequestTable::update($this->params['id'], [
-            'DATE' => $newDate
+            'DATE' => $newDate,
+            'NEAR_FUTURE' => false
         ]);
 
         if($updateResult->isSuccess())

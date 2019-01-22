@@ -3,10 +3,11 @@ import PropTypes from 'prop-types'
 import ColoredSelect from '../colored-select'
 import TextInput from './text-input'
 import RadioInput from './radio-input'
-import PhoneInput from "./phone-input";
+import AdditionalTextInput from "./additional-text-input";
 import Select from "./select";
 import Scrollbars from '../scrollbars'
 import PatientsTable from './patients-table'
+import ServerCommand from 'js/server/server-command'
 
 export default class NewVisitForm extends React.Component
 {
@@ -15,16 +16,20 @@ export default class NewVisitForm extends React.Component
         timeEnd: PropTypes.string.isRequired,
         date: PropTypes.string.isRequired,
         chairId: PropTypes.number.isRequired,
+        freezeTimeout: PropTypes.number,
 
         onSuccessSubmit: PropTypes.func,
         onClose: PropTypes.func
+    };
+
+    static defaultProps = {
+        freezeTimeout: 0
     };
 
     state = {
         doctors: [],
         doctor: {},
         fields: null,
-        additionalPhonesCount: 0,
         addFormScrollHeight: 0,
         values: {},
         selectedPatient: null
@@ -32,15 +37,9 @@ export default class NewVisitForm extends React.Component
 
     formRef = React.createRef();
 
-    maskedInputsMaskChars = {
-        personalBirthday: '_',
-        personalPhone: '-',
-        additionalPhones: '-'
-    };
-
     patientCardFields = [
         'id', 'name', 'lastName', 'secondName', 'number', 'personalBirthday', 'personalGender', 'parents',
-        'personalPhone', 'additionalPhones', 'personalCity', 'personalStreet', 'personalHome', 'personalHousing',
+        'personalPhone', 'additionalPhone', 'personalCity', 'personalStreet', 'personalHome', 'personalHousing',
         'personalApartment', 'source'
     ];
 
@@ -52,7 +51,7 @@ export default class NewVisitForm extends React.Component
     constructor(props)
     {
         super(props);
-        this.loadData();
+        this.loadData(this.props.freezeTimeout);
 
         this.handleInputChange = this.handleInputChange.bind(this);
     }
@@ -72,17 +71,6 @@ export default class NewVisitForm extends React.Component
                                    onChange={doctor => this.setState({doctor})}
                     />
 
-                    {/*<select name="doctor" id="new-visit-doctor" className="doctor">//
-                        <option data-color="fff" disabled selected>Врач</option>
-                        <option data-color="fff">Любой</option>
-                        <option data-color="936de0">Виноградова И.Б.</option>
-                        <option data-color="e36a52">Дмитриева Е.В.</option>
-                        <option data-color="ffcb87">Груничев В.А.</option>
-                        <option data-color="16aeed">Рудзит Ю.Ф.</option>
-                        <option data-color="936de0">Виноградова И.Б.</option>
-                        <option data-color="e36a52">Дмитриева Е.В.</option>
-                        <option data-color="ffcb87">Груничев В.А.</option>
-                    </select>*/}
                     <div className="new-visit__day-signal" style={{backgroundColor: '#ffb637'}}></div>
                     <span className="new-visit__day">{General.Date.formatDate(this.props.date, 'ru_weekday, DD ru_month_gen')}</span>
                     <span className="new-visit__time">{this.props.timeStart}</span>
@@ -108,8 +96,11 @@ export default class NewVisitForm extends React.Component
 
     renderAddPatientForm()
     {
+        const formClass = 'new-visit__form form' + ((this.state.selectedPatient === null) ? '' : ' selected-patient');
+        const additionalPhoneProps = this.addGeneralInputMixin(this.state.fields.additionalPhone);
+
         return (
-            <form className="new-visit__form form" onSubmit={this.handleSubmit.bind(this)} ref={this.formRef}>
+            <form className={formClass} onSubmit={this.handleSubmit.bind(this)} ref={this.formRef}>
                 <div className="form__top-block">
                     {(this.state.selectedPatient === null)
                         ? (
@@ -121,7 +112,7 @@ export default class NewVisitForm extends React.Component
                             <div className="form__selected-patient">
                                 <div className="selected-patient__text">Выбран пациент</div>
                                 <div className="selected-patient__fio">
-                                    {this.state.selectedPatient.lastName + ' ' + this.state.selectedPatient.name + ' ' + this.state.selectedPatient.secondName}
+                                    <span>{this.state.selectedPatient.lastName + ' ' + this.state.selectedPatient.name + ' ' + this.state.selectedPatient.secondName}</span>
                                 </div>
                                 <div className="selected-patient__cancel" onClick={this.handlePatientDeselect.bind(this)}>
                                     Отменить выбор
@@ -132,7 +123,7 @@ export default class NewVisitForm extends React.Component
                 </div>
 
                 <div className="form__fields-wrapper">
-                    <Scrollbars>
+                    <Scrollbars verticalScrollSide="left">
                         <div className="form__scroll-area">
 
                             <div className="form__block">
@@ -146,31 +137,24 @@ export default class NewVisitForm extends React.Component
                             </div>
 
                             <div className="form__block">
-                                <TextInput {...this.addGeneralInputMixin(this.state.fields.personalBirthday)} mask="99.99.9999" maskChar={this.maskedInputsMaskChars.personalBirthday}/>
+                                <TextInput {...this.addGeneralInputMixin(this.state.fields.personalBirthday)} mask="99.99.9999" maskChar="_"/>
                                 <RadioInput {...this.addGeneralInputMixin(this.state.fields.personalGender)}/>
                             </div>
 
-                            <div className="form__block form__block--phone">
-                                <div className="form__fields form__fields--phone">
+                            <div className="form__fields-group">
+                                <div className="form__block">
                                     <TextInput {...this.addGeneralInputMixin(this.state.fields.parents)}/>
-                                    <PhoneInput {...this.addGeneralInputMixin(this.state.fields.personalPhone)}
-                                                additionalInputsName="additionalPhones"
-                                                additionalInputsCount={this.state.additionalPhonesCount}
-                                    />
                                 </div>
 
-                                <button className="form__add-field-btn" onClick={this.addPhoneInput.bind(this)}>
-                                    <span className="form__btn-label">
-                                        <svg className="form__btn-icon" id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg"
-                                             viewBox="0 0 19.16 19.16">
-                                            <title>plus</title>
-                                            <line x1="2" y1="2" x2="17.16" y2="17.16" fill="none" strokeLinecap="round" strokeMiterlimit="10"
-                                                  strokeWidth="2"/>
-                                            <line x1="17.16" y1="2" x2="2" y2="17.16" fill="none" strokeLinecap="round" strokeMiterlimit="10" strokeWidth="2"/>
-                                        </svg>
-                                        Добавить телефон
-                                    </span>
-                                </button>
+                                <div className="form__block">
+                                    <TextInput mask="+7 (999) 999 99 99" maskChar="-" {...this.addGeneralInputMixin(this.state.fields.personalPhone)}/>
+
+                                    <AdditionalTextInput buttonTitle="Добавить телефон"
+                                                         updateKey={this.state.selectedPatient}
+                                                         mask="+7 (999) 999 99 99"
+                                                         maskChar="-"
+                                                         {...additionalPhoneProps} />
+                                </div>
                             </div>
 
                             <div className="form__block">
@@ -192,15 +176,22 @@ export default class NewVisitForm extends React.Component
                 </div>
 
                 <div className="form__btns-wrapper">
-                    <button type="submit" className="form__btn form__btn--submit">Создать</button>
-                    <input type="reset" className="form__btn form__btn--clear" value="Отмена" onClick={this.props.onClose}/>
+                    <button type="submit" className="form__btn form__btn--submit">
+                        {((this.state.selectedPatient === null) || this.isPatientChanged()) ? 'Сохранить и записать' : 'Записать'}
+                    </button>
+
+                    {(this.state.selectedPatient !== null) && this.isPatientChanged() && (
+                        <div className="form__data-changed-note">
+                            Внесены изменения в карту пациента
+                        </div>
+                    )}
                 </div>
             </form>
         );
     }
 
 
-    loadData()
+    loadData(minimalLoadTime = 0)
     {
         let data = {
             timeStart: this.props.timeStart,
@@ -212,48 +203,55 @@ export default class NewVisitForm extends React.Component
             patientsSelect: this.patientCardFields
         };
 
+        let loadStartTs = Date.now();
+
         let command = new ServerCommand('visit/get-add-form-info', data, result =>
         {
-            let newState = {};
+            let needWaitTime = minimalLoadTime - (Date.now() - loadStartTs);
 
-            if(result.doctors)
+            if(needWaitTime > 0)
             {
-                newState.doctors = result.doctors.map(doctor =>
-                {
-                    let doctorOption = {
-                        label: doctor.fio,
-                        color: doctor.color,
-                        value: doctor.code,
-                    };
-
-                    if(doctor.isCurrent)
-                    {
-                        newState.doctor = doctorOption;
-                    }
-
-                    return doctorOption;
-                });
+                setTimeout(this.processData.bind(this, result), needWaitTime);
             }
-
-            newState.values = this.getDefaultValues(result.fields);
-
-            newState.fields = result.fields;
-            newState.patients = result.patients;
-            newState.allPatientsLoaded = (result.patientsTotalCount === newState.patients.length);
-
-            this.setState(newState);
-        });//
+            else
+            {
+                this.processData(result);
+            }
+        });
 
         command.exec();
     }
 
-    addPhoneInput(e)
+    processData(data)
     {
-        this.setState({
-            additionalPhonesCount: this.state.additionalPhonesCount + 1
-        });
+        let newState = {};
 
-        e.preventDefault();
+        if(data.doctors)
+        {
+            newState.doctors = data.doctors.map(doctor =>
+            {
+                let doctorOption = {
+                    label: doctor.fio,
+                    color: doctor.color,
+                    value: doctor.code,
+                };
+
+                if(doctor.isCurrent)
+                {
+                    newState.doctor = doctorOption;
+                }
+
+                return doctorOption;
+            });
+        }
+
+        newState.values = this.getDefaultValues(data.fields);
+
+        newState.fields = data.fields;
+        newState.patients = data.patients;
+        newState.allPatientsLoaded = (data.patientsTotalCount === newState.patients.length);
+
+        this.setState(newState);
     }
 
     getGeneralInputMixin(field)
@@ -275,9 +273,7 @@ export default class NewVisitForm extends React.Component
         return new Promise(resolve =>
         {
             let data = General.clone(this.state.values);
-            data.additionalPhones = data.personalPhone.slice(1);
-            data.personalPhone = data.personalPhone[0];
-            data.source = data.source.map(source => (source.value));
+            data.source = data.source ? data.source.map(source => (source.value)) : [];
 
             if(id)
             {
@@ -327,8 +323,6 @@ export default class NewVisitForm extends React.Component
             delete field.defaultValue;
         });
 
-        values.personalPhone = [];
-
         return values;
     }
 
@@ -340,13 +334,13 @@ export default class NewVisitForm extends React.Component
         }
         else
         {
-            if(General.isEqualObjects(this.state.values, this.valuesSnapshot))
+            if(this.isPatientChanged())
             {
-                this.addVisit(this.state.selectedPatient.id);
+                this.savePatient(this.state.selectedPatient.id).then(() => this.addVisit(this.state.selectedPatient.id));
             }
             else
             {
-                this.savePatient(this.state.selectedPatient.id).then(() => this.addVisit(this.state.selectedPatient.id));
+                this.addVisit(this.state.selectedPatient.id);
             }
         }
 
@@ -382,10 +376,6 @@ export default class NewVisitForm extends React.Component
             {
                 fieldValue = General.Date.formatDate(fieldValue, 'DD.MM.YYYY');
             }
-            else if(fieldCode === 'personalPhone')
-            {
-                fieldValue = [fieldValue];
-            }
 
             if((field.type === 'multipleenum') && Array.isArray(fieldValue))
             {
@@ -399,6 +389,11 @@ export default class NewVisitForm extends React.Component
                     label: variantsMap[value],
                     value
                 }));
+            }
+
+            if((field.type === 'phone') && fieldValue)
+            {
+                fieldValue = General.formatPhone(fieldValue);
             }
 
             newState.values[fieldCode] = fieldValue;
@@ -415,5 +410,10 @@ export default class NewVisitForm extends React.Component
             selectedPatient: null,
             values: this.getDefaultValues()
         });
+    }
+
+    isPatientChanged()
+    {
+        return !General.isEqual(this.state.values, this.valuesSnapshot);
     }
 }

@@ -3,6 +3,7 @@
 namespace Mmit\NewSmile\Rest;
 
 use Bitrix\Main\Application;
+use Bitrix\Main\Diag\Debug;
 use Bitrix\Main\UrlRewriter;
 use Mmit\NewSmile\Config;
 use Mmit\NewSmile\Error;

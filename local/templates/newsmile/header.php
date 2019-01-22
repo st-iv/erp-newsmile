@@ -1,5 +1,7 @@
 <?if(!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED !== true) die();?>
 <?
+use Mmit\NewSmile\Application;
+
 \Bitrix\Main\Loader::includeModule('mmit.newsmile');
 ?>
 <?$asset = \Bitrix\Main\Page\Asset::getInstance();?>
@@ -43,7 +45,6 @@
     $asset->addJs(SITE_TEMPLATE_PATH . '/js/jquery.magnific-popup.js');
     //$asset->addJs(SITE_TEMPLATE_PATH . '/js/popup.js');
     $asset->addJs(SITE_TEMPLATE_PATH . '/js/main.js');
-    $asset->addJs(SITE_TEMPLATE_PATH . '/js/server.js');
     ?>
 </head>
 <body data-sessid="<?=bitrix_sessid()?>" data-post-form-action="<?=POST_FORM_ACTION_URI?>">
@@ -76,7 +77,7 @@
             );
             ?>
 
-            <?$APPLICATION->IncludeComponent(
+            <?/*$APPLICATION->IncludeComponent(
                 "newSmile:search.title",
                 "header",
                 array(
@@ -96,7 +97,13 @@
                         )
                     )
                 )
-            );?>
+            );*/
+            Application::getInstance()->renderReactComponent('Search', [
+                'useLanguageGuess' => true,
+                'minQueryLength' => 3,
+                'topCount' => 200
+            ], 'header-search-root');
+            ?>
             <div class="header_place">
                 <div class="place_current">
                     <div class="place_current_city">Иркутск</div>

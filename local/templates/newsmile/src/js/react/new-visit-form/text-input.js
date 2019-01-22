@@ -15,6 +15,8 @@ class TextInput extends React.Component
         alwaysShowMask: PropTypes.bool,
         maskChar: PropTypes.string,
 
+        inputRef: PropTypes.any,
+
         onChange: PropTypes.func
     };
 
@@ -25,20 +27,29 @@ class TextInput extends React.Component
     };
 
     state = {
-        isFocused: !!this.props.value
+        isActive: !!this.props.value
     };
 
-    rawValue = this.props.value || this.props.defaultValue;
+    inputRef = null;
+    inputComponent = null;
+
+    constructor(props)
+    {
+        super(props);
+        this.setInputRef = this.setInputRef.bind(this);
+    }
 
     render()
     {
         const inputClass = 'form__input' + (this.props.required ? ' form__input--required' : '');
-        const wrapperClass = 'form__wrapper' + (this.props.required ? ' form__wrapper--required' : '');
+        let wrapperClass = 'form__wrapper' + (this.props.required ? ' form__wrapper--required' : '');
+        wrapperClass += (this.props.disabled ? ' form__wrapper--disabled' : '');
+
         let inputProps = $.extend({}, this.props, {
             className: inputClass,
             type: 'text',
-            onFocus: () => this.setState({isFocused: true}),
-            onBlur: this.handleBlur.bind(this),
+            onFocus: () => this.setState({isActive: true}),
+            onBlur: this.handleBlur.bind(this)
         });
 
 
@@ -49,12 +60,15 @@ class TextInput extends React.Component
         else
         {
             inputProps.onChange = this.handleChange.bind(this);
+            inputProps.ref = inputProps.inputRef;
+
             delete inputProps.mask;
             delete inputProps.maskChar;
+            delete inputProps.inputRef;
         }
 
 
-        let labelClassName = 'form__label' + ((this.props.value || this.state.isFocused) ? ' form__label--focus' : '');
+        let labelClassName = 'form__label' + ((this.props.value || this.state.isActive) ? ' form__label--focus' : '');
 
         return (
             <label className={wrapperClass} htmlFor={this.props.name}>
@@ -64,9 +78,9 @@ class TextInput extends React.Component
                     </span>
 
                 {this.props.mask ? (
-                    <InputMask {...inputProps}/>
+                    <InputMask {...inputProps} inputRef={this.setInputRef} ref={ref => this.inputComponent = ref}/>
                 ) : (
-                    <input {...inputProps}/>
+                    <input {...inputProps} ref={this.setInputRef()}/>
                 )}
             </label>
         );
@@ -74,9 +88,21 @@ class TextInput extends React.Component
 
     handleBlur()
     {
-        this.setState({
-            isFocused: false
-        })
+        if(this.inputComponent && this.inputComponent.isEmpty)
+        {
+            if(this.inputComponent.isEmpty())
+            {
+                this.setState({
+                    isActive: false
+                });
+            }
+        }
+        else
+        {
+            this.setState({
+                isActive: false
+            });
+        }
     }
 
 
@@ -85,16 +111,24 @@ class TextInput extends React.Component
         $(e.target).next($('.form__input')).focus();
     }
 
-    handleMaskedChange(value, rawValue)
+    handleMaskedChange(value)
     {
-        this.rawValue = rawValue;
         this.props.onChange(value);
     }
 
     handleChange(e)
     {
-        this.rawValue = e.target.value;
         this.props.onChange(e.target.value);
+    }
+
+    setInputRef(ref)
+    {
+        this.inputRef = ref;
+
+        if(this.props.inputRef)
+        {
+            this.props.inputRef(ref);
+        }
     }
 
 }

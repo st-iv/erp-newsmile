@@ -6,6 +6,7 @@ use Bitrix\Main\Entity\BooleanField;
 use Bitrix\Main\Entity\DataManager;
 use Bitrix\Main\Entity\EnumField;
 use Bitrix\Main\Entity\ScalarField;
+use Bitrix\Main\ORM\Entity;
 use \Bitrix\Main\ORM\Fields\Field;
 use Bitrix\Main\Loader;
 use Bitrix\Main\LoaderException;
@@ -69,80 +70,6 @@ class Helper
     public static function isDataManagerClass($className)
     {
         return (!empty($className) && is_subclass_of($className, '\Bitrix\Main\Entity\DataManager'));
-    }
-
-    /**
-     * Добавляет запись в поисковый индекс в формате, необходимом для возможности раздельного поиска по некоторым полям. Этот
-     * формат поддерживает компонент newsmile:search.title
-     *
-     * @param int $id - id записи
-     * @param string $category - код категории, как правило, отдельный для каждой сущности. Этот код категории будет использоваться
-     * в компоненте newsmile:search.title
-     * @param array $mainFields - основной набор полей, для которых будет создана общая запись в поисковом индексе
-     * @param array $additionalFields - дополнительные поля, для которых будут созданы отдельные записи в поисковом индексе.
-     * По ним можно будет группировать результаты поиска
-     *
-     * @throws LoaderException
-     */
-    public static function indexSearch($id, $category, array $mainFields, array $additionalFields = array())
-    {
-        Loader::includeModule('search');
-
-        $mainSearchTitle = implode(' ', $mainFields);
-
-        \CSearch::Index(
-            "mmit.newsmile",
-            $category . '_' . $id,
-            [
-                "DATE_CHANGE" => date('d.m.Y'),
-                "TITLE" => $mainSearchTitle,
-                "SITE_ID" => Config::getSiteId(),
-                "PARAM1" => $category,
-                "PARAM2" => $id,
-                "URL" => '',
-                "BODY" => '',
-            ],
-            true
-        );
-
-        foreach ($additionalFields as $fieldName => $fieldValue)
-        {
-            $fieldName = strtolower($fieldName);
-
-            \CSearch::Index(
-                "mmit.newsmile",
-                $category . '_' . $fieldName . '_' . $id,
-                [
-                    "DATE_CHANGE" => date('d.m.Y'),
-                    "TITLE" => $fieldValue,
-                    "SITE_ID" => Config::getSiteId(),
-                    "PARAM1" => $category,
-                    "PARAM2" => $id,
-                    "URL" => '',
-                    "BODY" => '',
-                ],
-                true
-            );
-        }
-    }
-
-    /**
-     * Удаляет поисковый индекс элемента с указанным id в указанной категории
-     * @param string $id
-     * @param string $category
-     *
-     * @throws \Bitrix\Main\LoaderException
-     */
-    public static function deleteSearchIndex($id, $category)
-    {
-        Loader::includeModule('search');
-
-        \CSearch::DeleteIndex(
-            'mmit.newsmile',
-            false,
-            $category,
-            $id
-        );
     }
 
     public static function filterResultArray(array $resultArray, array $filter)
@@ -233,7 +160,6 @@ class Helper
 
         $result = [];
         $fieldsCodes = array_flip($fieldsCodes);
-        Debug::writeToFile($fieldsCodes);
 
         foreach ($dataManagerClass::getEntity()->getFields() as $field)
         {
@@ -288,5 +214,17 @@ class Helper
         }
 
         return $result;
+    }
+
+    /**
+     * Возвращает пространство имён команд, работающих с указаной ORM сущностью
+     * @param Entity $entity
+     *
+     * @return string
+     */
+    public static function getCommandNamespaceByEntity(Entity $entity)
+    {
+        $shortClassName = NewSmile\Helpers::getShortClassName($entity->getDataClass());
+        return NewSmile\Command\Base::getNamespace() . '\\' . preg_replace('/Table$/', '', $shortClassName);
     }
 }

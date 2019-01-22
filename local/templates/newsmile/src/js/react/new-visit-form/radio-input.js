@@ -18,8 +18,10 @@ class RadioInput extends React.PureComponent
 
     render()
     {
+        const wrapperClass = 'form__wrapper form__wrapper--radio' + (this.props.disabled ? ' form__wrapper--disabled' : '');
+
         return (
-            <label className="form__wrapper form__wrapper--radio">
+            <label className={wrapperClass}>
                 <span className="form__label form__label--focus">{this.props.title}</span>
 
                 {this.props.variants.map(variant =>
@@ -31,7 +33,7 @@ class RadioInput extends React.PureComponent
                                id={id}
                                name={this.props.name}
                                value={variant.code}
-                               defaultChecked={variant.code === this.props.defaultValue}
+                               checked={variant.code === this.props.value}
                                key={'input_' + variant.code}
                                onChange={e => this.props.onChange(e.target.value)}
                                disabled={this.props.disabled}

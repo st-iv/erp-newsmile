@@ -52,7 +52,7 @@ class Application
     }
 
 
-    public function renderReactComponent($componentName, array $data = [])
+    public function renderReactComponent($componentName, array $data = [], $rootClass = '')
     {
 
         $rootId = 'react-render-' . Helpers::getSnakeCase($componentName);
@@ -69,7 +69,7 @@ class Application
 
         $this->addReactRoot($componentName, $rootId, $data);
         ?>
-        <div id="<?=$rootId?>"></div>
+        <div id="<?=$rootId?>" class="<?=($rootClass ?: '')?>"></div>
         <?
     }
 

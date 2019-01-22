@@ -6,6 +6,7 @@ import CellDetailInfo from './cell-detail-info'
 import Popup from '../../popup'
 import NewVisitForm from '../../new-visit-form/main'
 import PopupManager from '../../popup-manager'
+import ServerCommand from 'js/server/server-command'
 
 class CellMenu extends React.PureComponent
 {

@@ -24,9 +24,10 @@ class Select extends React.Component
         const labelClassName = 'form__label' + ((this.state.isActive || this.props.value) ? ' form__label--focus' : '');
         const uniqueId = General.uniqueId(this.props.name);
         const selectClassName = 'select' + (this.state.isOpened ? ' select--opened' : '');
+        const wrapperClass = 'form__wrapper' + (this.props.disabled ? ' form__wrapper--disabled' : '');
 
         return (
-            <label htmlFor={uniqueId} className="form__wrapper">
+            <label htmlFor={uniqueId} className={wrapperClass}>
                 <span className={labelClassName} onClick={this.handleLabelClick.bind(this)}>
                     {this.props.title}
                  </span>
