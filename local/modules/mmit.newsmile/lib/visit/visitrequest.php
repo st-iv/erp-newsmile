@@ -5,6 +5,7 @@ namespace Mmit\NewSmile\Visit;
 use Bitrix\Main\Entity\DataManager;
 use Bitrix\Main\Entity;
 use Bitrix\Main\Type\DateTime;
+use Mmit\NewSmile\DoctorTable;
 use Mmit\NewSmile\Orm\ExtendedFieldsDescriptor;
 use Mmit\NewSmile\PatientCardTable;
 use Mmit\NewSmile\Service\ServiceTable;
@@ -47,6 +48,16 @@ class VisitRequestTable extends DataManager implements ExtendedFieldsDescriptor
             ),
             new Entity\IntegerField('SERVICE_ID', [
                 'title' => 'ID услуги'
+            ]),
+            new Entity\ReferenceField('DOCTOR',
+                DoctorTable::class,
+                array('=this.DOCTOR_ID' => 'ref.ID'),
+                array(
+                    'title' => 'Врач'
+                )
+            ),
+            new Entity\IntegerField('DOCTOR_ID', [
+                'title' => 'ID врача'
             ]),
             new Entity\DatetimeField('DATE', [
                 'title' => 'желаемая дата приёма'

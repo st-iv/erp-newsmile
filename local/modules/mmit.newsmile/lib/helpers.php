@@ -222,6 +222,16 @@ class Helpers
         return $result;
     }
 
+    public static function getSnakeCaseArray($array, $bUpper = true, $separator = '_')
+    {
+        array_walk($array, function(&$item) use ($bUpper, $separator)
+        {
+            $item = static::getSnakeCase($item, $bUpper, $separator);
+        });
+
+        return $array;
+    }
+
     /**
      * Получает гарантированно уникальный id
      * @return string

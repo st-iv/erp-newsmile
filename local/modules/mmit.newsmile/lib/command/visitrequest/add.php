@@ -44,7 +44,6 @@ class Add extends OrmEntityAdd
             {
                 unset($visitItem['is_date_change_queried']);
                 unset($visitItem['new_date']);
-                unset($visitItem['doctor']);
 
                 $this->result = array_merge($this->result, $visitItem);
             }

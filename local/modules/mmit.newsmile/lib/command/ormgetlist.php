@@ -47,6 +47,15 @@ abstract class OrmGetList extends OrmRead
         elseif($paramCode == 'select')
         {
             $paramValue = $this->prepareFieldsArray($paramValue);
+
+            /* блокировка использования точки в select, тк этот механизм позволяет обойти систему контроля доступа */
+            foreach ($paramValue as $item)
+            {
+                if(!preg_match('/^[A-Za-z0-9]$/', $item))
+                {
+                    throw new Error('Поля сущностей по ссылкам в select не поддерживаются', 'SELECT_LINKED_ENTITIES_NOT_SUPPORTED');
+                }
+            }
         }
 
         return $paramValue;

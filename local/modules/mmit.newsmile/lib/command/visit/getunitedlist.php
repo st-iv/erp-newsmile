@@ -6,7 +6,8 @@ namespace Mmit\NewSmile\Command\Visit;
 use Mmit\NewSmile\Command\Base,
     Mmit\NewSmile\Application,
     Bitrix\Main\Type\DateTime,
-    Mmit\NewSmile;
+    Mmit\NewSmile,
+    Mmit\NewSmile\Command\Doctor;
 
 class GetUnitedList extends Base
 {
@@ -16,7 +17,6 @@ class GetUnitedList extends Base
     protected function doExecute()
     {
         $this->result['visit_list'] = array_merge($this->getVisitRequests(), $this->getVisits());
-        $sortOrder = $this->params['order'];
 
         /* сортировка */
 
@@ -30,10 +30,14 @@ class GetUnitedList extends Base
         }
 
 
-        /* list position */
+        /* list position and doctors */
+        $doctors = $this->getDoctors($this->result['visit_list']);
+
         foreach ($this->result['visit_list'] as $index => &$visit)
         {
             $visit['list_position'] = $index;
+            $visit['doctor'] = $doctors[$visit['doctor']];
+
             unset($visit['timestamp']);
             unset($visit['create_timestamp']);
         }
@@ -58,61 +62,23 @@ class GetUnitedList extends Base
      */
     public function getVisitRequests()
     {
-        $result = [];
+        $result = []; return $result;
 
-        $filter = [
-            'PATIENT_ID' => Application::getInstance()->getUser()->getId()
-        ];
+
+        $filter = [];
 
         if(isset($this->params['is_active']))
         {
-            $filter['STATUS'] = ($this->params['is_active'] ? 'WAITING' : 'CANCELED');
+            $filter['status'] = ($this->params['is_active'] ? 'WAITING' : 'CANCELED');
         }
 
-        $dbVisitRequests = NewSmile\Visit\VisitRequestTable::getList([
-            'filter' => $filter,
-            'select' => [
-                '*',
-                'SERVICE_NAME' => 'SERVICE.NAME'
-            ]
+        $getListCommand = new NewSmile\Command\VisitRequest\GetListMobile([
+            'filter' => $filter
         ]);
 
-        $statusesTitles = NewSmile\Visit\VisitRequestTable::getEnumVariants('STATUS');
+        $getListCommand->execute();
 
-        while($visitRequest = $dbVisitRequests->fetch())
-        {
-             $visitRequestInfo = [
-                'id' => $visitRequest['ID'],
-                'date' => $visitRequest['DATE'] ? $visitRequest['DATE']->format('d.m.Y H:i:s') : null,
-                'doctor' => null,
-                'is_active' => $visitRequest['STATUS'] == 'WAITING',
-                'status' => $statusesTitles[$visitRequest['STATUS']],
-                'status_code' => $visitRequest['STATUS'],
-                'is_visit_request' => true,
-                'is_near_future' => $visitRequest['NEAR_FUTURE'] == true,
-                'is_date_change_queried' => null,
-                'new_date' => null,
-                'timestamp' => $visitRequest['DATE'] ? $visitRequest['DATE']->getTimestamp() : null,
-                'create_timestamp' => $visitRequest['DATE_CREATE']->getTimestamp(),
-                'date_create' => $visitRequest['DATE_CREATE']->format('d.m.Y H:i:s'),
-             ];
-
-             if($visitRequest['SERVICE_ID'])
-             {
-                 $visitRequestInfo['service'] = [
-                     'id' => $visitRequest['SERVICE_ID'],
-                     'name' => $visitRequest['SERVICE_NAME']
-                 ];
-             }
-             else
-             {
-                 $visitRequestInfo['service'] = null;
-             }
-
-            $result[] = $visitRequestInfo;
-        }
-
-        return $result;
+        return $getListCommand->result['list'];
     }
 
     protected function sortActive(&$list)
@@ -220,28 +186,17 @@ class GetUnitedList extends Base
             }
         }
 
-        $limit = $this->params['limit'];
-        $offset = $this->params['offset'] ?: 0;
-
         $queryParams = [
             'filter' => $filter,
             'select' => [
                 'ID',
                 'TIME_START',
                 'TIME_END',
-                'DOCTOR_NAME' => 'DOCTOR.NAME',
-                'DOCTOR_LAST_NAME' =>'DOCTOR.LAST_NAME',
-                'DOCTOR_SECOND_NAME' =>'DOCTOR.SECOND_NAME',
+                'DOCTOR_ID',
                 'STATUS',
                 'TIMESTAMP_X'
-            ],
-            'offset' => $offset
+            ]
         ];
-
-        if($limit)
-        {
-            $queryParams['limit'] = $limit;
-        }
 
         $statusesTitles = NewSmile\Visit\VisitTable::getEnumVariants('STATUS');
 
@@ -256,7 +211,7 @@ class GetUnitedList extends Base
             $result[] = [
                 'id' => $visit['ID'],
                 'date' => $visit['TIME_START']->format('d.m.Y H:i:s'),
-                'doctor' => NewSmile\Helpers::getFio($visit, 'DOCTOR_'),
+                'doctor' => $visit['DOCTOR_ID'],
                 'is_active' => ($visit['TIME_END']->getTimestamp() >= time()),
                 'status' => $statusesTitles[$visit['STATUS']],
                 'status_code' => $visit['STATUS'],
@@ -269,6 +224,35 @@ class GetUnitedList extends Base
                 'date_create' => $visit['TIMESTAMP_X']->format('d.m.Y H:i:s'),
                 'create_timestamp' => $visit['TIMESTAMP_X']->getTimestamp()
             ];
+        }
+
+        return $result;
+    }
+
+    protected function getDoctors($visits)
+    {
+        $doctorsIds = [];
+
+        foreach ($visits as $visit)
+        {
+            if($visit['doctor'])
+            {
+                $doctorsIds[$visit['doctor']] = true;
+            }
+        }
+
+        $doctorsListCommand = new Doctor\GetListMobile([
+            'ids' => array_keys($doctorsIds),
+            'get-specialization' => true
+        ]);
+
+        $doctorsListCommand->execute();
+        $commandResult = $doctorsListCommand->getResult();
+        $result = [];
+
+        foreach ($commandResult['list'] as $doctor)
+        {
+            $result[$doctor['id']] = $doctor;
         }
 
         return $result;
@@ -323,7 +307,8 @@ class GetUnitedList extends Base
                     'asc - по возрастанию даты, desc - по убыванию даты',
                 false,
                 'asc'
-            )
+            ),
+            new NewSmile\CommandParam\ArrayParam('')
         ];
     }
 }

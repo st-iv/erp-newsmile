@@ -41,6 +41,13 @@ class GetListMobile extends Base
             ];
         }
 
+        if($this->params['ids'])
+        {
+            $queryParams['filter'] = [
+                'ID' => $this->params['ids']
+            ];
+        }
+
         /* запрос врачей */
 
         $dbDoctors = DoctorTable::getList($queryParams);
@@ -129,6 +136,7 @@ class GetListMobile extends Base
             ))->setOperations('read-full-info'),
             new Bool('get-schedule', 'флаг запроса расписания', '', false, false),
             new Bool('get-specialization', 'флаг запроса специальности', '', false, false),
+            new ArrayParam('ids', 'id врачей для выборки')
         ];
     }
 }

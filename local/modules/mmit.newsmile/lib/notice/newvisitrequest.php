@@ -25,6 +25,9 @@ class NewVisitRequest extends Notice
                 'PATIENT_LAST_NAME' => 'PATIENT.LAST_NAME',
                 'PATIENT_SECOND_NAME' => 'PATIENT.SECOND_NAME',
                 'SERVICE_NAME' => 'SERVICE.NAME',
+                'DOCTOR_NAME' => 'DOCTOR.NAME',
+                'DOCTOR_LAST_NAME' => 'DOCTOR.LAST_NAME',
+                'DOCTOR_SECOND_NAME' => 'DOCTOR.SECOND_NAME',
             ]
         ])->fetch();
 
@@ -49,6 +52,13 @@ class NewVisitRequest extends Notice
         else
         {
             $this->params['DATE'] = $visitRequest['DATE'] ?: '(дата не указана)';
+        }
+
+        $this->params['DOCTOR'] = '';
+
+        if($visitRequest['DOCTOR_ID'])
+        {
+            $this->params['DOCTOR'] = Helpers::getFio($visitRequest, 'DOCTOR_');
         }
 
         $this->params['COMMENT'] = $visitRequest['COMMENT'];
