@@ -193,7 +193,7 @@ var General = (function()
      */
     function getPhoneNumFormattedPos(numNumber)
     {
-        let char = (numNumber === 10) ? '_' : String(numNumber);
+        let char = (numNumber === 10) ? '_' : window.String(numNumber);
         return formatPhone('0123456789_').indexOf(char);
     }
 

@@ -75,6 +75,14 @@ class Search extends Base
             $this->writeSearchResults($search);
             $this->queryAdditionalInfo();
             $this->sortCategories();
+
+            foreach ($this->result as &$category)
+            {
+                unset($category['code']);
+                $category = $category['subcategories'];
+            }
+
+            unset($category);
         }
     }
 
@@ -91,6 +99,7 @@ class Search extends Base
         {
             $categoryCode = $searchResult['PARAM1'];
             $category =& $this->result[$categoryCode];
+            $category['code'] = $categoryCode;
 
             if(preg_match('/^' . $categoryCode . '_([a-z_]+)_' . $searchResult['PARAM2'] .'$/', $searchResult['ITEM_ID'], $matches))
             {
@@ -100,7 +109,7 @@ class Search extends Base
             {
                 $subCategoryName = 'main';
             }
-            $category[$subCategoryName][$searchResult['PARAM2']] = array(
+            $category['subcategories'][$subCategoryName][$searchResult['PARAM2']] = array(
                 'id' => $searchResult['PARAM2'],
                 'searchEntry' => $searchResult['TITLE_FORMATED']
             );
@@ -126,7 +135,7 @@ class Search extends Base
         {
             if($this->params['select'][$categoryCode])
             {
-                foreach ($categoryResults as $subcategoryItems)
+                foreach ($categoryResults['subcategories'] as $subcategoryItems)
                 {
                     if(!isset($queryMap[$categoryCode]))
                     {
@@ -161,7 +170,7 @@ class Search extends Base
 
             foreach ($commandResult['list'] as $item)
             {
-                foreach ($this->result[$categoryCode] as &$subcategoryItems)
+                foreach ($this->result[$categoryCode]['subcategories'] as &$subcategoryItems)
                 {
                     if($subcategoryItems[$item['id']])
                     {
@@ -185,11 +194,11 @@ class Search extends Base
 
         uasort($this->result, function($categoryA, $categoryB) use ($categoriesSort)
         {
-            if($categoriesSort[$categoryA['CODE']] > $categoriesSort[$categoryB['CODE']])
+            if($categoriesSort[$categoryA['code']] > $categoriesSort[$categoryB['code']])
             {
                 return 1;
             }
-            elseif($categoriesSort[$categoryA['CODE']] < $categoriesSort[$categoryB['CODE']])
+            elseif($categoriesSort[$categoryA['code']] < $categoriesSort[$categoryB['code']])
             {
                 return -1;
             }

@@ -62,7 +62,8 @@ body>.container-fluid:first-child {
 	background-repeat: no-repeat;
 	background-size: 14px auto;
 }
-body.searchOpen .search_sbmt{
+.search_sbmt{
+	position: absolute;
 	z-index: 1120;
 	top: 6px;
 	right: 7px;
@@ -71,7 +72,10 @@ body.searchOpen .search_sbmt{
 	border-radius: 18px;
 	background-color: #e5e5e5;
 	background-image: url('../svg/search_cross.svg');
+	background-position: center;
+	background-repeat: no-repeat;
 	background-size: 11px auto;
+	cursor: pointer;
 }
 .header_notif{
 	margin-left: 41px;	
@@ -508,9 +512,9 @@ body.notifOpen .notif_amnt{
 	font-weight: 500;
 	color: #fff;
 }
-.search_res_doctors .search_res_title{
+/*.search_res_doctors .search_res_title{
 	margin-left: 0;
-}
+}*/
 .search_res_title span{
 	color: #959595;
 	font-weight: 400;
@@ -526,7 +530,7 @@ body.notifOpen .notif_amnt{
 .search_res_subtitle span{
 	padding-left: 14px;
 }
-.search_res_doctors {
+.search_res:not(:first-child){
 	margin-left: 50px;
 }
 .search_res_patients_с{
@@ -589,7 +593,7 @@ body.notifOpen .notif_amnt{
 }
 .search_item_dname{
 	line-height: 24px;
-	width: 180px;
+	width: 210px;
 	border-radius: 2px;
 	text-align: center
 }

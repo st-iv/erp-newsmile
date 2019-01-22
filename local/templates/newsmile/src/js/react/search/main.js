@@ -22,7 +22,8 @@ export default class Search extends React.Component
         topCount: 200
     };
 
-    commandsQueue = new Queue(result => this.setState({result}));
+    commandsQueue = new Queue(this.showResult.bind(this));
+    input = null;
 
     constructor(props)
     {
@@ -43,8 +44,12 @@ export default class Search extends React.Component
                            className="search_str"
                            placeholder="Искать пациента, врача, документ"
                            autoComplete="off"
+                           ref={ref => this.input = ref}
                            onChange={this.handleInputChange.bind(this)}
                     />
+                    {this.state.popupOpened && (
+                        <div className="search_sbmt" onClick={() => this.setState({popupOpened: false})}/>
+                    )}
                 </form>
             </div>
         );
@@ -87,6 +92,14 @@ export default class Search extends React.Component
         this.commandsQueue.push(command);
     }
 
+    showResult(result)
+    {
+        if(this.isSearchableValue(this.input.value))
+        {
+            this.setState({result});
+        }
+    }
+
     componentDidMount()
     {
         $(document).on('keyup', this.handleKeyUp);
@@ -99,7 +112,7 @@ export default class Search extends React.Component
 
     handleInputChange(e)
     {
-        if(e.target.value.length >= this.props.minQueryLength)
+        if(this.isSearchableValue(e.target.value))
         {
             if(!this.state.popupOpened)
             {
@@ -108,6 +121,15 @@ export default class Search extends React.Component
 
             this.search(e.target.value);
         }
+        else
+        {
+            this.setState({result: null});
+        }
+    }
+
+    isSearchableValue(value)
+    {
+        return value.length >= this.props.minQueryLength;
     }
 
     handleKeyUp(e)

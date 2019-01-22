@@ -1,5 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
+import MCustomScrollbar from "../m-custom-scrollbar";
 
 export default class ResultCategory extends React.PureComponent
 {
@@ -27,9 +28,11 @@ export default class ResultCategory extends React.PureComponent
     render()
     {
         return (
-            <div className={'search_res_' + ((this.props.code === 'patientcard') ? 'patients' : 'doctors')}>
+            <div className="search_res">
                 <div className="search_res_title">
                     {this.constructor.categoriesTitles[this.props.code]}
+                    {}
+                    <span>{this.getItemsCount()}</span>
                 </div>
 
                 {(this.props.code === 'patientcard')
@@ -58,31 +61,37 @@ export default class ResultCategory extends React.PureComponent
                                 </div>
                             )}
 
-                            <div className="search_res_cont">
+                            <MCustomScrollbar className="search_res_cont">
                                 {General.mapObj(items, item =>
                                 {
-                                    const searchEntry = this.prepareSearchEntry(item.searchEntry);
+                                    const preparedSearchEntry = this.prepareSearchEntry(item.searchEntry);
 
                                     return (
                                         <div className="search_res_item" key={item.id}>
                                             <div className="search_item_fl">
                                                 <div className="search_item_name">
-                                                    {isMainSubcat ? searchEntry : General.getFio(item)}
+                                                    {isMainSubcat ? preparedSearchEntry : General.getFio(item)}
                                                 </div>
-                                                <div className="search_item_age">
-                                                    {General.Date.getAge(item.personalBirthday)}
-                                                </div>
+
+                                                {item.personalBirthday && (
+                                                    <div className="search_item_age">
+                                                        {General.Date.getAge(item.personalBirthday)}
+                                                    </div>
+                                                )}
                                             </div>
 
                                             {!isMainSubcat && (
                                                 <div className="search_item_phone">
-                                                    {searchEntry}
+                                                    {(subcategoryCode === 'personal_phone')
+                                                        ? this.preparePhoneEntry(item.searchEntry)
+                                                        : preparedSearchEntry
+                                                    }
                                                 </div>
                                             )}
                                         </div>
                                     );
                                 })}
-                            </div>
+                            </MCustomScrollbar>
                         </div>
                     )
                 })}
@@ -93,15 +102,14 @@ export default class ResultCategory extends React.PureComponent
     renderDoctorCategory()
     {
         let items = this.uniteSubcategories(this.props.subcategories);
-        console.log('items', items);
 
         return (
             <div className="search_res_list">
-                <div className="search_res_cont">
+                <MCustomScrollbar className="search_res_cont">
                     {General.mapObj(items, item =>
                     {
                         return (
-                            <div className="search_res_item_doct">
+                            <div className="search_res_item_doct" key={item.id}>
                                 <div className="search_item_dname" style={{backgroundColor: item.color}}>
                                     {(item.entries.main && this.prepareSearchEntry(item.entries.main)) || General.getFio(item)}
                                 </div>
@@ -118,7 +126,7 @@ export default class ResultCategory extends React.PureComponent
                             </div>
                         );
                     })}
-                </div>
+                </MCustomScrollbar>
             </div>
         );
     }
@@ -131,22 +139,21 @@ export default class ResultCategory extends React.PureComponent
      */
     prepareSearchEntry(searchEntry)
     {
-        let startIndexes = this.indexOfAll(searchEntry, '<b>');
-        let endIndexes = this.indexOfAll(searchEntry, '</b>');
+        let $searchEntry = $('<div>' + searchEntry + '</div>');
+        let result = [];
 
-        if(!startIndexes.length) return searchEntry;
-
-        let result = [searchEntry.substr(0, startIndexes[0])];
-
-        startIndexes.forEach((startIndex, index) =>
+        $searchEntry.contents().each((index, entryNode) =>
         {
-            if(endIndexes[index] === undefined) return;
-            const cleanEntry = searchEntry.substr(startIndex + 3, endIndexes[index] - startIndex - 3);
-
-            result.push(<span key={index}>{cleanEntry}</span>);
+            let $entryNode = $(entryNode);
+            if(entryNode.tagName === 'B')
+            {
+                result.push(<span key={index}>{$entryNode.text()}</span>);
+            }
+            else
+            {
+                result.push($entryNode.text());
+            }
         });
-
-        result.push(searchEntry.substr(endIndexes.pop() + 4));
 
         return result;
     }
@@ -163,8 +170,8 @@ export default class ResultCategory extends React.PureComponent
 
         while(match = regexp.exec(searchEntry))
         {
-            formattedPhone = General.String.insert('<b>', formattedPhone, General.getPhoneNumFormattedPos(match.index + 3));
-            formattedPhone = General.String.insert('</b>', formattedPhone, General.getPhoneNumFormattedPos(match.index + match[0].length - 4));
+            formattedPhone = General.String.insert('<b>', formattedPhone, General.getPhoneNumFormattedPos(match.index));
+            formattedPhone = General.String.insert('</b>', formattedPhone, General.getPhoneNumFormattedPos(match.index + match[1].length - 1) + 4);
         }
 
         return this.prepareSearchEntry(formattedPhone);
@@ -192,22 +199,18 @@ export default class ResultCategory extends React.PureComponent
         return result;
     }
 
-    indexOfAll(string, entry)
+    getItemsCount()
     {
-        let result = [];
-        let entryPos = -1;
+        let ids = {};
 
-        do
+        General.forEachObj(this.props.subcategories, items =>
         {
-            entryPos = string.indexOf(entry, entryPos + 1);
-
-            if(entryPos !== -1)
+            General.forEachObj(items, item =>
             {
-                result.push(entryPos);
-            }
-        }
-        while(entryPos !== -1);
+                ids[item.id] = true;
+            })
+        });
 
-        return result;
+        return Object.keys(ids).length;
     }
 }
