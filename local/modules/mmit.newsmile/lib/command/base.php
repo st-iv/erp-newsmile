@@ -3,6 +3,7 @@
 
 namespace Mmit\NewSmile\Command;
 
+use Bitrix\Main\Diag\Debug;
 use Bitrix\Main\Entity\AddResult;
 use Bitrix\Main\Entity\DeleteResult;
 use Bitrix\Main\Entity\UpdateResult;
@@ -331,7 +332,9 @@ abstract class Base
     protected static function getParam($code)
     {
         $command = new static([], null, true);
+
         $paramsMap = $command->getParamsMapAssoc();
+
         if(!isset($paramsMap[$code]))
         {
             throw new Error('У команды ' . $command->getCode() . ' нет параметра ' . $code, 'PARAM_NOT_EXISTS');

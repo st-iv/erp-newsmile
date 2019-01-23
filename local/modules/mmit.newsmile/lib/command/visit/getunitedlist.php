@@ -8,6 +8,7 @@ use Mmit\NewSmile\Command\Base,
     Bitrix\Main\Type\DateTime,
     Mmit\NewSmile,
     Mmit\NewSmile\Command\Doctor;
+use Mmit\NewSmile\Command;
 
 class GetUnitedList extends Base
 {
@@ -16,7 +17,40 @@ class GetUnitedList extends Base
 
     protected function doExecute()
     {
-        $this->result['visit_list'] = array_merge($this->getVisitRequests(), $this->getVisits());
+        /* запрос списка приёмов */
+
+        $getVisitsCommand = new GetListMobile(['is_active' => $this->params['is_active']]);
+        $getVisitsCommand->execute();
+        $visitsResult = $getVisitsCommand->getResult();
+
+        /* приведение списка приёмов к общему виду */
+
+        array_walk($visitsResult['list'], function(&$item)
+        {
+            $item['is_visit_request'] = false;
+            $item['service'] = null;
+            $item['is_near_future'] = null;
+        });
+
+        /* запрос списка заявок на приём */
+
+        $getVisitRequestsCommand = new Command\VisitRequest\GetListMobile(['is_active' => $this->params['is_active']]);
+        $getVisitRequestsCommand->execute();
+        $visitRequestsResult = $getVisitRequestsCommand->getResult();
+
+        /* приведение списка заявок на приём к общему виду */
+
+        array_walk($visitRequestsResult['list'], function(&$item)
+        {
+            $item['is_visit_request'] = true;
+            $item['is_near_future'] = null;
+            $item['is_date_change_queried'] = null;
+            $item['new_date'] = null;
+        });
+
+        /* объединение списков */
+
+        $this->result['visit_list'] = array_merge($visitsResult['list'], $visitRequestsResult['list']);
 
         /* сортировка */
 
@@ -30,13 +64,11 @@ class GetUnitedList extends Base
         }
 
 
-        /* list position and doctors */
-        $doctors = $this->getDoctors($this->result['visit_list']);
+        /* list position */
 
         foreach ($this->result['visit_list'] as $index => &$visit)
         {
             $visit['list_position'] = $index;
-            $visit['doctor'] = $doctors[$visit['doctor']];
 
             unset($visit['timestamp']);
             unset($visit['create_timestamp']);
@@ -51,34 +83,6 @@ class GetUnitedList extends Base
         /* offset и limit */
 
         $this->result['visit_list'] = array_slice($this->result['visit_list'], $this->params['offset'], $this->params['limit'] ?: null);
-    }
-
-    /**
-     * Получает список записей на приём
-     * @return array
-     * @throws \Bitrix\Main\ArgumentException
-     * @throws \Bitrix\Main\ObjectPropertyException
-     * @throws \Bitrix\Main\SystemException
-     */
-    public function getVisitRequests()
-    {
-        $result = []; return $result;
-
-
-        $filter = [];
-
-        if(isset($this->params['is_active']))
-        {
-            $filter['status'] = ($this->params['is_active'] ? 'WAITING' : 'CANCELED');
-        }
-
-        $getListCommand = new NewSmile\Command\VisitRequest\GetListMobile([
-            'filter' => $filter
-        ]);
-
-        $getListCommand->execute();
-
-        return $getListCommand->result['list'];
     }
 
     protected function sortActive(&$list)
@@ -144,149 +148,6 @@ class GetUnitedList extends Base
 
             return $result * (($sortOrder == 'asc') ? 1 : -1);
         });
-    }
-
-    /**
-     * Получает список приёмов
-     * @return array
-     * @throws \Bitrix\Main\ArgumentException
-     * @throws \Bitrix\Main\ObjectException
-     * @throws \Bitrix\Main\ObjectPropertyException
-     * @throws \Bitrix\Main\SystemException
-     */
-    protected function getVisits()
-    {
-        $result = [];
-
-        /* запрос информации по приёмам */
-
-        $filter = [
-            'PATIENT_ID' => Application::getInstance()->getUser()->getId()
-        ];
-
-        if(isset($this->params['is_active']))
-        {
-
-            if($this->params['is_active'])
-            {
-                $filter['!STATUS'] = 'CANCELED';
-                $filter['>=TIME_END'] = new DateTime();
-            }
-            else
-            {
-                $filter[] = [
-                    'LOGIC' => 'OR',
-                    [
-                        '<TIME_END' => new DateTime(),
-                    ],
-                    [
-                        'STATUS' => 'CANCELED'
-                    ]
-                ];
-            }
-        }
-
-        $queryParams = [
-            'filter' => $filter,
-            'select' => [
-                'ID',
-                'TIME_START',
-                'TIME_END',
-                'DOCTOR_ID',
-                'STATUS',
-                'TIMESTAMP_X'
-            ]
-        ];
-
-        $statusesTitles = NewSmile\Visit\VisitTable::getEnumVariants('STATUS');
-
-        $dbVisit = NewSmile\Visit\VisitTable::getList($queryParams);
-
-        /* подготовка выходного массива */
-
-        while($visit = $dbVisit->fetch())
-        {
-            $dateChangeInfo = $this->getDateChangeInfo($visit['ID']);
-
-            $result[] = [
-                'id' => $visit['ID'],
-                'date' => $visit['TIME_START']->format('d.m.Y H:i:s'),
-                'doctor' => $visit['DOCTOR_ID'],
-                'is_active' => ($visit['TIME_END']->getTimestamp() >= time()),
-                'status' => $statusesTitles[$visit['STATUS']],
-                'status_code' => $visit['STATUS'],
-                'is_visit_request' => false,
-                'service' => null,
-                'is_near_future' => null,
-                'is_date_change_queried' => $dateChangeInfo['IS_QUERIED'],
-                'new_date' => $dateChangeInfo['NEW_DATE'],
-                'timestamp' => $visit['TIME_START']->getTimestamp(),
-                'date_create' => $visit['TIMESTAMP_X']->format('d.m.Y H:i:s'),
-                'create_timestamp' => $visit['TIMESTAMP_X']->getTimestamp()
-            ];
-        }
-
-        return $result;
-    }
-
-    protected function getDoctors($visits)
-    {
-        $doctorsIds = [];
-
-        foreach ($visits as $visit)
-        {
-            if($visit['doctor'])
-            {
-                $doctorsIds[$visit['doctor']] = true;
-            }
-        }
-
-        $doctorsListCommand = new Doctor\GetListMobile([
-            'ids' => array_keys($doctorsIds),
-            'get-specialization' => true
-        ]);
-
-        $doctorsListCommand->execute();
-        $commandResult = $doctorsListCommand->getResult();
-        $result = [];
-
-        foreach ($commandResult['list'] as $doctor)
-        {
-            $result[$doctor['id']] = $doctor;
-        }
-
-        return $result;
-    }
-
-    /**
-     * Возвращает дату, на которую запрошен перенос указанного приёма. Если
-     * @param int $visitId - id приёма
-     *
-     * @return array
-     * @throws \Bitrix\Main\ArgumentException
-     * @throws \Bitrix\Main\ObjectPropertyException
-     * @throws \Bitrix\Main\SystemException
-     */
-    protected function getDateChangeInfo($visitId)
-    {
-        if(!isset(static::$dateChangeRequests))
-        {
-            $dbChangeDateRequests = NewSmile\Visit\ChangeDateRequestTable::getList();
-            static::$dateChangeRequests = [];
-
-            while($changeDateRequest = $dbChangeDateRequests->fetch())
-            {
-                static::$dateChangeRequests[$changeDateRequest['VISIT_ID']] = [
-                    'NEW_DATE' => ($changeDateRequest['NEW_DATE'] ? $changeDateRequest['NEW_DATE']->format('d.m.Y H:i:s') : null),
-                    'IS_QUERIED' => true
-                ];
-            }
-        }
-
-        return static::$dateChangeRequests[$visitId] ?: [
-            'NEW_DATE' => null,
-            'IS_QUERIED' => false
-        ];
     }
 
     public function getParamsMap()
