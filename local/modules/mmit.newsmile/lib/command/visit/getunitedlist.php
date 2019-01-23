@@ -43,7 +43,6 @@ class GetUnitedList extends Base
         array_walk($visitRequestsResult['list'], function(&$item)
         {
             $item['is_visit_request'] = true;
-            $item['is_near_future'] = null;
             $item['is_date_change_queried'] = null;
             $item['new_date'] = null;
         });

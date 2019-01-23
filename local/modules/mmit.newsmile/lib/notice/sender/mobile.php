@@ -2,7 +2,9 @@
 
 namespace Mmit\NewSmile\Notice\Sender;
 
+use Bitrix\Main\Diag\Debug;
 use Mmit\NewSmile\User;
+use Mmit\NewSmile\Notice;
 
 /**
  * Отправляет уведомления в мобильное приложение
@@ -29,6 +31,27 @@ class Mobile implements Sender
          * */
         foreach ($tokens as $token)
         {
+            $tokenInfo = Notice\Helper::getNotificationTokenInfo($token);
+            $queryFields = [
+                'to' => $tokenInfo['CLEAN_TOKEN'],
+                'data' => [
+                    'notification_type' => $noticeData['TYPE'],
+                    'params' => $noticeData['PARAMS']
+                ]
+            ];
+
+            switch ($tokenInfo['DEVICE'])
+            {
+                case 'android':
+                    $queryFields['data']['title'] = $noticeData['TITLE'];
+                    $queryFields['data']['description'] = $noticeData['TEXT'];
+                    break;
+
+                case 'ios':
+                    $queryFields['notification']['title'] = $noticeData['TITLE'];
+                    $queryFields['notification']['body'] = $noticeData['TEXT'];
+            }
+
             $curl = curl_init();
             curl_setopt($curl, CURLOPT_URL, 'https://fcm.googleapis.com/fcm/send');
             curl_setopt($curl, CURLOPT_RETURNTRANSFER,true);
@@ -37,15 +60,7 @@ class Mobile implements Sender
                 'Authorization: key=' . static::SERVER_KEY,
                 'Content-Type: application/json'
             ]);
-            curl_setopt($curl, CURLOPT_POSTFIELDS, json_encode([
-                'to' => $token,
-                'data' => [
-                    'notification_type' => $noticeData['TYPE'],
-                    'title' => $noticeData['TITLE'],
-                    'description' => $noticeData['TEXT'],
-                    'params' => $noticeData['PARAMS']
-                ]
-            ]));
+            curl_setopt($curl, CURLOPT_POSTFIELDS, json_encode($queryFields));
 
             curl_multi_add_handle($multiChannel, $curl);
             $channels[] = $curl;

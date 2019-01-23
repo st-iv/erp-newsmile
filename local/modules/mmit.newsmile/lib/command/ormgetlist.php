@@ -51,7 +51,7 @@ abstract class OrmGetList extends OrmRead
             /* блокировка использования точки в select, тк этот механизм позволяет обойти систему контроля доступа */
             foreach ($paramValue as $item)
             {
-                if(!preg_match('/^[A-Za-z0-9]$/', $item))
+                if(!preg_match('/^[A-Za-z0-9_]+$/', $item))
                 {
                     throw new Error('Поля сущностей по ссылкам в select не поддерживаются', 'SELECT_LINKED_ENTITIES_NOT_SUPPORTED');
                 }

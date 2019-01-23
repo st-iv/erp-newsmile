@@ -12,8 +12,13 @@ class GetListMobile extends Base
     protected function doExecute()
     {
         $filter = [
-            'PATIENT_ID' => Application::getInstance()->getUser()->getId()
+            'PATIENT_ID' => Application::getInstance()->getUser()->getId(),
         ];
+
+        if($this->params['ids'])
+        {
+            $filter['ID'] = $this->params['ids'];
+        }
 
         if(isset($this->params['is_active']))
         {

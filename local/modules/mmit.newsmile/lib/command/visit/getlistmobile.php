@@ -19,8 +19,13 @@ class GetListMobile extends Base
 
 
         $filter = [
-            'PATIENT_ID' => NewSmile\Application::getInstance()->getUser()->getId()
+            'PATIENT_ID' => NewSmile\Application::getInstance()->getUser()->getId(),
         ];
+
+        if($this->params['ids'])
+        {
+            $filter['ID'] = $this->params['ids'];
+        }
 
         if(isset($this->params['is_active']))
         {
@@ -140,7 +145,6 @@ class GetListMobile extends Base
 
         foreach ($commandResult['list'] as $doctor)
         {
-            unset($doctor['fio']);
             unset($doctor['specialization_code']);
             $result[$doctor['id']] = $doctor;
         }
@@ -151,7 +155,8 @@ class GetListMobile extends Base
     public function getParamsMap()
     {
         return [
-            GetUnitedList::getParam('is_active')
+            GetUnitedList::getParam('is_active'),
+            new NewSmile\CommandParam\ArrayParam('ids', 'список id запрашиваемых заявок на приём', '', false, [])
         ];
     }
 

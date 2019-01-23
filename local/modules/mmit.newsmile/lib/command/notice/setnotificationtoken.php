@@ -17,7 +17,7 @@ class SetNotificationToken extends Base
 
         if(!in_array($this->params['notification_token'], $firebaseTokens))
         {
-            $firebaseTokens[] = $this->params['notification_token'];
+            $firebaseTokens[] = $this->params['device'] . '#' . $this->params['notification_token'];
 
             $user->setBitrixUserFields([
                 'UF_FIREBASE_TOKEN' => $firebaseTokens
@@ -33,7 +33,13 @@ class SetNotificationToken extends Base
                 'токен для получения уведомлений',
                 'Токен конкретного экземпляра мобильного приложения',
                 true
-            )
+            ),
+            (new CommandParam\Enum(
+                'device',
+                'тип устройства',
+                '',
+                true
+            ))->setVariants(['android', 'ios'])
         ];
     }
 }

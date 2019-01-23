@@ -9,6 +9,7 @@ use Bitrix\Main\Type\DateTime;
 use Mmit\NewSmile\Command\OrmEntityAdd;
 use Mmit\NewSmile\Command\TeethMap\Detail;
 use Mmit\NewSmile\Notice\NewVisitAdded;
+use Mmit\NewSmile\PatientCardTable;
 use Mmit\NewSmile\ScheduleTable;
 use Mmit\NewSmile\Visit\VisitTable;
 
@@ -35,7 +36,9 @@ class Add extends OrmEntityAdd
             'VISIT_ID' => $this->result['primary']['id']
         ]);
 
-        $notice->push([$this->params['patientId']]);
+        $notice->push([
+            (int)PatientCardTable::getUserIdForPatient($this->params['patientId'])
+        ]);
     }
 
     protected function checkAvailable()

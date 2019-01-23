@@ -397,4 +397,13 @@ class PatientCardTable extends Entity\DataManager implements NewSmile\Orm\Extend
     {
         return static::$enumFields[$enumFieldName];
     }
+
+    public static function getUserIdForPatient($patientId)
+    {
+        $patient = static::getByPrimary($patientId, [
+            'select' => ['USER_ID']
+        ])->fetch();
+
+        return $patient['USER_ID'];
+    }
 }
