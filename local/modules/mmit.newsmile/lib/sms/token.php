@@ -58,28 +58,32 @@ class TokenTable extends Entity\DataManager
         return $key;
     }
 
-    public static function createToken($userId) {
-        $arFields = [
-            'VALUE' => self::generateToken(self::LENGTH_TOKEN),
-            'USER_ID' => $userId
-        ];
+    public static function getToken($userId)
+    {
         $rsResult = self::getList([
             'filter' => [
                'USER_ID' => $userId
             ]
         ]);
-        if ($arResult = $rsResult->fetch()) {
-            $res = self::update($arResult['ID'], $arFields);
-            if ($res->isSuccess()) {
-                return $arFields['VALUE'];
-            } else {
-                return false;
-            }
-        } else {
+        if ($arResult = $rsResult->fetch())
+        {
+            return $arResult['VALUE'];
+        }
+        else
+        {
+            $arFields = [
+                'VALUE' => self::generateToken(self::LENGTH_TOKEN),
+                'USER_ID' => $userId
+            ];
+
             $res = self::add($arFields);
-            if ($res->isSuccess()) {
+
+            if ($res->isSuccess())
+            {
                 return $arFields['VALUE'];
-            } else {
+            }
+            else
+            {
                 return false;
             }
         }

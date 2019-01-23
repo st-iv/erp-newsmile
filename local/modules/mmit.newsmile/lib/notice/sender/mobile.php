@@ -26,6 +26,8 @@ class Mobile implements Sender
         $multiChannel = curl_multi_init();
         $channels = [];
 
+        $this->prepareNoticeParams();
+
         /*
          * Подготавливаем запросы для отправки уведомления на каждое устройство пользователя
          * */
@@ -99,5 +101,10 @@ class Mobile implements Sender
         }
 
         curl_multi_close($multiChannel);
+    }
+
+    protected function prepareNoticeParams($params)
+    {
+
     }
 }

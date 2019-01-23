@@ -22,7 +22,7 @@ class GetToken extends Base
             if($smsAuth->isCodeCorrect($code))
             {
                 $userId = $smsAuth->getUserId();
-                $token = Sms\TokenTable::createToken($userId);
+                $token = Sms\TokenTable::getToken($userId);
 
                 if ($token)
                 {

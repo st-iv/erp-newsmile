@@ -29,6 +29,7 @@ class NewVisitAdded extends Notice
         $visit['DOCTOR'] = Helpers::getFio($visit, 'DOCTOR_');
         $visit['TIME_START'] = $visit['TIME_START']->format('H:i');
         $visit['TIME_END'] = $visit['TIME_END']->format('H:i');
+        $visit['DATE'] = $visit['DATE']->format('Y-m-d');
 
 
         $this->params = array_merge($this->params, $visit);
