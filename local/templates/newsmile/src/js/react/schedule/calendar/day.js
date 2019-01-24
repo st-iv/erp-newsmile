@@ -30,7 +30,7 @@ class Day extends React.Component
 
         return (
             <div className={dayClassName} key={this.props.date}
-                 onClick={() => !dayData.isEmpty && this.props.selectDay(this.props.date)} {...self.getTooltipData(dayData)}>
+                 onClick={this.props.onClick} {...self.getTooltipData(dayData)}>
                 <div className="custCalendar_day_content" style={dayStyle}>
                     <div className="custCalendar_day_d">{this.props.day}</div>
                     <div className="custCalendar_day_m">{this.props.curMonth}</div>

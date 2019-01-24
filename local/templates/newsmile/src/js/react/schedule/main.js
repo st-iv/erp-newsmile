@@ -16,7 +16,7 @@ class Schedule extends React.Component
     };
 
     state = {
-        selectedDate: this.props.initialDate,
+        selectedDates: [this.props.initialDate],
         scheduleDay: Object.assign({}, this.props.scheduleDay),
         calendarData: Object.assign({}, this.props.calendar.data),
         filter: Object.assign({}, this.defaultFilter),
@@ -38,15 +38,16 @@ class Schedule extends React.Component
                         <div className="left_calendar_cont">
                             <Calendar colorsScheme={this.props.calendar.colorsScheme}
                                       data={this.state.calendarData}
-                                      setSelectedDate={this.setSelectedDate.bind(this)}
+                                      setSelectedDates={this.setSelectedDates.bind(this)}
                                       load={this.loadCalendar.bind(this)}
-                                      curDate={this.state.selectedDate}/>
+                                      selectedDates={this.state.selectedDates}
+                            />
                         </div>
                     </div>
 
                     <div className="main_content_center">
                         <ScheduleDay {...this.state.scheduleDay}
-                                     date={this.state.selectedDate}
+                                     date={this.state.selectedDates[0]}
                                      update={this.updateDaySchedule.bind(this)}
                                      filter={this.state.filter}
                                      doctors={this.props.doctors.list}
@@ -59,7 +60,7 @@ class Schedule extends React.Component
         );
     }
 
-    setSelectedDate(date)
+    setSelectedDates(date)
     {
         if(date !== this.state.selectedDate)
         {

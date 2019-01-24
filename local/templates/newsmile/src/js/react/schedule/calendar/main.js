@@ -1,11 +1,21 @@
 import React from 'react'
 import Day from './day'
 import ReactTooltip from 'react-tooltip'
+import PropTypes from 'prop-types'
 
 class Calendar extends React.Component
 {
     months = ['янв', 'фев', 'мар', 'апр', 'май', 'июн', 'июл', 'авг', 'сен', 'окт', 'ноя', 'дек'];
     scrollPosition = 0;
+    ctrlPressed = false;
+
+    static propTypes = {
+        data: PropTypes.object.isRequired,
+        colorScheme: PropTypes.object.isRequired,
+        load: PropTypes.func,
+        setSelectedDate: PropTypes.func,
+        selectedDates: PropTypes.arrayOf(PropTypes.string)
+    };
 
     constructor(props)
     {
@@ -28,6 +38,9 @@ class Calendar extends React.Component
                 }
             },
         };
+
+        this.handleKeyUp = this.handleKeyUp.bind(this);
+        this.handleKeyDown = this.handleKeyDown.bind(this);
     }
 
     $body = null;
@@ -87,18 +100,21 @@ class Calendar extends React.Component
             let curDateString = startDate.format('YYYY-MM-DD');
             let monthIndex = startDate.month();
             let date = startDate.format('YYYY-MM-DD');
+            const day = startDate.date();
+
+            const isSelected = this.props.selectedDates.indexOf(date) !== -1;
 
             result.push(
                 <Day date={date}
-                             day={startDate.date()}
-                             curMonth={this.months[monthIndex]}
-                             dayData={data.dateData[curDateString]}
-                             isSelected={this.props.curDate === date}
+                     day={day}
+                     curMonth={this.months[monthIndex]}
+                     dayData={data.dateData[curDateString]}
+                     isSelected={isSelected}
 
-                             getColor={this.getColor.bind(this)}
-                             selectDay={this.props.setSelectedDate}
+                     getColor={this.getColor.bind(this)}
+                     onClick={this.handleDayClick.bind(this, date, data.dateData[curDateString], isSelected)}
 
-                             key={date}
+                     key={date}
                 />
             );
 
@@ -111,11 +127,15 @@ class Calendar extends React.Component
     componentDidMount()
     {
         this.$body.mCustomScrollbar(this.scrollbarConfig);
+        $(document).keyup(this.handleKeyUp);
+        $(document).keydown(this.handleKeyDown);
     }
 
     componentWillUnmount()
     {
         this.$body.mCustomScrollbar('destroy');
+        $(document).off('keyup', this.handleKeyUp);
+        $(document).off('keydown', this.handleKeyDown);
     }
 
     componentWillUpdate()
@@ -257,6 +277,63 @@ class Calendar extends React.Component
         }
 
         this.props.load(loadStartDate.format('YYYY-MM-DD'), loadEndDate.format('YYYY-MM-DD'));
+    }
+
+    handleDayClick(date, dayData, isSelected)
+    {
+        if(dayData.isEmpty) return;
+        let newSelectedDates;
+
+        if(isSelected)
+        {
+            if(this.ctrlPressed)
+            {
+                newSelectedDates = this.props.selectedDates.filter(selectedDate =>
+                {
+                    return selectedDate !== date;
+                });
+            }
+            else
+            {
+                newSelectedDates = [date];
+            }
+        }
+        else
+        {
+            if(this.ctrlPressed)
+            {
+                if(this.props.selectedDates.indexOf(date) === -1)
+                {
+                    newSelectedDates = this.props.selectedDates.slice();
+                    newSelectedDates.push(date);
+                }
+            }
+            else
+            {
+                newSelectedDates = [date]
+            }
+        }
+
+        if(newSelectedDates)
+        {
+           this.props.setSelectedDates(newSelectedDates);
+        }
+    }
+
+    handleKeyUp(e)
+    {
+        if(e.which === 17)
+        {
+            this.ctrlPressed = true;
+        }
+    }
+
+    handleKeyDown(e)
+    {
+        if(e.which === 17)
+        {
+            this.ctrlPressed = false;
+        }
     }
 }
 
