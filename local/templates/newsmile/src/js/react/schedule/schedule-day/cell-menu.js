@@ -3,10 +3,10 @@ import {Popper, Reference, Manager} from 'react-popper'
 import PropTypes from 'prop-types'
 import CellContextMenu from './cell-context-menu'
 import CellDetailInfo from './cell-detail-info'
-import Popup from '../../popup'
 import NewVisitForm from '../../new-visit-form/main'
 import PopupManager from '../../popup-manager'
 import ServerCommand from 'js/server/server-command'
+import GeneralHelper from 'js/helpers/general-helper'
 
 class CellMenu extends React.PureComponent
 {
@@ -14,6 +14,7 @@ class CellMenu extends React.PureComponent
         renderCell: PropTypes.func.isRequired,
         getCellNode: PropTypes.func.isRequired,
         commands: PropTypes.objectOf(PropTypes.arrayOf(PropTypes.string)).isRequired,
+        clientCommands: PropTypes.array,
         detailInfo: PropTypes.shape(CellDetailInfo.propTypes),
         cellType: PropTypes.string.isRequired,
         onCommandResult: PropTypes.func,
@@ -49,7 +50,6 @@ class CellMenu extends React.PureComponent
     {
         super(props);
         this.handleOutsideClick = this.handleOutsideClick.bind(this);
-        this.commands = this.getCommands();
     }
 
     render()
@@ -173,80 +173,141 @@ class CellMenu extends React.PureComponent
         return result;
     }
 
+    getClientCommands()
+    {
+        let clientCommands = [];
+        let bCanUnite = false;
+        let bCanSplit = false;
+        let intervals = {};
+
+        GeneralHelper.forEachObj(this.props.timeLine, (timeLineItem, time) =>
+        {
+            let standardIntervalTime = this.getStandardIntervalTime(time);
+            intervals[standardIntervalTime] = true;
+
+            if(!!this.props.availableTimeUnite && (this.props.availableTimeUnite.indexOf(standardIntervalTime) !== -1))
+            {
+                bCanUnite = true;
+            }
+
+            if(timeLineItem.type === 'standard')
+            {
+                bCanSplit = true;
+            }
+
+        }, this.props.timeStart, this.props.timeEnd);
+
+        let intervalsCount = Object.keys(intervals).length;
+        let intervalWord = 'интервал' + ((intervalsCount > 1) ? 'ы' : '');
+
+        if(bCanSplit)
+        {
+            clientCommands.push({
+                code: 'split-interval',
+                name: 'Разделить ' + intervalWord
+            });
+        }
+
+        if(bCanUnite)
+        {
+            clientCommands.push({
+                code: 'unite-interval',
+                name: 'Объединить ' + intervalWord
+            });
+        }
+
+        return clientCommands;
+    }
+
     /**
      * Отображает контекстное меню.
      * Предварительно уточняет на сервере какие команды из списка доступны для выпонения в данный момент для данной ячейки.
      */
     showContextMenu()
     {
-        if(!this.commands) return;
+        let commands = this.getCommands();
 
-        let commands = this.commands.map(commandCode =>
+        if(commands.length)
         {
-            let commandInfo = {};
+            commands = commands.map(commandCode =>
+            {
+                let commandInfo = {};
 
-            commandInfo.code = commandCode;
-            commandInfo.params = {
-                timeStart: this.props.timeStart,
-                timeEnd: this.props.timeEnd,
-                chairId: this.props.chairId,
-                date: this.props.date,
+                commandInfo.code = commandCode;
+                commandInfo.params = {
+                    timeStart: this.props.timeStart,
+                    timeEnd: this.props.timeEnd,
+                    chairId: this.props.chairId,
+                    date: this.props.date,
+                };
+
+                switch(commandCode)
+                {
+                    case 'schedule/change-doctor':
+                        commandInfo.params = {
+                            timeStart: this.props.timeStart,
+                            timeEnd: this.props.timeEnd,
+                            chairId: this.props.chairId,
+                            date: this.props.date,
+                        };
+                        commandInfo.varyParam = 'doctorId';
+                        break;
+
+                    case 'visit/add':
+                        commandInfo.params = {
+                            timeStart: this.props.date + ' ' + this.props.timeStart,
+                            timeEnd: this.props.date + ' ' + this.props.timeEnd,
+                            workChairId: this.props.chairId,
+                        };
+                        commandInfo.varyParam = 'patientId';
+                        break;
+                }
+
+                return commandInfo;
+            });
+
+            let commandData = {
+                'commands': commands
             };
 
-            switch(commandCode)
+            let command = new ServerCommand('command/get-list', commandData, response =>
             {
-                case 'schedule/change-doctor':
-                    commandInfo.params = {
-                        timeStart: this.props.timeStart,
-                        timeEnd: this.props.timeEnd,
-                        chairId: this.props.chairId,
-                        date: this.props.date,
-                    };
-                    commandInfo.varyParam = 'doctorId';
-                    break;
-
-                case 'visit/add':
-                    commandInfo.params = {
-                        timeStart: this.props.date + ' ' + this.props.timeStart,
-                        timeEnd: this.props.date + ' ' + this.props.timeEnd,
-                        workChairId: this.props.chairId,
-                    };
-                    commandInfo.varyParam = 'patientId';
-                    break;
-            }
-
-            return commandInfo;
-        });
-
-        let commandData = {
-            'commands': commands
-        };
-
-        let command = new ServerCommand('command/get-list', commandData, response =>
-        {
-            if(response)
-            {
-                let hasAvailableCommands = false;
-
-                response.forEach(command =>
+                if(response)
                 {
-                    if(command.available)
+                    let hasAvailableCommands = false;
+
+                    response.forEach(command =>
                     {
-                        hasAvailableCommands = true;
-                    }
-                });
-
-                if(hasAvailableCommands)
-                {
-                    this.setState({
-                        commands: response,
-                        showContextMenu: true
+                        if(command.available)
+                        {
+                            hasAvailableCommands = true;
+                        }
                     });
-                }
-            }
-        });
 
-        command.exec();
+                    if(hasAvailableCommands)
+                    {
+                        this.setState({
+                            commands: response.concat(this.getClientCommands()),
+                            showContextMenu: true
+                        });
+                    }
+                }
+            });
+
+            command.exec();
+        }
+        else
+        {
+            let clientCommands = this.getClientCommands();
+
+            if(clientCommands.length)
+            {
+                this.setState({
+                    commands: clientCommands,
+                    showContextMenu: true
+                });
+            }
+        }
     }
 
     hide()
@@ -322,7 +383,7 @@ class CellMenu extends React.PureComponent
 
     handleMenuAction(commandCode, variantCode)
     {
-        let specificMethodName = 'process' + General.getCamelCase(commandCode);
+        let specificMethodName = 'process' + GeneralHelper.getCamelCase(commandCode);
 
         if(typeof this[specificMethodName] === 'function')
         {
@@ -390,6 +451,16 @@ class CellMenu extends React.PureComponent
         );
     }
 
+    processSplitInterval()
+    {
+        this.props.splitInterval(this.props.timeStart);
+    }
+    
+    processUniteInterval()
+    {
+        this.props.uniteInterval(this.props.timeStart);
+    }
+
     closeNewVisitForm(bUpdate)
     {
         if(bUpdate && this.props.update)
@@ -398,6 +469,17 @@ class CellMenu extends React.PureComponent
         }
 
         PopupManager.closePopup(this.newVisitFormPopupId);
+    }
+
+    getStandardIntervalTime(intervalTime)
+    {
+        let intervalMoment = moment(intervalTime, 'HH:mm');
+        if(intervalMoment.get('m') % 30 === 15)
+        {
+            intervalMoment.add(-15, 'm');
+        }
+
+        return intervalMoment.format('HH:mm');
     }
 }
 

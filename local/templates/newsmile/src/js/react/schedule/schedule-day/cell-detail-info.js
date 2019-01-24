@@ -1,5 +1,8 @@
 import React from 'react'
 import PropTypes from 'prop-types'
+import GeneralHelper from 'js/helpers/general-helper'
+import DateHelper from 'js/helpers/date-helper'
+import PhoneHelper from 'js/helpers/phone-helper'
 
 class CellDetailInfo extends React.PureComponent
 {
@@ -30,7 +33,7 @@ class CellDetailInfo extends React.PureComponent
                 <div className="dClndr_popup_info">
                     <div className="dClndr_pinfo_name">
                         <div>
-                            <span>{General.getFullName(patient)}</span> - {patient.age}
+                            <span>{GeneralHelper.getFullName(patient)}</span> - {patient.age}
                         </div>
                     </div>
                     <div className="dClndr_pinfo_number">
@@ -40,13 +43,13 @@ class CellDetailInfo extends React.PureComponent
 
                     {!!patient.phone && (
                         <div className="dClndr_pinfo_phone">
-                            <div>{General.formatPhone(patient.phone)}</div>
+                            <div>{PhoneHelper.format(patient.phone)}</div>
                         </div>
                     )}
 
                     <div className="dClndr_pinfo_time">
                         <span>{this.props.timeStart} - {this.props.timeEnd}</span>
-                        <span>{General.Date.getDurationString(this.props.timeStart, this.props.timeEnd)}</span>
+                        <span>{DateHelper.getDurationString(this.props.timeStart, this.props.timeEnd)}</span>
                     </div>
                 </div>
             </div>

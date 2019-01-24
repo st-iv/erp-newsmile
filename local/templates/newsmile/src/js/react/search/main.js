@@ -3,6 +3,7 @@ import PropTypes from 'prop-types'
 import ServerCommand from 'js/server/server-command'
 import Queue from "../../server/queue";
 import ResultCategory from './result-category'
+import GeneralHelper from 'js/helpers/general-helper.js';
 
 export default class Search extends React.Component
 {
@@ -65,7 +66,7 @@ export default class Search extends React.Component
 
                 <div className="search_result">
 
-                    {!!this.state.result && General.mapObj(this.state.result, (subcategories, categoryCode) =>
+                    {!!this.state.result && GeneralHelper.mapObj(this.state.result, (subcategories, categoryCode) =>
                     {
                         return (
                             <ResultCategory code={categoryCode} subcategories={subcategories} key={categoryCode}/>

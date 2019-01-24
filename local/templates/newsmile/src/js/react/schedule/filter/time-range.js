@@ -1,6 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import {Range} from 'rc-slider'
+import DateHelper from 'js/helpers/date-helper'
 
 class TimeRange extends React.Component
 {
@@ -16,14 +17,14 @@ class TimeRange extends React.Component
         step: 15
     };
 
-    min = General.Date.getMinutesByTime(this.props.timeStart);
-    max = General.Date.getMinutesByTime(this.props.timeEnd);
+    min = DateHelper.getMinutesByTime(this.props.timeStart);
+    max = DateHelper.getMinutesByTime(this.props.timeEnd);
 
     render()
     {
         let value = this.props.value.map(time =>
         {
-            return General.Date.getMinutesByTime(time);
+            return DateHelper.getMinutesByTime(time);
         });
 
         return (
@@ -51,7 +52,7 @@ class TimeRange extends React.Component
     {
         value = value.map(minutes =>
         {
-            return General.Date.formatMinutes(minutes);
+            return DateHelper.formatMinutes(minutes);
         });
 
         this.props.onChange(value);

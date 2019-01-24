@@ -4,9 +4,11 @@ import Search from './react/search/main'
 import React from 'react';
 import ReactDOM from 'react-dom'
 import ServerCommand from './server/server-command'
+import CookieHelper from 'js/helpers/cookie-helper.js';
 
 window.Schedule = Schedule;
 window.ServerCommand = ServerCommand;
 window.Search = Search;
 window.React = React;
 window.ReactDOM = ReactDOM;
+window.CookieHelper = CookieHelper;

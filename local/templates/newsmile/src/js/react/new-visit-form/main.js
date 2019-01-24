@@ -8,6 +8,10 @@ import Select from "./select";
 import Scrollbars from '../scrollbars'
 import PatientsTable from './patients-table'
 import ServerCommand from 'js/server/server-command'
+import DateHelper from 'js/helpers/date-helper'
+import GeneralHelper from 'js/helpers/general-helper.js';
+import PhoneHelper from 'js/helpers/phone-helper.js';
+
 
 export default class NewVisitForm extends React.Component
 {
@@ -72,9 +76,9 @@ export default class NewVisitForm extends React.Component
                     />
 
                     <div className="new-visit__day-signal" style={{backgroundColor: '#ffb637'}}></div>
-                    <span className="new-visit__day">{General.Date.formatDate(this.props.date, 'ru_weekday, DD ru_month_gen')}</span>
+                    <span className="new-visit__day">{DateHelper.formatDate(this.props.date, 'ru_weekday, DD ru_month_gen')}</span>
                     <span className="new-visit__time">{this.props.timeStart}</span>
-                    <span className="new-visit__duration">Длительность приема &mdash; {General.Date.getDurationString(this.props.timeStart, this.props.timeEnd)}</span>
+                    <span className="new-visit__duration">Длительность приема &mdash; {DateHelper.getDurationString(this.props.timeStart, this.props.timeEnd)}</span>
                 </header>
 
                 <main className="new-visit__content">
@@ -272,7 +276,7 @@ export default class NewVisitForm extends React.Component
     {
         return new Promise(resolve =>
         {
-            let data = General.clone(this.state.values);
+            let data = GeneralHelper.clone(this.state.values);
             data.source = data.source ? data.source.map(source => (source.value)) : [];
 
             if(id)
@@ -282,7 +286,7 @@ export default class NewVisitForm extends React.Component
 
             if(data.personalBirthday)
             {
-                data.personalBirthday = General.Date.formatDate(data.personalBirthday, 'YYYY-MM-DD', 'DD.MM.YYYY');
+                data.personalBirthday = DateHelper.formatDate(data.personalBirthday, 'YYYY-MM-DD', 'DD.MM.YYYY');
             }
 
             let command = new ServerCommand('patient-card/' + (id ? 'edit' : 'add'), data, response =>
@@ -317,7 +321,7 @@ export default class NewVisitForm extends React.Component
 
         let values = {};
 
-        General.forEachObj(fields, field =>
+        GeneralHelper.forEachObj(fields, field =>
         {
             values[field.name] = ((field.defaultValue === undefined) ? '' : field.defaultValue);
             delete field.defaultValue;
@@ -349,7 +353,7 @@ export default class NewVisitForm extends React.Component
 
     handleInputChange(field, value)
     {
-        let newValues = General.clone(this.state.values);
+        let newValues = GeneralHelper.clone(this.state.values);
         newValues[field.name] = value;
 
         this.setState({
@@ -364,9 +368,9 @@ export default class NewVisitForm extends React.Component
             values: {}
         };
 
-        patient = General.clone(patient);
+        patient = GeneralHelper.clone(patient);
 
-        General.forEachObj(patient, (fieldValue, fieldCode) =>
+        GeneralHelper.forEachObj(patient, (fieldValue, fieldCode) =>
         {
             let field = this.state.fields[fieldCode];
 
@@ -374,7 +378,7 @@ export default class NewVisitForm extends React.Component
 
             if(fieldCode === 'personalBirthday')
             {
-                fieldValue = General.Date.formatDate(fieldValue, 'DD.MM.YYYY');
+                fieldValue = DateHelper.formatDate(fieldValue, 'DD.MM.YYYY');
             }
 
             if((field.type === 'multipleenum') && Array.isArray(fieldValue))
@@ -393,7 +397,7 @@ export default class NewVisitForm extends React.Component
 
             if((field.type === 'phone') && fieldValue)
             {
-                fieldValue = General.formatPhone(fieldValue);
+                fieldValue = PhoneHelper.format(fieldValue);
             }
 
             newState.values[fieldCode] = fieldValue;
@@ -414,6 +418,6 @@ export default class NewVisitForm extends React.Component
 
     isPatientChanged()
     {
-        return !General.isEqual(this.state.values, this.valuesSnapshot);
+        return !GeneralHelper.isEqual(this.state.values, this.valuesSnapshot);
     }
 }

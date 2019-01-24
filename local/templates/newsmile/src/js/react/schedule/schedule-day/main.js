@@ -1,12 +1,20 @@
 import React from 'react'
 import CurTime from './cur-time'
 import Column from './column'
+import GeneralHelper from 'js/helpers/general-helper'
+import CookieHelper from 'js/helpers/cookie-helper';
+
 
 class ScheduleDay extends React.Component
 {
+    state = {
+        splittedTime: this.loadSplittedTime()
+    };
+
     constructor(props)
     {
         super(props);
+        this.finalize = this.finalize.bind(this);
     }
 
     getHalfTime(startTime, endTime)
@@ -67,20 +75,24 @@ class ScheduleDay extends React.Component
                 let startTime = this.getMoment(interval.TIME_START);
                 if(startTime.get('minutes') % 30 === 15)
                 {
-                    timeLine[interval.TIME_START].type = 'half';
+                    startTime.add(-15, 'm');
+                    this.splitTimeLine(timeLine, startTime.format('HH:mm'));
                 }
 
-                if(timeLine[interval.TIME_END])
+                let endTime = this.getMoment(interval.TIME_END);
+                if(endTime.get('minutes') % 30 === 15)
                 {
-                    let endTime = this.getMoment(interval.TIME_END);
-                    if(endTime.get('minutes') % 30 === 15)
-                    {
-                        timeLine[interval.TIME_END].type = 'half'
-                    }
+                    endTime.add(-15, 'm');
+                    this.splitTimeLine(timeLine, endTime.format('HH:mm'));
                 }
             });
         });
 
+        return timeLine;
+    }
+
+    sortTimeLine(timeLine)
+    {
         let sortedTimeLine = {};
 
         Object.keys(timeLine).sort().forEach(time =>
@@ -89,6 +101,25 @@ class ScheduleDay extends React.Component
         });
 
         return sortedTimeLine;
+    }
+
+    /**
+     * Делит определённый элемент таймлайна
+     * @param timeLine
+     * @param time - начальное время разделяемого элемента
+     */
+    splitTimeLine(timeLine, time)
+    {
+        if((time in timeLine) && (timeLine[time].type === 'standard'))
+        {
+            const nextTime = this.getMoment(time).add(15, 'm').format('HH:mm');
+            timeLine[nextTime] = {
+                type: 'half',
+                height: null
+            };
+
+            timeLine[time].type = 'half';
+        }
     }
 
     /**
@@ -168,7 +199,7 @@ class ScheduleDay extends React.Component
     {
         this.doctors = this.getDoctors();
 
-        let schedule = General.clone(this.props.schedule);
+        let schedule = GeneralHelper.clone(this.props.schedule);
 
         /* фильтрация расписания */
         let timeLineLimits = this.getTimeLineLimits(schedule);
@@ -178,7 +209,20 @@ class ScheduleDay extends React.Component
         формирование timeLine - массива значений времени, задающего сетку для всего расписания.
         Визуально timeLine отображается в виде боковых колонок расписания.
         */
-        const timeLine = this.getTimeLine(schedule, timeLineLimits);
+        let timeLine = this.getTimeLine(schedule, timeLineLimits);
+
+        // делим timeLine в зависимости от разделённых пользователем интервалов
+
+        let availableTimeUnite = this.getAvailableTimeUnite(timeLine);
+
+        let splittedTime = this.state.splittedTime[this.props.date];
+        !!splittedTime && splittedTime.forEach(time =>
+        {
+            this.splitTimeLine(timeLine, time);
+        });
+
+        timeLine = this.sortTimeLine(timeLine);
+
         const timeLineNode = React.createRef();
 
         /* ограничения расписания по времени - время начала и время окончания работы клиники, а также середина рабочего дня */
@@ -231,6 +275,9 @@ class ScheduleDay extends React.Component
                                 chairId={chairSchedule.chair.id}
                                 timeLine={timeLine}
                                 update={this.props.update}
+                                splitInterval={this.splitInterval.bind(this)}
+                                uniteInterval={this.uniteInterval.bind(this)}
+                                availableTimeUnite={availableTimeUnite}
                         />
                     )}
 
@@ -251,7 +298,7 @@ class ScheduleDay extends React.Component
 
     renderTimeLine(timeLine, ref, className)
     {
-        let timeLineItems = General.mapObj(timeLine, (timeLineItem, time) =>
+        let timeLineItems = GeneralHelper.mapObj(timeLine, (timeLineItem, time) =>
         {
             let style = {};
 
@@ -505,7 +552,8 @@ class ScheduleDay extends React.Component
                     timeEnd: moment.add(duration, 'minute').format('HH:mm'),
                     doctorId: interval.DOCTOR_ID,
                     halfDayNum: interval.halfDayNum,
-                    isBlocked: interval.isBlocked
+                    isBlocked: interval.isBlocked,
+                    isHalf: (timeLine[time].type === 'half')
                 };
             }
         }
@@ -573,6 +621,43 @@ class ScheduleDay extends React.Component
         }
     }
 
+    splitInterval(time)
+    {
+        let splittedTime = GeneralHelper.clone(this.state.splittedTime);
+        if(!splittedTime[this.props.date])
+        {
+            splittedTime[this.props.date] = [];
+        }
+
+        splittedTime[this.props.date].push(time);
+        this.setState({splittedTime});
+    }
+
+    uniteInterval(time)
+    {
+        let splittedTime = GeneralHelper.clone(this.state.splittedTime);
+        if(!splittedTime[this.props.date]) return;
+
+        splittedTime[this.props.date].splice(splittedTime[this.props.date].indexOf(time), 1);
+        this.setState({splittedTime});
+    }
+
+    /**
+     * Получает массив времени, которое можно объединить
+     * @param timeLine
+     * @returns {*}
+     */
+    getAvailableTimeUnite(timeLine)
+    {
+        let result = this.state.splittedTime[this.props.date];
+        if(!result) return [];
+
+        return result.filter(splittedTime =>
+        {
+            return (splittedTime in timeLine) && (timeLine[splittedTime].type === 'standard');
+        })
+    }
+
     /**
      * Возвращает массив mainDoctors (основных врачей) для указанного массива ячеек.
      * @param cells
@@ -628,12 +713,14 @@ class ScheduleDay extends React.Component
 
     defineHeight(timeLine, cells, mainDoctors)
     {
-        General.forEachObj(timeLine, (timeLineItem, time) =>
+        GeneralHelper.forEachObj(timeLine, (timeLineItem, time) =>
         {
             let cell = cells[time];
+            if(!cell) return;
+
             let height;
 
-            if(cell.patientId && (cell.doctorId !== mainDoctors[cell.halfDayNum]))
+            if(cell.patientId && (cell.doctorId !== mainDoctors[cell.halfDayNum]) && (cell.size === 1))
             {
                 height = 46;
             }
@@ -647,6 +734,31 @@ class ScheduleDay extends React.Component
                 timeLineItem.height = height;
             }
         })
+    }
+
+    /**
+     * Грузит разделённое время из куков
+     */
+    loadSplittedTime()
+    {
+        let splittedTime = CookieHelper.getCookie('scheduleSplittedTime');
+        return splittedTime ? JSON.parse(splittedTime) : {};
+    }
+
+    componentWillMount()
+    {
+        $(window).on('unload', this.finalize);
+    }
+
+    componentWillUnmount()
+    {
+        this.finalize();
+        $(window).off('unload', this.finalize);
+    }
+
+    finalize()
+    {
+        CookieHelper.setCookie('scheduleSplittedTime', JSON.stringify(this.state.splittedTime));
     }
 
     blockEvent(e)

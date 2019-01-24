@@ -1,5 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
+import GeneralHelper from 'js/helpers/general-helper'
 
 class RadioInput extends React.PureComponent
 {
@@ -26,7 +27,7 @@ class RadioInput extends React.PureComponent
 
                 {this.props.variants.map(variant =>
                 {
-                    let id = General.uniqueId(this.props.name);
+                    let id = GeneralHelper.uniqueId(this.props.name);
                     return  [
                         <input className="form__radio visually-hidden"
                                type="radio"
@@ -39,7 +40,7 @@ class RadioInput extends React.PureComponent
                                disabled={this.props.disabled}
                         />,
                         <label className="form__radio-label" htmlFor={id} key={'label' + variant.code}>
-                            {General.ucfirst(variant.title)}
+                            {GeneralHelper.ucfirst(variant.title)}
                         </label>
                     ];
                 })}

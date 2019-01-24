@@ -1,6 +1,6 @@
 import React from 'react'
-import PropTypes from 'prop-types'
 import {default as ReactSelect} from 'react-select'
+import GeneralHelper from 'js/helpers/general-helper.js';
 
 class Select extends React.Component
 {
@@ -22,7 +22,7 @@ class Select extends React.Component
         });
 
         const labelClassName = 'form__label' + ((this.state.isActive || this.props.value) ? ' form__label--focus' : '');
-        const uniqueId = General.uniqueId(this.props.name);
+        const uniqueId = GeneralHelper.uniqueId(this.props.name);
         const selectClassName = 'select' + (this.state.isOpened ? ' select--opened' : '');
         const wrapperClass = 'form__wrapper' + (this.props.disabled ? ' form__wrapper--disabled' : '');
 

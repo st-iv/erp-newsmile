@@ -1,5 +1,6 @@
 import React from 'react'
 import Cell from './cell'
+import GeneralHelper from 'js/helpers/general-helper'
 
 class Column extends React.PureComponent
 {
@@ -37,7 +38,7 @@ class Column extends React.PureComponent
     {
         let result = [];
 
-        General.forEachObj(this.props.timeLine, (timeLineItem, time) =>
+        GeneralHelper.forEachObj(this.props.timeLine, (timeLineItem, time) =>
         {
             if(!cells[time]) return;
 
@@ -54,6 +55,9 @@ class Column extends React.PureComponent
             cellProps.onUpdate = this.props.update;
             cellProps.height = timeLineItem.height;
             cellProps.timeLine = this.props.timeLine;
+            cellProps.splitInterval = this.props.splitInterval;
+            cellProps.uniteInterval = this.props.uniteInterval;
+            cellProps.availableTimeUnite = this.props.availableTimeUnite;
 
             result.push(
                 <Cell {...cellProps}/>

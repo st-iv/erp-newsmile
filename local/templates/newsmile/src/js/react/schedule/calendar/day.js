@@ -1,4 +1,5 @@
 import React from 'react'
+import DateHelper from 'js/helpers/date-helper'
 
 class Day extends React.Component
 {
@@ -44,8 +45,8 @@ class Day extends React.Component
 
         if(!dayData.isEmpty)
         {
-            let freeTime = General.Date.formatMinutes(dayData.generalTime - dayData.engagedTime);
-            let generalTime = General.Date.formatMinutes(dayData.generalTime);
+            let freeTime = DateHelper.formatMinutes(dayData.generalTime - dayData.engagedTime);
+            let generalTime = DateHelper.formatMinutes(dayData.generalTime);
 
             title += '<div>Пациентов - ' + Number(dayData.patientsCount) + '</div>';
             title += '<div>Свободно - ' + freeTime + ' из ' + generalTime + '</div>';

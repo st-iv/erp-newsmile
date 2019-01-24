@@ -1,6 +1,8 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
 import CellMenu from './cell-menu'
+import GeneralHelper from 'js/helpers/general-helper'
+import ColorHelper from 'js/helpers/color-helper'
 
 class Cell extends React.PureComponent
 {
@@ -22,7 +24,7 @@ class Cell extends React.PureComponent
             if(!!this.props.patient)
             {
                 detailInfo = {
-                    patient: General.clone(this.props.patient),
+                    patient: GeneralHelper.clone(this.props.patient),
                     timeStart: this.props.timeStart,
                     timeEnd: this.props.timeEnd
                 };
@@ -44,9 +46,13 @@ class Cell extends React.PureComponent
                           update={this.props.onUpdate}
                           timeStart={this.props.timeStart}
                           timeEnd={this.props.timeEnd}
+                          timeLine={this.props.timeLine}
                           chairId={this.props.chairId}
                           date={this.props.date}
                           doctorId={this.props.doctorId}
+                          splitInterval={this.props.splitInterval}
+                          uniteInterval={this.props.uniteInterval}
+                          availableTimeUnite={this.props.availableTimeUnite}
                 />
             );
         }
@@ -67,18 +73,18 @@ class Cell extends React.PureComponent
 
         if(doctor)
         {
-            cellStyle.color = General.Color.darken(doctor.color, 50);
+            cellStyle.color = ColorHelper.darken(doctor.color, 50);
 
             if(patient)
             {
-                cellStyle.backgroundColor = General.Color.lighten(doctor.color, 30);
-                cellStyle.borderColor = General.Color.lighten(doctor.color, 13);
+                cellStyle.backgroundColor = ColorHelper.lighten(doctor.color, 30);
+                cellStyle.borderColor = ColorHelper.lighten(doctor.color, 13);
 
-                cellContent.push(<span key="patient-fio">{General.getFio(patient)}</span>);
+                cellContent.push(<span key="patient-fio">{GeneralHelper.getFio(patient)}</span>);
             }
             else
             {
-                cellStyle.backgroundColor = General.Color.lighten(doctor.color, 40);
+                cellStyle.backgroundColor = ColorHelper.lighten(doctor.color, 40);
             }
 
             if(!isMainDoctor)
@@ -116,7 +122,7 @@ class Cell extends React.PureComponent
     {
         let height = -this.defaultCellMargin;
 
-        General.forEachObj(this.props.timeLine, timeLineItem =>
+        GeneralHelper.forEachObj(this.props.timeLine, timeLineItem =>
         {
             let timeLineItemHeight = timeLineItem.height || this.defaultCellHeight;
             height += timeLineItemHeight + this.defaultCellMargin;

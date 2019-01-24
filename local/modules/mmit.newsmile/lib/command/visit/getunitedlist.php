@@ -167,8 +167,7 @@ class GetUnitedList extends Base
                     'asc - по возрастанию даты, desc - по убыванию даты',
                 false,
                 'asc'
-            ),
-            new NewSmile\CommandParam\ArrayParam('')
+            )
         ];
     }
 }

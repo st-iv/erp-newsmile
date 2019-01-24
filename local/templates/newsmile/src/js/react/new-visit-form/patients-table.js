@@ -2,6 +2,9 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import Scrollbars from '../scrollbars'
 import ServerCommand from 'js/server/server-command'
+import GeneralHelper from 'js/helpers/general-helper'
+import DateHelper from 'js/helpers/date-helper'
+import PhoneHelper from 'js/helpers/phone-helper'
 
 export default class PatientsTable extends React.PureComponent
 {
@@ -97,7 +100,7 @@ export default class PatientsTable extends React.PureComponent
     {
         let verdict = true;
 
-        General.forEachObj(this.prepareFilter(), (fieldValue, fieldCode) =>
+        GeneralHelper.forEachObj(this.prepareFilter(), (fieldValue, fieldCode) =>
         {
             fieldValue = String(fieldValue).toLowerCase();
 
@@ -120,7 +123,7 @@ export default class PatientsTable extends React.PureComponent
             rawFilter = this.props.filter;
         }
 
-        return General.filterObj(rawFilter, (fieldValue, fieldCode) =>
+        return GeneralHelper.filterObj(rawFilter, (fieldValue, fieldCode) =>
         {
             return (!!String(fieldValue).length && (this.props.filterBy.indexOf(fieldCode) !== -1));
         });
@@ -128,19 +131,19 @@ export default class PatientsTable extends React.PureComponent
 
     preparePatientsData(patients)
     {
-        let result = General.clone(patients);
+        let result = GeneralHelper.clone(patients);
 
         result.forEach(patient =>
         {
             if(patient.personalBirthday)
             {
-                General.Date.formatDate(patient.personalBirthday, 'DD.MM.YYYY');
-                patient.age = General.Date.getAge(patient.personalBirthday);
+                DateHelper.formatDate(patient.personalBirthday, 'DD.MM.YYYY');
+                patient.age = DateHelper.getAge(patient.personalBirthday);
             }
 
             if(patient.personalPhone)
             {
-                patient.personalPhoneFormatted = General.formatPhone(String(patient.personalPhone));
+                patient.personalPhoneFormatted = PhoneHelper.format(String(patient.personalPhone));
             }
         });
 
