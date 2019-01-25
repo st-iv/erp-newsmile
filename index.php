@@ -36,7 +36,7 @@ $application = NewSmile\Application::getInstance();
             ],
             'data' => new Command\Schedule\GetCalendar()
         ],
-        'scheduleDay' => new Command\Schedule\GetDayInfo(),
+        'schedule' => new Command\Schedule\GetDaysInfo(),
         'initialDate' => date('Y-m-d'),
 
         'doctors' => new Command\Doctor\GetListMobile([

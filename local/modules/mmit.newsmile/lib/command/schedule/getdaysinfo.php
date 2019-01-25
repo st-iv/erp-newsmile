@@ -3,6 +3,7 @@
 
 namespace Mmit\NewSmile\Command\Schedule;
 
+use Bitrix\Main\Diag\Debug;
 use Mmit\NewSmile\Command\Base;
 use Mmit\NewSmile\WorkChairTable;
 use Mmit\NewSmile;
@@ -12,7 +13,7 @@ use Bitrix\Main\ORM\Query\Query;
 use Bitrix\Main\DB;
 use Bitrix\Main\ORM\Fields\ExpressionField;
 
-class GetDayInfo extends Base
+class GetDaysInfo extends Base
 {
     protected static $name = 'Получить расписание на день';
     
@@ -23,62 +24,64 @@ class GetDayInfo extends Base
 
     protected function doExecute()
     {
-        $curDateTime = new \DateTime($this->params['date']);
-
         $timeLimits = [
             'start' => NewSmile\Config::getScheduleStartTime(),
             'end' => NewSmile\Config::getScheduleEndTime(),
         ];
         
-        $this->timeFrom = $this->params['timeFrom'] ?: $timeLimits['start'];
-        $this->timeTo = $this->params['timeTo'] ?: $timeLimits['end'];
+        $this->timeFrom = $timeLimits['start'];
+        $this->timeTo = $timeLimits['end'];
 
         $this->result = [
             'timeLimits' => $timeLimits,
-
-            'dateTitle' => Date\Helper::date('l_ru - j F_ru_gen', $curDateTime->getTimestamp()),
-
-            'startTime' => $this->timeFrom,
-            'endTime' => $this->timeTo,
-
             'curServerTimestamp' => time(),
-            'isCurDay' => ($this->params['date'] == date('Y-m-d'))
+            'commands' => $this->getAllowedCommands(),
         ];
 
         $patientsIds = [];
-        $schedule = [];
+        $curDate = date('Y-m-d');
 
         $visits = $this->getVisits();
         $rawSchedule = $this->getSchedule();
+        $chairs = $this->getChairs();
 
-        foreach ($this->getChairs() as $chairId => $chair)
+        foreach ($this->params['dates'] as $date)
         {
-            if(!$rawSchedule[$chairId]) continue;
+            $daySchedule = [];
 
-            $chairVisits = $visits[$chairId];
-
-            foreach ($chairVisits as $visit)
+            foreach ($chairs as $chairId => $chair)
             {
-                $patientsIds[] = $visit['PATIENT_ID'];
+                if (!$rawSchedule[$date][$chairId])
+                    continue;
+
+                $chairVisits = $visits[$date][$chairId];
+
+                foreach ($chairVisits as $visit)
+                {
+                    $patientsIds[] = $visit['PATIENT_ID'];
+                }
+
+                $daySchedule[] = [
+                    'chair' => $chair,
+                    'intervals' => $this->getDoctorsIntervals($rawSchedule[$date][$chairId]),
+                    'visits' => $chairVisits ?: []
+                ];
             }
 
-            $schedule[] = [
-                'chair' => $chair,
-                'intervals' => $this->getDoctorsIntervals($rawSchedule[$chairId]),
-                'visits' => $visits[$chairId] ?: []
+            $this->result['days'][$date] = [
+                'schedule' => $daySchedule,
+                'dateTitle' => Date\Helper::date('l_ru - j F_ru_gen', strtotime($date)),
+                'isCurDay' => ($date == $curDate)
             ];
         }
 
-        $this->result['schedule'] = $schedule;
-        $this->result['doctors'] = $this->getDoctors();
         $this->result['patients'] = $this->getPatients($patientsIds);
-        $this->result['commands'] = $this->getAllowedCommands();
     }
 
     public function getParamsMap()
     {
         return [
-            new NewSmile\CommandParam\Date('date', 'дата', '', false, date('Y-m-d'))
+            new NewSmile\CommandParam\ArrayParam('dates', 'даты', '', false, [date('Y-m-d')])
         ];
     }
 
@@ -90,7 +93,10 @@ class GetDayInfo extends Base
             'order' => array(
                 'TIME' => 'ASC'
             ),
-            'filter' => $this->getScheduleFilter(),
+            'filter' => [
+                'CLINIC_ID' => NewSmile\Config::getClinicId(),
+                'DATE' => $this->params['dates']
+            ],
             'select' => array(
                 'ID',
                 'TIME',
@@ -104,27 +110,10 @@ class GetDayInfo extends Base
 
         while ($arSchedule = $rsSchedule->fetch())
         {
-            $result[$arSchedule['WORK_CHAIR_ID']][$arSchedule['TIME']->format('H:i')] = $arSchedule;
+            $result[$arSchedule['TIME']->format('Y-m-d')][$arSchedule['WORK_CHAIR_ID']][$arSchedule['TIME']->format('H:i')] = $arSchedule;
         }
 
         return $result;
-    }
-
-    protected function getScheduleFilter()
-    {
-        /**
-         * @var \Bitrix\Main\ORM\Query\Filter\ConditionTree $filter
-         */
-        $filter = Query::filter();//$this->arParams['FILTER'];
-
-        $thisDate = new \DateTime($this->params['date']);
-        $tomorrowDate = clone $thisDate;
-        $tomorrowDate->modify('tomorrow');
-
-        $filter->whereBetween('TIME', \Bitrix\Main\Type\Date::createFromPhp($thisDate), \Bitrix\Main\Type\Date::createFromPhp($tomorrowDate));
-        $filter->where('CLINIC_ID', NewSmile\Config::getClinicId());
-
-        return $filter;
     }
 
     protected function getDoctorsIntervals(array $intervals)
@@ -181,12 +170,17 @@ class GetDayInfo extends Base
     {
         $result = [];
 
+        $bitrixDates = array_map(function($date)
+        {
+            return new \Bitrix\Main\Type\Date($date, 'Y-m-d');
+        }, $this->params['dates']);
+
         $rsVisit = NewSmile\Visit\VisitTable::getList(array(
             'order' => array(
                 'TIME_START' => 'ASC'
             ),
             'filter' => array(
-                'DATE_START' => new \Bitrix\Main\Type\Date($this->params['date'], 'Y-m-d'),
+                'DATE_START' => $bitrixDates,
                 'CLINIC_ID' => NewSmile\Config::getClinicId()
             ),
             'select' => array(
@@ -197,6 +191,7 @@ class GetDayInfo extends Base
                 'DOCTOR_ID',
                 'STATUS',
                 'WORK_CHAIR_ID',
+                'DATE_START'
             )
         ));
 
@@ -206,7 +201,6 @@ class GetDayInfo extends Base
 
         foreach ($visits as $visit)
         {
-
             if(Date\Helper::isBefore($visit['TIME_START'], $timeFromDateTime) && Date\Helper::isAfter($visit['TIME_END'], $timeFromDateTime))
             {
                 $visitKey = $this->timeFrom;
@@ -219,8 +213,7 @@ class GetDayInfo extends Base
             $visit['TIME_START'] = $visit['TIME_START']->format('H:i');
             $visit['TIME_END'] = $visit['TIME_END']->format('H:i');
 
-            $result[$visit['WORK_CHAIR_ID']][$visitKey] = $visit;
-            $this->patientsIds[] = $visit['PATIENT_ID'];
+            $result[ $visit['DATE_START']->format('Y-m-d') ][$visit['WORK_CHAIR_ID']][$visitKey] = $visit;
         }
 
         return $result;

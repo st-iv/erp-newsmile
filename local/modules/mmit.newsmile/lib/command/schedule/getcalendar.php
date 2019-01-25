@@ -107,13 +107,15 @@ class GetCalendar extends Command\Base
         }
 
         $availability = NewSmile\Scheduler::checkAvailability(clone $this->dateFrom, clone $this->dateTo);
+        $curDate = date('Y-m-d');
 
         foreach ($availability as $date => $isAvailable)
         {
             $countInfo = $counter[$date];
             $dateInfo = [
                 'isAvailable' => $isAvailable,
-                'isEmpty' => !isset($countInfo)
+                'isEmpty' => !isset($countInfo),
+                'isCurrent' => $curDate == $date
             ];
 
             if(isset($countInfo))

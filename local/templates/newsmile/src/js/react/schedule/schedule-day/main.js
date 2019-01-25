@@ -7,10 +7,6 @@ import CookieHelper from 'js/helpers/cookie-helper';
 
 class ScheduleDay extends React.Component
 {
-    state = {
-        splittedTime: this.loadSplittedTime()
-    };
-
     constructor(props)
     {
         super(props);
@@ -199,30 +195,6 @@ class ScheduleDay extends React.Component
     {
         this.doctors = this.getDoctors();
 
-        let schedule = GeneralHelper.clone(this.props.schedule);
-
-        /* фильтрация расписания */
-        let timeLineLimits = this.getTimeLineLimits(schedule);
-        schedule = this.filterSchedule(schedule, timeLineLimits);
-
-        /*
-        формирование timeLine - массива значений времени, задающего сетку для всего расписания.
-        Визуально timeLine отображается в виде боковых колонок расписания.
-        */
-        let timeLine = this.getTimeLine(schedule, timeLineLimits);
-
-        // делим timeLine в зависимости от разделённых пользователем интервалов
-
-        let availableTimeUnite = this.getAvailableTimeUnite(timeLine);
-
-        let splittedTime = this.state.splittedTime[this.props.date];
-        !!splittedTime && splittedTime.forEach(time =>
-        {
-            this.splitTimeLine(timeLine, time);
-        });
-
-        timeLine = this.sortTimeLine(timeLine);
-
         const timeLineNode = React.createRef();
 
         /* ограничения расписания по времени - время начала и время окончания работы клиники, а также середина рабочего дня */
@@ -233,18 +205,8 @@ class ScheduleDay extends React.Component
 
         timeLimits.half = this.getHalfTime(timeLimits.start, timeLimits.end);
 
-        /*
-        переопределение в фильтре ограничений по времени на основе timeLineLimits (фактическое ограничение по времени может быть строже, чем
-        изначально заданный фильтр по времени, тк удаляются крайние строки с пустыми и заблокированными ячейками)
-         */
-
-        let filter = Object.assign({}, this.props.filter);
-        filter.timeFrom = timeLineLimits.startTime.format('HH:mm');
-        filter.timeTo = timeLineLimits.endTime.format('HH:mm');
-
-
         /* подготовка производной информации по расписанию - массивов ячеек (cells) и id основных врачей (mainDoctors) */
-        schedule.filter(chairSchedule =>
+        const filter = this.props.filter(chairSchedule =>
         {
             this.addEmptyIntervals(chairSchedule.intervals, filter);
             chairSchedule.cells = this.getCells(chairSchedule, timeLine);
@@ -254,6 +216,8 @@ class ScheduleDay extends React.Component
             return this.isEmptyCells(chairSchedule.cells);
         });
         /* */
+
+        const timeLine = this.props.timeLine;
 
         return (
             <div className="dayCalendar_cont" onContextMenu={this.blockEvent}>
@@ -275,9 +239,9 @@ class ScheduleDay extends React.Component
                                 chairId={chairSchedule.chair.id}
                                 timeLine={timeLine}
                                 update={this.props.update}
-                                splitInterval={this.splitInterval.bind(this)}
-                                uniteInterval={this.uniteInterval.bind(this)}
-                                availableTimeUnite={availableTimeUnite}
+                                splitInterval={this.props.splitInterval}
+                                uniteInterval={this.props.uniteInterval}
+                                availableTimeUnite={this.props.availableTimeUnite}
                         />
                     )}
 
@@ -331,17 +295,17 @@ class ScheduleDay extends React.Component
 
     /**
      * Фильтрует расписание - отбрасывает интервалы, которые не подходят по времени (ограничения по времени принимает в аргументе timeLineLimits),
-     * нтервалы на границе при необходимости делит пополам (если в фильтре по времени указаны 15 или 45 минут). Помечает заблокированные интервалы
-     * @param filteredSchedule
+     * интервалы на границе при необходимости делит пополам (если в фильтре по времени указаны 15 или 45 минут). Помечает заблокированные интервалы
+     * @param schedule
      * @param timeLineLimits
      * @returns {*}
      */
-    filterSchedule(filteredSchedule, timeLineLimits)
+    filterSchedule(schedule, timeLineLimits)
     {
         let timeFrom = timeLineLimits.startTime;
         let timeTo = timeLineLimits.endTime;
 
-        filteredSchedule.forEach(chairSchedule =>
+        schedule.forEach(chairSchedule =>
         {
             let intervals = [];
             let visits = {};
@@ -411,7 +375,7 @@ class ScheduleDay extends React.Component
             chairSchedule.visits = visits;
         });
 
-        return filteredSchedule;
+        return schedule;
     }
 
     /**
@@ -633,15 +597,6 @@ class ScheduleDay extends React.Component
         this.setState({splittedTime});
     }
 
-    uniteInterval(time)
-    {
-        let splittedTime = GeneralHelper.clone(this.state.splittedTime);
-        if(!splittedTime[this.props.date]) return;
-
-        splittedTime[this.props.date].splice(splittedTime[this.props.date].indexOf(time), 1);
-        this.setState({splittedTime});
-    }
-
     /**
      * Получает массив времени, которое можно объединить
      * @param timeLine
@@ -734,31 +689,6 @@ class ScheduleDay extends React.Component
                 timeLineItem.height = height;
             }
         })
-    }
-
-    /**
-     * Грузит разделённое время из куков
-     */
-    loadSplittedTime()
-    {
-        let splittedTime = CookieHelper.getCookie('scheduleSplittedTime');
-        return splittedTime ? JSON.parse(splittedTime) : {};
-    }
-
-    componentWillMount()
-    {
-        $(window).on('unload', this.finalize);
-    }
-
-    componentWillUnmount()
-    {
-        this.finalize();
-        $(window).off('unload', this.finalize);
-    }
-
-    finalize()
-    {
-        CookieHelper.setCookie('scheduleSplittedTime', JSON.stringify(this.state.splittedTime));
     }
 
     blockEvent(e)

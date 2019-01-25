@@ -2,6 +2,7 @@ import React from 'react'
 import Day from './day'
 import ReactTooltip from 'react-tooltip'
 import PropTypes from 'prop-types'
+import Helper from 'js/helpers/main'
 
 class Calendar extends React.Component
 {
@@ -11,10 +12,14 @@ class Calendar extends React.Component
 
     static propTypes = {
         data: PropTypes.object.isRequired,
-        colorScheme: PropTypes.object.isRequired,
+        colorsScheme: PropTypes.object.isRequired,
         load: PropTypes.func,
-        setSelectedDate: PropTypes.func,
-        selectedDates: PropTypes.arrayOf(PropTypes.string)
+        onSelect: PropTypes.func,
+        initialDate: PropTypes.string
+    };
+
+    state = {
+        selectedDates: [this.props.initialDate]
     };
 
     constructor(props)
@@ -102,7 +107,7 @@ class Calendar extends React.Component
             let date = startDate.format('YYYY-MM-DD');
             const day = startDate.date();
 
-            const isSelected = this.props.selectedDates.indexOf(date) !== -1;
+            const isSelected = this.state.selectedDates.indexOf(date) !== -1;
 
             result.push(
                 <Day date={date}
@@ -288,7 +293,7 @@ class Calendar extends React.Component
         {
             if(this.ctrlPressed)
             {
-                newSelectedDates = this.props.selectedDates.filter(selectedDate =>
+                newSelectedDates = this.state.selectedDates.filter(selectedDate =>
                 {
                     return selectedDate !== date;
                 });
@@ -302,9 +307,9 @@ class Calendar extends React.Component
         {
             if(this.ctrlPressed)
             {
-                if(this.props.selectedDates.indexOf(date) === -1)
+                if(this.state.selectedDates.indexOf(date) === -1)
                 {
-                    newSelectedDates = this.props.selectedDates.slice();
+                    newSelectedDates = this.state.selectedDates.slice();
                     newSelectedDates.push(date);
                 }
             }
@@ -314,9 +319,10 @@ class Calendar extends React.Component
             }
         }
 
-        if(newSelectedDates)
+        if(!Helper.isEqual(newSelectedDates, this.state.selectedDates))
         {
-           this.props.setSelectedDates(newSelectedDates);
+            this.setState({selectedDates: newSelectedDates});
+            this.props.onSelect && this.props.onSelect(newSelectedDates);
         }
     }
 
@@ -324,7 +330,7 @@ class Calendar extends React.Component
     {
         if(e.which === 17)
         {
-            this.ctrlPressed = true;
+            this.ctrlPressed = false;
         }
     }
 
@@ -332,7 +338,7 @@ class Calendar extends React.Component
     {
         if(e.which === 17)
         {
-            this.ctrlPressed = false;
+            this.ctrlPressed = true;
         }
     }
 }

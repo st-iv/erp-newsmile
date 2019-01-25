@@ -18,9 +18,14 @@ class Day extends React.Component
             color: '#' + color.text
         };
 
+        if(dayData.isCurrent)
+        {
+            dayClassName += ' day_current';
+        }
+
         if(this.props.isSelected)
         {
-            dayClassName += ' day_current active';
+            dayClassName += ' active';
         }
 
         if(dayData.isEmpty)

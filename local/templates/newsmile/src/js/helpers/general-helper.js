@@ -155,11 +155,23 @@ let GeneralHelper = {
 
     mapObj: function(object, handler)
     {
-        var result = [];
+        let result = [];
 
         this.forEachObj(object, (value, key) =>
         {
             result.push(handler(value, key, object));
+        });
+
+        return result;
+    },
+
+    sortObj: function(object)
+    {
+        let result = {};
+
+        Object.keys(object).sort().forEach(key =>
+        {
+            result[key] = object[key];
         });
 
         return result;
@@ -171,15 +183,22 @@ let GeneralHelper = {
 
         if((typeof var1 === 'object') && (typeof var2 === 'object'))
         {
-            for (var key in var1)
+            if(Object.keys(var1).length === Object.keys(var2).length)
             {
-                if(!var1.hasOwnProperty(key)) continue;
-
-                if(!this.isEqual(var1[key], var2[key]))
+                for (let key in var1)
                 {
-                    result = false;
-                    break;
+                    if(!var1.hasOwnProperty(key)) continue;
+
+                    if(!this.isEqual(var1[key], var2[key]))
+                    {
+                        result = false;
+                        break;
+                    }
                 }
+            }
+            else
+            {
+                result = false;
             }
         }
         else
@@ -189,17 +208,6 @@ let GeneralHelper = {
 
         return result;
     },
-
-    isEqualArrays: function(ar1, ar2)
-    {
-        var result = true;
-        ar1.forEach(function(element1, index)
-        {
-            var element2 = ar2[index];
-        });
-
-        return result;
-    }
 };
 
 export default GeneralHelper

@@ -827,6 +827,7 @@ body.notifOpen .notif_amnt{
 }
 .main_content{
 	padding-left: 108px;
+	flex-wrap: nowrap;
 }
 .main_content_left{
 	width: 342px;
@@ -1062,6 +1063,7 @@ body.notifOpen .notif_amnt{
     border: none;
 }
 .main_content_center{
+	display: flex;
 }
 .dayCalendar_cont{
 	padding-left: 104px;
