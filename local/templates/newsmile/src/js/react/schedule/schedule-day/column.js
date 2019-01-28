@@ -2,13 +2,8 @@ import React from 'react'
 import Cell from './cell'
 import GeneralHelper from 'js/helpers/general-helper'
 
-class Column extends React.PureComponent
+export default class Column extends React.PureComponent
 {
-    constructor(props)
-    {
-        super(props);
-    }
-
     render()
     {
         const cells = this.props.cells;
@@ -67,5 +62,3 @@ class Column extends React.PureComponent
         return result;
     }
 }
-
-export default Column

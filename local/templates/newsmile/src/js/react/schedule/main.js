@@ -8,9 +8,10 @@ import Helper from 'js/helpers/main'
 import ScheduleProcessor from 'js/schedule/schedule-processor'
 import CookieHelper from "../../helpers/cookie-helper";
 import GeneralHelper from "../../helpers/general-helper";
+import ScheduleScroll from './schedule-scroll'
 
 
-class Schedule extends React.Component
+class Schedule extends React.PureComponent
 {
     defaultFilter = {
         timeFrom: this.props.schedule.timeLimits.start,
@@ -41,6 +42,8 @@ class Schedule extends React.Component
         const timeLine = scheduleProcessor.getTimeLine();
         const filter = scheduleProcessor.getFilter();
         const availableTimeUnite = scheduleProcessor.getAvailableTimeUnite();
+        let dayCounter = 0;
+        let daysCount = Object.keys(schedule.days).length;
 
         return (
             <div>
@@ -63,9 +66,11 @@ class Schedule extends React.Component
                         </div>
                     </div>
 
-                    <div className="main_content_center">
+                    <ScheduleScroll className="main_content_center">
                         {Helper.mapObj(schedule.days, (daySchedule, date) =>
                         {
+                            dayCounter++;
+
                             return (
                                 <ScheduleDay {...daySchedule}
                                              timeLimits={schedule.timeLimits}
@@ -79,12 +84,16 @@ class Schedule extends React.Component
                                              filter={filter}
                                              doctors={this.props.doctors.list}
                                              patients={schedule.patients}
+
+                                             showLeftTimeLine={dayCounter === 1}
+                                             centerRightTimeLine={daysCount !== dayCounter}
+
                                              key={date}
                                 />
                             );
-
                         })}
-                    </div>
+                    </ScheduleScroll>
+
                 </div>
 
                 <PopupManager />

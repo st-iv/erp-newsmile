@@ -1,4 +1,5 @@
 import Helper from 'js/helpers/main'
+import GeneralHelper from "../helpers/general-helper";
 
 export default class ScheduleProcessor
 {
@@ -46,6 +47,26 @@ export default class ScheduleProcessor
 
         // сортировка timeLine по возрастанию времени
         timeLine = this._sortTimeLine(timeLine);
+
+        /* разбиение интервалов на ячейки таблицы, определение главных врачей */
+
+        // ограничения расписания по времени - время начала и время окончания работы клиники, а также середина рабочего дня
+        let timeLimits = {
+            start: this._getMoment(this.schedule.timeLimits.start),
+            end: this._getMoment(this.schedule.timeLimits.end),
+        };
+
+        timeLimits.half = this._getHalfTime(timeLimits.start, timeLimits.end);
+
+        unitedSchedule.filter(chairSchedule =>
+        {
+            this._addEmptyIntervals(chairSchedule.intervals, this.filter);
+            chairSchedule.cells = this._getCells(chairSchedule, timeLine);
+            chairSchedule.mainDoctors = this._defineMainDoctors(chairSchedule.cells, timeLimits);
+            this._defineHeight(timeLine, chairSchedule.cells, chairSchedule.mainDoctors);
+            return !this._isEmptyCells(chairSchedule.cells);
+        });
+
 
         /*
         переопределение в фильтре ограничений по времени на основе timeLineLimits (фактическое ограничение по времени может быть строже, чем
@@ -378,6 +399,273 @@ export default class ScheduleProcessor
         });
 
         return sortedTimeLine;
+    }
+
+    /**
+     * Добавляет пустые интервалы (интервалы расписания, для которых не назначен врач).
+     * @param intervals
+     * @param filter
+     * @returns {Array}
+     */
+    _addEmptyIntervals(intervals, filter)
+    {
+        let result = [];
+        let prevEndTime = filter.timeFrom;
+        let count = intervals.length;
+
+        intervals.forEach((interval, index) =>
+        {
+            if(interval.TIME_START !== prevEndTime)
+            {
+                result.push({
+                    TIME_START: prevEndTime,
+                    TIME_END: interval.TIME_START,
+                    DOCTOR_ID: 0
+                });
+            }
+
+            result.push(interval);
+
+            if((index === count - 1) && (filter.timeTo !== interval.TIME_END))
+            {
+                result.push({
+                    TIME_START: interval.TIME_END,
+                    TIME_END: filter.timeTo,
+                    DOCTOR_ID: 0
+                });
+            }
+
+            prevEndTime = interval.TIME_END;
+        });
+
+        return result;
+    }
+
+    /**
+     * Из посещений и интервалов собирает единый массив - массив ячеек, который используется для вывода
+     * @returns object
+     */
+    _getCells(schedule, timeLine)
+    {
+        let intervals = schedule.intervals.slice();
+
+        let interval;
+        let intervalEndTime;
+
+        let result = {};
+
+        /*
+        Массив ячеек - это объединенные массивы интервалов(расписания врачей) и приемов.
+        Сначала в массив ячеек добавляем интервалы
+        */
+
+        for(let time in timeLine)
+        {
+            if(!timeLine.hasOwnProperty(time)) continue;
+
+            let moment = this._getMoment(time);
+
+            if(!interval || !moment.isBefore(intervalEndTime))
+            {
+                if(intervals.length)
+                {
+                    interval = intervals.shift();
+                    intervalEndTime = this._getMoment(interval.TIME_END);
+                }
+            }
+
+            if(interval)
+            {
+                let duration = ((timeLine[time].type === 'half') ? 15 : 30);
+
+                result[time] = {
+                    timeStart: time,
+                    timeEnd: moment.add(duration, 'minute').format('HH:mm'),
+                    doctorId: interval.DOCTOR_ID,
+                    halfDayNum: interval.halfDayNum,
+                    isBlocked: interval.isBlocked,
+                    isHalf: (timeLine[time].type === 'half')
+                };
+            }
+        }
+
+        this._writeVisitsSize(schedule, timeLine);
+
+
+        /* затем добавляем приемы, заменяя интервалы, на которые они приходятся */
+
+        let resultWithVisits = {};
+        let visit;
+        let skipCellsCounter = 0;
+
+        for(let time in result)
+        {
+            if (!result.hasOwnProperty(time)) continue;
+
+            if(skipCellsCounter)
+            {
+                skipCellsCounter--;
+                continue;
+            }
+
+            visit = schedule.visits[time];
+            let cell = result[time];
+
+            if(visit)
+            {
+                skipCellsCounter = (visit.size - 1);
+                cell.size = visit.size;
+                cell.timeStart = visit.TIME_START;
+                cell.timeEnd = visit.TIME_END;
+                cell.patientId = visit.PATIENT_ID;
+            }
+
+            resultWithVisits[time] = cell;
+        }
+
+        return resultWithVisits;
+    }
+
+    /**
+     * Определение размеров приемов (в количестве строк таймлайна)
+     */
+    _writeVisitsSize(schedule, timeLine)
+    {
+        timeLine = Object.keys(timeLine);
+
+        for(let timeStart in schedule.visits)
+        {
+            if(!schedule.visits.hasOwnProperty(timeStart)) continue;
+
+            let visit = schedule.visits[timeStart];
+            let timeEnd = visit.TIME_END;
+
+            let startIndex = timeLine.indexOf(timeStart);
+            let endIndex = timeLine.indexOf(timeEnd);
+            if(endIndex === -1)
+            {
+                // такое может быть только когда время окончания приема является временем окончания рабочего дня
+                endIndex = undefined;
+            }
+
+            visit.size = timeLine.slice(startIndex, endIndex).length;
+        }
+    }
+
+    _getHalfTime(startTime, endTime)
+    {
+        let halfDiffSeconds = Math.round(endTime.diff(startTime) / 2000);
+        let halfTime = startTime.clone();
+        halfTime = halfTime.add(halfDiffSeconds, 'seconds');
+
+        halfTime.set({
+            'second': 0,
+            'millisecond': 0
+        });
+
+        return halfTime;
+    }
+
+    /**
+     * Возвращает массив mainDoctors (основных врачей) для указанного массива ячеек.
+     * @param cells
+     * @param timeLimits
+     * @returns {number[]}
+     */
+    _defineMainDoctors(cells, timeLimits)
+    {
+        let votes = [];
+
+        for(let time in cells)
+        {
+            if(!cells.hasOwnProperty(time)) continue;
+
+            let cell = cells[time];
+
+            if(!cell.doctorId || cell.isBlocked) continue;
+
+            let timeMoment = this._getMoment(cell.timeStart);
+            cell.halfDayNum = timeMoment.isBefore(timeLimits.half) ? 0 : 1;
+
+            if(!votes[cell.halfDayNum])
+            {
+                votes[cell.halfDayNum] = {};
+            }
+
+            if(!votes[cell.halfDayNum][cell.doctorId])
+            {
+                votes[cell.halfDayNum][cell.doctorId] = 0;
+            }
+
+            votes[cell.halfDayNum][cell.doctorId]++;
+        }
+
+        let mainDoctors = [0, 0];
+
+        votes.forEach((doctorsVotes, halfDayNum) =>
+        {
+            let maxVotes = 0;
+
+            for(let doctorId in doctorsVotes)
+            {
+                if(doctorsVotes[doctorId] > maxVotes)
+                {
+                    maxVotes = doctorsVotes[doctorId];
+                    mainDoctors[halfDayNum] = Number(doctorId);
+                }
+            }
+        });
+
+        return mainDoctors;
+    }
+
+    /**
+     * Проверяет, является ли массив ячеек пустым (не содержит ячеек вообще, либо содержит ячейки с неназначенными врачами,
+     * либо заблокированные)
+     * @param cells
+     * @returns {boolean}
+     */
+    _isEmptyCells(cells)
+    {
+        let isEmpty = true;
+
+        for(let time in cells)
+        {
+            let cell = cells[time];
+            if (cell.doctorId && !cell.isBlocked) {
+                isEmpty = false;
+                break;
+            }
+        }
+
+        return isEmpty;
+    }
+
+    _defineHeight(timeLine, cells, mainDoctors)
+    {
+        GeneralHelper.forEachObj(timeLine, (timeLineItem, time) =>
+        {
+            if(timeLineItem.height) return;
+
+            let cell = cells[time];
+            if(!cell) return;
+
+            let height;
+
+            if(cell.patientId && (cell.doctorId !== mainDoctors[cell.halfDayNum]) && (cell.size === 1))
+            {
+                height = 46;
+            }
+            else
+            {
+                height = null;
+            }
+
+            if(height > timeLineItem.height)
+            {
+                timeLineItem.height = height;
+            }
+        })
     }
 
     getTimeLine()

@@ -1066,6 +1066,9 @@ body.notifOpen .notif_amnt{
 	display: flex;
 }
 .dayCalendar_cont{
+	padding-right: 88px;
+}
+.dayCalendar_cont:first-child{
 	padding-left: 104px;
 }
 .dayCalendar_header{
@@ -1122,6 +1125,12 @@ body.notifOpen .notif_amnt{
 	margin-right: 3px;
 	font-size: 12px;
 	background-color: #fff;
+}
+.dayCalendar_tl.dayCalendar_tl--center {
+	justify-content: center;
+}
+.dayCalendar_tl.dayCalendar_tl--center .dayCalendar_timeItem.littleTI span {
+	margin: auto;
 }
 .dayCalendar_rightTl .dayCalendar_timeItem.littleTI{
 	justify-content: flex-start;
@@ -2954,4 +2963,33 @@ input[type=radio].visually-hidden {
 .new-visit__table-wrapper .custom-scroll__container {
 	margin-left: -24px;
 	width: calc(100% + 24px) !important;
+}
+
+.schedule-scroll {
+	width: 100%;
+	overflow: hidden;
+    position: relative;
+}
+
+.schedule-scroll__content {
+	display: flex;
+    position: relative;
+}
+
+.schedule-scroll__button {
+    background: url('../img/schedule_scroll_button.png') no-repeat center;
+    width: 39px;
+    height: 218px;
+    position: fixed;
+    cursor: pointer;
+    top: calc(50% - 110px);
+    z-index: 5;
+}
+
+.schedule-scroll__button.schedule-scroll__button--right {
+    right: 0;
+}
+
+.schedule-scroll__button.schedule-scroll__button--left {
+    left: 0;
 }
