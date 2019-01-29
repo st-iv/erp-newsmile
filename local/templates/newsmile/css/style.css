@@ -2966,9 +2966,16 @@ input[type=radio].visually-hidden {
 }
 
 .schedule-scroll {
-	width: 100%;
-	overflow: hidden;
+	width: calc(100% - 343px);
     position: relative;
+}
+
+.schedule-scroll .mCSB_draggerContainer {
+	display: none;
+}
+
+.schedule-scroll .mCSB_container {
+	display: flex;
 }
 
 .schedule-scroll__content {
