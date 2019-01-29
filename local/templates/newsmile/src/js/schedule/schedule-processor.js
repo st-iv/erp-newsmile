@@ -42,7 +42,7 @@ export default class ScheduleProcessor
 
         !!availableTimeUnite && availableTimeUnite.forEach(time =>
         {
-            this._splitTimeLine(this.timeLine, time);
+            this._splitTimeLine(timeLine, time);
         });
 
         // сортировка timeLine по возрастанию времени
@@ -360,33 +360,14 @@ export default class ScheduleProcessor
         {
             if(!!this.schedule.days[date])
             {
-                result.concat(dateSplittedTime);
+                result = result.concat(dateSplittedTime);
             }
         });
 
         return result.filter(splittedTime =>
         {
-            return (splittedTime in timeLine) && (timeLine[splittedTime].type === 'standard');
+            return !!timeLine[splittedTime] && (timeLine[splittedTime].type === 'standard');
         })
-    }
-
-    /**
-     * Делит определённый элемент таймлайна
-     * @param timeLine
-     * @param time - начальное время разделяемого элемента
-     */
-    _splitTimeLine(timeLine, time)
-    {
-        if((time in timeLine) && (timeLine[time].type === 'standard'))
-        {
-            const nextTime = this._getMoment(time).add(15, 'm').format('HH:mm');
-            timeLine[nextTime] = {
-                type: 'half',
-                height: null
-            };
-
-            timeLine[time].type = 'half';
-        }
     }
 
     _sortTimeLine(timeLine)

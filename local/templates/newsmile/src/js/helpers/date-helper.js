@@ -91,9 +91,18 @@ let DateHelper = {
     {
         let yearsCount = moment().diff(moment(birthday), 'y');
         return GeneralHelper.getCountString(yearsCount, ['год', 'года', 'лет']);
+    },
+
+    getStandardIntervalTime: function(intervalTime)
+    {
+        let intervalMoment = moment(intervalTime, 'HH:mm');
+        if(intervalMoment.get('m') % 30 === 15)
+        {
+            intervalMoment.add(-15, 'm');
+        }
+
+        return intervalMoment.format('HH:mm');
     }
-
-
 };
 
 export default DateHelper

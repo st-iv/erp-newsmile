@@ -4,7 +4,7 @@ import CellMenu from './cell-menu'
 import GeneralHelper from 'js/helpers/general-helper'
 import ColorHelper from 'js/helpers/color-helper'
 
-class Cell extends React.PureComponent
+class Cell extends React.Component
 {
     defaultCellHeight = 22;
     defaultCellMargin = 2;

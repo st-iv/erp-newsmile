@@ -35,7 +35,13 @@ class Schedule extends React.PureComponent
 
     render()
     {
-        let scheduleProcessor = new ScheduleProcessor(this.state.schedule, this.state.filter, this.props.doctors.list);
+        let scheduleProcessor = new ScheduleProcessor(
+            this.state.schedule,
+            this.state.filter,
+            this.props.doctors.list,
+            this.state.splittedTime
+        );
+
         scheduleProcessor.process();
 
         const schedule = scheduleProcessor.getSchedule();
@@ -80,7 +86,8 @@ class Schedule extends React.PureComponent
                                              commands={schedule.commands}
                                              date={date}
                                              update={this.updateDaySchedule.bind(this, [date])}
-                                             splitInterval={this.splitInterval.bind(this,date)}
+                                             splitInterval={this.splitInterval.bind(this, date)}
+                                             uniteInterval={this.uniteInterval.bind(this, date)}
                                              filter={filter}
                                              doctors={this.props.doctors.list}
                                              patients={schedule.patients}
@@ -216,16 +223,21 @@ class Schedule extends React.PureComponent
             splittedTime[date] = [];
         }
 
-        splittedTime[date].push(time);
-        this.setState({splittedTime});
+        if(splittedTime[date].indexOf(time) === -1)
+        {
+            splittedTime[date].push(time);
+            this.setState({splittedTime});
+        }
     }
 
-    uniteInterval(time)
+    uniteInterval(date, time)
     {
         let splittedTime = GeneralHelper.clone(this.state.splittedTime);
-        if(!splittedTime[this.props.date]) return;
+        if(!splittedTime[date]) return;
 
-        splittedTime[this.props.date].splice(splittedTime[this.props.date].indexOf(time), 1);
+        time = Helper.Date.getStandardIntervalTime(time);
+
+        splittedTime[date].splice(splittedTime[date].indexOf(time), 1);
         this.setState({splittedTime});
     }
 }

@@ -6,9 +6,9 @@ import CellDetailInfo from './cell-detail-info'
 import NewVisitForm from '../../new-visit-form/main'
 import PopupManager from '../../popup-manager'
 import ServerCommand from 'js/server/server-command'
-import GeneralHelper from 'js/helpers/general-helper'
+import Helper from 'js/helpers/main'
 
-class CellMenu extends React.PureComponent
+class CellMenu extends React.Component
 {
     static propTypes = {
         renderCell: PropTypes.func.isRequired,
@@ -180,9 +180,9 @@ class CellMenu extends React.PureComponent
         let bCanSplit = false;
         let intervals = {};
 
-        GeneralHelper.forEachObj(this.props.timeLine, (timeLineItem, time) =>
+        Helper.forEachObj(this.props.timeLine, (timeLineItem, time) =>
         {
-            let standardIntervalTime = this.getStandardIntervalTime(time);
+            let standardIntervalTime = Helper.Date.getStandardIntervalTime(time);
             intervals[standardIntervalTime] = true;
 
             if(!!this.props.availableTimeUnite && (this.props.availableTimeUnite.indexOf(standardIntervalTime) !== -1))
@@ -383,7 +383,7 @@ class CellMenu extends React.PureComponent
 
     handleMenuAction(commandCode, variantCode)
     {
-        let specificMethodName = 'process' + GeneralHelper.getCamelCase(commandCode);
+        let specificMethodName = 'process' + Helper.getCamelCase(commandCode);
 
         if(typeof this[specificMethodName] === 'function')
         {
@@ -469,17 +469,6 @@ class CellMenu extends React.PureComponent
         }
 
         PopupManager.closePopup(this.newVisitFormPopupId);
-    }
-
-    getStandardIntervalTime(intervalTime)
-    {
-        let intervalMoment = moment(intervalTime, 'HH:mm');
-        if(intervalMoment.get('m') % 30 === 15)
-        {
-            intervalMoment.add(-15, 'm');
-        }
-
-        return intervalMoment.format('HH:mm');
     }
 }
 
