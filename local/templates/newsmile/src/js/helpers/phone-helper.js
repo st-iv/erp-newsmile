@@ -25,7 +25,7 @@ let PhoneHelper = {
     getNumFormattedPos: function(numNumber)
     {
         let char = (numNumber === 10) ? '_' : window.String(numNumber);
-        return formatPhone('0123456789_').indexOf(char);
+        return this.format('0123456789_').indexOf(char);
     },
 }
 
