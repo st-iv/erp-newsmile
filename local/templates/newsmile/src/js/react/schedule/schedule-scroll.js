@@ -1,19 +1,20 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import MCustomScrollbar from 'js/react/m-custom-scrollbar'
+import Animation from 'js/animation/animation'
+import Helper from 'js/helpers/main'
 
 export default class ScheduleScroll extends React.Component
 {
     state = {
         width: 0,
         contentWidth: 0,
-        scrollingTo: null,
         position: 'left',
-        scrollDuration: 2
+        shift: 0
     };
 
     static propTypes = {
-        className: PropTypes.string
+        className: PropTypes.string,
+        contentStamp: PropTypes.any
     };
 
     static defaultProps = {
@@ -21,71 +22,95 @@ export default class ScheduleScroll extends React.Component
     };
 
     rootNode = null;
-    scrollbar = null;
+    contentNode = null;
 
-    scrollSpeed = 5;
+    scrollSpeed = 500; // скорость скролла при наведении - количество пикселей в секунду
+    toEndSpeed = 1200; // скорость скролла при клике
+    bToEnd = false;
+
+    scrollAnimation = new Animation((timePassed, stepSize, params) =>
+    {
+        const speed = this.bToEnd ? this.toEndSpeed : this.scrollSpeed;
+        let shiftDif = speed * stepSize / 1000;
+        let stop = false;
+
+        shiftDif *= (params.direction === 'left') ? -1 : 1;
+
+        let rawShift = this.state.shift + shiftDif;
+        let newState = {};
+
+        const isCompleted = ((params.direction === 'left') && (rawShift <= params.endShift)) || ((params.direction === 'right') && (rawShift >= params.endShift));
+
+        newState.shift = isCompleted ? params.endShift : (this.state.shift + shiftDif);
+
+        if(isCompleted)
+        {
+            newState.position = params.direction;
+            this.bToEnd = false;
+            stop = true;
+        }
+        else
+        {
+            newState.position = 'middle';
+        }
+
+        this.setState(newState);
+
+        return !stop;
+    });
+
+    constructor(props)
+    {
+        super(props);
+        this.handleUnhover = this.handleUnhover.bind(this);
+    }
 
     render()
     {
-        let isActive = !!this.scrollbar && this.scrollbar.isHidden();
+        let isActive = !!this.state.width && !!this.state.contentWidth && (this.state.contentWidth > this.state.width);
 
         return (
-
-            <MCustomScrollbar
-                className={this.props.className + ' schedule-scroll'}
-                ref={ref => this.scrollbar = ref}
-                callbacks={{onScrollStart: this.handleScrollStart.bind(this)}}
-                onScrollComplete={this.handleScrollComplete.bind(this)}
-                mouseWheel={{enable: false}}
-                axis="x"
-            >
+            <div className={this.props.className + ' schedule-scroll'} ref={ref => this.rootNode = ref}>
                 {isActive && (this.state.position !== 'left') && (
-                    <div className="schedule-scroll__button schedule-scroll__button--left"
-                         onMouseEnter={() => this.scrollbar.scrollTo('left')}
-                         onMouseLeave={() => this.scrollbar.stop()}
-                    />
-                )}
-                {this.props.children}
-                {isActive && (this.state.position !== 'right') && (
-                    <div className="schedule-scroll__button schedule-scroll__button--right"
-                         onMouseEnter={() => this.scrollbar.scrollTo('right')}
-                         onMouseLeave={() => this.scrollbar.stop()}
-                    />
-                )}
-            </MCustomScrollbar>
-                /*<div className={this.props.className + ' schedule-scroll'} ref={ref => this.rootNode = ref}>
-                    {isActive && (this.state.position !== 'left') && (
+                    <div className="schedule-scroll__button-container schedule-scroll__button-container--left">
                         <div className="schedule-scroll__button schedule-scroll__button--left"
-                             onMouseEnter={this.scroll.bind(this, 'left')}/>
-                    )}
-
-
-
-                    <div className="schedule-scroll__content"
-                         ref={ref => this.contentNode = ref}
-                         style={style}>
-                        {this.props.children}
+                             onMouseEnter={this.scroll.bind(this, 'left')}
+                             onMouseLeave={this.handleUnhover}
+                             onClick={() => this.bToEnd = true}
+                             /*style={{left: $(this.rootNode).offset().left}}*/
+                        />
                     </div>
+                )}
 
-                    {isActive && (this.state.position !== 'right') && (
+                <div className="schedule-scroll__content"
+                     ref={ref => this.contentNode = ref}
+                     style={{right: this.state.shift}}>
+                    {this.props.children}
+                </div>
+
+                {isActive && (this.state.position !== 'right') && (
+                    <div className="schedule-scroll__button-container schedule-scroll__button-container--right">
                         <div className="schedule-scroll__button schedule-scroll__button--right"
-                             onMouseEnter={this.scroll.bind(this, 'right')}/>
-                    )}
-                </div>*/
+                             onMouseEnter={this.scroll.bind(this, 'right')}
+                             onMouseLeave={this.handleUnhover}
+                             onClick={() => this.bToEnd = true}/>
+                    </div>
+                )}
+            </div>
         );
     }
 
     componentDidMount()
     {
-        /*this.setState({
+        this.setState({
             contentWidth: this.contentNode.clientWidth,
             width: this.rootNode.clientWidth
-        });*/
+        });
     }
 
     componentDidUpdate(prevProps, prevState, snapshot)
     {
-        /*let newState = {};
+        let newState = {};
         if(this.state.contentWidth !== this.contentNode.clientWidth)
         {
             newState.contentWidth = this.contentNode.clientWidth;
@@ -96,46 +121,42 @@ export default class ScheduleScroll extends React.Component
             newState.width = this.rootNode.clientWidth;
         }
 
+        if(!Helper.isEqual(this.props.contentStamp, prevProps.contentStamp))
+        {
+            this.scrollAnimation.stop();
+            newState.shift = 0;
+            newState.position = 'left';
+        }
+
         if(!$.isEmptyObject(newState))
         {
             this.setState(newState);
-        }*/
+        }
     }
 
     scroll(direction)
     {
         if(this.state.position === direction) return;
 
-        const shift = parseFloat(window.getComputedStyle(this.contentNode).right);
-        let distance;
+        const animationParams = {
+            direction,
+            startShift: this.state.shift,
+            endShift: (direction === 'left') ? 0 : (this.state.contentWidth - this.state.width)
+        };
 
-        if(direction === 'left')
-        {
-            distance = shift;
-        }
-        else
-        {
-            distance = (this.state.contentWidth - this.state.width) - shift;
-        }
-
-        this.setState({
-            scrollingTo: direction,
-            position: 'middle',
-            scrollDuration: (distance / this.scrollSpeed) / 100
-        });
+        this.scrollAnimation.animate(null, animationParams);
     }
 
-    handleScrollComplete(position)
+    stopScroll()
     {
-        this.setState({
-            scrollingTo: null,
-            position: position
-        });
+        if(!this.bToEnd)
+        {
+            this.scrollAnimation.stop();
+        }
     }
 
-    handleScrollStart()
+    handleUnhover()
     {
-        console.log('start scroll!');
-        //this.setState({position: null});
+        this.stopScroll();
     }
 }

@@ -51,6 +51,8 @@ class Schedule extends React.PureComponent
         let dayCounter = 0;
         let daysCount = Object.keys(schedule.days).length;
 
+        const scheduleDates = Object.keys(schedule.days);
+
         return (
             <div>
                 <Filter doctors={this.props.doctors.list}
@@ -72,7 +74,7 @@ class Schedule extends React.PureComponent
                         </div>
                     </div>
 
-                    <ScheduleScroll className="main_content_center">
+                    <ScheduleScroll className="main_content_center" contentStamp={Object.keys(schedule.days)}>
                         {Helper.mapObj(schedule.days, (daySchedule, date) =>
                         {
                             dayCounter++;
@@ -86,8 +88,8 @@ class Schedule extends React.PureComponent
                                              commands={schedule.commands}
                                              date={date}
                                              update={this.updateDaySchedule.bind(this, [date])}
-                                             splitInterval={this.splitInterval.bind(this, date)}
-                                             uniteInterval={this.uniteInterval.bind(this, date)}
+                                             splitInterval={this.splitInterval.bind(this, scheduleDates)}
+                                             uniteInterval={this.uniteInterval.bind(this, scheduleDates)}
                                              filter={filter}
                                              doctors={this.props.doctors.list}
                                              patients={schedule.patients}
@@ -215,29 +217,39 @@ class Schedule extends React.PureComponent
         CookieHelper.setCookie('scheduleSplittedTime', JSON.stringify(this.state.splittedTime));
     }
 
-    splitInterval(date, time)
+    splitInterval(dates, time)
     {
         let splittedTime = GeneralHelper.clone(this.state.splittedTime);
-        if(!splittedTime[date])
-        {
-            splittedTime[date] = [];
-        }
 
-        if(splittedTime[date].indexOf(time) === -1)
+        dates.map(date =>
         {
-            splittedTime[date].push(time);
-            this.setState({splittedTime});
-        }
+            if(!splittedTime[date])
+            {
+                splittedTime[date] = [];
+            }
+
+            if(splittedTime[date].indexOf(time) === -1)
+            {
+                splittedTime[date].push(time);
+            }
+        });
+
+        this.setState({splittedTime});
     }
 
-    uniteInterval(date, time)
+    uniteInterval(dates, time)
     {
         let splittedTime = GeneralHelper.clone(this.state.splittedTime);
-        if(!splittedTime[date]) return;
 
-        time = Helper.Date.getStandardIntervalTime(time);
+        dates.map(date =>
+        {
+            if(!splittedTime[date]) return;
 
-        splittedTime[date].splice(splittedTime[date].indexOf(time), 1);
+            time = Helper.Date.getStandardIntervalTime(time);
+
+            splittedTime[date].splice(splittedTime[date].indexOf(time), 1);
+        });
+
         this.setState({splittedTime});
     }
 }
