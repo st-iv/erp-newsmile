@@ -172,7 +172,7 @@ class mmit_newsmile extends CModule
 
     protected function installSefRules()
     {
-        NewSmile\Rest\Controller::installSefRule('/api/rest');
+        NewSmile\Rest\Controller::installSefRule(NewSmile\Config::REST_API_ROOT_DIR);
     }
 
     public function registerDependences()

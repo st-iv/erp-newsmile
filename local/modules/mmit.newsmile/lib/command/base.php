@@ -218,6 +218,11 @@ abstract class Base
         return __NAMESPACE__;
     }
 
+    public static function getBaseCommandsPath()
+    {
+        return __DIR__;
+    }
+
     private static function getCodeFor($bCommand)
     {
         $offset = $bCommand ? -1 : -2;

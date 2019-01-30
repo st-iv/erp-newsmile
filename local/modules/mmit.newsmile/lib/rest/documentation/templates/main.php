@@ -62,7 +62,7 @@
             <tbody>
             <?foreach ($data['ENTITIES'] as $entity):?>
                 <tr>
-                    <td><?=$entity['CODE']?></td>
+                    <td><a href="<?=$entity['URL']?>"><?=$entity['CODE']?></a></td>
                     <td><?=$entity['DESCRIPTION']?></td>
                 </tr>
             <?endforeach;?>

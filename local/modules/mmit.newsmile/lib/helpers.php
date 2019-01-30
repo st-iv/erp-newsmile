@@ -294,8 +294,9 @@ class Helpers
      * Для всех файлов в указанной паапке вызывает переданный обработчик
      * @param string $directory
      * @param callable $callback - в качестве аргумента получает абсолютный путь к файлу в папке
+     * @param bool $bRecursive - включает режим рекурсивного обхода содержимого папки
      */
-    public static function scanDir($directory, $callback)
+    public static function scanDir($directory, $callback, $bRecursive = true)
     {
         // Привести каталог в канонизированный абсолютный путь
         $directory=realpath($directory);
@@ -307,8 +308,7 @@ class Helpers
                     continue;
                 }
 
-
-                if (is_dir($directory.DIRECTORY_SEPARATOR.$fname)) {
+                if ($bRecursive && is_dir($directory.DIRECTORY_SEPARATOR.$fname)) {
                     static::scanDir($directory.DIRECTORY_SEPARATOR.$fname, $callback);
                 }
                 else
@@ -326,5 +326,25 @@ class Helpers
     public static function preparePhone($phone)
     {
         return preg_replace('/[^0-9]/', '', $phone);
+    }
+
+    /**
+     * Возвращает путь относительно корня сайта
+     * @param string $absolutePath
+     *
+     * @return bool|string
+     */
+    public static function getRelPath($absolutePath)
+    {
+        if(strpos($absolutePath, $_SERVER['DOCUMENT_ROOT']) === 0)
+        {
+            $result = substr($absolutePath, strlen($_SERVER['DOCUMENT_ROOT']));
+        }
+        else
+        {
+            $result = $absolutePath;
+        }
+
+        return $result;
     }
 }
