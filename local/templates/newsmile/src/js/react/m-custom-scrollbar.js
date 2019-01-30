@@ -5,6 +5,7 @@ export default class MCustomScrollbar extends React.Component
 {
     static propTypes = {
         className: PropTypes.string,
+        onScrollComplete: PropTypes.func
     };
 
     static defaultProps = {
@@ -12,6 +13,7 @@ export default class MCustomScrollbar extends React.Component
     };
 
     $root = null;
+    scrolledTo = null;
 
     render()
     {
@@ -46,6 +48,34 @@ export default class MCustomScrollbar extends React.Component
     {
         let config = $.extend({}, this.props);
         delete config.className;
+        delete config.callbacks.onScroll;
+        config.callbacks.onScroll = this.handleScroll.bind(this);
         return config;
+    }
+
+    stop()
+    {
+        this.$root.mCustomScrollbar('stop');
+    }
+
+    scrollTo(position, options)
+    {
+        this.$root.mCustomScrollbar('scrollTo', position, options);
+        this.scrolledTo = position;
+    }
+
+    getNode()
+    {
+        return this.$root[0];
+    }
+
+    isHidden()
+    {
+        return this.$root.hasClass('mCS_no_scrollbar');
+    }
+
+    handleScroll()
+    {
+        !!this.props.onScrollComplete && this.props.onScrollComplete(this.scrolledTo);
     }
 }
