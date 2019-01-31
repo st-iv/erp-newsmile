@@ -4,7 +4,7 @@ namespace Mmit\NewSmile\Command\TreatmentPlan;
 
 use Mmit\NewSmile\Application;
 use Mmit\NewSmile\Command\Base;
-use Mmit\NewSmile\CommandParam\Integer;
+use Mmit\NewSmile\CommandVariable\Integer;
 use Mmit\NewSmile\Helpers;
 use Mmit\NewSmile\Service\ServiceTable;
 use Mmit\NewSmile\TreatmentPlanItemTable;
@@ -137,7 +137,7 @@ class Detail extends Base
     public function getParamsMap()
     {
         return [
-            new Integer('id', 'id плана лечения', '', true)
+            new Integer('id', 'id плана лечения', true)
         ];
     }
 }

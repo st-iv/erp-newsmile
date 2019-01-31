@@ -40,11 +40,7 @@ class DeleteNotificationToken extends Base
     public function getParamsMap()
     {
         return [
-            new CommandParam\String(
-                'notification_token',
-                'токен для получения уведомлений',
-                'Токен конкретного экземпляра мобильного приложения',
-                true
+            new \Mmit\NewSmile\CommandVariable\String('notification_token', 'токен для получения уведомлений', true
             )
         ];
     }

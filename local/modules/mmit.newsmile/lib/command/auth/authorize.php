@@ -4,11 +4,24 @@ namespace Mmit\NewSmile\Command\Auth;
 
 use Mmit\NewSmile\Sms;
 use Mmit\NewSmile\Application;
-use Mmit\NewSmile\CommandParam;
+use Mmit\NewSmile\CommandVariable;
+use Mmit\NewSmile\Command;
 
 class Authorize extends Base
 {
-    protected static $name = 'Авторизация по токену';
+    public function getDescription()
+    {
+        return 'Авторизует пользователя в системе по токену, возвращает информацию по авторизованному пользователю';
+    }
+
+    public function getResultFormat()
+    {
+        return new Command\ResultFormat([
+            new CommandVariable\String('name', 'имя пациента', false),
+            new CommandVariable\String('lastName', 'фамилия пациента', false),
+            new CommandVariable\String('secondName', 'отчество пациента', false),
+        ]);
+    }
 
     protected function doExecute()
     {
@@ -17,7 +30,7 @@ class Authorize extends Base
         {
             if($this->params['get_user_info'])
             {
-                $this->result = $this->getUserInfo($userId);;
+                $this->result = $this->getUserInfo($userId);
             }
 
             $GLOBALS['USER']->Authorize($userId);
@@ -36,13 +49,8 @@ class Authorize extends Base
     public function getParamsMap()
     {
         return [
-            new CommandParam\String('token', 'токен авторизации'),
-            new CommandParam\Bool(
-                'get_user_info',
-                'флаг запроса краткой информации о пользователе',
-                '',
-                false,
-                true
+            new CommandVariable\String('token', 'токен авторизации'),
+            new CommandVariable\Bool('get_user_info', 'флаг запроса краткой информации о пользователе', false, true
             )
         ];
     }

@@ -10,6 +10,8 @@ class Documentator
 {
     const TEMPLATES_FOLDER = __DIR__ . '/templates';
 
+    protected static $commandsClasses;
+
     protected $baseDir;
 
     public function __construct($baseDir)
@@ -17,19 +19,26 @@ class Documentator
         $this->baseDir = $baseDir;
     }
 
-    public function renderHelpPage($entity, $command)
+    public function renderHelpPage($entityCode, $commandCode)
     {
         include static::TEMPLATES_FOLDER . '/header.php';
 
-        if(isset($entity) && isset($command))
+        if(isset($entityCode) && isset($commandCode))
         {
+            $data = $this->getCommandsList($entityCode, $commandCode, true)[0];
+            $data['ENTITY'] = $this->getEntitiesList($entityCode)[0];
+            $data['MAIN_PAGE_URL'] = $this->baseDir . '/?help';
 
+            $this->includeTemplate('command', $data);
         }
-        elseif (isset($entity))
+        elseif (isset($entityCode))
         {
-            $entitiesList = $this->getEntitiesList($entity);
+            $entitiesList = $this->getEntitiesList($entityCode);
 
-            $this->includeTemplate('entity', $entitiesList[0]);
+            $this->includeTemplate('entity', array_merge($entitiesList[0], [
+                'COMMANDS' => $this->getCommandsList($entityCode),
+                'MAIN_PAGE_URL' => $this->baseDir . '/?help'
+            ]));
         }
         else
         {
@@ -46,7 +55,7 @@ class Documentator
     {
         $result = [];
 
-        foreach ($this->getAllCommandsClasses() as $class)
+        foreach ($this->getCommandsClasses() as $class)
         {
             if(is_subclass_of($class, Command\EntityDescriptor::class))
             {
@@ -75,25 +84,95 @@ class Documentator
         return $result;
     }
 
-    protected function getAllCommandsClasses()
+    /**
+     * @param string $entity - код сущности
+     * @param string $filterByCode - код команды, если указан, то будет возвращена информация только по этой команде
+     * @param bool $bDetailInfo - флаг запроса детальной информации по командам
+     *
+     * @return array
+     * @throws \ReflectionException
+     */
+    protected function getCommandsList($entity, $filterByCode = '', $bDetailInfo = false)
     {
-        $startIndex = count(get_declared_classes());
+        $result = [];
 
-        Helpers::scanDir(Command\Base::getBaseCommandsPath(), function($filePath)
+        foreach ($this->getCommandsClasses() as $class)
         {
-            include_once $filePath;
-        });
+            if (is_subclass_of($class, Command\Base::class))
+            {
+                $reflector = new \ReflectionClass($class);
 
-        $result = array_slice(get_declared_classes(), $startIndex);
-        return array_filter($result, function($className)
+                /**
+                 * @var Command\Base $class
+                 * @var Command\Base $command
+                 */
+                if($reflector->isAbstract() || $entity != $class::getEntityCode()) continue;
+
+                $command = new $class([], null, true);
+                $commandCode = $command::getShortCode();
+
+                if(!$filterByCode || ($commandCode == $filterByCode))
+                {
+                    $commandInfo = [
+                        'CODE' => $commandCode,
+                        'DESCRIPTION' => $command->getDescription(),
+                        'URL' => $this->getCommandUrl($entity, $commandCode),
+                    ];
+
+                    if($bDetailInfo)
+                    {
+                        $commandInfo['FULL_CODE'] = $command::getCode();
+                        $commandInfo['RESULT_FORMAT'] = $command->getResultFormat();
+                        $commandInfo['PARAMS'] = $command->getParamsMap();
+                    }
+
+                    $result[] = $commandInfo;
+                }
+            }
+        }
+
+        sort($result);
+
+        return $result;
+    }
+
+    /**
+     * Получает классы команд в системе
+     * @param string $entity - код сущности. Если указан, то будут выбраны только те классы команд, которые относятся к
+     * этой сущности
+     *
+     * @return array
+     */
+    protected function getCommandsClasses()
+    {
+        if(!isset(static::$commandsClasses))
         {
-            return $className != 'Mmit\\NewSmile\\Helpers';
-        });
+            $startIndex = count(get_declared_classes());
+
+            Helpers::scanDir(Command\Base::getBaseCommandsPath(), function($filePath)
+            {
+                include_once $filePath;
+            });
+
+            $result = array_slice(get_declared_classes(), $startIndex);
+
+            static::$commandsClasses = array_filter($result, function($className)
+            {
+                return $className != 'Mmit\\NewSmile\\Helpers';
+            });
+        }
+
+        return static::$commandsClasses;
     }
 
     protected function getEntityUrl($entityCode)
     {
-        return Rest\Controller::getEntityPath($this->baseDir, $entityCode) . '?help';
+        return Rest\Controller::getEntityUrl($this->baseDir, $entityCode) . '?help';
+    }
+
+    protected function getCommandUrl($entityCode, $commandCode)
+    {
+        return Rest\Controller::getCommandUrl($this->baseDir, $entityCode, $commandCode) . '?help';
     }
 
     protected function includeTemplate($templateName, array $data = [])

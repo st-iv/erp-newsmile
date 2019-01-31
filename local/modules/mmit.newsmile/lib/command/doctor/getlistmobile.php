@@ -4,10 +4,10 @@ namespace Mmit\NewSmile\Command\Doctor;
 
 use Bitrix\Main\Entity\IntegerField;
 use Mmit\NewSmile\Command\Base;
-use Mmit\NewSmile\CommandParam\ArrayParam;
-use Mmit\NewSmile\CommandParam\Bool;
-use Mmit\NewSmile\CommandParam\Integer;
-use Mmit\NewSmile\CommandParam\String;
+use Mmit\NewSmile\CommandVariable\ArrayParam;
+use Mmit\NewSmile\CommandVariable\Bool;
+use Mmit\NewSmile\CommandVariable\Integer;
+use Mmit\NewSmile\CommandVariable\String;
 use Mmit\NewSmile\DoctorSpecializationTable;
 use Mmit\NewSmile\DoctorTable;
 use Mmit\NewSmile\Helpers;
@@ -15,7 +15,10 @@ use Mmit\NewSmile\Scheduler;
 
 class GetListMobile extends Base
 {
-    protected static $name = 'Получить список врачей';
+    public function getDescription()
+    {
+        return 'Возвращает информацию о врачах в особом формате для мобильных приложений';
+    }
 
     protected function doExecute()
     {
@@ -127,15 +130,10 @@ class GetListMobile extends Base
             new Integer('limit', 'ограничение количества'),
             new String('sort_by', 'поле для сортировки'),
             new String('sort_order', 'направление сортировки'),
-            (new ArrayParam(
-                'select',
-                'направление сортировки',
-                '',
-                false,
-                ['NAME', 'LAST_NAME', 'SECOND_NAME', 'ID']
+            (new ArrayParam('select', 'направление сортировки', false, ['NAME', 'LAST_NAME', 'SECOND_NAME', 'ID']
             ))->setOperations('read-full-info'),
-            new Bool('get-schedule', 'флаг запроса расписания', '', false, false),
-            new Bool('get-specialization', 'флаг запроса специальности', '', false, false),
+            new Bool('get-schedule', 'флаг запроса расписания', false, false),
+            new Bool('get-specialization', 'флаг запроса специальности', false, false),
             new ArrayParam('ids', 'id врачей для выборки')
         ];
     }

@@ -100,28 +100,14 @@ abstract class OrmGetList extends OrmRead
     public function getParamsMap()
     {
         return [
-            new CommandParam\ArrayParam(
-                'filter',
-                'фильтр',
-                    'объект со значениями полей для фильтрации'
+            new \Mmit\NewSmile\CommandVariable\ArrayParam('filter', 'фильтр'
             ),
-            new CommandParam\ArrayParam(
-                'select',
-                'поля для выборки',
-                'массив кодов полей для выборки'
+            new \Mmit\NewSmile\CommandVariable\ArrayParam('select', 'поля для выборки'
             ),
-            new CommandParam\ArrayParam(
-                'order',
-                'порядок сортировки',
-                'Объект, содержащий в качестве ключей имена полей, а в качестве значений - направление сортировки'
+            new \Mmit\NewSmile\CommandVariable\ArrayParam('order', 'порядок сортировки'
             ),
-            new CommandParam\Integer('limit', 'ограничение по количеству'),
-            new CommandParam\Bool(
-                'countTotal',
-                'флаг подсчета количества',
-                'Если установлен, вернёт общее количество записей по ключу count',
-                false,
-                false
+            new \Mmit\NewSmile\CommandVariable\Integer('limit', 'ограничение по количеству'),
+            new \Mmit\NewSmile\CommandVariable\Bool('countTotal', 'флаг подсчета количества', false, false
             )
         ];
     }

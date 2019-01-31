@@ -6,9 +6,9 @@ namespace Mmit\NewSmile\Command\Schedule;
 use Bitrix\Main\Diag\Debug;
 use Bitrix\Main\Type\DateTime;
 use Mmit\NewSmile\Command\Base;
-use Mmit\NewSmile\CommandParam\Date;
-use Mmit\NewSmile\CommandParam\Integer;
-use Mmit\NewSmile\CommandParam\Time;
+use Mmit\NewSmile\CommandVariable\Date;
+use Mmit\NewSmile\CommandVariable\Integer;
+use Mmit\NewSmile\CommandVariable\Time;
 use Mmit\NewSmile\Config;
 use Mmit\NewSmile\DoctorTable;
 use Mmit\NewSmile\Helpers;
@@ -99,11 +99,11 @@ class ChangeDoctor extends Base
     public function getParamsMap()
     {
         return [
-            new Time('timeStart', 'Начало интервала', '', true),
-            new Time('timeEnd', 'Конец интервала', '', true),
-            new Integer('chairId', 'id кресла', '', true),
-            new Date('date', 'дата', '', true),
-            new Integer('doctorId', 'id врача', '', true),
+            new Time('timeStart', 'Начало интервала', true),
+            new Time('timeEnd', 'Конец интервала', true),
+            new Integer('chairId', 'id кресла', true),
+            new Date('date', 'дата', true),
+            new Integer('doctorId', 'id врача', true),
         ];
     }
 

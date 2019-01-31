@@ -158,8 +158,13 @@ class Controller
         UrlRewriter::add(Config::getSiteId(), $actionsRule);
     }
 
-    public static function getEntityPath($baseDir, $entityCode)
+    public static function getEntityUrl($baseDir, $entityCode)
     {
         return sprintf('%s/%s/', $baseDir, $entityCode);
+    }
+
+    public static function getCommandUrl($baseDir, $entityCode, $commandCode)
+    {
+        return sprintf('%s/%s/%s/', $baseDir, $entityCode, $commandCode);
     }
 }

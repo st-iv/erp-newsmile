@@ -20,7 +20,7 @@ class Cancel extends Base
     public function getParamsMap()
     {
         return [
-            new CommandParam\Integer('id', 'id приёма', '', true)
+            new \Mmit\NewSmile\CommandVariable\Integer('id', 'id приёма', true)
         ];
     }
 }

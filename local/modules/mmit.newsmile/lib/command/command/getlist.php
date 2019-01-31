@@ -5,7 +5,7 @@ namespace Mmit\NewSmile\Command\Command;
 
 use Bitrix\Main\Diag\Debug;
 use Mmit\NewSmile\Command;
-use Mmit\NewSmile\CommandParam\ArrayParam;
+use Mmit\NewSmile\CommandVariable\ArrayParam;
 
 class GetList extends Command\Base
 {
@@ -44,7 +44,7 @@ class GetList extends Command\Base
     public function getParamsMap()
     {
         return [
-            new ArrayParam('commands', 'список команд', '', true)
+            new ArrayParam('commands', 'список команд', true)
         ];
     }
 }

@@ -5,8 +5,8 @@ namespace Mmit\NewSmile\Command\TreatmentPlan;
 
 use Mmit\NewSmile\Application;
 use Mmit\NewSmile\Command\Base;
-use Mmit\NewSmile\CommandParam\Integer;
-use Mmit\NewSmile\CommandParam\String;
+use Mmit\NewSmile\CommandVariable\Integer;
+use Mmit\NewSmile\CommandVariable\String;
 use Mmit\NewSmile\Helpers;
 use Mmit\NewSmile\TreatmentPlanTable;
 

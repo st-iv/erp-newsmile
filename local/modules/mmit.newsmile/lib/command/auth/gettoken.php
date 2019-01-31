@@ -2,14 +2,25 @@
 
 namespace Mmit\NewSmile\Command\Auth;
 
-use Mmit\NewSmile\CommandParam\String;
+use Mmit\NewSmile\CommandVariable\String;
 use Mmit\NewSmile\Sms,
     Mmit\NewSmile\Config,
-    Mmit\NewSmile\Error;
+    Mmit\NewSmile\Error,
+    Mmit\NewSmile\Command;
 
 class GetToken extends Base
 {
-    protected static $name = 'Получить токен авторизации';
+    public function getDescription()
+    {
+        return 'Возвращает авторизационный токен для пользователя с указанным телефоном, если указан правильный код подтверждения.';
+    }
+
+    public function getResultFormat()
+    {
+        return new Command\ResultFormat([
+            //new CommandResult\Field()
+        ]);
+    }
 
     protected function doExecute()
     {
@@ -66,8 +77,8 @@ class GetToken extends Base
     public function getParamsMap()
     {
         return [
-            new String('phone', 'телефон', '', true),
-            new String('code', 'код подтверждения', '', true),
+            new String('phone', 'телефон', true),
+            new String('code', 'код подтверждения', true),
         ];
     }
 }

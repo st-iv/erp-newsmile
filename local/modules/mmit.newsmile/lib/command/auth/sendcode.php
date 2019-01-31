@@ -2,14 +2,18 @@
 
 namespace Mmit\NewSmile\Command\Auth;
 
-use Mmit\NewSmile\CommandParam\String;
+use Mmit\NewSmile\CommandVariable\String;
 use Mmit\NewSmile\Sms;
 use Mmit\NewSmile\Error;
 
 class SendCode extends Base
 {
     protected $isTestMode = true;
-    protected static $name = 'Отправить смс-код';
+
+    public function getDescription()
+    {
+        return 'Отправляет смс код подтверждения на указанный номер';
+    }
 
     protected function doExecute()
     {
@@ -35,7 +39,7 @@ class SendCode extends Base
     public function getParamsMap()
     {
         return [
-            new String('phone', 'телефон', '', true)
+            new String('phone', 'телефон', true)
         ];
     }
 }

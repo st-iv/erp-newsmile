@@ -81,7 +81,7 @@ class GetDaysInfo extends Base
     public function getParamsMap()
     {
         return [
-            new NewSmile\CommandParam\ArrayParam('dates', 'даты', '', false, [date('Y-m-d')])
+            new NewSmile\CommandVariable\ArrayParam('dates', 'даты', false, [date('Y-m-d')])
         ];
     }
 

@@ -1,6 +1,6 @@
 <?
 
-namespace Mmit\NewSmile\CommandParam;
+namespace Mmit\NewSmile\CommandVariable;
 
 class Regexp extends String
 {
@@ -11,7 +11,7 @@ class Regexp extends String
         $this->regexp = $regexp;
     }
 
-    protected function formatValue($value)
+    public function formatValue($value)
     {
         $value = parent::formatValue($value);
 

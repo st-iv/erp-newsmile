@@ -57,8 +57,8 @@ class ChangeDate extends Base
     public function getParamsMap()
     {
         return [
-            new CommandParam\DateTime('new_date', 'новая дата заявки на приём', ''),
-            new CommandParam\String('id', 'id заявки на приём', '', true),
+            new \Mmit\NewSmile\CommandVariable\DateTime('new_date', 'новая дата заявки на приём'),
+            new \Mmit\NewSmile\CommandVariable\String('id', 'id заявки на приём', true),
         ];
     }
 }

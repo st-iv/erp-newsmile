@@ -3,7 +3,7 @@
 namespace Mmit\NewSmile\Command\Visit;
 
 use Mmit\NewSmile\Command\Base;
-use Mmit\NewSmile\CommandParam\Integer;
+use Mmit\NewSmile\CommandVariable\Integer;
 use Mmit\NewSmile\Error;
 
 class DetailMobile extends Base
@@ -33,7 +33,7 @@ class DetailMobile extends Base
     public function getParamsMap()
     {
         return [
-            new Integer('id', 'id приёма', '', true)
+            new Integer('id', 'id приёма', true)
         ];
     }
 }

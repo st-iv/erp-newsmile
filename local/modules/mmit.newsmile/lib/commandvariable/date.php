@@ -1,6 +1,8 @@
 <?
 
-namespace Mmit\NewSmile\CommandParam;
+namespace Mmit\NewSmile\CommandVariable;
+
+use Mmit\NewSmile\CommandVariable\Regexp;
 
 class Date extends Regexp
 {
@@ -11,7 +13,7 @@ class Date extends Regexp
         $this->setRegexp('/^' . static::$dateRegexpBody . '$/');
     }
 
-    protected function formatValue($value)
+    public function formatValue($value)
     {
         if(($value instanceof \DateTime) || ($value instanceof \Bitrix\Main\Type\Date))
         {
@@ -35,5 +37,10 @@ class Date extends Regexp
     public static function getRegexpBody()
     {
         return static::$dateRegexpBody;
+    }
+
+    public function getTypeName()
+    {
+        return 'дата';
     }
 }

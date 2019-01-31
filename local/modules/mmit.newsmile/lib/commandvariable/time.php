@@ -1,7 +1,9 @@
 <?
 
 
-namespace Mmit\NewSmile\CommandParam;
+namespace Mmit\NewSmile\CommandVariable;
+
+use Mmit\NewSmile\CommandVariable\Regexp;
 
 class Time extends Regexp
 {
@@ -15,5 +17,10 @@ class Time extends Regexp
     public static function getRegexpBody()
     {
         return static::$timeRegexpBody;
+    }
+
+    public function getTypeName()
+    {
+        return 'время';
     }
 }

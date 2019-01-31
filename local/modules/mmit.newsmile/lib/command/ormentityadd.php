@@ -4,9 +4,9 @@
 namespace Mmit\NewSmile\Command;
 
 use Bitrix\Main\Diag\Debug;
-use Mmit\NewSmile\CommandParam\Date;
-use Mmit\NewSmile\CommandParam\DateTime;
-use Mmit\NewSmile\CommandParam\Time;
+use Mmit\NewSmile\CommandVariable\Date;
+use Mmit\NewSmile\CommandVariable\DateTime;
+use Mmit\NewSmile\CommandVariable\Time;
 use Mmit\NewSmile\Error;
 use Mmit\NewSmile\Helpers;
 use Mmit\NewSmile\PatientCardTable;
@@ -33,7 +33,7 @@ abstract class OrmEntityAdd extends OrmEntityWrite
 
     public function getParamsMap()
     {
-        return array_filter(parent::getParamsMap(), function(\Mmit\NewSmile\CommandParam\Base $param)
+        return array_filter(parent::getParamsMap(), function(\Mmit\NewSmile\CommandVariable\Base $param)
         {
             return ($param->getCode() != 'id');
         });

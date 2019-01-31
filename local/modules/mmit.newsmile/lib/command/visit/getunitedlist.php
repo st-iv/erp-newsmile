@@ -152,21 +152,11 @@ class GetUnitedList extends Base
     public function getParamsMap()
     {
         return [
-            new NewSmile\CommandParam\Integer(
-                'offset',
-                'смещение выборки от начала',
-                '',
-                false,
-                0
+            new NewSmile\CommandVariable\Integer('offset', 'смещение выборки от начала', false, 0
             ),
-            new NewSmile\CommandParam\Integer('limit', 'ограничение количества'),
-            new NewSmile\CommandParam\Bool('is_active', 'флаг выборки только будущих приемов'),
-            new NewSmile\CommandParam\String(
-                'order',
-                'порядок сортировки',
-                    'asc - по возрастанию даты, desc - по убыванию даты',
-                false,
-                'asc'
+            new NewSmile\CommandVariable\Integer('limit', 'ограничение количества'),
+            new NewSmile\CommandVariable\Bool('is_active', 'флаг выборки только будущих приемов'),
+            new NewSmile\CommandVariable\String('order', 'порядок сортировки', false, 'asc'
             )
         ];
     }

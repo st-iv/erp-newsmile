@@ -69,7 +69,7 @@ class Schedule extends React.PureComponent
                                       data={this.state.calendarData}
                                       initialDate={this.props.initialDate}
                                       onSelect={this.handleSelectedDates.bind(this)}
-                                      load={this.loadCalendar.bind(this)}
+                                      load={this.loisEmptyObjectadCalendar.bind(this)}
                             />
                         </div>
                     </div>

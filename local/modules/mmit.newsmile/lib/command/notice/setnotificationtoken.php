@@ -28,17 +28,9 @@ class SetNotificationToken extends Base
     public function getParamsMap()
     {
         return [
-            new CommandParam\String(
-                'notification_token',
-                'токен для получения уведомлений',
-                'Токен конкретного экземпляра мобильного приложения',
-                true
+            new \Mmit\NewSmile\CommandVariable\String('notification_token', 'токен для получения уведомлений', true
             ),
-            (new CommandParam\Enum(
-                'device',
-                'тип устройства',
-                '',
-                true
+            (new \Mmit\NewSmile\CommandVariable\Enum('device', 'тип устройства', true
             ))->setVariants(['android', 'ios'])
         ];
     }
