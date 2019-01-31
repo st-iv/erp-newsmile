@@ -8,7 +8,5 @@ sitemap*.xml
 /upload/
 /local/templates/newsmile/node_modules/
 local/templates/newsmile/webpack.config.js
-local/templates/newsmile/package.json
-local/templates/newsmile/package-lock.json
 composer.phar
 
