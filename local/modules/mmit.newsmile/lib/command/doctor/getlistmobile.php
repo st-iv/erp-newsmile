@@ -4,9 +4,11 @@ namespace Mmit\NewSmile\Command\Doctor;
 
 use Bitrix\Main\Entity\IntegerField;
 use Mmit\NewSmile\Command\Base;
+use Mmit\NewSmile\Command\ResultFormat;
 use Mmit\NewSmile\CommandVariable\ArrayParam;
 use Mmit\NewSmile\CommandVariable\Bool;
 use Mmit\NewSmile\CommandVariable\Integer;
+use Mmit\NewSmile\CommandVariable\Object;
 use Mmit\NewSmile\CommandVariable\String;
 use Mmit\NewSmile\DoctorSpecializationTable;
 use Mmit\NewSmile\DoctorTable;
@@ -18,6 +20,41 @@ class GetListMobile extends Base
     public function getDescription()
     {
         return 'Возвращает информацию о врачах в особом формате для мобильных приложений';
+    }
+
+    public function getParamsMap()
+    {
+        return [
+            new Integer('offset', 'смещение выборки от начала'),
+            new Integer('limit', 'ограничение количества'),
+            new String('sort_by', 'поле для сортировки'),
+            new String('sort_order', 'направление сортировки'),
+            (new ArrayParam(
+                'select',
+                'поля для выборки',
+                false,
+                ['NAME', 'LAST_NAME', 'SECOND_NAME', 'ID']
+            ))->setContentType(
+                new String('', '', true)
+            )->setOperations('read-full-info'),
+            new Bool('get-schedule', 'флаг запроса расписания', false, false),
+            new Bool('get-specialization', 'флаг запроса специальности', false, false),
+            new ArrayParam('ids', 'id врачей для выборки')
+        ];
+    }
+
+    public function getResultFormat()
+    {
+        return new ResultFormat([
+            new Integer('total_count', 'общее количество записей', true),
+            (new ArrayParam('list', 'список врачей, информация по каждому врачу зависит от параметра select', true))->setContentType(
+                (new Object('', '', true))->setShape([
+                    new String('specialization', 'название специализации врача, если был указан флаг get-specialization'),
+                    new String('specialization_code', 'код специализации врача, если был указан флаг get-specialization'),
+                    new Object('work_schedule', 'информация по расписанию, если был указан флаг get-schedule')
+                ])->setFlexible(true)
+            )
+        ]);
     }
 
     protected function doExecute()
@@ -121,20 +158,5 @@ class GetListMobile extends Base
         }
 
         return $specializations;
-    }
-
-    public function getParamsMap()
-    {
-        return [
-            new Integer('offset', 'смещение выборки от начала'),
-            new Integer('limit', 'ограничение количества'),
-            new String('sort_by', 'поле для сортировки'),
-            new String('sort_order', 'направление сортировки'),
-            (new ArrayParam('select', 'направление сортировки', false, ['NAME', 'LAST_NAME', 'SECOND_NAME', 'ID']
-            ))->setOperations('read-full-info'),
-            new Bool('get-schedule', 'флаг запроса расписания', false, false),
-            new Bool('get-specialization', 'флаг запроса специальности', false, false),
-            new ArrayParam('ids', 'id врачей для выборки')
-        ];
     }
 }

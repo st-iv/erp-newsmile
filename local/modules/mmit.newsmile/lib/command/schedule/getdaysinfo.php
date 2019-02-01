@@ -3,24 +3,96 @@
 
 namespace Mmit\NewSmile\Command\Schedule;
 
-use Bitrix\Main\Diag\Debug;
 use Mmit\NewSmile\Command\Base;
 use Mmit\NewSmile\WorkChairTable;
 use Mmit\NewSmile;
 use Mmit\NewSmile\Date;
 use Mmit\NewSmile\Command;
-use Bitrix\Main\ORM\Query\Query;
-use Bitrix\Main\DB;
-use Bitrix\Main\ORM\Fields\ExpressionField;
+use Mmit\NewSmile\CommandVariable;
+use Mmit\NewSmile\CommandVariable\Object;
+use Mmit\NewSmile\CommandVariable\Time;
+use Mmit\NewSmile\CommandVariable\String;
+use Mmit\NewSmile\CommandVariable\Integer;
+use Mmit\NewSmile\CommandVariable\ArrayParam;
 
 class GetDaysInfo extends Base
 {
-    protected static $name = 'Получить расписание на день';
-    
     protected $timeFrom;
     protected $timeTo;
-
     protected $patientsIds;
+
+    public function getDescription()
+    {
+        return 'Возвращает детальную информацию по расписанию на указанные даты.';
+    }
+
+    public function getResultFormat()
+    {
+        return new Command\ResultFormat([
+            (new Object('timeLimits', 'Время начала и время окончания работы клиники', true))->setShape([
+                new Time('start', 'Время начала работы', true),
+                new Time('end', 'Время окончания работы', true)
+            ]),
+            new Integer('curServerTimestamp', 'timestamp текущего времени на сервере', true),
+            (new Object('commands', 'Информация о доступных командах', true))->setShape([
+                (new ArrayParam('<код сущности>', 'коды доступных комманд', true))->setContentType(
+                    new String('', '')
+                )
+            ]),
+            (new Object('patients', 'информация о пациентах, записанных на выбранные дни',true))->setShape([
+                (new Object('<id пациента>', 'информация о пациенте', true))->setShape([
+                    new Integer('id', 'id', true),
+                    new String('name', 'имя', true),
+                    new String('lastName', 'фамилия', true),
+                    new String('secondName', 'отчество', true),
+                    new String('phone', 'телефон', true),
+                    new String('cardNumber', 'номер карты', true),
+                    new String('age', 'возраст', true),
+                ])
+            ]),
+            (new Object('days', 'расписание на запрошенные дни', true))->setShape([
+                (new Object('<дата дня>', 'информация о дне', true))->setShape([
+                    new String('dateTitle', 'заголовок дня (число и день недели)', true),
+                    new CommandVariable\Bool('isCurDay', 'является текущим днём', true),
+                    (new ArrayParam('schedule', 'расписание на каждое кресло', true))->setContentType(
+                        (new Object('', '', true))->setShape([
+                            (new Object('chair', 'информация о кресле', true))->setShape([
+                                new Integer('id', 'id', true),
+                                new String('name', 'название', true)
+                            ]),
+                            (new ArrayParam('intervals', 'интервалы расписания', true))->setContentType(
+                                (new Object('', '', true))->setShape([
+                                    new Integer('DOCTOR_ID', 'id врача', true),
+                                    new Time('TIME_START', 'начальное время интервала', true),
+                                    new Time('TIME_END', 'конечное время интервала', true),
+                                ])
+                            ),
+                            (new Object('visits', 'приёмы', true))->setShape([
+                                (new Object('<начальное время приёма>', 'информация о приёме', true))->setShape([
+                                    new Integer('ID', 'id приёма', true),
+                                    new Integer('DOCTOR_ID', 'id врача', true),
+                                    new Integer('PATIENT_ID', 'id пациента', true),
+                                    new Integer('WORK_CHAIR_ID', 'id кресла', true),
+                                    new Time('TIME_START', 'начальное время приёма', true),
+                                    new Time('TIME_END', 'конечное время приёма', true),
+                                    new String('STATUS', 'код статуса приёма', true),
+                                ])
+                            ])
+                        ])
+                    )
+                ])
+            ])
+        ]);
+    }
+
+    public function getParamsMap()
+    {
+        return [
+            (new ArrayParam('dates', 'даты запрашиваемых дней', false, [date('Y-m-d')]))->setContentType(
+                new NewSmile\CommandVariable\Date('', '')
+            )
+        ];
+    }
 
     protected function doExecute()
     {
@@ -76,13 +148,6 @@ class GetDaysInfo extends Base
         }
 
         $this->result['patients'] = $this->getPatients($patientsIds);
-    }
-
-    public function getParamsMap()
-    {
-        return [
-            new NewSmile\CommandVariable\ArrayParam('dates', 'даты', false, [date('Y-m-d')])
-        ];
     }
 
     protected function getSchedule()
@@ -190,8 +255,7 @@ class GetDaysInfo extends Base
                 'PATIENT_ID',
                 'DOCTOR_ID',
                 'STATUS',
-                'WORK_CHAIR_ID',
-                'DATE_START'
+                'WORK_CHAIR_ID'
             )
         ));
 

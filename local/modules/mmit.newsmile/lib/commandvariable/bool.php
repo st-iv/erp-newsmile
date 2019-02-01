@@ -20,7 +20,7 @@ class Bool extends Base
         return $value;
     }
 
-    protected function getPrintValue($value)
+    public function getPrintValue($value)
     {
         return ($value ? 'true' : 'false');
     }
@@ -28,5 +28,10 @@ class Bool extends Base
     public function getTypeName()
     {
         return 'булево';
+    }
+
+    public function getTypeNameGenitive()
+    {
+        return 'булевых значений';
     }
 }

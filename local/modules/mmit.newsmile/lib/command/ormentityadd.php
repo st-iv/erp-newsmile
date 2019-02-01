@@ -4,8 +4,11 @@
 namespace Mmit\NewSmile\Command;
 
 use Bitrix\Main\Diag\Debug;
+use Bitrix\Main\Entity\IntegerField;
 use Mmit\NewSmile\CommandVariable\Date;
 use Mmit\NewSmile\CommandVariable\DateTime;
+use Mmit\NewSmile\CommandVariable\Integer;
+use Mmit\NewSmile\CommandVariable\Object;
 use Mmit\NewSmile\CommandVariable\Time;
 use Mmit\NewSmile\Error;
 use Mmit\NewSmile\Helpers;
@@ -39,5 +42,12 @@ abstract class OrmEntityAdd extends OrmEntityWrite
         });
     }
 
-
+    public function getResultFormat()
+    {
+        return new ResultFormat([
+            (new Object('primary', 'первичный ключ добавленной записи', true))->setShape([
+                new Integer('id', 'как правило, именно id является первичным ключом')
+            ])->setFlexible(true)
+        ]);
+    }
 }

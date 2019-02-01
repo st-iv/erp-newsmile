@@ -16,4 +16,14 @@ class String extends Base
     {
         return 'строка';
     }
+
+    public function getTypeNameGenitive()
+    {
+        return 'строк';
+    }
+
+    public function getPrintValue($value)
+    {
+        return '"' . $value . '"';
+    }
 }

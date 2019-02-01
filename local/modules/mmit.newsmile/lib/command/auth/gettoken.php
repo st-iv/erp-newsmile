@@ -6,7 +6,8 @@ use Mmit\NewSmile\CommandVariable\String;
 use Mmit\NewSmile\Sms,
     Mmit\NewSmile\Config,
     Mmit\NewSmile\Error,
-    Mmit\NewSmile\Command;
+    Mmit\NewSmile\Command,
+    Mmit\NewSmile\CommandVariable;
 
 class GetToken extends Base
 {
@@ -18,7 +19,10 @@ class GetToken extends Base
     public function getResultFormat()
     {
         return new Command\ResultFormat([
-            //new CommandResult\Field()
+            new String('token', 'авторизационный токен', true),
+            new String('name', 'имя пользователя', true),
+            new String('lastName', 'фамилия пользователя', true),
+            new String('secondName', 'отчество пользователя', true),
         ]);
     }
 

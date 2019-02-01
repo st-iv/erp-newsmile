@@ -23,4 +23,9 @@ class Time extends Regexp
     {
         return 'время';
     }
+
+    public function getTypeNameGenitive()
+    {
+        return 'времени';
+    }
 }

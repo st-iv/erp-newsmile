@@ -6,38 +6,77 @@ use Mmit\NewSmile\CommandVariable;
 
 class TemplateHelper
 {
-    public static function getResultFieldHtml(CommandVariable\Base $field, $eol = ',<br>&emsp;&emsp;')
+    public static function getObjectFieldHtml(CommandVariable\Base $field)
     {
-        return  '<span class="field-code">' . $field->getCode() . '</span>' . ': ' . static::getFieldValueHtml($field) . $eol;
+        $bComma = !($field instanceof CommandVariable\Object);
+
+        return  '
+            <div class="result-object__field">
+                <div class="field-code">' . htmlspecialchars($field->getCode()) . '</div>' . '<div class="field-value ' . ($bComma ? 'field-value--with-comma' : '') . '">' . static::getFieldValueHtml($field) . '</div>
+            </div>
+        ';
     }
 
     protected static function getSimpleFieldValueHtml(CommandVariable\Base $field)
     {
         return sprintf(
-            '<span class="field-value"><%s, (%s%s)></span>',
+            '%s, (%s%s)',
             $field->getDescription(),
             $field->getTypeName(),
             $field->isRequired() ? '' : ', не обязательное'
         );
     }
 
-    protected static function getObjectFieldValueHtml(CommandVariable\Object $field)
+    protected static function getObjectFieldValueHtml(CommandVariable\Object $field, $bWithDescription = true)
     {
-        $result = [];
+        $result = '';
+        $shape = $field->getShape();
 
-        foreach ($field->getShape() as $childField)
+        if($shape)
         {
-            $result[] = static::getResultFieldHtml($childField);
+            foreach ($shape as $childField)
+            {
+                $result .= static::getObjectFieldHtml($childField);
+            }
+
+            if($field->isFlexible())
+            {
+                $result .= '<div class="result-object__field">...</div>';
+            }
+
+            $result = '
+            <div class="result-object">' .
+                $result .
+            '</div>';
         }
 
-        return sprintf('%s{<br>%s}', static::getSimpleFieldValueHtml($field), implode(',<br>', $result));
+
+        if($bWithDescription)
+        {
+            $result = static::getSimpleFieldValueHtml($field) . $result;
+        }
+
+        return $result;
+    }
+
+    public static function getArrayFieldValueHtml(CommandVariable\ArrayParam $field, $bWithDescription = true)
+    {
+        $result = $bWithDescription ? static::getSimpleFieldValueHtml($field) : '';
+        $contentType = $field->getContentType();
+
+        if(($contentType instanceof CommandVariable\Object) && $contentType->getShape())
+        {
+            $result .= '<div class="result-array">' . static::getObjectFieldValueHtml($contentType, false) . '</div>';
+        }
+
+        return $result;
     }
 
     protected static function getFieldValueHtml(CommandVariable\Base $field)
     {
         if($field instanceof CommandVariable\ArrayParam)
         {
-
+            $result = static::getArrayFieldValueHtml($field);
         }
         elseif($field instanceof CommandVariable\Object)
         {

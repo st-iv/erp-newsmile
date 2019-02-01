@@ -10,6 +10,11 @@ use Mmit\NewSmile\PatientCardTable;
 
 class Edit extends OrmEntityEdit
 {
+    public function getDescription()
+    {
+        return 'Изменяет карту пациента';
+    }
+
     protected function getOrmEntity()
     {
         return PatientCardTable::getEntity();

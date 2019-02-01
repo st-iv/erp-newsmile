@@ -16,4 +16,9 @@ class Phone extends Base
     {
         return 'телефон';
     }
+
+    public function getTypeNameGenitive()
+    {
+        return 'телефонов';
+    }
 }

@@ -3,10 +3,11 @@
 namespace Mmit\NewSmile\Command;
 
 use Bitrix\Main\Diag\Debug;
+use Bitrix\Main\Entity\IntegerField;
 use Bitrix\Main\ORM\Entity;
 use Bitrix\Main\Type\Date;
 use Bitrix\Main\Type\DateTime;
-use Mmit\NewSmile\CommandParam;
+use Mmit\NewSmile\CommandVariable;
 use Mmit\NewSmile\Error;
 use Mmit\NewSmile\Helpers;
 
@@ -100,15 +101,22 @@ abstract class OrmGetList extends OrmRead
     public function getParamsMap()
     {
         return [
-            new \Mmit\NewSmile\CommandVariable\ArrayParam('filter', 'фильтр'
-            ),
-            new \Mmit\NewSmile\CommandVariable\ArrayParam('select', 'поля для выборки'
-            ),
-            new \Mmit\NewSmile\CommandVariable\ArrayParam('order', 'порядок сортировки'
-            ),
-            new \Mmit\NewSmile\CommandVariable\Integer('limit', 'ограничение по количеству'),
-            new \Mmit\NewSmile\CommandVariable\Bool('countTotal', 'флаг подсчета количества', false, false
-            )
+            new CommandVariable\Object('filter', 'фильтр'),
+            new CommandVariable\ArrayParam('select', 'поля для выборки'),
+            new CommandVariable\Object('order', 'порядок сортировки'),
+            new CommandVariable\Integer('limit', 'ограничение по количеству'),
+            new CommandVariable\Integer('offset', 'смещение от начала выборки'),
+            new CommandVariable\Bool('countTotal', 'флаг подсчета количества', false, false)
         ];
+    }
+
+    public function getResultFormat()
+    {
+        return new ResultFormat([
+            new CommandVariable\Integer('count', 'общее количество записей (без учёта limit и offset)'),
+            (new CommandVariable\ArrayParam('list', 'список записей', true))->setContentType(
+                new CommandVariable\Object('', '')
+            )
+        ]);
     }
 }

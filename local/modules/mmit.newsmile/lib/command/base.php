@@ -229,7 +229,15 @@ abstract class Base
 
         if(preg_match_all('/\\\\([A-Za-z0-9]+)/', static::class, $matches))
         {
-            $code = Helpers::getSnakeCase(array_slice($matches[1], $offset, 1)[0], false, '-');
+            $rawCode = array_slice($matches[1], $offset, 1)[0];
+            if($bCommand)
+            {
+                $code = Helpers::getSnakeCase($rawCode, false, '-');
+            }
+            else
+            {
+                $code = strtolower($rawCode);
+            }
         }
 
         return $code;

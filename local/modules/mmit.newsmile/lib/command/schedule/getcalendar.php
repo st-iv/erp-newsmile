@@ -46,7 +46,7 @@ class GetCalendar extends Command\Base
                     new CommandVariable\Bool('isAvailable', 'На день составлено расписание', true),
                     new CommandVariable\Bool('isCurrent', 'День является текущим', true),
                     new CommandVariable\Bool('isEmpty', 'День является пустым', true),
-                    new CommandVariable\Integer('patientsCount', 'Количество запсанных пациентов', true),
+                    new CommandVariable\Integer('patientsCount', 'Количество записанных пациентов', true),
                 ])
             ]),
         ]);

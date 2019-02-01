@@ -2,6 +2,7 @@
 
 namespace Mmit\NewSmile\Command\Auth;
 
+use Mmit\NewSmile\Command\ResultFormat;
 use Mmit\NewSmile\CommandVariable\String;
 use Mmit\NewSmile\Sms;
 use Mmit\NewSmile\Error;
@@ -41,5 +42,12 @@ class SendCode extends Base
         return [
             new String('phone', 'телефон', true)
         ];
+    }
+
+    public function getResultFormat()
+    {
+        return new ResultFormat([
+            new String('code', 'код подтверждения, только в режиме тестирования')
+        ]);
     }
 }

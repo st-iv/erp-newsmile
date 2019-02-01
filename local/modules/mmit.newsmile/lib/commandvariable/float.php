@@ -15,4 +15,9 @@ class Float extends Base
     {
         return 'число';
     }
+
+    public function getTypeNameGenitive()
+    {
+        return 'чисел';
+    }
 }

@@ -16,4 +16,9 @@ class Integer extends Base
     {
         return 'целое число';
     }
+
+    public function getTypeNameGenitive()
+    {
+        return 'целых чисел';
+    }
 }

@@ -1,6 +1,6 @@
 <?
 
-namespace Mmit\NewSmile\Command\Auth;
+namespace Mmit\NewSmile\Command\Command;
 
 use Mmit\NewSmile\Command\EntityDescriptor;
 
@@ -8,6 +8,6 @@ class Descriptor extends EntityDescriptor
 {
     public function getDescription()
     {
-        return 'Авторизация в системе';
+        return 'Команды';
     }
 }

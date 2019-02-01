@@ -11,7 +11,7 @@ class ArrayParam extends Base
     /**
      * @var Base
      */
-    protected $contentVariable;
+    protected $contentType;
 
     public function formatValue($value)
     {
@@ -23,24 +23,44 @@ class ArrayParam extends Base
         return $value;
     }
 
-    public function setContentVariable(Base $contentVariable)
+    public function setContentType(Base $contentType)
     {
-        $this->contentVariable = $contentVariable;
+        $this->contentType = $contentType;
         return $this;
     }
 
-    public function getContentVariable()
+    public function getContentType()
     {
-        return $this->contentVariable;
+        return $this->contentType;
     }
 
     public function getTypeName()
     {
-        return 'массив';
+        $result = 'массив';
+
+        if(isset($this->contentType))
+        {
+            $result .= ' ' . $this->contentType->getTypeNameGenitive();
+        }
+
+        return $result;
     }
 
-    protected function getPrintValue($value)
+    public function getTypeNameGenitive()
     {
+        return 'массивов';
+    }
+
+    public function getPrintValue($value)
+    {
+        if($this->contentType)
+        {
+            array_walk($value, function(&$item, $key)
+            {
+                $item = $this->contentType->getPrintValue($item);
+            });
+        }
+
         return '[' . implode(', ', $value) . ']';
     }
 }

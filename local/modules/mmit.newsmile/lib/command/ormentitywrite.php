@@ -124,9 +124,7 @@ abstract class OrmEntityWrite extends Base
         return new $class(
             $this->getParamNameByField($field),
             $field->getTitle(),
-            '',
-            $field->isRequired()/*,
-            $field->getDefaultValue()*/
+            $field->isRequired()
         );
     }
 

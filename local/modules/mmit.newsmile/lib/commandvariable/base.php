@@ -258,9 +258,9 @@ abstract class Base
         echo $this->getPrintValue($this->formatValue($value));
     }
 
-    protected function getPrintValue($value)
+    public function getPrintValue($value)
     {
-        echo $value;
+        return $value;
     }
 
     /**
@@ -284,4 +284,6 @@ abstract class Base
      * @return string
      */
     abstract public function getTypeName();
+
+    abstract public function getTypeNameGenitive();
 }

@@ -1,4 +1,6 @@
 <div class="container">
+    <a class="back-arrow" href="<?=$data['MAIN_PAGE_URL']?>"></a>
+
     <h1><?=$data['CODE']?></h1>
     <div class="row">
         <p><?=$data['DESCRIPTION']?></p>

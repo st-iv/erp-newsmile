@@ -8,9 +8,13 @@ use Mmit\NewSmile\PatientCardTable;
 
 class GetList extends OrmGetList
 {
+    public function getDescription()
+    {
+        return 'Получает список пациентов';
+    }
+
     protected function getOrmEntity()
     {
         return PatientCardTable::getEntity();
     }
-
 }

@@ -9,6 +9,6 @@ class Descriptor extends EntityDescriptor
 {
     public function getDescription()
     {
-        return 'Врач клиники';
+        return 'Врачи клиники';
     }
 }

@@ -34,7 +34,6 @@ class Documentator
         elseif (isset($entityCode))
         {
             $entitiesList = $this->getEntitiesList($entityCode);
-
             $this->includeTemplate('entity', array_merge($entitiesList[0], [
                 'COMMANDS' => $this->getCommandsList($entityCode),
                 'MAIN_PAGE_URL' => $this->baseDir . '/?help'
@@ -107,6 +106,7 @@ class Documentator
                  * @var Command\Base $command
                  */
                 if($reflector->isAbstract() || $entity != $class::getEntityCode()) continue;
+
 
                 $command = new $class([], null, true);
                 $commandCode = $command::getShortCode();

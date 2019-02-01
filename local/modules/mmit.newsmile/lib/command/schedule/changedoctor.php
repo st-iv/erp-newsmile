@@ -6,6 +6,7 @@ namespace Mmit\NewSmile\Command\Schedule;
 use Bitrix\Main\Diag\Debug;
 use Bitrix\Main\Type\DateTime;
 use Mmit\NewSmile\Command\Base;
+use Mmit\NewSmile\Command\ResultFormat;
 use Mmit\NewSmile\CommandVariable\Date;
 use Mmit\NewSmile\CommandVariable\Integer;
 use Mmit\NewSmile\CommandVariable\Time;
@@ -17,7 +18,15 @@ use Mmit\NewSmile\ScheduleTable;
 
 class ChangeDoctor extends Base
 {
-    protected static $name = 'Изменить врача';
+    public function getDescription()
+    {
+        return 'Назначает другого врача на указанный интервал расписания';
+    }
+
+    public function getResultFormat()
+    {
+        return new ResultFormat([]);
+    }
 
     protected function doExecute()
     {

@@ -30,6 +30,11 @@ class DateTime extends Regexp
 
     public function getTypeName()
     {
-        return 'Дата с временем';
+        return 'дата с временем';
+    }
+
+    public function getTypeNameGenitive()
+    {
+        return 'дат со временем';
     }
 }

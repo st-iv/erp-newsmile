@@ -10,6 +10,11 @@ use Mmit\NewSmile\PatientCardTable;
 
 class Add extends Command\OrmEntityAdd
 {
+    public function getDescription()
+    {
+        return 'Добавляет карту пациента';
+    }
+
     protected function getOrmEntity()
     {
         return PatientCardTable::getEntity();
@@ -17,7 +22,7 @@ class Add extends Command\OrmEntityAdd
 
     protected function filterField(Field $field)
     {
-        return true;
+        return $field->getName() != 'TIMESTAMP_X';
     }
 
 

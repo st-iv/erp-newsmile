@@ -43,4 +43,9 @@ class Date extends Regexp
     {
         return 'дата';
     }
+
+    public function getTypeNameGenitive()
+    {
+        return 'дат';
+    }
 }

@@ -14,6 +14,11 @@ class Any extends Base
 
     public function getTypeName()
     {
-        return 'любой';
+        return 'любой тип';
+    }
+
+    public function getTypeNameGenitive()
+    {
+        return 'любых значений';
     }
 }

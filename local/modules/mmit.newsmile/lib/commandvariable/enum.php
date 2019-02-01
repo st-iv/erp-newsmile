@@ -40,6 +40,11 @@ class Enum extends String
 
     public function getTypeName()
     {
-        return 'перечисление';
+        return 'перечисление ["' . implode('", "', $this->variants) . '"]';
+    }
+
+    public function getTypeNameGenitive()
+    {
+        return 'перечислений';
     }
 }

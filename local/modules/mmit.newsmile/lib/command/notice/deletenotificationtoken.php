@@ -4,11 +4,29 @@ namespace Mmit\NewSmile\Command\Notice;
 
 use Mmit\NewSmile\Application;
 use Mmit\NewSmile\Command\Base;
+use Mmit\NewSmile\Command\ResultFormat;
 use Mmit\NewSmile\CommandParam;
 use Mmit\NewSmile\Notice;
 
 class DeleteNotificationToken extends Base
 {
+    public function getDescription()
+    {
+        return 'Удаляет указанный токен уведомлений Firebase у текущего пользователя';
+    }
+
+    public function getParamsMap()
+    {
+        return [
+            new \Mmit\NewSmile\CommandVariable\String('notification_token', 'токен для получения уведомлений', true)
+        ];
+    }
+
+    public function getResultFormat()
+    {
+        return new ResultFormat([]);
+    }
+
     protected function doExecute()
     {
         $user = Application::getInstance()->getUser();
@@ -34,14 +52,5 @@ class DeleteNotificationToken extends Base
                 'UF_FIREBASE_TOKEN' => $firebaseTokens
             ]);
         }
-    }
-
-
-    public function getParamsMap()
-    {
-        return [
-            new \Mmit\NewSmile\CommandVariable\String('notification_token', 'токен для получения уведомлений', true
-            )
-        ];
     }
 }
