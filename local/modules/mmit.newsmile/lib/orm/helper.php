@@ -12,7 +12,7 @@ use Bitrix\Main\Loader;
 use Bitrix\Main\LoaderException;
 use Bitrix\Main\Type\Date;
 use Bitrix\Main\Type\DateTime;
-use Mmit\NewSmile\Config;
+use Mmit\NewSmile\CommandVariable;
 use Mmit\NewSmile;
 
 class Helper
@@ -214,6 +214,13 @@ class Helper
         }
 
         return $result;
+    }
+
+    public static function getFieldsDescriptionFormat($resultFieldCode, $resultFieldDescription)
+    {
+        /*return (new CommandVariable\Object($resultFieldCode, $resultFieldDescription, true))->setShape([
+            new CommandVariable\Object('<код поля>', '', )
+        ]);*/
     }
 
     /**

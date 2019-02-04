@@ -9,7 +9,11 @@ class Phone extends Base
 {
     public function formatValue($value)
     {
-        return Helpers::preparePhone($value);
+        $value = Helpers::preparePhone($value);
+        if(strlen($value) !== 11)
+        {
+            $this->sayBadValueFormat('11 цифр');
+        }
     }
 
     public function getTypeName()
@@ -20,5 +24,10 @@ class Phone extends Base
     public function getTypeNameGenitive()
     {
         return 'телефонов';
+    }
+
+    public function getTypeDescription()
+    {
+        return 'обязательно должен содержать ровно 11 цифр';
     }
 }

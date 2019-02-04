@@ -34,4 +34,9 @@ class Bool extends Base
     {
         return 'булевых значений';
     }
+
+    public function getTypeDescription()
+    {
+        return 'принимает значение true или false';
+    }
 }

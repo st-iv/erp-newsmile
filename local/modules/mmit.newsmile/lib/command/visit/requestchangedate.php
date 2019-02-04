@@ -13,7 +13,10 @@ use Mmit\NewSmile\Visit\ChangeDateRequestTable;
 
 class RequestChangeDate extends Base
 {
-    protected static $name = 'Запросить перенос приема';
+    public function getDescription()
+    {
+        return 'Запрашивает изменение даты приёма текущего пациента.';
+    }
 
     protected function doExecute()
     {

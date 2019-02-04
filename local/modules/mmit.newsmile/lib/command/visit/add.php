@@ -15,8 +15,12 @@ use Mmit\NewSmile\Visit\VisitTable;
 
 class Add extends OrmEntityAdd
 {
-    protected static $name = 'Записать пациента';
     protected $recordedPatients;
+
+    public function getDescription()
+    {
+        return 'Добавляет приём';
+    }
 
     protected function getOrmEntity()
     {

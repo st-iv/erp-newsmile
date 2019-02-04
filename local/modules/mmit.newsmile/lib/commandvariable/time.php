@@ -28,4 +28,9 @@ class Time extends Regexp
     {
         return 'времени';
     }
+
+    public function getTypeDescription()
+    {
+        return 'формат времени: HH:mm:SS, секунды указывать не обязательно';
+    }
 }

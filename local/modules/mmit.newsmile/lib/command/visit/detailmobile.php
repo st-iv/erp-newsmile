@@ -3,11 +3,36 @@
 namespace Mmit\NewSmile\Command\Visit;
 
 use Mmit\NewSmile\Command\Base;
+use Mmit\NewSmile\Command\ResultFormat;
+use Mmit\NewSmile\CommandVariable\ArrayParam;
 use Mmit\NewSmile\CommandVariable\Integer;
+use Mmit\NewSmile\CommandVariable\Object;
 use Mmit\NewSmile\Error;
 
 class DetailMobile extends Base
 {
+    public function getDescription()
+    {
+        return 'Получает детальную нформацию о приёме с указанным id для текущего пользователя (в особом формате для мобильных приложений)';
+    }
+
+    public function getResultFormat()
+    {
+        $getList = new GetListMobile([], null, true);
+
+        /**
+         * @var ArrayParam $listArray
+         */
+        $listArray = $getList->getResultFormat()->getField('list');
+
+        /**
+         * @var Object $listObject
+         */
+        $listObject = $listArray->getContentType();
+        $listObject->removeShapeFields(['timestamp', 'create_timestamp']);
+        return new ResultFormat($listObject->getShape());
+    }
+
     protected function doExecute()
     {
         $getListCommand = new GetListMobile([

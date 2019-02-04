@@ -12,8 +12,12 @@ use Mmit\NewSmile\Command;
 
 class GetUnitedList extends Base
 {
-    protected static $name = 'Получить список приемов';
     protected static $dateChangeRequests;
+
+    public function getDescription()
+    {
+        return 'Возвращает объединённый список приёмов и заявок на приём';
+    }
 
     protected function doExecute()
     {

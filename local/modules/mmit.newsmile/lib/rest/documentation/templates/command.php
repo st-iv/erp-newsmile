@@ -35,28 +35,31 @@ use \Mmit\NewSmile\CommandVariable;
                             /**
                              * @var \Mmit\NewSmile\CommandVariable\Base $param
                              */
-
+                            $typeDescription = $param->getTypeDescription();
+                            $typeTooltipAttrs = ($typeDescription ? 'class="with-tooltip" data-toggle="tooltip" title="' . $typeDescription . '"' : '');
                             ?>
                             <td><?=$param->getCode() . ($param->isRequired() ? '*' : '')?></td>
                             <td><?=$param->getDescription()?></td>
                             <td>
-                                <?
-                                if($param instanceof CommandVariable\ArrayParam)
-                                {
-                                    if($param->getContentType() instanceof CommandVariable\Object)
+                                <span <?=$typeTooltipAttrs?>>
+                                    <?
+                                    if($param instanceof CommandVariable\ArrayParam)
                                     {
-                                        echo Documentation\TemplateHelper::getArrayFieldValueHtml($param, false);
+                                        if($param->getContentType() instanceof CommandVariable\Object)
+                                        {
+                                            echo Documentation\TemplateHelper::getArrayFieldValueHtml($param, false);
+                                        }
+                                        else
+                                        {
+                                            echo $param->getTypeName();
+                                        }
                                     }
                                     else
                                     {
                                         echo $param->getTypeName();
                                     }
-                                }
-                                else
-                                {
-                                    echo $param->getTypeName();
-                                }
-                                ?>
+                                    ?>
+                                </span>
                             </td>
                             <td>
                                 <?

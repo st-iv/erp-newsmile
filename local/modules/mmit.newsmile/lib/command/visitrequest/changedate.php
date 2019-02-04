@@ -13,6 +13,11 @@ use Mmit\NewSmile\CommandParam;
 
 class ChangeDate extends Base
 {
+    public function getDescription()
+    {
+        return 'Изменяет дату заявки на приём, при этом снимает флаг near_future.';
+    }
+
     protected function doExecute()
     {
         $visitRequest = VisitRequestTable::getByPrimary($this->params['id'], [

@@ -9,6 +9,11 @@ use Mmit\NewSmile;
 
 class GetListMobile extends Base
 {
+    public function getDescription()
+    {
+        return 'Возвращает список заявок на приём в специальном формате для мобильных приложений';
+    }
+
     protected function doExecute()
     {
         $filter = [

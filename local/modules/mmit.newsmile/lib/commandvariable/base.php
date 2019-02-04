@@ -65,6 +65,11 @@ abstract class Base
         return $this->description;
     }
 
+    public function getTypeDescription()
+    {
+        return '';
+    }
+
     /**
      * @param string|array $operations
      *

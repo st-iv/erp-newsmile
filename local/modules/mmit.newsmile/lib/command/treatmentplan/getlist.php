@@ -5,14 +5,34 @@ namespace Mmit\NewSmile\Command\TreatmentPlan;
 
 use Mmit\NewSmile\Application;
 use Mmit\NewSmile\Command\Base;
+use Mmit\NewSmile\Command\ResultFormat;
+use Mmit\NewSmile\CommandVariable\ArrayParam;
 use Mmit\NewSmile\CommandVariable\Integer;
 use Mmit\NewSmile\CommandVariable\String;
 use Mmit\NewSmile\Helpers;
 use Mmit\NewSmile\TreatmentPlanTable;
+use Mmit\NewSmile\CommandVariable;
 
 class GetList extends Base
 {
-    protected static $name = 'Получить список планов лечения';
+    public function getDescription()
+    {
+        return 'Получает список планов лечения текущего пользователя. Текущий пользователь должен быть пациентом.';
+    }
+
+    public function getResultFormat()
+    {
+        return new ResultFormat([
+            (new ArrayParam('plan_list', 'список планов лечения', true))->setContentType(
+                (new CommandVariable\Object('', '', true))->setShape([
+                    new Integer('id', 'id', true),
+                    new String('name', 'название', true),
+                    new String('date_create', 'дата создания в формате DD.MM.YYYY', true)
+                ])
+            ),
+            new Integer('total_count', 'общее количество планов лечения', true)
+        ]);
+    }
 
     protected function doExecute()
     {

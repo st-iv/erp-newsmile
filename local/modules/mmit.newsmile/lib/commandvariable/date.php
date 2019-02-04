@@ -2,8 +2,6 @@
 
 namespace Mmit\NewSmile\CommandVariable;
 
-use Mmit\NewSmile\CommandVariable\Regexp;
-
 class Date extends Regexp
 {
     protected static $dateRegexpBody = '[0-9]{4}-[0-9]{2}-[0-9]{2}';
@@ -47,5 +45,10 @@ class Date extends Regexp
     public function getTypeNameGenitive()
     {
         return 'дат';
+    }
+
+    public function getTypeDescription()
+    {
+        return 'формат даты: YYYY-MM-DD';
     }
 }

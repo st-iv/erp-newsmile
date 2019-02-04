@@ -105,3 +105,8 @@ h2 {
 .param-table .result-array, .param-table .result-object {
     font-size: 0.8rem;
 }
+
+.with-tooltip {
+    display: inline-block;
+    border-bottom: 1px dotted #000;
+}

@@ -37,4 +37,9 @@ class DateTime extends Regexp
     {
         return 'дат со временем';
     }
+
+    public function getTypeDescription()
+    {
+        return 'формат: YYYY-MM-DD HH:mm:SS';
+    }
 }

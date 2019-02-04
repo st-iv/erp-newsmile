@@ -20,13 +20,17 @@ use Mmit\NewSmile\ScheduleTable;
 
 class GetAddFormInfo extends Base
 {
+    public function getDescription()
+    {
+        return 'Возвращает информацию для формы добавления приёма';
+    }
+
     protected function doExecute()
     {
         /* список врачей, которых можно назначить на приём, а также назначенного врача */
 
         $changeDoctorCommand = new Command\Schedule\ChangeDoctor($this->params, 'doctorId');
-
-            $doctors = [];
+        $doctors = [];
 
         if($changeDoctorCommand->isAvailable())
         {

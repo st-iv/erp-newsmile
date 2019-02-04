@@ -7,11 +7,38 @@ use Bitrix\Main\Type\DateTime;
 use Mmit\NewSmile\Command\Base;
 use Mmit\NewSmile;
 use Mmit\NewSmile\Command\Doctor;
+use Mmit\NewSmile\CommandVariable;
 
 class GetListMobile extends Base
 {
     protected static $dateChangeRequests;
     protected static $doctorsCache;
+
+    public function getDescription()
+    {
+        return 'Получает список приёмов для текущего пользователя в особом формате для мобильного приложения';
+    }
+
+    public function getResultFormat()
+    {
+        return new NewSmile\Command\ResultFormat([
+            (new NewSmile\CommandVariable\ArrayParam('list', 'список приёмов', true))->setContentType(
+                (new NewSmile\CommandVariable\Object('', '', true))->setShape([
+                    new CommandVariable\Integer('id', 'id', true),
+                    new CommandVariable\String('date', 'дата приёма в формате DD.MM.YYYY HH:mm:SS', true),
+                    new CommandVariable\Bool('is_active', 'флаг активности приёма', true),
+                    new CommandVariable\String('status', 'название статуса приёма', true),
+                    new CommandVariable\String('status_code', 'код статуса приёма', true),
+                    new CommandVariable\Bool('is_date_change_queried', 'флаг запроса на перенос приёма', true),
+                    new CommandVariable\String('new_date', 'новая дата', true),
+                    new CommandVariable\Integer('timestamp', 'timestamp времени начала приёма', true),
+                    new CommandVariable\String('date_create', 'дата создания приёма в формате DD.MM.YYYY HH:mm:SS', true),
+                    new CommandVariable\Integer('create_timestamp', 'timestamp времени создания приёма', true),
+                    new CommandVariable\Object('doctor', 'информация о враче', true)
+                ])
+            )
+        ]);
+    }
 
     protected function doExecute()
     {

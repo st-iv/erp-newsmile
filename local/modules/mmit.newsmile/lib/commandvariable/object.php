@@ -53,6 +53,19 @@ class Object extends Base
         return $this->shape;
     }
 
+    public function removeShapeFields(array $codes)
+    {
+        $codes = array_flip($codes);
+
+        foreach ($this->shape as $index => $field)
+        {
+            if(isset($codes[$field->getCode()]))
+            {
+                unset($this->shape[$index]);
+            }
+        }
+    }
+
     /**
      * @return mixed
      */

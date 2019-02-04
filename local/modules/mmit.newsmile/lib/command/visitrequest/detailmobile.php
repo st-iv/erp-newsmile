@@ -8,6 +8,11 @@ use Mmit\NewSmile\Error;
 
 class DetailMobile extends Base
 {
+    public function getDescription()
+    {
+        return 'Возвращает информацию по заявке на приём с указаным id для текущего пользователя, который должен быть пациентом.';
+    }
+
     protected function doExecute()
     {
         $getListCommand = new GetListMobile([

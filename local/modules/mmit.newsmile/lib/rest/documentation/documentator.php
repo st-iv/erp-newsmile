@@ -66,7 +66,7 @@ class Documentator
 
                 if(!$filterByCode || ($filterByCode == $entityCode))
                 {
-                    $result[] = [
+                    $result[$entityCode] = [
                         'CODE' => $entityCode,
                         'DESCRIPTION' => $descriptor->getDescription(),
                         'URL' => $this->getEntityUrl($entityCode)
@@ -80,7 +80,9 @@ class Documentator
             }
         }
 
-        return $result;
+        ksort($result);
+
+        return array_values($result);
     }
 
     /**
@@ -126,14 +128,14 @@ class Documentator
                         $commandInfo['PARAMS'] = $command->getParamsMap();
                     }
 
-                    $result[] = $commandInfo;
+                    $result[$commandCode] = $commandInfo;
                 }
             }
         }
 
-        sort($result);
+        ksort($result);
 
-        return $result;
+        return array_values($result);
     }
 
     /**

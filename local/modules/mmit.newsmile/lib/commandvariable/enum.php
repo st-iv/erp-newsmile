@@ -47,4 +47,9 @@ class Enum extends String
     {
         return 'перечислений';
     }
+
+    public function getTypeDescription()
+    {
+        return 'принимает только те строковые значения, которые перечислены в указанном списке';
+    }
 }

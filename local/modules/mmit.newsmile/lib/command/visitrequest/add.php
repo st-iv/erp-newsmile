@@ -11,8 +11,14 @@ use Mmit\NewSmile\Visit\VisitRequestTable;
 
 class Add extends OrmEntityAdd
 {
+    public function getDescription()
+    {
+        return 'Добавляет новую завявку на приём от имени текущего пользователя, помимо id возвращает остальные поля созданной заявки, в тч позицию в общем списке заявок и приёмов (visit/get-united-list)';
+    }
+
     protected function doExecute()
     {
+        /* родительский метод добавляет новую заявку на приём в бд */
         parent::doExecute();
 
         /* уведомление администратору о новой заявке на приём */
