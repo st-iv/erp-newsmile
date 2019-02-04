@@ -1,6 +1,6 @@
 <?
 
-namespace Mmit\NewSmile\CommandParam;
+namespace Mmit\NewSmile\CommandVariable;
 
 use Bitrix\Main\Diag\Debug;
 use Mmit\NewSmile\Application;
@@ -9,13 +9,20 @@ use Mmit\NewSmile\Error;
 abstract class Base
 {
     protected $code;
-    protected $title;
     protected $description;
-    protected $required;
+    protected $isRequired;
     protected $defaultValue;
     protected $operations;
     protected $rawValue;
     protected $defaultEntityCode;
+
+    /**
+     * @return null
+     */
+    public function getDefaultValue()
+    {
+        return $this->defaultValue;
+    }
 
     /**
      * @var \Mmit\NewSmile\Command\Base
@@ -26,25 +33,41 @@ abstract class Base
      * Base constructor.
      *
      * @param string $code - символьнйы код параметра, рекомендуется задавать в camelCase
-     * @param string $title - название параметра
      * @param string $description - описание параметра, выводится в описании rest API
      * @param bool $required - является ли параметр обязательным
      * @param null $defaultValue - значение параметра по умолчанию. Для обязательных параметров указывать значение по умолчанию нет смысла
      */
-    public function __construct($code, $title, $description = '', $required = false, $defaultValue = null)
+    public function __construct($code, $description, $required = false, $defaultValue = null)
     {
         $this->code = $code;
-        $this->title = $title;
         $this->description = $description;
-        $this->required = $required;
+        $this->isRequired = $required;
         $this->defaultValue = $defaultValue;
 
         $this->init();
     }
 
+    /**
+     * @return bool
+     */
+    public function isRequired()
+    {
+        return $this->isRequired;
+    }
+
     public function getCode()
     {
         return $this->code;
+    }
+
+    public function getDescription()
+    {
+        return $this->description;
+    }
+
+    public function getTypeDescription()
+    {
+        return '';
     }
 
     /**
@@ -96,7 +119,7 @@ abstract class Base
                 );
             }
         }
-        elseif($this->required)
+        elseif($this->isRequired)
         {
             throw new Error(
                 'Не указано значение обязательного параметра ' . $this->code . ($this->command ? ' команды ' . $this->command->getCode() : ''),
@@ -131,13 +154,6 @@ abstract class Base
      */
     final public function getFormattedValue()
     {
-        if($this->getCode() == 'filter')
-        {
-            Debug::writeToFile($this->defaultValue);
-            Debug::writeToFile($this->getCode());
-        }
-
-
         if(isset($this->rawValue) && ($this->rawValue !== ''))
         {
             $result = $this->formatValue($this->rawValue);
@@ -242,6 +258,16 @@ abstract class Base
         throw new Error($message, 'PARAM_VALUE_BAD_FORMAT');
     }
 
+    final public function printValue($value)
+    {
+        echo $this->getPrintValue($this->formatValue($value));
+    }
+
+    public function getPrintValue($value)
+    {
+        return $value;
+    }
+
     /**
      * Инициализирует параметр
      */
@@ -256,5 +282,13 @@ abstract class Base
      *
      * @return mixed
      */
-    abstract protected function formatValue($value);
+    abstract public function formatValue($value);
+
+    /**
+     * Возвращает название типа параметров команд
+     * @return string
+     */
+    abstract public function getTypeName();
+
+    abstract public function getTypeNameGenitive();
 }

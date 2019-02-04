@@ -8,6 +8,19 @@ use Mmit\NewSmile\CommandParam;
 
 class SetNotificationToken extends Base
 {
+    public function getDescription()
+    {
+        return 'Добавляет токен для получения push-уведомлений через Firebase';
+    }
+
+    public function getParamsMap()
+    {
+        return [
+            new \Mmit\NewSmile\CommandVariable\String('notification_token', 'токен для получения уведомлений', true),
+            (new \Mmit\NewSmile\CommandVariable\Enum('device', 'тип устройства', true))->setVariants(['android', 'ios'])
+        ];
+    }
+
     protected function doExecute()
     {
         $user = Application::getInstance()->getUser();
@@ -23,23 +36,5 @@ class SetNotificationToken extends Base
                 'UF_FIREBASE_TOKEN' => $firebaseTokens
             ]);
         }
-    }
-
-    public function getParamsMap()
-    {
-        return [
-            new CommandParam\String(
-                'notification_token',
-                'токен для получения уведомлений',
-                'Токен конкретного экземпляра мобильного приложения',
-                true
-            ),
-            (new CommandParam\Enum(
-                'device',
-                'тип устройства',
-                '',
-                true
-            ))->setVariants(['android', 'ios'])
-        ];
     }
 }

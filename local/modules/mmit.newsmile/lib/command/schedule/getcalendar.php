@@ -10,6 +10,7 @@ use Mmit\NewSmile\Command;
 use Mmit\NewSmile\ScheduleTable;
 use Mmit\NewSmile;
 use Bitrix\Main\Entity\ExpressionField;
+use Mmit\NewSmile\CommandVariable;
 
 class GetCalendar extends Command\Base
 {
@@ -22,6 +23,34 @@ class GetCalendar extends Command\Base
      * @var \DateTime
      */
     protected $dateTo;
+
+    public function getDescription()
+    {
+        return 'Возвращает общую информацию по расписанию клиники: 
+                общее количество рабочих часов, количество занятых часов и количество записанных пациентов';
+    }
+
+    public function getResultFormat()
+    {
+        return new Command\ResultFormat([
+            new CommandVariable\Date('dateFrom', 'Начальная дата выборки', true),
+            new CommandVariable\Date('dateTo', 'Конечная дата выборки', true),
+            (new CommandVariable\Object(
+                'dateData',
+                'Информация по всем дням расписания, попавшим в выборку',
+                true
+            ))->setShape([
+                (new CommandVariable\Object('<дата>', 'Информация по конкретному дню'))->setShape([
+                    new CommandVariable\Integer('generalTime', 'Доступное время (в минутах)', true),
+                    new CommandVariable\Integer('engagedTime', 'Занятое время (в минутах)', true),
+                    new CommandVariable\Bool('isAvailable', 'На день составлено расписание', true),
+                    new CommandVariable\Bool('isCurrent', 'День является текущим', true),
+                    new CommandVariable\Bool('isEmpty', 'День является пустым', true),
+                    new CommandVariable\Integer('patientsCount', 'Количество записанных пациентов', true),
+                ])
+            ]),
+        ]);
+    }
 
     protected function doExecute()
     {
@@ -210,19 +239,14 @@ class GetCalendar extends Command\Base
     public function getParamsMap()
     {
         return [
-            new NewSmile\CommandParam\Date('dateFrom', 'начальная дата', '', false, date('Y-m-d')),
-            new NewSmile\CommandParam\Date('dateTo', 'конечная дата'),
-            new NewSmile\CommandParam\Integer(
-                'weeksCount',
-                'количество запрашиваемых недель',
-                '',
-                false,
-                8
+            new NewSmile\CommandVariable\Date('dateFrom', 'начальная дата', false, date('Y-m-d')),
+            new NewSmile\CommandVariable\Date('dateTo', 'конечная дата'),
+            new NewSmile\CommandVariable\Integer('weeksCount', 'количество запрашиваемых недель', false, 8
             ),
-            new NewSmile\CommandParam\Time('timeFrom', 'начальное время выборки'),
-            new NewSmile\CommandParam\Time('timeTo', 'конечное время выборки'),
-            new NewSmile\CommandParam\Integer('doctor', 'id врача'),
-            new NewSmile\CommandParam\String('specialization', 'код специальности')
+            new NewSmile\CommandVariable\Time('timeFrom', 'начальное время выборки'),
+            new NewSmile\CommandVariable\Time('timeTo', 'конечное время выборки'),
+            new NewSmile\CommandVariable\Integer('doctor', 'id врача'),
+            new NewSmile\CommandVariable\String('specialization', 'код специальности')
         ];
     }
 }

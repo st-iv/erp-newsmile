@@ -16,10 +16,21 @@ use Mmit\NewSmile\Search\Manager as SearchManager;
 
 class Search extends Base
 {
-    protected static $name = 'Поиск';
-    protected static $description = 'Осуществляет поиск по всем проиндексированным сущностям системы.';
-
     protected $categoriesEntitiesMap = null;
+
+    public function getDescription()
+    {
+        return '
+            Осуществляет поиск по всем проиндексированным сущностям системы, либо по отдельным поисковым категориям,
+            указанным в параметрах команды';
+    }
+
+    /*public function getResultFormat()
+    {
+        return new Command\ResultFormat([
+
+        ]);
+    }*/
 
     protected function doExecute()
     {
@@ -212,19 +223,11 @@ class Search extends Base
     public function getParamsMap()
     {
         return [
-            new CommandParam\String('query', 'поисковая строка', '', true),
-            new CommandParam\Bool('useLanguageGuess', 'флаг восстановления раскладки', '', false, true),
-            new CommandParam\ArrayParam(
-                'categories',
-                'категории',
-                'коды категорий поиска',
-                false,
-                []
+            new \Mmit\NewSmile\CommandVariable\String('query', 'поисковая строка', true),
+            new \Mmit\NewSmile\CommandVariable\Bool('useLanguageGuess', 'флаг восстановления раскладки', false, true),
+            new \Mmit\NewSmile\CommandVariable\ArrayParam('categories', 'категории', false, []
             ),
-            new CommandParam\ArrayParam(
-                'select',
-                'дополнительные поля результатов для выборки',
-                'Формат объекта: <код категории> => <массив полей для выборки>'
+            new \Mmit\NewSmile\CommandVariable\ArrayParam('select', 'дополнительные поля результатов для выборки'
             )
         ];
     }

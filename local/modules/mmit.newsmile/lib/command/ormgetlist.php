@@ -3,10 +3,11 @@
 namespace Mmit\NewSmile\Command;
 
 use Bitrix\Main\Diag\Debug;
+use Bitrix\Main\Entity\IntegerField;
 use Bitrix\Main\ORM\Entity;
 use Bitrix\Main\Type\Date;
 use Bitrix\Main\Type\DateTime;
-use Mmit\NewSmile\CommandParam;
+use Mmit\NewSmile\CommandVariable;
 use Mmit\NewSmile\Error;
 use Mmit\NewSmile\Helpers;
 
@@ -100,29 +101,22 @@ abstract class OrmGetList extends OrmRead
     public function getParamsMap()
     {
         return [
-            new CommandParam\ArrayParam(
-                'filter',
-                'фильтр',
-                    'объект со значениями полей для фильтрации'
-            ),
-            new CommandParam\ArrayParam(
-                'select',
-                'поля для выборки',
-                'массив кодов полей для выборки'
-            ),
-            new CommandParam\ArrayParam(
-                'order',
-                'порядок сортировки',
-                'Объект, содержащий в качестве ключей имена полей, а в качестве значений - направление сортировки'
-            ),
-            new CommandParam\Integer('limit', 'ограничение по количеству'),
-            new CommandParam\Bool(
-                'countTotal',
-                'флаг подсчета количества',
-                'Если установлен, вернёт общее количество записей по ключу count',
-                false,
-                false
-            )
+            new CommandVariable\Object('filter', 'фильтр'),
+            new CommandVariable\ArrayParam('select', 'поля для выборки'),
+            new CommandVariable\Object('order', 'порядок сортировки'),
+            new CommandVariable\Integer('limit', 'ограничение по количеству'),
+            new CommandVariable\Integer('offset', 'смещение от начала выборки'),
+            new CommandVariable\Bool('countTotal', 'флаг подсчета количества', false, false)
         ];
+    }
+
+    public function getResultFormat()
+    {
+        return new ResultFormat([
+            new CommandVariable\Integer('count', 'общее количество записей (без учёта limit и offset)'),
+            (new CommandVariable\ArrayParam('list', 'список записей', true))->setContentType(
+                new CommandVariable\Object('', '')
+            )
+        ]);
     }
 }

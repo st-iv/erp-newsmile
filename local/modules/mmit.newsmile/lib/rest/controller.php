@@ -13,12 +13,13 @@ use Mmit\NewSmile\Command;
 
 class Controller
 {
-    const TEMPLATES_FOLDER = __DIR__ . '/templates';
     protected $request;
+    protected $baseDir;
 
-    public function __construct()
+    public function __construct($baseDir)
     {
         $this->request = Application::getInstance()->getContext()->getRequest();
+        $this->baseDir = Helpers::getRelPath($baseDir);
     }
 
     public function process()
@@ -28,19 +29,13 @@ class Controller
 
         if(isset($this->request['help']))
         {
-            $this->renderHelpPage($entity, $command);
+            $documentator = new NewSmile\Rest\Documentation\Documentator($this->baseDir);
+            $documentator->renderHelpPage($entity, $command);
         }
         else
         {
             $this->executeCommand($entity, $command);
         }
-    }
-
-    protected function renderHelpPage($entity, $command)
-    {
-        // подумать как можно это реализовать
-        include static::TEMPLATES_FOLDER . '/header.php';
-        include static::TEMPLATES_FOLDER . '/footer.php';
     }
 
     protected function executeCommand($entity, $command)
@@ -161,5 +156,15 @@ class Controller
         ];
 
         UrlRewriter::add(Config::getSiteId(), $actionsRule);
+    }
+
+    public static function getEntityUrl($baseDir, $entityCode)
+    {
+        return sprintf('%s/%s/', $baseDir, $entityCode);
+    }
+
+    public static function getCommandUrl($baseDir, $entityCode, $commandCode)
+    {
+        return sprintf('%s/%s/%s/', $baseDir, $entityCode, $commandCode);
     }
 }

@@ -1,6 +1,6 @@
 <?
 
-namespace Mmit\NewSmile\CommandParam;
+namespace Mmit\NewSmile\CommandVariable;
 
 use Mmit\NewSmile\Error;
 
@@ -14,7 +14,7 @@ class Enum extends String
         return $this;
     }
 
-    protected function formatValue($value)
+    public function formatValue($value)
     {
         if(!$this->variants)
         {
@@ -38,4 +38,18 @@ class Enum extends String
         return $value;
     }
 
+    public function getTypeName()
+    {
+        return 'перечисление ["' . implode('", "', $this->variants) . '"]';
+    }
+
+    public function getTypeNameGenitive()
+    {
+        return 'перечислений';
+    }
+
+    public function getTypeDescription()
+    {
+        return 'принимает только те строковые значения, которые перечислены в указанном списке';
+    }
 }

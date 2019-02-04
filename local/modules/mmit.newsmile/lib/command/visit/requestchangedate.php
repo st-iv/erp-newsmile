@@ -6,14 +6,17 @@ namespace Mmit\NewSmile\Command\Visit;
 use Bitrix\Main\Type\DateTime;
 use Mmit\NewSmile\Application;
 use Mmit\NewSmile\Command\Base;
-use Mmit\NewSmile\CommandParam\String;
+use Mmit\NewSmile\CommandVariable\String;
 use Mmit\NewSmile\Notice;
 use Mmit\NewSmile\Error;
 use Mmit\NewSmile\Visit\ChangeDateRequestTable;
 
 class RequestChangeDate extends Base
 {
-    protected static $name = 'Запросить перенос приема';
+    public function getDescription()
+    {
+        return 'Запрашивает изменение даты приёма текущего пациента.';
+    }
 
     protected function doExecute()
     {
@@ -62,8 +65,8 @@ class RequestChangeDate extends Base
     public function getParamsMap()
     {
         return [
-            new \Mmit\NewSmile\CommandParam\DateTime('new_date', 'новая дата приема', ''),
-            new String('id', 'id приема', '', true),
+            new \Mmit\NewSmile\CommandVariable\DateTime('new_date', 'новая дата приема'),
+            new String('id', 'id приема', true),
         ];
     }
 }

@@ -4,7 +4,7 @@ namespace Mmit\NewSmile\Command;
 
 
 use Bitrix\Main\ORM\Entity;
-use Mmit\NewSmile\CommandParam\Any;
+use Mmit\NewSmile\CommandVariable\Any;
 use Mmit\NewSmile\Helpers;
 
 abstract class OrmDetail extends OrmRead
@@ -33,10 +33,7 @@ abstract class OrmDetail extends OrmRead
     public function getParamsMap()
     {
         return [
-            new Any('primary',
-                'первичный ключ',
-                'Первичный ключ - объект со значениями если первичный ключ составляют несколько полей, иначе просто значение ключа',
-                true
+            new Any('primary', 'первичный ключ', true
             ),
             OrmGetList::getParam('select')
         ];

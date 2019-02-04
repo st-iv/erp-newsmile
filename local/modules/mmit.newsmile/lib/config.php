@@ -9,6 +9,8 @@ Loc::loadMessages(__FILE__);
 
 class Config
 {
+    const REST_API_ROOT_DIR = '/rest/api';
+
     public static function getScheduleStartTime()
     {
         return Option::get('mmit.newsmile', 'start_time_schedule', '09:00');

@@ -1,0 +1,112 @@
+.container {
+    margin-top: 30px;
+}
+
+.navigation-link {
+    font-size: 14px;
+}
+.navigation {
+    margin: 20px 0;
+}
+.navigation-item {
+    padding-left: 0;
+}
+
+.result-object {
+    font-family: SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace;
+}
+
+.result-object:before {
+    content: '{';
+    display: block;
+}
+
+.result-object:after {
+    content: '}';
+    display: block;
+}
+
+.result-object .field-value {
+    color: #000;
+}
+
+.result-object__field {
+    display: flex;
+    margin-left: 20px;
+}
+
+.result-object__field .field-code {
+    color: #e83e8c;
+}
+.result-object__field .field-code:after {
+    display: inline;
+    content: ':';
+    color: #000;
+}
+.result-object__field .field-value {
+    color: #000;
+    margin-left: 10px;
+}
+
+.result-object__field .field-value--with-comma:after {
+    content: ',';
+    display: inline;
+}
+
+.result-object .result-object__field:not(:last-child) .result-object:after {
+    content: '},';
+}
+
+.result-object__field:last-child > .field-value:after {
+    display: none;
+}
+
+.result-array {
+    padding-left: 20px;
+}
+
+.result-array:before {
+    content: '[';
+    display: block;
+    margin-left: -20px;
+}
+
+.result-array:after {
+    content: ']';
+    display: block;
+    margin-left: -20px;
+}
+
+h1 {
+    margin-bottom: 15px;
+}
+
+h2 {
+    margin: 50px 0 20px;
+    font-size: 1.5rem;
+}
+
+.back-arrow {
+    display: block;
+}
+
+.back-arrow, .back-arrow:hover {
+    text-decoration: none;
+}
+
+.back-arrow:before {
+    content: '←';
+    display: inline;
+    font-size: 30px;
+    font-weight: bold;
+    line-height: 10px;
+}
+
+.param-table .result-array, .param-table .result-object {
+    font-size: 0.8rem;
+}
+
+.with-tooltip {
+    display: inline-block;
+    border-bottom: 1px dotted #000;
+}

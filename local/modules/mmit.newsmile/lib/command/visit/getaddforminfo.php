@@ -6,10 +6,10 @@ use Bitrix\Main\Diag\Debug;
 use Bitrix\Main\Type\DateTime;
 use Mmit\NewSmile\Command\Base;
 use Mmit\NewSmile\Command;
-use Mmit\NewSmile\CommandParam\ArrayParam;
-use Mmit\NewSmile\CommandParam\Date;
-use Mmit\NewSmile\CommandParam\Integer;
-use Mmit\NewSmile\CommandParam\Time;
+use Mmit\NewSmile\CommandVariable\ArrayParam;
+use Mmit\NewSmile\CommandVariable\Date;
+use Mmit\NewSmile\CommandVariable\Integer;
+use Mmit\NewSmile\CommandVariable\Time;
 use Mmit\NewSmile\Config;
 use Mmit\NewSmile\DoctorTable;
 use Mmit\NewSmile\Error;
@@ -20,13 +20,17 @@ use Mmit\NewSmile\ScheduleTable;
 
 class GetAddFormInfo extends Base
 {
+    public function getDescription()
+    {
+        return 'Возвращает информацию для формы добавления приёма';
+    }
+
     protected function doExecute()
     {
         /* список врачей, которых можно назначить на приём, а также назначенного врача */
 
         $changeDoctorCommand = new Command\Schedule\ChangeDoctor($this->params, 'doctorId');
-
-            $doctors = [];
+        $doctors = [];
 
         if($changeDoctorCommand->isAvailable())
         {
@@ -140,23 +144,13 @@ class GetAddFormInfo extends Base
     public function getParamsMap()
     {
         return [
-            new Time('timeStart', 'начальное время приема', '', true),
-            new Time('timeEnd', 'конечное время приема', '', true),
-            new Date('date', 'дата приема', '', true),
-            new Integer('chairId', 'id кресла', '', true),
-            new ArrayParam(
-                'fields',
-                'используемые поля',
-                'коды полей карточки пациента, по которым нужно вернуть информацию',
-                false,
-                []
+            new Time('timeStart', 'начальное время приема', true),
+            new Time('timeEnd', 'конечное время приема', true),
+            new Date('date', 'дата приема', true),
+            new Integer('chairId', 'id кресла', true),
+            new ArrayParam('fields', 'используемые поля', false, []
             ),
-            new Integer(
-                'patientsCount',
-                'количество пациентов',
-                '',
-                false,
-                20
+            new Integer('patientsCount', 'количество пациентов', false, 20
             ),
             Command\PatientCard\GetList::getParam('select')->setCode('patientsSelect')
         ];

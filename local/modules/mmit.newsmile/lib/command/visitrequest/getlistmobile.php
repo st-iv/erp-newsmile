@@ -9,6 +9,11 @@ use Mmit\NewSmile;
 
 class GetListMobile extends Base
 {
+    public function getDescription()
+    {
+        return 'Возвращает список заявок на приём в специальном формате для мобильных приложений';
+    }
+
     protected function doExecute()
     {
         $filter = [
@@ -83,7 +88,7 @@ class GetListMobile extends Base
     {
         return [
             GetUnitedList::getParam('is_active'),
-            new NewSmile\CommandParam\ArrayParam('ids', 'список id запрашиваемых заявок на приём', '', false, [])
+            new NewSmile\CommandVariable\ArrayParam('ids', 'список id запрашиваемых заявок на приём', false, [])
         ];
     }
 }

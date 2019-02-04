@@ -29,7 +29,6 @@ abstract class Base
     private $isReflectionMode;
 
     protected static $name = '';
-    protected static $description = '';
 
     public function __construct($params = [], $varyParam = null, $isReflectionMode = false)
     {
@@ -46,7 +45,7 @@ abstract class Base
         foreach (static::getParamsMap() as $param)
         {
             /**
-             * @var \Mmit\NewSmile\CommandParam\Base $param
+             * @var \Mmit\NewSmile\CommandVariable\Base $param
              */
             
             $paramCode = $param->getCode();
@@ -203,12 +202,12 @@ abstract class Base
         return static::getEntityCode() . '/' . static::getShortCode();
     }
 
-    protected static function getShortCode()
+    public static function getShortCode()
     {
         return static::getCodeFor(true);
     }
 
-    protected static function getEntityCode()
+    public static function getEntityCode()
     {
         return static::getCodeFor(false);
     }
@@ -218,6 +217,11 @@ abstract class Base
         return __NAMESPACE__;
     }
 
+    public static function getBaseCommandsPath()
+    {
+        return __DIR__;
+    }
+
     private static function getCodeFor($bCommand)
     {
         $offset = $bCommand ? -1 : -2;
@@ -225,7 +229,15 @@ abstract class Base
 
         if(preg_match_all('/\\\\([A-Za-z0-9]+)/', static::class, $matches))
         {
-            $code = Helpers::getSnakeCase(array_slice($matches[1], $offset, 1)[0], false, '-');
+            $rawCode = array_slice($matches[1], $offset, 1)[0];
+            if($bCommand)
+            {
+                $code = Helpers::getSnakeCase($rawCode, false, '-');
+            }
+            else
+            {
+                $code = strtolower($rawCode);
+            }
         }
 
         return $code;
@@ -313,7 +325,7 @@ abstract class Base
         foreach($this->getParamsMap() as $param)
         {
             /**
-             * @var \Mmit\NewSmile\CommandParam\Base $param
+             * @var \Mmit\NewSmile\CommandVariable\Base $param
              */
 
             $result[$param->getCode()] = $param;
@@ -324,10 +336,11 @@ abstract class Base
 
     /**
      * Возвращает объект параметра с указанным кодом (т.е. именно сам параметр, а не его значение)
+     *
      * @param string $code
      *
      * @throws Error
-     * @return \Mmit\NewSmile\CommandParam\Base
+     * @return \Mmit\NewSmile\CommandVariable\Base
      */
     protected static function getParam($code)
     {
@@ -360,4 +373,23 @@ abstract class Base
      * @return array
      */
     abstract public function getParamsMap();
+
+
+    /**
+     * Возвращает описание команды
+     * @return string
+     */
+    public function getDescription()
+    {
+        return ''; // TODO it must be abstract
+    }
+
+    /**
+     * Возвращает описание формата результата в виде массива
+     * @return array
+     */
+    public function getResultFormat()
+    {
+        return []; // TODO it must be abstract
+    }
 }

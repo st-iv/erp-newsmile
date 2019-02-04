@@ -7,10 +7,13 @@ use Mmit\NewSmile\DoctorTable;
 
 class GetList extends OrmGetList
 {
-    protected static $name = 'Получить список врачей';
-
     protected function getOrmEntity()
     {
         return DoctorTable::getEntity();
+    }
+
+    public function getDescription()
+    {
+        return 'Возвращает информацию о врачах';
     }
 }

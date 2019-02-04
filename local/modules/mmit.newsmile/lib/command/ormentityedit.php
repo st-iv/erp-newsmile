@@ -36,4 +36,9 @@ abstract class OrmEntityEdit extends OrmEntityWrite
             );
         }
     }
+
+    public function getResultFormat()
+    {
+        return new ResultFormat([]);
+    }
 }

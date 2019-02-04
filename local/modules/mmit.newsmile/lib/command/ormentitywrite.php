@@ -22,15 +22,15 @@ abstract class OrmEntityWrite extends Base
         foreach ($this->params as $paramKey => $paramValue)
         {
             /**
-             * @var \Mmit\NewSmile\CommandParam\Base $param
+             * @var \Mmit\NewSmile\CommandVariable\Base $param
              */
             $param = $paramsMap[$paramKey];
 
-            if($param instanceof CommandParam\Date)
+            if($param instanceof \Mmit\NewSmile\CommandVariable\Date)
             {
                 $paramValue = new \Bitrix\Main\Type\Date($paramValue, 'Y-m-d');
             }
-            elseif($param instanceof CommandParam\DateTime)
+            elseif($param instanceof \Mmit\NewSmile\CommandVariable\DateTime)
             {
                 $paramValue = new \Bitrix\Main\Type\DateTime($paramValue, 'Y-m-d H:i:s');
             }
@@ -64,7 +64,7 @@ abstract class OrmEntityWrite extends Base
     /**
      * @param ScalarField $field
      *
-     * @return CommandParam\Base
+     * @return \Mmit\NewSmile\CommandVariable\Base
      * @throws Error
      */
     protected function getParamByField(ScalarField $field)
@@ -73,7 +73,7 @@ abstract class OrmEntityWrite extends Base
 
         if($field->isSerialized())
         {
-            $class = CommandParam\ArrayParam::class;
+            $class = \Mmit\NewSmile\CommandVariable\ArrayParam::class;
         }
         else
         {
@@ -82,37 +82,37 @@ abstract class OrmEntityWrite extends Base
             switch($fieldType)
             {
                 case 'integer':
-                    $class = CommandParam\Integer::class;
+                    $class = \Mmit\NewSmile\CommandVariable\Integer::class;
                     break;
 
                 case 'float':
-                    $class = CommandParam\Float::class;
+                    $class = \Mmit\NewSmile\CommandVariable\Float::class;
                     break;
 
                 case 'string':
                 case 'text':
                 case 'enum':
-                    $class = CommandParam\String::class;
+                    $class = \Mmit\NewSmile\CommandVariable\String::class;
                     break;
 
                 case 'multipleenum':
-                    $class = CommandParam\ArrayParam::class;
+                    $class = \Mmit\NewSmile\CommandVariable\ArrayParam::class;
                     break;
 
                 case 'date':
-                    $class = CommandParam\Date::class;
+                    $class = \Mmit\NewSmile\CommandVariable\Date::class;
                     break;
 
                 case 'datetime':
-                    $class = CommandParam\DateTime::class;
+                    $class = \Mmit\NewSmile\CommandVariable\DateTime::class;
                     break;
 
                 case 'boolean':
-                    $class = CommandParam\Bool::class;
+                    $class = \Mmit\NewSmile\CommandVariable\Bool::class;
                     break;
 
                 case 'phone':
-                    $class = CommandParam\Phone::class;
+                    $class = \Mmit\NewSmile\CommandVariable\Phone::class;
                     break;
 
                 default:
@@ -124,9 +124,7 @@ abstract class OrmEntityWrite extends Base
         return new $class(
             $this->getParamNameByField($field),
             $field->getTitle(),
-            '',
-            $field->isRequired()/*,
-            $field->getDefaultValue()*/
+            $field->isRequired()
         );
     }
 
