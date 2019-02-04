@@ -7,6 +7,5 @@ sitemap*.xml
 /webstat/
 /upload/
 /local/templates/newsmile/node_modules/
-local/templates/newsmile/webpack.config.js
 composer.phar
 
