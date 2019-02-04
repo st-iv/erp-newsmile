@@ -18,6 +18,8 @@ abstract class OrmRead extends Base
 {
     protected function prepareRow($row)
     {
+        $row = $this->doPrepareRow($row);
+
         foreach ($row as $fieldName => &$fieldValue)
         {
             if($fieldValue instanceof DateTime)
@@ -33,6 +35,17 @@ abstract class OrmRead extends Base
         unset($fieldValue);
 
         return Helpers::camelCaseKeys($row, false);
+    }
+
+    /**
+     * Подготавливает массив строки таблицы перед преобразованием дат и ключей массива
+     * @param array $row
+     *
+     * @return array
+     */
+    protected function doPrepareRow(array $row)
+    {
+        return $row;
     }
 
     /**

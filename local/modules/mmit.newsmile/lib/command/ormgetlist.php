@@ -11,6 +11,11 @@ use Mmit\NewSmile\CommandVariable;
 use Mmit\NewSmile\Error;
 use Mmit\NewSmile\Helpers;
 
+/**
+ * Реализует команду - обёртку над методом getList ORM сущности.
+ * Class OrmGetList
+ * @package Mmit\NewSmile\Command
+ */
 abstract class OrmGetList extends OrmRead
 {
     // TODO нужно обязать дочерние классы детально описывать схему доступа к полям сущности
@@ -23,6 +28,8 @@ abstract class OrmGetList extends OrmRead
         $queryParams = $this->params;
         $queryParams['count_total'] = $queryParams['countTotal'];
         unset($queryParams['countTotal']);
+
+        $queryParams['filter'] = $this->modifyFilter($queryParams['filter']);
 
         $dbRows = $dataManagerClass::getList($queryParams);
 
@@ -37,6 +44,17 @@ abstract class OrmGetList extends OrmRead
                 $this->result['count'] = $dbRows->getCount();
             }
         }
+    }
+
+    /**
+     * Модифицирует фильтр, изначально заданный через параметр команды filter
+     * @param $filter
+     *
+     * @return mixed
+     */
+    protected function modifyFilter(array $filter)
+    {
+        return $filter;
     }
 
     protected function prepareParamValue($paramCode, $paramValue)
@@ -101,7 +119,7 @@ abstract class OrmGetList extends OrmRead
     public function getParamsMap()
     {
         return [
-            new CommandVariable\Object('filter', 'фильтр'),
+            new CommandVariable\Object('filter', 'фильтр', false, []),
             new CommandVariable\ArrayParam('select', 'поля для выборки'),
             new CommandVariable\Object('order', 'порядок сортировки'),
             new CommandVariable\Integer('limit', 'ограничение по количеству'),
