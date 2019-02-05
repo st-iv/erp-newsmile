@@ -22,7 +22,7 @@ class Add extends OrmEntityAdd
         return 'Добавляет приём';
     }
 
-    protected function getOrmEntity()
+    public function getOrmEntity()
     {
         return VisitTable::getEntity();
     }

@@ -13,7 +13,7 @@ class GetList extends OrmGetList
         return 'Получает список пациентов';
     }
 
-    protected function getOrmEntity()
+    public function getOrmEntity()
     {
         return PatientCardTable::getEntity();
     }

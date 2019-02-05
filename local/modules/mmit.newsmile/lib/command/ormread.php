@@ -14,7 +14,7 @@ use Bitrix\Main\Type\Date;
 use Bitrix\Main\Type\DateTime;
 use Mmit\NewSmile\Helpers;
 
-abstract class OrmRead extends Base
+abstract class OrmRead extends Base implements OrmCommand
 {
     protected function prepareRow($row)
     {
@@ -47,10 +47,4 @@ abstract class OrmRead extends Base
     {
         return $row;
     }
-
-    /**
-     * Возвращает Entity, с которой будет работать команда
-     * @return Entity
-     */
-    abstract protected function getOrmEntity();
 }

@@ -14,7 +14,7 @@ class GetList extends OrmGetList
         return 'Возвращает список уведомлений для текущего пользователя';
     }
 
-    protected function getOrmEntity()
+    public function getOrmEntity()
     {
         return NoticeTable::getEntity();
     }

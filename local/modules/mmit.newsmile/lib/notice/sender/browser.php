@@ -4,6 +4,7 @@
 namespace Mmit\NewSmile\Notice\Sender;
 
 use Bitrix\Main\Loader;
+use Mmit\NewSmile\Helpers;
 use Mmit\NewSmile\User;
 
 class Browser implements Sender
@@ -15,9 +16,7 @@ class Browser implements Sender
         \CPullStack::AddByUser($user->getBitrixId(), array(
             'module_id' => 'mmit.newsmile',
             'command' => 'add_notice',
-            'params' => array(
-                'ID' => $noticeData['ID']
-            )
+            'params' => Helpers::camelCaseKeys($noticeData, false)
         ));
     }
 }

@@ -11,7 +11,7 @@ use Mmit\NewSmile\Helpers;
 use Mmit\NewSmile\CommandParam;
 use Mmit\NewSmile\Orm\Helper;
 
-abstract class OrmEntityWrite extends Base
+abstract class OrmEntityWrite extends Base implements OrmCommand
 {
     protected function getFieldsValues()
     {
@@ -62,6 +62,7 @@ abstract class OrmEntityWrite extends Base
     }
 
     /**
+     * Возвращает объект переменной команды, построенный на основе поля ORM сущности
      * @param ScalarField $field
      *
      * @return \Mmit\NewSmile\CommandVariable\Base
@@ -138,12 +139,6 @@ abstract class OrmEntityWrite extends Base
     {
         return Helpers::getCamelCase($field->getName(), false);
     }
-
-    /**
-     * Возвращает Entity, с которой будет работать команда
-     * @return Entity
-     */
-    abstract protected function getOrmEntity();
 
     /**
      * Возвращает true для полей, к которым команда должна предоставить доступ

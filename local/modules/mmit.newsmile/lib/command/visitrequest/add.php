@@ -56,7 +56,7 @@ class Add extends OrmEntityAdd
         }
     }
 
-    protected function getOrmEntity()
+    public function getOrmEntity()
     {
         return VisitRequestTable::getEntity();
     }

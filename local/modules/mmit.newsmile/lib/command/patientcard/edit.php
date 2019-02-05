@@ -15,7 +15,7 @@ class Edit extends OrmEntityEdit
         return 'Изменяет карту пациента';
     }
 
-    protected function getOrmEntity()
+    public function getOrmEntity()
     {
         return PatientCardTable::getEntity();
     }

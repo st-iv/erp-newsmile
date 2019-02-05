@@ -7,7 +7,7 @@ use Mmit\NewSmile\DoctorTable;
 
 class GetList extends OrmGetList
 {
-    protected function getOrmEntity()
+    public function getOrmEntity()
     {
         return DoctorTable::getEntity();
     }

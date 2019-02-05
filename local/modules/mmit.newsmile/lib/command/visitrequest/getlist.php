@@ -12,7 +12,7 @@ class GetList extends OrmGetList
         return 'Возвращает список заявок на приём.';
     }
 
-    protected function getOrmEntity()
+    public function getOrmEntity()
     {
         return VisitRequestTable::getEntity();
     }

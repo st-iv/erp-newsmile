@@ -222,6 +222,25 @@ class Helpers
         return $result;
     }
 
+    /**
+     * Возвращает массив с ключами, переведенными в camelCase
+     * @param array $array
+     * @param bool $bUpper
+     * @param string $separator
+     *
+     * @return array
+     */
+    public static function snakeCaseKeys(array $array, $bUpper = true, $separator = '_')
+    {
+        $result = [];
+        foreach ($array as $key => $value)
+        {
+            $result[Helpers::getSnakeCase($key, $bUpper, $separator)] = $value;
+        }
+
+        return $result;
+    }
+
     public static function getSnakeCaseArray($array, $bUpper = true, $separator = '_')
     {
         array_walk($array, function(&$item) use ($bUpper, $separator)

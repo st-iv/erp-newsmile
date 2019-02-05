@@ -24,7 +24,7 @@ class GetGroupList extends Base
 
     public function getParamsMap()
     {
-        // TODO: Implement getParamsMap() method.
+        return [];
     }
 
 }

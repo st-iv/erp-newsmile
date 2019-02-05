@@ -15,7 +15,7 @@ class Add extends Command\OrmEntityAdd
         return 'Добавляет карту пациента';
     }
 
-    protected function getOrmEntity()
+    public function getOrmEntity()
     {
         return PatientCardTable::getEntity();
     }
