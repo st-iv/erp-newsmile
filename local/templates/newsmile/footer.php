@@ -1,7 +1,9 @@
 <?if(!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED !== true) die();?>
 <?
-$application = \Mmit\NewSmile\Application::getInstance();
-?>
+if($APPLICATION->GetCurDir() == '/')
+{
+    $application = \Mmit\NewSmile\Application::getInstance();
+    ?>
 
     </div>
 
@@ -9,6 +11,6 @@ $application = \Mmit\NewSmile\Application::getInstance();
     //\Bitrix\Main\Page\Asset::getInstance()->addJs('https://unpkg.com/babel-standalone@6/babel.min.js');
     //$APPLICATION->ShowProperty('REACT_COMPONENTS');
     $application->includeReact();
-    ?>
+}   ?>
 </body>
 </html>
