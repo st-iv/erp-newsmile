@@ -8,6 +8,11 @@ use Mmit\NewSmile\Notice;
 
 class GetGroupList extends Base
 {
+    public function getDescription()
+    {
+        return 'Получает список групп уведомлений';
+    }
+
     protected function doExecute()
     {
         $groups = Notice\Data\TypeTable::getEnumVariants('GROUP');
