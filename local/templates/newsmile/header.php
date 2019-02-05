@@ -27,8 +27,6 @@ $isNewTemplateVersion = ($APPLICATION->GetCurPage() == '/');
         $asset->addCss(SITE_TEMPLATE_PATH . '/css/style.css');
         $asset->addCss(SITE_TEMPLATE_PATH . '/build/css/main.css');
 
-        $asset->addCss(SITE_TEMPLATE_PATH . '/css/main.css');
-
         $asset->addJs(SITE_TEMPLATE_PATH . '/build/js/vendor.js');
         $asset->addJs(SITE_TEMPLATE_PATH . '/build/js/main.js');
 
@@ -48,9 +46,10 @@ $isNewTemplateVersion = ($APPLICATION->GetCurPage() == '/');
         $asset->addJs(SITE_TEMPLATE_PATH . '/js/ajax_load.js');
         $asset->addJs(SITE_TEMPLATE_PATH . '/js/jquery.magnific-popup.js');
         //$asset->addJs(SITE_TEMPLATE_PATH . '/js/popup.js');
-        $asset->addJs(SITE_TEMPLATE_PATH . '/js/main.js');
     }
 
+    $asset->addCss(SITE_TEMPLATE_PATH . '/css/main.css');
+    $asset->addJs(SITE_TEMPLATE_PATH . '/js/main.js');
     ?>
 </head>
 <body <?if(!$isNewTemplateVersion):?>data-sessid="<?=bitrix_sessid()?>" data-post-form-action="<?=POST_FORM_ACTION_URI?>"<?endif;?>>
