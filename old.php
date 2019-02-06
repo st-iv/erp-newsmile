@@ -11,7 +11,7 @@ $application = NewSmile\Application::getInstance();
 \Bitrix\Main\Loader::includeModule('mmit.newsmile');
 ?>
     <?
-    $application->renderReactComponent('App', [
+    $application->renderReactComponent('Schedule', [
         'calendar' => [
             'colorsScheme' => [
                 0 => array(
@@ -42,24 +42,7 @@ $application = NewSmile\Application::getInstance();
         'doctors' => new Command\Doctor\GetListMobile([
             'select' => ['ID', 'NAME', 'COLOR', 'LAST_NAME', 'SECOND_NAME'],
             'get-specialization' => true
-        ]),
-
-        'notices' => [
-            'noticeList' => new Command\Notice\GetList([
-                'limit' => 50,
-                'order' => [
-                    'id' => 'desc'
-                ],
-                'countTotal' => true
-            ]),
-            'noticeGroupList' => new Command\Notice\GetGroupList()
-        ],
-
-        'search' => [
-            'useLanguageGuess' => true,
-            'minQueryLength' => 3,
-            'topCount' => 200
-        ]
+        ])
     ]);
     ?>
 <?
