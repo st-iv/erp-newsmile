@@ -6,6 +6,34 @@ sitemap*.xml
 /bitrix/
 /webstat/
 /upload/
+
+# dependencies
 /local/templates/newsmile/node_modules/
+/local/templates/newsmile/erp_frontend/node_modules
+/local/templates/newsmile/erp_frontend/.pnp
+/local/templates/newsmile/erp_frontend/.pnp.js
+/local/templates/newsmile/erp_frontend/.idea
+
+# testing
+/local/templates/newsmile/erp_frontend/coverage
+/local/templates/newsmile/erp_frontend/.idea
+# production
+/local/templates/newsmile/erp_frontend/build
+
+# misc
+/local/templates/newsmile/erp_frontend/.DS_Store
+/local/templates/newsmile/erp_frontend/.env.local
+/local/templates/newsmile/erp_frontend/.env.development.local
+/local/templates/newsmile/erp_frontend/.env.test.local
+/local/templates/newsmile/erp_frontend/.env.production.local
+
+/local/templates/newsmile/erp_frontend/npm-debug.log*
+/local/templates/newsmile/erp_frontend/yarn-debug.log*
+/local/templates/newsmile/erp_frontend/yarn-error.log*
+
+/coverage
+/.idea
+# production
+/build
 composer.phar
 
