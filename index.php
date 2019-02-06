@@ -53,6 +53,12 @@ $application = NewSmile\Application::getInstance();
                 'countTotal' => true
             ]),
             'noticeGroupList' => new Command\Notice\GetGroupList()
+        ],
+
+        'search' => [
+            'useLanguageGuess' => true,
+            'minQueryLength' => 3,
+            'topCount' => 200
         ]
     ]);
     ?>
