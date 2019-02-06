@@ -13,6 +13,13 @@ export default class Contacts extends React.Component {
         })
     }
 
+    handleHide = (e) => {
+        e.preventDefault()
+        this.setState({
+            visible: false
+        })
+    }
+
     render () {
         const { visible } = this.state
         const contactsMore = this.props.data.map(function(item, index){
@@ -38,7 +45,16 @@ export default class Contacts extends React.Component {
                     !visible && <div className="header_drwnarr" onClick={this.handleReadMoreClck}></div>
                 }
                 {
-                    visible && <div className="place__listMore">{contactsMore}</div>
+                    visible && <div className="place__listMore">
+                        <div className="place__item">
+                            <span className="header_drwnarr header_drwnarrTop" onClick={this.handleHide}></span>
+                            <span>
+                                Иркутск
+                            Донская, 24/3
+                            </span>
+                        </div>
+                        {contactsMore}
+                    </div>
                 }
             </div>
         )

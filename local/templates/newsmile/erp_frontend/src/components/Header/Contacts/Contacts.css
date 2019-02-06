@@ -27,3 +27,7 @@
   border-bottom: 1px solid #727272;
   color: #fff;
 }
+
+.header_drwnarrTop {
+  transform: rotate(180deg);
+}
