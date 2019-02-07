@@ -6,9 +6,12 @@
 @import 'styles/fonts';
 @import 'styles/vendor';
 @import 'styles/base';
+// custom - постепенно распределить по компонентам
+// @import 'style';
+// @import 'main';
 // COMPONENTS
 // header
-@import 'components/Header/Header';
+// @import 'components/Header/Header';
 
 .App {
   text-align: center;
