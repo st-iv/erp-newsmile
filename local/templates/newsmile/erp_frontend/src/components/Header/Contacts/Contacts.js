@@ -1,5 +1,5 @@
 import React from 'react'
-import './Contacts.css'
+import './Contacts.scss'
 
 export default class Contacts extends React.Component {
     state = {

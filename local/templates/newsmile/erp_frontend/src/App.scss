@@ -1,3 +1,15 @@
+// COMMON
+@import 'styles/variables';
+@import 'styles/functions';
+@import 'styles/mixins';
+@import 'styles/sprites';
+@import 'styles/fonts';
+@import 'styles/vendor';
+@import 'styles/base';
+// COMPONENTS
+// header
+@import 'components/Header/Header';
+
 .App {
   text-align: center;
 }

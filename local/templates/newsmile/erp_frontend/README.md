@@ -1,7 +1,7 @@
 ## ERP New Smile
 components - Компоненты приложения
 
-shared - Вспомогательные функции для взаимодействия с сервером и 1C-Bitrix
+common - Вспомогательные функции для взаимодействия с сервером и 1C-Bitrix
 
 Файловая структура: https://reactjs.org/docs/faq-structure.html
 ## Create React App

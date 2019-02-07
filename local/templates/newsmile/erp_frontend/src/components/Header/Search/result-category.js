@@ -1,11 +1,11 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import $ from 'jquery'
-import MCustomScrollbar from './../../../shared/ui/m-custom-scrollbar'
-import DateHelper from './../../../shared/helpers/date-helper'
-import GeneralHelper from './../../../shared/helpers/general-helper.js';
-import PhoneHelper from './../../../shared/helpers/phone-helper.js';
-import StringHelper from './../../../shared/helpers/string-helper.js';
+import MCustomScrollbar from './../../../common/ui/m-custom-scrollbar'
+import DateHelper from './../../../common/helpers/date-helper'
+import GeneralHelper from './../../../common/helpers/general-helper.js';
+import PhoneHelper from './../../../common/helpers/phone-helper.js';
+import StringHelper from './../../../common/helpers/string-helper.js';
 
 export default class ResultCategory extends React.PureComponent
 {

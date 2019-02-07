@@ -12,7 +12,7 @@ export default class Time extends React.Component {
     }
     render () {
         return (
-                <div className="header_clock">
+                <div className="supertest header_clock">
                     <Moment format = "HH:mm" interval = {1000}/>
                 </div>
 

@@ -1,10 +1,10 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import $ from 'jquery'
-import ServerCommand from './../../../shared/server/server-command'
-import Queue from './../../../shared/server/queue'
+import ServerCommand from './../../../common/server/server-command'
+import Queue from './../../../common/server/queue'
 import ResultCategory from './result-category'
-import GeneralHelper from './../../../shared/helpers/general-helper.js';
+import GeneralHelper from './../../../common/helpers/general-helper.js';
 
 export default class Search extends React.Component
 {
