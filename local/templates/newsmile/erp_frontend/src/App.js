@@ -27,7 +27,7 @@ class App extends Component {
                     </div>
                 </div>
                 <Header/>
-                <Test name="test"/>
+                {/*<Test name="test"/>*/}
             </div>
         );
     }
