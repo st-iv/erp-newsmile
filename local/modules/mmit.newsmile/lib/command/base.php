@@ -317,7 +317,6 @@ abstract class Base
         }
     }
 
-
     public function getParamsMapAssoc()
     {
         $result = [];
@@ -390,6 +389,6 @@ abstract class Base
      */
     public function getResultFormat()
     {
-        return []; // TODO it must be abstract
+        return [];
     }
 }
