@@ -48,6 +48,34 @@ const NotificationsItems = () => {
                     </div>
                     <div className="notif_close"></div>
                 </div>
+                <div className="notif_item">
+                    <div className="notif_data">
+                        <div className="notif_data_date">
+                            01 февраля 2019, в 14:33
+                        </div>
+                    </div>
+                    <div className="notif_status status">
+                        Новая запись на приём
+                    </div>
+                    <div className="notif_text">
+                        Вы записаны на приём 2019-02-01 с 16:45 до 17:00 (Кресло 1, врач )
+                    </div>
+                    <div className="notif_close"></div>
+                </div>
+                <div className="notif_item">
+                    <div className="notif_data">
+                        <div className="notif_data_date">
+                            01 февраля 2019, в 14:33
+                        </div>
+                    </div>
+                    <div className="notif_status status">
+                        Новая запись на приём
+                    </div>
+                    <div className="notif_text">
+                        Вы записаны на приём 2019-02-01 с 16:45 до 17:00 (Кресло 1, врач )
+                    </div>
+                    <div className="notif_close"></div>
+                </div>
             </Scrollbar>
         </div>
     )
