@@ -9,8 +9,7 @@ class App extends Component {
     render() {
         return (
             <div className="App">
-                <div id="panel">
-                </div>
+                {/*<div id="panel">Зачем это тут?</div>*/}
                 <div className="left_menu">
                     <div className="menu_btn_shld"></div>
                     <div className="menu_btn_kartoteka"></div>
