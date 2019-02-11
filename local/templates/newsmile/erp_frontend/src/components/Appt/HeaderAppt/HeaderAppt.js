@@ -1,6 +1,7 @@
 import React from 'react'
-import './HeaderAppt.scss'
 import Moment from 'react-moment'
+import './HeaderAppt.scss'
+import Button from './../../common/Button/Button'
 
 export default class HeaderAppt extends React.Component {
     render() {
@@ -29,9 +30,7 @@ export default class HeaderAppt extends React.Component {
                             </div>
                         </div>
                     </div>
-                    <div className="btn btn-default">
-                        Открыть карточку пациента
-                    </div>
+                    <Button size="sm" variant="secondary" text="Открыть карту" />
                 </div>
             </div>
         )
