@@ -3,6 +3,7 @@
 namespace Mmit\NewSmile\Command\Schedule;
 
 
+use Bitrix\Main\Diag\Debug;
 use Bitrix\Main\ORM\Query\Query;
 use Bitrix\Main\Type\DateTime;
 use Bitrix\Main\DB;

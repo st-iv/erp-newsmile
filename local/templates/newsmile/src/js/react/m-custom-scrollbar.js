@@ -48,7 +48,16 @@ export default class MCustomScrollbar extends React.Component
     {
         let config = $.extend({}, this.props);
         delete config.className;
-        delete config.callbacks.onScroll;
+
+        if(!!config.callbacks)
+        {
+            delete config.callbacks.onScroll;
+        }
+        else
+        {
+            config.callbacks = {};
+        }
+
         config.callbacks.onScroll = this.handleScroll.bind(this);
         return config;
     }

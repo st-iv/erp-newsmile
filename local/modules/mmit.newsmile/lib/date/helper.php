@@ -87,16 +87,34 @@ class Helper
     }
 
     /**
-     * Возвращает объект DateTime php по DateTime или Date объекту битрикса
-     * @param DateTime|Date $bitrixDate
+     * Возвращает объект \DateTime по DateTime или Date объекту битрикса, либо по строковому представлению даты
+     * @param Date|string $rawDateTime
      *
      * @return \DateTime
      */
-    public static function getPhpDateTime($bitrixDate)
+    public static function getDateTime($rawDateTime)
     {
-        $phpDate = new \DateTime();
-        $phpDate->setTimestamp($bitrixDate->getTimestamp());
-        return $phpDate;
+        $tastyDateTime = null;
+
+        if($rawDateTime instanceof \DateTime)
+        {
+            $tastyDateTime = clone $rawDateTime;
+        }
+        else
+        {
+            $tastyDateTime = new \DateTime();
+
+            if($rawDateTime instanceof Date)
+            {
+                $tastyDateTime->setTimestamp($rawDateTime->getTimestamp());
+            }
+            elseif(is_string($rawDateTime))
+            {
+                $tastyDateTime->modify($rawDateTime);
+            }
+        }
+
+        return $tastyDateTime;
     }
 
     /**
@@ -125,7 +143,7 @@ class Helper
         }
         elseif ($date instanceof Date || $date instanceof DateTime)
         {
-            $date = static::getPhpDateTime($date);
+            $date = static::getDateTime($date);
         }
 
         /**

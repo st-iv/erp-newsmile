@@ -28,8 +28,6 @@ abstract class Base
 
     private $isReflectionMode;
 
-    protected static $name = '';
-
     public function __construct($params = [], $varyParam = null, $isReflectionMode = false)
     {
         $this->varyParam = $varyParam;
@@ -259,9 +257,9 @@ abstract class Base
      * Возвращает название команды
      * @return string
      */
-    public static function getName()
+    public function getName()
     {
-        return static::$name;
+        return '';
     }
 
     /**
