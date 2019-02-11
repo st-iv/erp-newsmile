@@ -1,6 +1,7 @@
 import React, {Component} from 'react'
 import './App.scss'
 import Header from './components/Header/Header'
+import Appt from './components/Appt/Appt'
 import Test from './components/Test/Test'
 
 
@@ -26,8 +27,9 @@ class App extends Component {
                         <div className="menu_shld_item">Журнал заказ-нарядов</div>
                     </div>
                 </div>
-                <Header/>
-                {/*<Test name="test"/>*/}
+                <Header />
+                {/*<Test name="Gallery"/>*/}
+                <Appt />
             </div>
         );
     }
