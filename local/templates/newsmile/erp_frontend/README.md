@@ -4,6 +4,12 @@ components - Компоненты приложения
 common - Вспомогательные функции для взаимодействия с сервером и 1C-Bitrix
 
 Файловая структура: https://reactjs.org/docs/faq-structure.html
+
+## Стилизация
+
+.indent-default - задает базовый внутренний отступ в блоках
+
+
 ## Create React App
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 

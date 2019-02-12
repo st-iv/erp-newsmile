@@ -40,7 +40,7 @@ const contactsList = [{
 export default class Header extends React.Component {
   render () {
     return (
-      <div className="row main_header top-header">
+      <div className="main_header">
         <Time />
         <Notifications />
         <Search />

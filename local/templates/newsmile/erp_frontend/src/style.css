@@ -1,14 +1,14 @@
 body{
 	font-family: 'Rubik', 'Arial';
-	overflow: hidden;
+	/*overflow: hidden;*/
 }
 body>.container-fluid:first-child {
 	height: 100vh;
 	min-width: 1280px;
 }
 .main_header{
+	display: flex;
 	height: 88px;
-	padding-left: 108px;
 	background-color: #fff;
 	border-bottom: 8px solid #f4f4f4;
 	align-items: center;
@@ -188,9 +188,10 @@ body>.container-fluid:first-child {
 .statusred.header_user_status:after{
 	background-color: #ff004e;
 }
+
 .left_menu {
-	z-index: 8;
-	position: fixed;
+	/*z-index: 8;*/
+	/*position: fixed;*/
 	display: flex;
 	flex-direction: column;
 	top: 0;
@@ -199,6 +200,7 @@ body>.container-fluid:first-child {
 	height: 100vh;
 	background-color: #4f5965;
 }
+
 .left_menu_vline{
 	z-index: 6;
 	position: fixed;
