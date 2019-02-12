@@ -15,7 +15,7 @@ class App extends Component {
                 <div className="main-content">
                     <Header />
                     {/*<Appt />*/}
-                    <Schedule />
+                    <Schedule calendar={this.props.calendar} doctors={this.props.doctors} initialDate={this.props.initialDate} schedule={this.props.schedule} />
                 </div>
             </div>
         );

@@ -11,7 +11,6 @@ import CookieHelper from "./../../common/helpers/cookie-helper"
 import GeneralHelper from "./../../common/helpers/general-helper"
 import ScheduleScroll from './schedule-scroll'
 
-
 class Schedule extends React.PureComponent
 {
     defaultFilter = {

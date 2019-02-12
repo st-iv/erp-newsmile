@@ -1,6 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import {Range} from 'rc-slider'
+import Slider, { Range } from 'rc-slider'
 import DateHelper from './../../../common/helpers/date-helper'
 
 class TimeRange extends React.Component
