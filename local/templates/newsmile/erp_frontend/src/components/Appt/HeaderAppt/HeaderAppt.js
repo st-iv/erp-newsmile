@@ -17,9 +17,9 @@ export default class HeaderAppt extends React.Component {
                             <div className="text">
                                 Время
                             </div>
-                             <div className="val">
-                                 10:34 - 12:00
-                             </div>
+                            <div className="val">
+                                10:34 - 12:00
+                            </div>
                         </div>
                         <div className="header-appt__time-item header-appt__time-current">
                             <div className="text">
@@ -30,7 +30,7 @@ export default class HeaderAppt extends React.Component {
                             </div>
                         </div>
                     </div>
-                    <Button size="sm" variant="secondary" text="Открыть карту" />
+                    <Button size="sm" variant="secondary" text="Открыть карту"/>
                 </div>
             </div>
         )

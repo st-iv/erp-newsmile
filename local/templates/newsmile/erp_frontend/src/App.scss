@@ -18,5 +18,10 @@
 }
 
 .indent-default {
-  padding: 0 47px;
+  padding-left: 47px;
+  padding-right: 47px;
+ }
+
+.main-content {
+  flex-grow: 1;
 }
