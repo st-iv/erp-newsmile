@@ -1,5 +1,6 @@
-import Helper from 'js/helpers/main'
-import GeneralHelper from "../helpers/general-helper";
+import Helper from './../../common/helpers/main'
+import GeneralHelper from "./../../common/helpers/general-helper"
+import moment from 'moment'
 
 export default class ScheduleProcessor
 {
