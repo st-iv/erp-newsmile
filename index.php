@@ -11,7 +11,7 @@ $application = NewSmile\Application::getInstance();
 \Bitrix\Main\Loader::includeModule('mmit.newsmile');
 ?>
     <?
-    $application->renderReactComponent('App', [
+    /*$application->renderReactComponent('App', [
         'calendar' => [
             'colorsScheme' => [
                 0 => array(
@@ -60,7 +60,7 @@ $application = NewSmile\Application::getInstance();
             'minQueryLength' => 3,
             'topCount' => 200
         ]
-    ]);
+    ]);*/
     ?>
 <?
 
