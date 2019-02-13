@@ -14,8 +14,8 @@ class App extends Component {
                 <Sidebar />
                 <div className="main-content">
                     <Header />
-                    {/*<Appt />*/}
-                    <Schedule calendar={this.props.calendar} doctors={this.props.doctors} initialDate={this.props.initialDate} schedule={this.props.schedule} />
+                    <Appt />
+                    {/*<Schedule calendar={this.props.calendar} doctors={this.props.doctors} initialDate={this.props.initialDate} schedule={this.props.schedule} />*/}
                 </div>
             </div>
         );
