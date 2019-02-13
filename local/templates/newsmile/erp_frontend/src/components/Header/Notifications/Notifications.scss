@@ -1,0 +1,19 @@
+.notif_items {
+  overflow: unset;
+  width: 520px;
+}
+
+.notif_item {
+  margin-right: 10px;
+}
+
+.scrolltst {
+  .thumb {
+    background: rgba(255,255,255,0.2) !important;
+    width: 4px !important;
+
+    &:hover {
+      background: #fff !important;
+    }
+  }
+}

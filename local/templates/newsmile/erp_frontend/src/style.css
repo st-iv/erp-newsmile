@@ -1,13 +1,14 @@
 body{
 	font-family: 'Rubik', 'Arial';
+	/*overflow: hidden;*/
 }
 body>.container-fluid:first-child {
 	height: 100vh;
 	min-width: 1280px;
 }
 .main_header{
-	height: 88px;
-	padding-left: 108px;
+	display: flex;
+	padding: 16px 47px;
 	background-color: #fff;
 	border-bottom: 8px solid #f4f4f4;
 	align-items: center;
@@ -57,7 +58,7 @@ body>.container-fluid:first-child {
 	left: 2px;
 	width: 48px;
 	height: 48px;
-	background-image: url('../svg/search.svg');
+	background-image: url('./svg/search.svg');
 	background-position: center;
 	background-repeat: no-repeat;
 	background-size: 14px auto;
@@ -71,7 +72,7 @@ body>.container-fluid:first-child {
 	height: 36px;	
 	border-radius: 18px;
 	background-color: #e5e5e5;
-	background-image: url('../svg/search_cross.svg');
+	background-image: url('./svg/search_cross.svg');
 	background-position: center;
 	background-repeat: no-repeat;
 	background-size: 11px auto;
@@ -86,7 +87,7 @@ body>.container-fluid:first-child {
 	width: 50px;
 	background-color: #f4f4f4;
 	border-radius: 25px;
-	background-image: url('../svg/bell.svg');
+	background-image: url('./svg/bell.svg');
 	background-position: center;
 	background-repeat: no-repeat;
 	background-size: 21px auto;
@@ -117,6 +118,7 @@ body>.container-fluid:first-child {
 .place_current{
 	display: block;
 	margin-right: 24px;
+	text-align: left;
 }
 .place_current_city,
 .place_current_adrs{
@@ -128,10 +130,11 @@ body>.container-fluid:first-child {
 	display: block;
 	height: 32px;
 	width: 32px;
-	background-image: url('../svg/header_drwnarr.svg');
+	background-image: url('./svg/header_drwnarr.svg');
 	background-position: center;
 	background-repeat: no-repeat;
 	background-size: 9px auto;	
+	cursor: pointer;
 }
 .header_user {
 	display: flex;
@@ -163,7 +166,7 @@ body>.container-fluid:first-child {
 	border-radius: 24px;
 	overflow: hidden;
 }
-.header_user_img .header_user_status{
+.header_user_status{
 	position: absolute;
 	top: 4px;
 	right: -5px;
@@ -172,7 +175,7 @@ body>.container-fluid:first-child {
 	background-color: #fff;
 	border-radius: 6px;
 }
-.header_user_img .header_user_status:after{
+.header_user_status:after{
 	content: '';
 	position: absolute;
 	top: 3px;
@@ -182,29 +185,29 @@ body>.container-fluid:first-child {
 	background-color: #fff;
 	border-radius: 3px;
 }
-.header_user_img.statusred .header_user_status:after{
+.statusred.header_user_status:after{
 	background-color: #ff004e;
 }
+
 .left_menu {
-	z-index: 8;
-	position: fixed;
+	position: relative;
 	display: flex;
 	flex-direction: column;
-	top: 0;
-	left: 0;
 	width: 59px;
 	height: 100vh;
 	background-color: #4f5965;
 }
-.left_menu_vline{
-	z-index: 6;
-	position: fixed;
-	top: 0;	
-	left: 0;
-	width: 67px;
+
+.left_menu::after {
+	position: absolute;
+	content: '';
+	top: 0;
+	right: -7px;
 	height: 100vh;
-	border-right: 8px solid #f4f4f4;
+	width: 8px;
+	background: #f4f4f4;
 }
+
 .menu_btn_shld,
 .menu_btn_kartoteka,
 .menu_btn_options{
@@ -216,7 +219,7 @@ body>.container-fluid:first-child {
 }
 .menu_btn_shld{
 	margin-top: 88px;
-	background-image: url('../svg/shld.svg');
+	background-image: url('./svg/shld.svg');
 	background-size: 20px auto;		
 }
 .menu_btn_shld.bActive,
@@ -225,14 +228,14 @@ body>.container-fluid:first-child {
 	background-color: #353c44;
 }
 .menu_btn_kartoteka{
-	background-image: url('../svg/kartoteka.svg');
+	background-image: url('./svg/kartoteka.svg');
 	background-size: 18px auto;		
 }
 .menu_btn_options{
 	height: 98px;
 	margin-top: auto;
 	border-top: 1px solid #616a75;
-	background-image: url('../svg/options.svg');
+	background-image: url('./svg/options.svg');
 	background-size: 25px auto;		
 }
 .left_menu_content{
@@ -282,7 +285,7 @@ body>.container-fluid:first-child {
 	height: 36px;
 	border-radius: 18px;
 	background-color: #6e7378;
-	background-image: url('../svg/notif_content_close.svg');
+	background-image: url('./svg/notif_content_close.svg');
 	background-repeat: no-repeat;
 	background-position: center;
 	background-size: 11px auto;	
@@ -389,7 +392,7 @@ body.notifOpen .notif_amnt{
 /* ADDED end */
 .notif_data_action.notifClose{
 	padding-left: 30px;
-	background-image: url('../svg/notif_V.svg');
+	background-image: url('./svg/notif_V.svg');
 	background-repeat: no-repeat;
 	background-position: 10px center;
 	background-size: 12px auto;	
@@ -424,7 +427,7 @@ body.notifOpen .notif_amnt{
 	width: 8px;
 	height: 8px;
 	margin-top: -4px;
-	background-image: url('../svg/notif_reject.svg');
+	background-image: url('./svg/notif_reject.svg');
 	background-repeat: no-repeat;
 	background-position: center;
 	background-size: 8px auto;		
@@ -458,7 +461,7 @@ body.notifOpen .notif_amnt{
 	right: 8px;
 	width: 22px;
 	height: 22px;
-	background-image: url('../svg/notif_close.svg');
+	background-image: url('./svg/notif_close.svg');
 	background-repeat: no-repeat;
 	background-position: center;
 	background-size: 7px auto;		
@@ -494,7 +497,7 @@ body.notifOpen .notif_amnt{
 	font-size: 13px;
 	text-align: center;
 	color: #fff;
-	background-image: url('../svg/search_arrow.svg');
+	background-image: url('./svg/search_arrow.svg');
 	background-repeat: no-repeat;
 	background-position: 172px center;
 	background-size: auto 9px;
@@ -662,7 +665,7 @@ body.notifOpen .notif_amnt{
     top: 50%;
     right: 12px;
     margin-top: -8px;
-    background-image: url(../svg/filter_arrow_down.svg);
+    background-image: url(./svg/filter_arrow_down.svg);
     background-repeat: no-repeat;
     background-position: center;
     background-size: 9px auto;
@@ -670,7 +673,7 @@ body.notifOpen .notif_amnt{
 #speс-button.ui-selectmenu-button-open .ui-selectmenu-icon,
 #doctor-button.ui-selectmenu-button-open .ui-selectmenu-icon,
 #new-visit-doctor-button.ui-selectmenu-button-open .ui-selectmenu-icon{
-	background-image: url(../svg/filter_arrow_up.svg);
+	background-image: url(./svg/filter_arrow_up.svg);
 }
 #speс-button.ui-selectmenu-button-open,
 #doctor-button.ui-selectmenu-button-open,
@@ -816,13 +819,13 @@ body.notifOpen .notif_amnt{
 .shld_btn_acc{
 	width: 42px;
 	margin-left: 8px;
-	background-image: url(../svg/filter_accept.svg);
+	background-image: url(./svg/filter_accept.svg);
 	background-size: 12px auto;
 }
 .shld_btn_dcl{
 	width: 22px;
 	margin-left: 42px;
-	background-image: url(../svg/filter_cross.svg);
+	background-image: url(./svg/filter_cross.svg);
 	background-size: 10px auto;
 }
 .main_content{
@@ -900,19 +903,19 @@ body.notifOpen .notif_amnt{
 	margin-left: 1px;
 }
 .custCalendar_month_up{
-	background-image: url(../svg/calend_month_up.svg);
+	background-image: url(./svg/calend_month_up.svg);
 	background-size: 9px auto;	
 }
 .custCalendar_month_down{
-	background-image: url(../svg/calend_month_down.svg);
+	background-image: url(./svg/calend_month_down.svg);
 	background-size: 9px auto;	
 }
 .custCalendar_week_up{
-	background-image: url(../svg/calend_week_up.svg);
+	background-image: url(./svg/calend_week_up.svg);
 	background-size: 9px auto;	
 }
 .custCalendar_week_down{
-	background-image: url(../svg/calend_week_down.svg);
+	background-image: url(./svg/calend_week_down.svg);
 	background-size: 9px auto;	
 }
 .custCalendar_frame{
@@ -1225,7 +1228,7 @@ body.notifOpen .notif_amnt{
 	right: 0;
 	width: 20px;
 	background-position: left center;
-	background-image: url(../svg/day_calend_perv.svg);
+	background-image: url(./svg/day_calend_perv.svg);
 	background-size: 8px auto;
 }
 .dayCalendar_interval .ptnt_status_icon {
@@ -1356,7 +1359,7 @@ body.notifOpen .notif_amnt{
 	left: -22px;
 	height: 100%;
 	width: 20px;
-	background-image: url(../svg/day_calend_perv.svg);
+	background-image: url(./svg/day_calend_perv.svg);
 	background-position: left center;
 	background-repeat: no-repeat;
 	background-size: 8px auto;
@@ -1420,7 +1423,7 @@ body.notifOpen .notif_amnt{
 	align-items: center;
 }
 .dClndr_pinfo_number:before{
-	background-image: url(../svg/day_calend_card.svg);
+	background-image: url(./svg/day_calend_card.svg);
 	background-size: 13px auto;
 }
 .dClndr_pinfo_number span {
@@ -1431,19 +1434,19 @@ body.notifOpen .notif_amnt{
 	height: 16px;
 	margin-left: 10px;
 	background-color: #f5f5f5;
-	background-image: url(../svg/day_calend_card_arrow.svg);
+	background-image: url(./svg/day_calend_card_arrow.svg);
 	background-size: auto 8px;
 	background-repeat: no-repeat;
 	background-position: center;
 	cursor: pointer;
 }
 .dClndr_pinfo_phone:before{
-	background-image: url(../svg/day_calend_phone.svg);
+	background-image: url(./svg/day_calend_phone.svg);
 	background-size: 12px auto;
 	background-position: 1px center;
 }
 .dClndr_pinfo_time:before{
-	background-image: url(../svg/day_calend_time.svg);
+	background-image: url(./svg/day_calend_time.svg);
 	background-size: 12px auto;
 	background-position: 1px center;
 }
@@ -1777,7 +1780,7 @@ ul.dClndr_psubmenu {
     left: 0;
     width: 10px;
     height: 10px;
-    background: url(../svg/clock.svg) no-repeat center;
+    /* background: url('./svg/clock.svg') no-repeat center; */
 }
 
 .status__menu-btn {
@@ -2071,7 +2074,7 @@ ul.dClndr_psubmenu {
     top: -9px;
     border-top-left-radius: 3px;
     border-bottom-left-radius: 3px;
-    background: url('../svg/arrow.svg') center no-repeat;
+    background: url('./svg/arrow.svg') center no-repeat;
     background-color: #e4e5e6;
     background-size: 5px 9px;
     opacity: 0;
@@ -2564,7 +2567,7 @@ input[type=radio].visually-hidden {
 }
 
 .filter-select .filter-select__dropdown-indicator {
-	background-image: url(../svg/filter_arrow_down.svg);
+	background-image: url(./svg/filter_arrow_down.svg);
 	background-repeat: no-repeat;
 	background-position: center;
 	background-size: 9px auto;
@@ -2608,7 +2611,7 @@ input[type=radio].visually-hidden {
 }
 
 .filter-select--opened .filter-select__dropdown-indicator {
-	background-image: url(../svg/filter_arrow_up.svg);
+	background-image: url(./svg/filter_arrow_up.svg);
 }
 
 .filter-select--opened .filter-select__control {
@@ -2753,7 +2756,7 @@ input[type=radio].visually-hidden {
 	top: 59%;
 	right: 12px;
 	margin-top: -8px;
-	background-image: url(../svg/filter_arrow_down.svg);
+	background-image: url(./svg/filter_arrow_down.svg);
 	background-repeat: no-repeat;
 	background-position: center;
 	background-size: 9px auto;
@@ -2842,7 +2845,7 @@ input[type=radio].visually-hidden {
 
 .new-visit__form .select__option.select__option--is-selected:before {
 	border: 1px solid #00d6d6;
-	background: url(../svg/check.svg) center no-repeat;
+	background: url(./svg/check.svg) center no-repeat;
 	background-color: #00d6d6;
 	background-size: 8px 6px;
 }
@@ -2985,7 +2988,7 @@ input[type=radio].visually-hidden {
 }
 
 .schedule-scroll__button {
-    background: url('../img/schedule_scroll_button.png') no-repeat center;
+    background: url('./images/schedule_scroll_button.png') no-repeat center;
     width: 39px;
     height: 218px;
     position: fixed;

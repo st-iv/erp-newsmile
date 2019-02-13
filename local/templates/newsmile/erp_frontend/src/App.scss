@@ -1,0 +1,27 @@
+// COMMON
+@import 'styles/variables';
+@import 'styles/functions';
+@import 'styles/mixins';
+@import 'styles/sprites';
+@import 'styles/fonts';
+@import 'styles/vendor';
+@import 'styles/base';
+// custom - постепенно распределить по компонентам
+// @import 'style';
+// @import 'main';
+// COMPONENTS
+// header
+// @import 'components/Header/Header';
+
+.App {
+  display: flex;
+}
+
+.indent-default {
+  padding-left: 47px;
+  padding-right: 47px;
+ }
+
+.main-content {
+  flex-grow: 1;
+}
