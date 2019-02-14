@@ -12,6 +12,6 @@ if($APPLICATION->GetCurPage() != '/')
     //$APPLICATION->ShowProperty('REACT_COMPONENTS');
 }   ?>
 
-<?$application->includeReact();?>
+<?//$application->includeReact();?>
 </body>
 </html>
