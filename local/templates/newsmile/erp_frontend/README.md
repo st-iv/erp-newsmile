@@ -1,9 +1,17 @@
 ## ERP New Smile
 components - Компоненты приложения
 
-shared - Вспомогательные функции для взаимодействия с сервером и 1C-Bitrix
+common - Вспомогательные функции для взаимодействия с сервером и 1C-Bitrix
 
-Файловая структура: https://reactjs.org/docs/faq-structure.html
+[Файловая структура](https://reactjs.org/docs/faq-structure.html)
+
+[Блок-схема ERP React](https://drive.google.com/file/d/1Gl5e6vOiNV7Aj54t6CqQ2aasVtM42s3k/view?usp=sharing)
+
+## Стилизация
+
+.indent-default - задает базовый внутренний отступ в блоках
+
+
 ## Create React App
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 

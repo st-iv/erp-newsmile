@@ -1,0 +1,67 @@
+@import './../../../styles/variables';
+
+.appt-nav {
+  display: flex;
+  border: 1px solid $color-secondary;
+}
+
+.appt-nav__item {
+  position: relative;
+  display: inline-flex;
+  flex-grow: 1;
+  justify-content: center;
+  text-align: center;
+  padding: 15px 45px;
+  white-space: nowrap;
+  user-select: none;
+  cursor: pointer;
+
+  &::after,
+  &::before {
+    position: absolute;
+    z-index: 1;
+    content: '';
+    display: block;
+    left: 100%;
+    width: 0;
+    height: 0;
+    border-style: solid;
+  }
+
+  &::after {
+    //fill
+    top: 1px;
+    border-color: transparent transparent transparent #fff;
+    border-width: 26px;
+  }
+
+  &::before {
+    //border
+    top: 0;
+    border-color: transparent transparent transparent $color-secondary;
+    border-width: 27px;
+  }
+}
+
+.appt-nav__item:last-child {
+  &::before,
+  &::after {
+    display: none;
+  }
+}
+
+.appt-nav__item--active {
+  cursor: default;
+  background: $color-success;
+  color: #fff;
+
+  &::after {
+    //fill
+    border-color: transparent transparent transparent $color-success;
+  }
+
+  &::before {
+    //border
+    border-color: transparent transparent transparent #fff;
+  }
+}

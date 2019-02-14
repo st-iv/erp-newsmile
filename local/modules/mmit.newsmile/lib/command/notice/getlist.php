@@ -5,6 +5,7 @@ namespace Mmit\NewSmile\Command\Notice;
 
 use Mmit\NewSmile\Application;
 use Mmit\NewSmile\Command\OrmGetList;
+use Mmit\NewSmile\Helpers;
 use Mmit\NewSmile\Notice\Data\NoticeTable;
 
 class GetList extends OrmGetList
@@ -22,6 +23,7 @@ class GetList extends OrmGetList
     protected function doPrepareRow(array $row)
     {
         NoticeTable::extendNoticeDataByType($row);
+        $row['PARAMS'] = Helpers::camelCaseKeys($row['PARAMS'], false);
         return $row;
     }
 

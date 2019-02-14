@@ -1,5 +1,5 @@
 import React from 'react'
-import './Contacts.css'
+import './Contacts.scss'
 
 export default class Contacts extends React.Component {
     state = {
@@ -10,6 +10,13 @@ export default class Contacts extends React.Component {
         e.preventDefault()
         this.setState({
             visible: true
+        })
+    }
+
+    handleHide = (e) => {
+        e.preventDefault()
+        this.setState({
+            visible: false
         })
     }
 
@@ -38,7 +45,16 @@ export default class Contacts extends React.Component {
                     !visible && <div className="header_drwnarr" onClick={this.handleReadMoreClck}></div>
                 }
                 {
-                    visible && <div className="place__listMore">{contactsMore}</div>
+                    visible && <div className="place__listMore">
+                        <div className="place__item">
+                            <span className="header_drwnarr header_drwnarrTop" onClick={this.handleHide}></span>
+                            <span>
+                                Иркутск
+                            Донская, 24/3
+                            </span>
+                        </div>
+                        {contactsMore}
+                    </div>
                 }
             </div>
         )
