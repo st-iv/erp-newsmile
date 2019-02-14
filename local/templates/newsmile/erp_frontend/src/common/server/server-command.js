@@ -1,14 +1,22 @@
 import $ from 'jquery'
+
 export default class ServerCommand
 {
-    restApiUrl = '/api/rest/';
+    restApiUrl = window.test_serv ? 'http://erp.megamir38.ru/api/rest/' : '/api/rest/';
 
     constructor(code, data, success = null)
     {
         this.code = code;
-        this.data = data;
+
+        this.data = Object.assign({}, data);
+        if(window.test_serv && window.token)
+        {
+            this.data.token = window.token;
+        }
+
         this.success = success;
     }
+
     exec()
     {
         return new Promise((resolve, reject) =>

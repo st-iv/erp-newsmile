@@ -10,7 +10,7 @@ $application = NewSmile\Application::getInstance();
 <?
 \Bitrix\Main\Loader::includeModule('mmit.newsmile');
 ?>
-    <?
+    <?/*
     $application->renderReactComponent('App', [
         'calendar' => [
             'colorsScheme' => [
@@ -60,8 +60,10 @@ $application = NewSmile\Application::getInstance();
             'minQueryLength' => 3,
             'topCount' => 200
         ]
-    ]);
+    ]);*/
     ?>
+
+<div id="root"></div>
 <?
 
 require($_SERVER['DOCUMENT_ROOT'].'/bitrix/footer.php');
