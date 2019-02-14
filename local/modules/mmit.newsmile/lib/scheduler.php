@@ -3,21 +3,29 @@
 namespace Mmit\NewSmile;
 
 
-use Bitrix\Main\ORM\Fields\ExpressionField;
 use Bitrix\Main\Type\Date;
 use Bitrix\Main\Type\DateTime;
 use Mmit\NewSmile\Date\Helper;
 use Mmit\NewSmile;
 
+/**
+ * Выполняет массовые операции с интервалами расписания, делит и объединяет интервалы
+ * Class Scheduler
+ * @package Mmit\NewSmile
+ */
 class Scheduler
 {
     protected $date;
     protected $schedulesTable = [];
     protected $deleteIntervals = [];
 
-    public function __construct(\DateTime $date = null)
+    public function __construct($date = null)
     {
-        if(!$date)
+        if($date)
+        {
+            $date = Helper::getDateTime($date);
+        }
+        else
         {
             $date = new \DateTime();
         }
@@ -36,6 +44,8 @@ class Scheduler
      * @throws \Bitrix\Main\ArgumentException
      * @throws \Bitrix\Main\ObjectPropertyException
      * @throws \Bitrix\Main\SystemException
+     *
+     * @return array массив общих значений полей обновлённых интервалов расписания
      */
     public function updateByTime($startTime, $endTime, $workChairId, $fields)
     {
@@ -45,8 +55,9 @@ class Scheduler
         unset($fields['TIME']);
         unset($fields['WORK_CHAIR_ID']);
 
-        $this->date->modify($startTime);
-        $startDateTime = clone $this->date->modify($startTime);
+        $startDateTime = Helper::getDateTime($startTime);
+        $startDateTime->modify($this->date->format('d.m.Y'));
+
         $queryStartDateTime = clone $startDateTime;
         $queryStartTime = '';
 
@@ -58,7 +69,8 @@ class Scheduler
             $queryStartTime = $queryStartDateTime->format('H:i');
         }
 
-        $endDateTime = clone $this->date->modify($endTime);
+        $endDateTime = Helper::getDateTime($endTime);
+        $endDateTime->modify($this->date->modify('d.m.Y'));
 
         $dbCurrentIntervals = ScheduleTable::getList([
             'filter' => [
@@ -84,6 +96,7 @@ class Scheduler
         $exceptFromUpdate = [];
         if($queryStartTime)
         {
+            // если начальное время было сдвинуто - не обновляем начальный интервал
             $exceptFromUpdate[$queryStartTime] = true;
         }
 
@@ -93,28 +106,50 @@ class Scheduler
             $exceptFromUpdate[$exceptTime->format('H:i')] = true;
         }
 
+        $updatedIntervals = [];
+
         // накатываем новые значения интервалов для текущего рабочего кресла
         foreach ($this->schedulesTable[$workChairId] as $intervalTime => &$interval)
         {
             if(!$exceptFromUpdate[$intervalTime])
             {
                 $interval = array_merge($interval, $fields);
+                $updatedIntervals[] = $interval;
+            }
+        }
+
+        $updatedGeneralFields = [];
+
+        if($updatedIntervals)
+        {
+            if(count($updatedIntervals) == 1)
+            {
+                $updatedGeneralFields = $updatedIntervals[0];
+            }
+            else
+            {
+                $updatedGeneralFields = call_user_func_array('array_intersect_assoc', $updatedIntervals);
             }
         }
 
         $this->cleanIntervals();
 
         $this->save();
+
+        return $updatedGeneralFields;
     }
 
     /**
      * Рабивает интервалы, которые попадают на начало и конец указанного временного диапазона
-     * @param \DateTime $startDateTime - начало временного диапазона
-     * @param \DateTime $endDateTime - конец временного диапазона
+     * @param \DateTime|Date|string $startDateTime - начало временного диапазона
+     * @param \DateTime|Date|string $endDateTime - конец временного диапазона
      * @param $workChairId - id рабочего кресла
      */
-    protected function splitIntervals(\DateTime $startDateTime, \DateTime $endDateTime, $workChairId)
+    public function splitIntervals($startDateTime, $endDateTime, $workChairId)
     {
+        $startDateTime = NewSmile\Date\Helper::getDateTime($startDateTime);
+        $endDateTime = NewSmile\Date\Helper::getDateTime($endDateTime);
+
         $startTime = $startDateTime->format('H:i');
         $endTime = $endDateTime->format('H:i');
 
@@ -253,6 +288,7 @@ class Scheduler
         }
     }
 
+
     /**
      * Сохраняет в бд внесенные изменения
      */
@@ -320,9 +356,9 @@ class Scheduler
             {
                 if($intervalStart && $prevSchedule['DOCTOR_ID'])
                 {
-                    $intervalEnd = Helper::getPhpDateTime($prevSchedule['TIME']);
+                    $intervalEnd = Helper::getDateTime($prevSchedule['TIME']);
                     $intervalEnd->modify('add +' . $prevSchedule['DURATION'] . ' minute');
-                    $isEvenWeek = ScheduleTemplateTable::isEvenWeek(Helper::getPhpDateTime($intervalStart));
+                    $isEvenWeek = ScheduleTemplateTable::isEvenWeek(Helper::getDateTime($intervalStart));
 
                     $weekDayIndex = (int)$intervalStart->format('N');
                     $parity = ($isEvenWeek ? 'even' : 'odd');

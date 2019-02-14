@@ -17,6 +17,11 @@ class Add extends OrmEntityAdd
 {
     protected $recordedPatients;
 
+    public function getName()
+    {
+        return 'Записать пациента';
+    }
+
     public function getDescription()
     {
         return 'Добавляет приём';

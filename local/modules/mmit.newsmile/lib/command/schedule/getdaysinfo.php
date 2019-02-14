@@ -3,6 +3,7 @@
 
 namespace Mmit\NewSmile\Command\Schedule;
 
+use Bitrix\Main\Diag\Debug;
 use Mmit\NewSmile\Command\Base;
 use Mmit\NewSmile\WorkChairTable;
 use Mmit\NewSmile;
@@ -255,7 +256,8 @@ class GetDaysInfo extends Base
                 'PATIENT_ID',
                 'DOCTOR_ID',
                 'STATUS',
-                'WORK_CHAIR_ID'
+                'WORK_CHAIR_ID',
+                'DATE_START'
             )
         ));
 

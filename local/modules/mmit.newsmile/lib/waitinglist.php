@@ -307,7 +307,7 @@ class WaitingListTable extends Entity\DataManager implements ExtendedFieldsDescr
         /* проверка по начальному времени */
         if($waitingListItem['TIME_START'] instanceof DateTime)
         {
-            $waitingStartTime = NewSmile\Date\Helper::getPhpDateTime($waitingListItem['TIME_START']);
+            $waitingStartTime = NewSmile\Date\Helper::getDateTime($waitingListItem['TIME_START']);
             $waitingStartTime->modify($scheduleDate);
 
             if($scheduleTimeTs < $waitingStartTime->getTimestamp()) return false;
@@ -316,7 +316,7 @@ class WaitingListTable extends Entity\DataManager implements ExtendedFieldsDescr
         /* проверка по конечному времени */
         if($waitingListItem['TIME_END'] instanceof DateTime)
         {
-            $waitingEndTime = NewSmile\Date\Helper::getPhpDateTime($waitingListItem['TIME_END']);
+            $waitingEndTime = NewSmile\Date\Helper::getDateTime($waitingListItem['TIME_END']);
             $waitingEndTime->modify($scheduleDate);
 
             if($scheduleTimeTs >= $waitingEndTime->getTimestamp()) return false;

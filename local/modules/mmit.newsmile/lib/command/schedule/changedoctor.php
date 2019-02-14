@@ -18,6 +18,11 @@ use Mmit\NewSmile\ScheduleTable;
 
 class ChangeDoctor extends Base
 {
+    public function getName()
+    {
+        return 'Изменить врача';
+    }
+
     public function getDescription()
     {
         return 'Назначает другого врача на указанный интервал расписания';
