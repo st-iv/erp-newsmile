@@ -1,0 +1,19 @@
+@import './../../../../styles/variables';
+
+.checkup {
+  padding: 20px 47px;
+}
+.checkup-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.checkup-steps {
+  display: flex;
+}
+
+.checkup-steps__item {
+  padding: 15px 30px;
+  border: 1px solid $color-secondary;
+}

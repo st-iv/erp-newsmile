@@ -37,10 +37,8 @@ class ApptStep extends React.Component {
     render() {
         const stepsTemplate = this.props.data.map(function (item, index) {
             return (
-                <div key={index}>
-                    <div className="appt-nav__item">
-                        {item.text}
-                    </div>
+                <div className="appt-nav__item" key={index}>
+                    {item.text}
                 </div>
             )
         })

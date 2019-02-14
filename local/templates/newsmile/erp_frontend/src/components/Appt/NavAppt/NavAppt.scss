@@ -16,11 +16,12 @@
   user-select: none;
   cursor: pointer;
 
-  &::after,
-  &::before {
+
+  &:after,
+  &:before {
+    content: '';
     position: absolute;
     z-index: 1;
-    content: '';
     display: block;
     left: 100%;
     width: 0;
@@ -29,14 +30,12 @@
   }
 
   &::after {
-    //fill
     top: 1px;
     border-color: transparent transparent transparent #fff;
     border-width: 26px;
   }
 
   &::before {
-    //border
     top: 0;
     border-color: transparent transparent transparent $color-secondary;
     border-width: 27px;
