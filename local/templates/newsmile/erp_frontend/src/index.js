@@ -11,10 +11,12 @@ import './styles/vendor/select2.min.css';
 import './style.css';
 import './main.css';
 import App from './App';
+import ArrayHelper from './common/helpers/array-helper'
 
 import * as serviceWorker from './serviceWorker';
 
 ReactDOM.render(<App />, document.getElementById('root'));
+ArrayHelper.modifyPrototype();
 
 //server
 /*window.React =  React;
