@@ -1,5 +1,6 @@
 import React from 'react'
 import './NavAppt.scss'
+import IconCheck from "../../common/Icons";
 
 const stepNames = [
     {
@@ -28,7 +29,7 @@ const stepNames = [
     },
     {
         id: 7,
-        text: 'V'
+        text: <IconCheck width="15" height="10"/>
     }
 
 ]

@@ -1,6 +1,6 @@
 import React from 'react'
 import './Checkup.scss'
-import Button from "../../../common/Button/Button";
+import Button from "../../../common/Button/Button"
 
 export default class Checkup extends React.Component {
     render() {

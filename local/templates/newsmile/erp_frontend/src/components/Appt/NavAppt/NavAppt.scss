@@ -2,6 +2,7 @@
 
 .appt-nav {
   display: flex;
+  background: lighten($color-secondary, 12%);
   border: 1px solid $color-secondary;
 }
 
@@ -10,12 +11,11 @@
   display: inline-flex;
   flex-grow: 1;
   justify-content: center;
+  align-items: center;
   text-align: center;
   padding: 15px 45px;
   white-space: nowrap;
   user-select: none;
-  cursor: pointer;
-
 
   &:after,
   &:before {
@@ -31,7 +31,7 @@
 
   &::after {
     top: 1px;
-    border-color: transparent transparent transparent #fff;
+    border-color: transparent transparent transparent lighten($color-secondary, 12%);
     border-width: 26px;
   }
 
