@@ -30,7 +30,7 @@ class CheckupHeader extends React.Component {
                         Печать
                     </div>
                 </div>
-                <Button text="Сохранить и продолжить"/>
+                <Button variant="success" text="Сохранить и продолжить"/>
             </div>
         )
     }

@@ -22,6 +22,6 @@ Button.defaultProps = {
 
 Button.propTypes = {
     size: PropTypes.oneOf(["sm", "md", "lg"]),
-    variant: PropTypes.oneOf(["primary", "secondary", "disabled", "default"]),
+    variant: PropTypes.oneOf(["primary", "secondary", "success", "disabled", "default"]),
     text: PropTypes.string
 }

@@ -1,3 +1,4 @@
+@import url('https://fonts.googleapis.com/css?family=Rubik:300,400,500&subset=cyrillic');
 // colors
 $sea: #00d6d6;
 $pink-red: #fa004c;
@@ -10,3 +11,20 @@ $color-accent: $sea;
 $color-success: $apple;
 $color-danger: $pink-red;
 $color-secondary: $smoke;
+
+// FONTS
+
+$font-main: 'Lato-Regular', 'Arial', sans-serif;
+//$font-accent: 'Lato-Bold', 'Arial', sans-serif;
+//$font-light: 'Lato-Light', 'Arial', sans-serif;
+//$font-mid: 'Lato-Semibold', 'Arial', sans-serif;
+
+%font-main {
+  font-family: 'Rubik', 'Arial', sans-serif;
+  font-weight: 400;
+}
+
+%font-accent {
+  font-family: 'Rubik', 'Arial', sans-serif;
+  font-weight: 500;
+}

@@ -1,5 +1,18 @@
 @import './../../../styles/variables';
 
+@mixin button-states($bg) {
+  background: $bg;
+
+  &:hover {
+    background:darken($bg,8%);
+    transition: background 0.3s ease;
+  }
+
+  &:active {
+    background:darken($bg,25%);
+  }
+}
+
 .btn {
   display: inline-block;
   cursor: pointer;
@@ -17,6 +30,11 @@
 }
 
 .btn-variant-default {
-  background: $color-secondary;
+  @include button-states($color-secondary);
   color: #000;
+}
+
+.btn-variant-success {
+  @include button-states($color-success);
+  color: #fff;
 }

@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import './index.css';
+import './index.scss';
 import './bootstrap.min.css';
 import './styles/vendor/jquery.mCustomScrollbar.css';
 // import './styles/vendor/jquery-ui.min.css';

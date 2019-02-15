@@ -11,6 +11,12 @@ common - Вспомогательные функции для взаимодей
 
 .indent-default - задает базовый внутренний отступ в блоках
 
+### `КНОПКИ`
+
+миксины
+
+@mixin button-states<br>состояния при hover, active
+
 
 ## Create React App
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
