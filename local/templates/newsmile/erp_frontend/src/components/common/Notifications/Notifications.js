@@ -35,6 +35,21 @@ export default class Notifications extends React.Component {
 						<svg className="notify__close-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 19.16 19.16"><title>close</title><line x1="2" y1="2" x2="17.16" y2="17.16" fill="none" stroke-linecap="round" stroke-miterlimit="10" stroke-width="4"/><line x1="17.16" y1="2" x2="2" y2="17.16" fill="none" stroke-linecap="round" stroke-miterlimit="10" stroke-width="4"/></svg>
 					</button>
 				</div>
+				<div className="notify__item notify__item--waiting notify__item--open">
+					<div className="notify__item-info">
+						<div className="notify__item-header">
+							<span className="notify__status">Пациент ожидает</span>
+						</div>
+						<div className="notify__item-content">
+							<div className="notify__signal"></div>
+							<span className="notify__doctor-name">Свешникова К.А.</span>
+							<span class="notify__time">13:00 - 14:00</span>
+						</div>
+					</div>
+					<button type="button" className="notify__write-btn">
+						Принять пациента
+					</button>
+				</div>
 			</div>
         )
     }
