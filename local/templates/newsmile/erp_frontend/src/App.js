@@ -32,7 +32,6 @@ class App extends Component {
                 <div className="main-content">
                     <Header />
                     <Appt />
-                    <TextArea />
                     {this.state.schedule && (
                         <Schedule calendar={this.state.calendar} doctors={this.state.doctors} initialDate={this.state.initialDate} schedule={this.state.schedule} />
                     )}

@@ -11,13 +11,13 @@ $color-accent: $sea;
 $color-success: $apple;
 $color-danger: $pink-red;
 $color-secondary: $smoke;
+$color-secondary-light: ($smoke, 12%);
 
 // FONTS
 
-$font-main: 'Lato-Regular', 'Arial', sans-serif;
-//$font-accent: 'Lato-Bold', 'Arial', sans-serif;
-//$font-light: 'Lato-Light', 'Arial', sans-serif;
-//$font-mid: 'Lato-Semibold', 'Arial', sans-serif;
+// RUBIK
+
+// regular
 
 %font-main {
   font-family: 'Rubik', 'Arial', sans-serif;
