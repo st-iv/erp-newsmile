@@ -11,7 +11,7 @@ export default class AccordionItem extends React.Component {
     render() {
         const {variant} = this.props
         return (
-            <div className={`accordion-item accordion-item--variant-${variant}`}>
+            <div className={`accordion-item accordion-item--variandt-${variant}`}>
                 <span className="accordion-item__text">
                     Перенесенные и сопутствующие заболевания
                 </span>
