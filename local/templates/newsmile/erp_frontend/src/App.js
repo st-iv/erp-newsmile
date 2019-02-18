@@ -4,6 +4,7 @@ import Sidebar from './components/Sidebar/Sidebar'
 import Header from './components/Header/Header'
 import Schedule from './components/Schedule/Schedule'
 import Appt from './components/Appt/Appt'
+import TextArea from './components/common/TextArea/TextArea'
 import ServerCommand from './common/server/server-command'
 // import Test from './components/Test/Test'
 
@@ -31,6 +32,7 @@ class App extends Component {
                 <div className="main-content">
                     <Header />
                     <Appt />
+                    <TextArea />
                     {this.state.schedule && (
                         <Schedule calendar={this.state.calendar} doctors={this.state.doctors} initialDate={this.state.initialDate} schedule={this.state.schedule} />
                     )}
