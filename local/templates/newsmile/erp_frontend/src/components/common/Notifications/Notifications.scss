@@ -1,0 +1,101 @@
+@import './../../../styles/variables';
+
+.notify__item {
+	position: relative;
+	margin: 0 auto;
+	margin-bottom: 3px;
+	padding: 16px 35px 18px 14px;
+	font-size: 0.688rem;
+	color: #ffffff;
+	background-color: rgba(36,41,47,.908);
+	border-radius: 2px;
+	opacity: 0;
+	transform: scale(0.65);
+	filter: blur(5px);
+	transition: opacity ease-in-out 0.3s, transform ease-in-out 0.3s, filter ease-in-out 0.1s;
+}
+
+.notify__item--open {
+	opacity: 1;
+	transform: scale(1);
+	filter: none;
+}
+
+.notify__signal {
+	width: 7px;
+	height: 7px;
+	margin-right: 10px;
+	border-radius: 50%;
+}
+
+.notify__close-btn {
+	position: absolute;
+	top: 7px;
+	right: 5px;
+	background: transparent;
+	border: none;
+	cursor: pointer;
+}
+
+.notify__close-btn:focus {
+	outline: none;
+}
+
+.notify__close-icon {
+	width: 7px;
+	height: 7px;
+	stroke: #ffffff;
+}
+
+.notify__close-btn:hover .notify__close-icon {
+	stroke: rgba(255, 255, 255, 0.5);
+}
+
+.notify__item-header {
+	display: flex;
+	align-items: center;
+	margin-bottom: 10px;
+}
+
+.notify__doctor-name {
+	margin-right: 11px;
+	padding-left: 8px;
+	padding-right: 7px;
+	padding-top: 1px;
+	border-radius: 2px;
+	@extend %font-accent;
+}
+
+.notify__item--finish .notify__signal{
+	background-color: #6ac153;
+}
+
+.notify__item--ready .notify__signal{
+	background-color: #fa004c;
+}
+
+.notify__status {
+	font-size: 0.813rem;
+}
+
+.notify__item-content {
+	display: flex;
+}
+
+.notify__patient {
+	margin: 0;
+	margin-right: 8px;
+}
+
+.notify__patient-name,
+.notify__cabinet-name {
+	display: inline-block;
+    margin-left: 3px;
+	padding: 0 7px;
+	border-radius: 2px;
+	background-color: rgba(255,255,255, 0.1);
+}
+
+.notify__cabinet {
+	margin-bottom: 0;
+}
