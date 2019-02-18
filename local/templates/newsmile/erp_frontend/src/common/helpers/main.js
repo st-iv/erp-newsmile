@@ -1,9 +1,9 @@
-import ColorHelper from 'js/helpers/color-helper';
-import CookieHelper from 'js/helpers/cookie-helper';
-import DateHelper from 'js/helpers/date-helper';
-import GeneralHelper from 'js/helpers/general-helper';
-import PhoneHelper from 'js/helpers/phone-helper';
-import StringHelper from 'js/helpers/string-helper';
+import ColorHelper from './color-helper';
+import CookieHelper from './cookie-helper';
+import DateHelper from './date-helper';
+import GeneralHelper from './general-helper';
+import PhoneHelper from './phone-helper';
+import StringHelper from './string-helper';
 
 let Helper = Object.assign({
     Color: ColorHelper,

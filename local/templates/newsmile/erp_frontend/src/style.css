@@ -1,6 +1,7 @@
 body{
 	font-family: 'Rubik', 'Arial';
 	/*overflow: hidden;*/
+	font-size: 16px;
 }
 body>.container-fluid:first-child {
 	height: 100vh;
@@ -190,26 +191,24 @@ body>.container-fluid:first-child {
 }
 
 .left_menu {
-	/*z-index: 8;*/
-	/*position: fixed;*/
+	position: relative;
 	display: flex;
 	flex-direction: column;
-	top: 0;
-	left: 0;
 	width: 59px;
 	height: 100vh;
 	background-color: #4f5965;
 }
 
-.left_menu_vline{
-	z-index: 6;
-	position: fixed;
-	top: 0;	
-	left: 0;
-	width: 67px;
+.left_menu::after {
+	position: absolute;
+	content: '';
+	top: 0;
+	right: 0;
 	height: 100vh;
-	border-right: 8px solid #f4f4f4;
+	width: 8px;
+	background: #f4f4f4;
 }
+
 .menu_btn_shld,
 .menu_btn_kartoteka,
 .menu_btn_options{

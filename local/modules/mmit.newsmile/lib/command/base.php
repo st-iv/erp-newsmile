@@ -28,8 +28,6 @@ abstract class Base
 
     private $isReflectionMode;
 
-    protected static $name = '';
-
     public function __construct($params = [], $varyParam = null, $isReflectionMode = false)
     {
         $this->varyParam = $varyParam;
@@ -259,9 +257,9 @@ abstract class Base
      * Возвращает название команды
      * @return string
      */
-    public static function getName()
+    public function getName()
     {
-        return static::$name;
+        return '';
     }
 
     /**
@@ -316,7 +314,6 @@ abstract class Base
             );
         }
     }
-
 
     public function getParamsMapAssoc()
     {
@@ -390,6 +387,6 @@ abstract class Base
      */
     public function getResultFormat()
     {
-        return []; // TODO it must be abstract
+        return [];
     }
 }

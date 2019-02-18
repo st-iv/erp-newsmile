@@ -4,6 +4,7 @@
 namespace Mmit\NewSmile;
 
 use Bitrix\Main\EventManager;
+use Bitrix\Main\Page\Asset;
 use Mmit\NewSmile\Access;
 use Mmit\NewSmile\Command;
 
@@ -129,5 +130,38 @@ class Application
     public function clearUser()
     {
         $this->user = null;
+    }
+
+    public function includeScriptsAndStyles()
+    {
+        $asset = Asset::getInstance();
+        $buildDir = $_SERVER['DOCUMENT_ROOT'] . SITE_TEMPLATE_PATH . '/erp_frontend/build/static';
+        $filesList = [];
+
+        Helpers::scanDir($buildDir . '/js', function($filePath) use ($asset)
+        {
+            if(pathinfo($filePath, PATHINFO_EXTENSION) == 'js')
+            {
+                //echo '<script src="' . Helpers::getRelPath($filePath) . '"></script>';
+                $asset->addJs(Helpers::getRelPath($filePath));
+            }
+        });
+
+        /*$asset->addJs('/local/templates/newsmile/erp_frontend/build/static/js/runtime~main.229c360f.js');
+        $asset->addJs('/local/templates/newsmile/erp_frontend/build/static/js/1.eebabb29.chunk.js');
+        $asset->addJs('/local/templates/newsmile/erp_frontend/build/static/js/main.be7531df.chunk.js');*/
+
+
+
+
+
+
+        Helpers::scanDir($buildDir . '/css', function($filePath) use ($asset)
+        {
+            if(pathinfo($filePath, PATHINFO_EXTENSION) == 'css')
+            {
+                $asset->addCss(Helpers::getRelPath($filePath));
+            }
+        });
     }
 }

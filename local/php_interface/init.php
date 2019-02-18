@@ -1,6 +1,8 @@
 <?
 \Bitrix\Main\Loader::includeModule('mmit.newsmile');
 
+header('Access-Control-Allow-Origin: *');
+
 function pr($var, $bDump = false)
 {
     ?>

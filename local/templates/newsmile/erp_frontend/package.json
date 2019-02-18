@@ -4,8 +4,10 @@
   "private": true,
   "dependencies": {
     "jquery": "^3.3.1",
+    "malihu-custom-scrollbar-plugin": "^3.1.5",
     "moment": "^2.24.0",
     "node-sass": "^4.11.0",
+    "rc-slider": "^8.6.5",
     "react": "^16.7.0",
     "react-addons-css-transition-group": "15.6.2",
     "react-contextmenu": "2.10.0",
@@ -19,7 +21,8 @@
     "react-select": "2.1.2",
     "react-simple-animate": "2.6.2",
     "react-tooltip": "3.9.0",
-    "typescript": "^3.3.3"
+    "typescript": "^3.3.3",
+    "tinycolor2": "^1.4.1"
   },
   "scripts": {
     "start": "react-scripts start",

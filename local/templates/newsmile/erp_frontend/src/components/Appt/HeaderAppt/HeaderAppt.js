@@ -30,7 +30,7 @@ export default class HeaderAppt extends React.Component {
                             </div>
                         </div>
                     </div>
-                    <Button size="sm" variant="secondary" text="Открыть карту"/>
+                    <Button text="Открыть карточку пациента"/>
                 </div>
             </div>
         )

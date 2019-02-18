@@ -4,7 +4,6 @@ export default class Sidebar extends React.Component {
     render() {
         return (
             <div className=" left_menu__wrap">
-                {/*<div id="panel">Зачем это тут?</div>*/}
                 <div className="left_menu">
                     <div className="menu_btn_shld"></div>
                     <div className="menu_btn_kartoteka"></div>

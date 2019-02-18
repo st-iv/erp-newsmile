@@ -1,3 +1,5 @@
+@import './../../../styles/variables';
+
 .header-appt {
   display: flex;
   align-items: center;
@@ -13,11 +15,14 @@
 
 .header-appt__title {
   margin-right: 50px;
+  font-size: 1.0625rem;
 }
 
-.header-appt__user--online {
+.header-appt__user {
   display: flex;
   align-items: center;
+  @extend %font-accent;
+  font-size: 1rem;
 
   &::before {
     content: "";
@@ -26,7 +31,13 @@
     height: 6px;
     border-radius: 50%;
     margin-right: 12px;
-    background: #8db62a;
+    background: $color-danger;
+  }
+}
+
+.header-appt__user--online {
+  &::before {
+    background: $color-success;
   }
 }
 
@@ -45,7 +56,13 @@
   padding: 15px;
 
   .text {
+    font-size: 0.8125rem;
     margin-right: 20px;
+  }
+
+  .val {
+    font-size: 0.8125rem;
+    @extend %font-accent;
   }
 }
 

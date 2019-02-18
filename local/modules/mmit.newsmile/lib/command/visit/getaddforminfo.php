@@ -111,6 +111,7 @@ class GetAddFormInfo extends Base
                 'DOCTOR_NAME' => 'DOCTOR.NAME',
                 'DOCTOR_LAST_NAME' => 'DOCTOR.LAST_NAME',
                 'DOCTOR_SECOND_NAME' => 'DOCTOR.SECOND_NAME',
+                'TIME'
             ]
         ]);
 

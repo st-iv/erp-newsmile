@@ -1,0 +1,20 @@
+@import './../../../styles/variables';
+
+.accordion-item {
+  padding: 19px;
+  border-radius: 4px;
+  background: $color-secondary;
+}
+
+.accordion-item__text {
+  font-size: 0.8125rem;
+  color: #fff;
+}
+
+.accordion-item--variant-success {
+  background: lighten($color-success, 50%);
+
+  .accordion-item__text {
+    color: $color-success;
+  }
+}

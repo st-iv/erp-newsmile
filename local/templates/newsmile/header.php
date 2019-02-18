@@ -45,19 +45,18 @@ $isNewTemplateVersion = ($APPLICATION->GetCurPage() == '/');
         $asset->addJs(SITE_TEMPLATE_PATH . '/js/custom_calendar.js');
         $asset->addJs(SITE_TEMPLATE_PATH . '/js/ajax_load.js');
         $asset->addJs(SITE_TEMPLATE_PATH . '/js/jquery.magnific-popup.js');
-        //$asset->addJs(SITE_TEMPLATE_PATH . '/js/popup.js');
+        $asset->addCss(SITE_TEMPLATE_PATH . '/css/main.css');
+        $asset->addJs(SITE_TEMPLATE_PATH . '/js/main.js');
     }
-
-    $asset->addCss(SITE_TEMPLATE_PATH . '/css/main.css');
-    $asset->addJs(SITE_TEMPLATE_PATH . '/js/main.js');
+    else
+    {
+        Application::getInstance()->includeScriptsAndStyles();
+    }
     ?>
 </head>
 <body <?if(!$isNewTemplateVersion):?>data-sessid="<?=bitrix_sessid()?>" data-post-form-action="<?=POST_FORM_ACTION_URI?>"<?endif;?>>
 
     <?if(!$isNewTemplateVersion):?>
-        <div id="panel">
-            <?//$APPLICATION->ShowPanel()?>
-        </div>
 
         <?$APPLICATION->IncludeComponent("bitrix:menu","left",Array(
                 "ROOT_MENU_TYPE" => "left",
@@ -70,7 +69,7 @@ $isNewTemplateVersion = ($APPLICATION->GetCurPage() == '/');
                 "MENU_CACHE_TIME" => "36000",
                 "MENU_CACHE_USE_GROUPS" => "N",
             )
-        );?>
+        ); ?>
 
         <div class="container-fluid" id="body">
             <div class="row main_header">

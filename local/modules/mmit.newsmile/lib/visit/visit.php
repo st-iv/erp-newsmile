@@ -7,6 +7,7 @@
  */
 namespace Mmit\NewSmile\Visit;
 
+use Bitrix\Main\Diag\Debug;
 use Bitrix\Main\Entity;
 use Bitrix\Main\Localization\Loc;
 use Bitrix\Main\ORM\Event;
@@ -116,64 +117,48 @@ class VisitTable extends Entity\DataManager implements ExtendedFieldsDescriptor
         $fields = $event->getParameter('fields');
         $result = new Entity\EventResult();
 
-        /* выясняем ID врача для приема по интервалам расписания, которые приходятся на прием */
-        if(!$fields['DOCTOR_ID'])
-        {
-            $dbSchedules = ScheduleTable::getList([
-                'filter' => [
-                    '>=TIME' => $fields['TIME_START'],
-                    '<TIME' => $fields['TIME_END'],
-                    'WORK_CHAIR_ID' => $fields['WORK_CHAIR_ID'],
-                    'CLINIC_ID' => $fields['CLINIC_ID'] ?: Config::getClinicId()
-                ]
-            ]);
-
-            $doctorId = null;
-
-            while ($schedule = $dbSchedules->fetch())
-            {
-                if(!$schedule['DOCTOR_ID'])
-                {
-                    throw new Error('На все интервалы расписания, на которые записывается пациент, должен быть назначен врач!', 'VISIT_NOT_APPOINTED_DOCTOR');
-                }
-
-                if(!isset($doctorId))
-                {
-                    $doctorId = $schedule['DOCTOR_ID'];
-                }
-                elseif($doctorId != $schedule['DOCTOR_ID'])
-                {
-                    throw new Error('На все интервалы расписания, на которые записывается пациент, должен быть назначен один и тотже врач!', 'VISIT_DIFFERENT_DOCTORS');
-                }
-            }
-
-            $result->modifyFields([
-                'DOCTOR_ID' => $doctorId
-            ]);
-        }
-
         /* берем DATE_START (дату приема) с TIME_START и TIME_END */
 
         if(!NewSmile\Date\Helper::isEqualDates($fields['TIME_START'], $fields['TIME_END']))
         {
-            throw new Error('Время начала приема и время окончания приема должны приходитьтся на одну дату', 'VISIT_DIFFERENT_TIMES_DATE');
+            throw new Error('Время начала приема и время окончания приема должны приходиться на одну дату', 'VISIT_DIFFERENT_TIMES_DATE');
         }
 
-        $result->modifyFields([
-            'DATE_START' => new Date($fields['TIME_START']->format('d.m.Y'))
+        $dateStart = new Date($fields['TIME_START']->format('d.m.Y'));
+        $modifiedFields = [
+            'DATE_START' => clone $dateStart
+        ];
+
+
+        /* пишем PATIENT_ID в интервалы расписания */
+        $scheduler = new NewSmile\Scheduler($dateStart);
+        $actualScheduleFields = $scheduler->updateByTime($fields['TIME_START'], $fields['TIME_END'], $fields['WORK_CHAIR_ID'], [
+            'PATIENT_ID' => $fields['PATIENT_ID']
         ]);
+
+        if($actualScheduleFields['DOCTOR_ID'])
+        {
+            $scheduler->save();
+            $modifiedFields['DOCTOR_ID'] = $actualScheduleFields['DOCTOR_ID'];
+        }
+        else
+        {
+            throw new Error('Невозможна запись пациента на интервалы расписания, на которые не назначен врач, либо назначены разные врачи', 'SEVERAL_DOCTORS');
+        }
+
+        $result->modifyFields($modifiedFields);
 
         return $result;
     }
 
     public static function onAfterAdd(Event $event)
     {
-        $fields = $event->getParameter('fields');
+        //$fields = $event->getParameter('fields');
 
 
         /* записываем id пациента в интервалы расписания */
 
-        $dbSchedules = ScheduleTable::getList([
+        /*$dbSchedules = ScheduleTable::getList([
             'filter' => [
                 '>=TIME' => $fields['TIME_START'],
                 '<TIME' => $fields['TIME_END'],
@@ -189,7 +174,7 @@ class VisitTable extends Entity\DataManager implements ExtendedFieldsDescriptor
                 'PATIENT_ID' => $fields['PATIENT_ID'],
                 'DOCTOR_ID' => $fields['DOCTOR_ID']
             ]);
-        }
+        }*/
     }
 
     public static function getEnumVariants($enumFieldName)
