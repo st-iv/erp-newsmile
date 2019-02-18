@@ -19,6 +19,10 @@
   font-size: 0.938rem;
   @extend %font-accent;
 
+  .icon-check {
+    stroke: #000;
+  }
+
   &:after,
   &:before {
     content: '';
@@ -55,6 +59,10 @@
   cursor: default;
   background: $color-success;
   color: #fff;
+
+  .icon-check {
+    stroke: #fff;
+  }
 
   &::after {
     //fill

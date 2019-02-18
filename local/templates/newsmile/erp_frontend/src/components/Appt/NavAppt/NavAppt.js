@@ -1,6 +1,6 @@
 import React from 'react'
 import './NavAppt.scss'
-import IconCheck from "../../common/Icons";
+import {IconCheck} from "../../common/Icons";
 
 const stepNames = [
     {

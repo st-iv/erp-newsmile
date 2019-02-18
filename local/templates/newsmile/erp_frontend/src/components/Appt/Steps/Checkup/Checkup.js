@@ -1,6 +1,7 @@
 import React from 'react'
 import './Checkup.scss'
 import Button from "../../../common/Button/Button"
+import {IconPrint, IconArrow} from "./../../../common/Icons";
 
 export default class Checkup extends React.Component {
     render() {
@@ -27,7 +28,7 @@ class CheckupHeader extends React.Component {
                         Осмотр
                     </div>
                     <div className="checkup-steps__item">
-                        Печать
+                        <IconPrint width="15" height="18"/>
                     </div>
                 </div>
                 <Button variant="success" text="Сохранить и продолжить"/>
