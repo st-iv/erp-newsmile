@@ -2,8 +2,35 @@ import React from 'react'
 import './Checkup.scss'
 import Button from "../../../common/Button/Button"
 import TextArea from "../../../common/TextArea/TextArea"
-import AccordionWrap from "../../../common/Accordion/Accordion"
+import AccordionList from "../../../common/Accordion/Accordion"
 import {IconPrint, IconArrow} from "./../../../common/Icons";
+
+const AccordionData = [
+    {
+        id: 1,
+        text: 'Перенесенные и сопутствующие заболевания'
+    },
+    {
+        id: 2,
+        text: 'Развитие настоящего заболевания'
+    },
+    {
+        id: 3,
+        text: 'Данные объективного обследования, внешний осмотр'
+    },
+    {
+        id: 4,
+        text: 'Прикус'
+    },
+    {
+        id: 5,
+        text: 'Состояние слизистой оболочки полости рта, десен, альвеолярных отростков и неба'
+    },
+    {
+        id: 6,
+        text: 'Данные рентгеновских и лабораторных исследований'
+    },
+]
 
 export default class Checkup extends React.Component {
     render() {
@@ -11,7 +38,6 @@ export default class Checkup extends React.Component {
             <div className="checkup">
                 <CheckupHeader />
                 <CheckupContent />
-                <AccordionWrap />
             </div>
         )
     }
@@ -50,6 +76,7 @@ class CheckupContent extends React.Component {
                 <div className="appt-form">
                     <TextArea title="Диагноз" placeholder="Опишите состояние пациента"/>
                     <TextArea title="Жалобы" placeholder="Опишите жалобы"/>
+                    <AccordionList data={AccordionData} />
                 </div>
                 <div className="appt-explorer">
                     <div className="appt-explorer__title">

@@ -1,26 +1,7 @@
 import React from 'react'
 import './Accordion.scss'
 
-const AccordionData = [
-    {
-        id: 1,
-        text: 'description1'
-    },
-    {
-        id: 2,
-        text: 'description2'
-    },
-    {
-        id: 3,
-        text: 'description3'
-    },
-    {
-        id: 4,
-        text: 'descripdwtion'
-    }
-]
-
-class AccordionList extends React.Component {
+export default class AccordionList extends React.Component {
     static defaultProps = {
         variant: 'success',
     }
@@ -45,11 +26,11 @@ class AccordionList extends React.Component {
     }
 }
 
-export default class AccordionWrap extends React.Component {
+/*export default class AccordionWrap extends React.Component {
     render() {
         return (
             <AccordionList data={AccordionData}/>
         )
     }
-}
+}*/
 
