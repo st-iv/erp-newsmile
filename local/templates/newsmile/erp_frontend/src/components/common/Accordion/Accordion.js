@@ -4,18 +4,19 @@ import './Accordion.scss'
 export default class AccordionItem extends React.Component {
     static defaultProps = {
         variant: 'success',
-        steps: 0,
-        title: "[recipe]"
     }
 
     render() {
-        const {variant} = this.props
+        const {variant, text} = this.props
         return (
-            <div className={`accordion-item accordion-item--variandt-${variant}`}>
+            {this.props.accordionData.map((item, index) =>
+                <div className={`accordion-item accordion-item--variant-${variant}`}>
                 <span className="accordion-item__text">
-                    Перенесенные и сопутствующие заболевания
+                    {item.text}
                 </span>
-            </div>
-        )
+                </div>
+            )}
+
+    )
     }
 }

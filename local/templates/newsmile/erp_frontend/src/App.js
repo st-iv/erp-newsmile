@@ -29,7 +29,7 @@ class App extends Component {
     render() {
         return (
             <div className="App">
-                <Notifications />
+                {/*<Notifications />*/}
                 <Sidebar />
                 <div className="main-content">
                     <Header />

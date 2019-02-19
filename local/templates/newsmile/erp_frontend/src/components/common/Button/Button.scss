@@ -30,7 +30,7 @@
 }
 
 .btn-variant-default {
-  @include button-states(rgba($black, 0.05));
+  @include button-states($color-secondary);
   color: #000;
 }
 

@@ -1,8 +1,9 @@
 @import './../../../../styles/variables';
 
 .checkup {
-  padding: 20px 48px;
+  padding: 20px 0;
 }
+
 .checkup-header {
   display: flex;
   justify-content: space-between;
@@ -14,6 +15,7 @@
 .checkup-header__desc {
   font-size: 0.813rem;
 }
+
 .checkup-steps {
   display: flex;
   border-radius: 4px;
@@ -23,10 +25,6 @@
 .checkup-steps__item {
   padding: 15px 30px;
   border: 1px solid $color-secondary;
-}
-
-.checkup-content {
-  display: flex;
   padding: 10px 30px 10px 50px;
   font-size: 0.813rem;
   position: relative;
@@ -78,15 +76,20 @@
     &::after {
       border-color: transparent transparent transparent $color-success;
     }
-  
+
     &::before {
       border-color: transparent transparent transparent #fff;
+    }
+
+    .icon-print {
+      stroke: #fff;
     }
   }
 }
 
-.icon-print {
-  stroke: #fff;
+.checkup-content {
+  display: flex;
+  padding: 0 47px;
 }
 
 .icon-print {
