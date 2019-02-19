@@ -2,27 +2,8 @@ import React from 'react'
 import './Checkup.scss'
 import Button from "../../../common/Button/Button"
 import TextArea from "../../../common/TextArea/TextArea"
-import AccordionItem from "../../../common/Accordion/Accordion"
+import AccordionWrap from "../../../common/Accordion/Accordion"
 import {IconPrint, IconArrow} from "./../../../common/Icons";
-
-const AccordionData = [
-    {
-        id: 1,
-        text: 'description'
-    },
-    {
-        id: 1,
-        text: 'description'
-    },
-    {
-        id: 1,
-        text: 'description'
-    },
-    {
-        id: 1,
-        text: 'description'
-    }
-]
 
 export default class Checkup extends React.Component {
     render() {
@@ -30,7 +11,7 @@ export default class Checkup extends React.Component {
             <div className="checkup">
                 <CheckupHeader />
                 <CheckupContent />
-                <AccordionItem items={AccordionData}/>
+                <AccordionWrap />
             </div>
         )
     }
