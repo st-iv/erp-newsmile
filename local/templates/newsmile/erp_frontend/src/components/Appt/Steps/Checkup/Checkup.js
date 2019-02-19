@@ -3,6 +3,7 @@ import './Checkup.scss'
 import Button from "../../../common/Button/Button"
 import TextArea from "../../../common/TextArea/TextArea"
 import AccordionItem from "../../../common/Accordion/Accordion"
+import {IconPrint, IconArrow} from "./../../../common/Icons";
 
 export default class Checkup extends React.Component {
     render() {
@@ -30,7 +31,7 @@ class CheckupHeader extends React.Component {
                             Осмотр
                         </div>
                         <div className="checkup-steps__item">
-                            Печать
+                            <IconPrint width="15" height="18"/>
                         </div>
                     </div>
                     <Button variant="success" text="Сохранить и продолжить"/>
@@ -39,7 +40,7 @@ class CheckupHeader extends React.Component {
                     <div className="appt-form">
                         <TextArea title="Диагноз" placeholder="Опишите состояние пациента"/>
                         <TextArea title="Жалобы" placeholder="Опишите жалобы"/>
-                        <AccordionItem />
+                        <AccordionItem/>
                     </div>
                     <div className="appt-explorer">
                         <div className="appt-explorer__title">
@@ -52,6 +53,6 @@ class CheckupHeader extends React.Component {
                     </div>
                 </div>
             </React.Fragment>
-        )
+    )
     }
-}
+    }
