@@ -4,6 +4,7 @@ import HeaderAppt from './HeaderAppt/HeaderAppt'
 import NavAppt from './NavAppt/NavAppt'
 import Checkup from "./Steps/Checkup/Checkup"
 import ToothCard from "./Steps/ToothCard/ToothCard"
+import ToothRoll from "./Steps/ToothCard/ToothRoll"
 
 export default class Appt extends React.Component {
     render() {
@@ -13,6 +14,7 @@ export default class Appt extends React.Component {
                 <NavAppt />
                 {/*<Checkup />*/}
                 <ToothCard />
+                <ToothRoll />
             </div>
         )
     }
