@@ -1,6 +1,7 @@
 import React from 'react'
 import './ToothCard.scss'
 import {IconTooth} from "../../../common/Icons";
+import Tabs from '../../../common/Tabs/Tabs'
 
 const toothData = [
     //1row topleft
@@ -132,7 +133,10 @@ class ToothList extends React.Component {
 export default class ToothWrap extends React.Component {
     render() {
         return (
-            <ToothList data={toothData}/>
+            <div>
+                <Tabs />
+                <ToothList data={toothData}/>
+            </div>
         )
     }
 }
