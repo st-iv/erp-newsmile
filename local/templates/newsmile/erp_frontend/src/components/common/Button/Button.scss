@@ -52,6 +52,11 @@
   }
 }
 
-.btn-action-next {
+.btn-variant-outline--secondary {
+  border: 1px solid $color-secondary;
+}
 
+.btn-size-sm {
+  border-radius: 4px;
+  padding: 4px 9px 5px 9px;
 }
