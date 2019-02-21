@@ -12,7 +12,7 @@ export default class Appt extends React.Component {
             <div className="appt">
                 <HeaderAppt />
                 <NavAppt />
-                {/*<Checkup />*/}
+                <Checkup />
                 <ToothCard />
                 <ToothRoll />
             </div>

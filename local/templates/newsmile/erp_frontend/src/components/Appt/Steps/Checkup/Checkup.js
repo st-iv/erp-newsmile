@@ -62,7 +62,7 @@ class CheckupHeader extends React.Component {
                             <IconPrint width="15" height="18"/>
                         </div>
                     </div>
-                    <Button variant="success" text="Сохранить и продолжить"/>
+                    <Button variant="success" text="Сохранить и продолжить" action="next"/>
                 </div>
             </React.Fragment>
         )

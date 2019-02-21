@@ -22,11 +22,20 @@
   user-select: none;
   background-color: transparent;
   border: 1px solid transparent;
-  padding: 10px 21px 10px 16px;
+  padding: 10px 20px;
   font-size: 0.813rem;
   border-radius: 5px;
   line-height: 1.5;
   transition: color .15s ease-in-out, background-color .15s ease-in-out, border-color .15s ease-in-out, box-shadow .15s ease-in-out;
+
+  .icon-arrow {
+    width: 10px;
+    height: 10px;
+    margin-left: 15px;
+    transform: rotate(180deg);
+    stroke: #000;
+    stroke-width: 2px;
+  }
 }
 
 .btn-variant-default {
@@ -37,4 +46,12 @@
 .btn-variant-success {
   @include button-states($color-success);
   color: #fff;
+
+  .icon-arrow {
+    stroke: #fff;
+  }
+}
+
+.btn-action-next {
+
 }
