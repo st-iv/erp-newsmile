@@ -10,7 +10,7 @@
   justify-content: space-evenly;
   border-radius: 50%;
   background: #fff;
-  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.24);
+  @extend %shadow-main;
 
   .row {
     display: flex;
@@ -52,7 +52,6 @@
 
 .tooth-roll__select {
   padding: 15px;
-  border: 1px solid $color-secondary;
   border-radius: 50%;
-  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.24);
+  @extend %shadow-main;
 }

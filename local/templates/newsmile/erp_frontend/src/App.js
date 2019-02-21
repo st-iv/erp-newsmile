@@ -7,7 +7,7 @@ import Appt from './components/Appt/Appt'
 import TextArea from './components/common/TextArea/TextArea'
 import Notifications from './components/common/Notifications/Notifications'
 import ServerCommand from './common/server/server-command'
-// import Test from './components/Test/Test'
+import Test from './components/Test/Test'
 
 
 class App extends Component {
@@ -32,6 +32,7 @@ class App extends Component {
                 {/*<Notifications />*/}
                 <Sidebar />
                 <div className="main-content">
+                    <Test />
                     <Header />
                     <Appt />
                     {this.state.schedule && (
