@@ -1,82 +1,91 @@
 import React from 'react'
 import PropTypes from 'prop-types'
+import './ServicesLists.scss'
+import { IconFolder } from './../Icons';
 
 export default class ServicesList extends React.Component {
     render() {
         return (
-			<ul className="services-list">
+			<ul className="services-list services-list--lvl1">
 				<li className="services-list__item">
-					<span className="services-list__item-title">Терапия</span>
-					<ul className="services-list__sublist">
-						<li className = "services-list__sublist-item">
-							<span className="services-list__sublist-item-title">Подпапка 1</span>
+					<div className="services-list__item-title-group services-list__item-title-group--full">
+						<IconFolder width="13" height="11" />
+						<a href="" className="services-list__item-title">Терапия</a>
+					</div>
+				</li>
+				<li className="services-list__item">
+					<div className="services-list__item-title-group">
+						<IconFolder width="13" height="11" />
+						<a href="" className="services-list__item-title">Хирургия</a>
+					</div>
+				</li>
+				<li className="services-list__item">
+					<div className="services-list__item-title-group">
+						<IconFolder width="13" height="11" />
+						<a href="" className="services-list__item-title">Парадонтология</a>
+					</div>
+				</li>
+				<li className="services-list__item">
+					<div className="services-list__item-title-group services-list__item-title-group--full services-list__item-title-group--active">
+						<IconFolder width="13" height="11" />
+						<a href="" className="services-list__item-title">Имплантология</a>
+					</div>
+					<ul className="services-list services-list--lvl2">
+						<li className = "services-list__item">
+							<div className="services-list__item-title-group services-list__item-title-group--full">
+								<IconFolder width="13" height="11" />
+								<a href="" className="services-list__item-title">Еще одна подпапка</a>
+							</div>
 						</li>
-						<li className = "services-list__sublist-item">
-							<span className="services-list__sublist-item-title">Подпапка 2</span>
+						<li className = "services-list__item">
+							<div className="services-list__item-title-group">
+								<IconFolder width="13" height="11" />
+								<a href="" className="services-list__item-title">Установка ипланта ADIN</a>
+							</div>
+						</li>
+						<li className = "services-list__item">
+							<div className="services-list__item-title-group">
+								<IconFolder width="13" height="11" />
+								<a href="" className="services-list__item-title">Операции + костный материал</a>
+							</div>
+						</li>
+						<li className = "services-list__item">
+							<div className="services-list__item-title-group">
+								<IconFolder width="13" height="11" />
+								<a href="" className="services-list__item-title">Установка импланта MIS</a>
+							</div>
+						</li>
+						<li className = "services-list__item">
+							<div className="services-list__item-title-group">
+								<IconFolder width="13" height="11" />
+								<a href="" className="services-list__item-title">Установка ипланта Nobel</a>
+							</div>
 						</li>
 					</ul>
 				</li>
 				<li className="services-list__item">
-					<span className="services-list__item-title">Хирургия</span>
-					<ul className="services-list__sublist">
-						<li className = "services-list__sublist-item">
-							<span className="services-list__sublist-item-title">Подпапка 1</span>
-						</li>
-						<li className = "services-list__sublist-item">
-							<span className="services-list__sublist-item-title">Подпапка 2</span>
-						</li>
-					</ul>
+					<div className="services-list__item-title-group services-list__item-title-group--full">
+						<IconFolder width="13" height="11" />
+						<a href="" className="services-list__item-title">Несъемное протезирование</a>
+					</div>
 				</li>
 				<li className="services-list__item">
-					<span className="services-list__item-title">Парадонтология</span>
-					<ul className="services-list__sublist">
-						<li className = "services-list__sublist-item">
-							<span className="services-list__sublist-item-title">Подпапка 1</span>
-						</li>
-						<li className = "services-list__sublist-item">
-							<span className="services-list__sublist-item-title">Подпапка 1</span>
-						</li>
-					</ul>
+					<div className="services-list__item-title-group services-list__item-title-group--full">
+						<IconFolder width="13" height="11" />
+						<a href="" className="services-list__item-title">Съемное протезирование</a>
+					</div>
 				</li>
 				<li className="services-list__item">
-					<span className="services-list__item-title">Имплантология</span>
-					<ul className="services-list__sublist">
-						<li className = "services-list__sublist-item">
-							<span className="services-list__sublist-item-title">Еще одна подпапка</span>
-							<ul className="services-list__sublist">
-								<li className="services-list__sublist-item">
-									<span className="services-list__sublist-item-title">Подпапка 1 внутри еще одной подпапки</span>
-								</li>
-								<li className="services-list__sublist-item">
-									<span className="services-list__sublist-item-title">Подпапка 2 внутри еще одной подпапки</span>
-								</li>
-							</ul>
-						</li>
-						<li className = "services-list__sublist-item">
-							<span className="services-list__sublist-item-title">Установка ипланта ADIN</span>
-						</li>
-						<li className = "services-list__sublist-item">
-							<span className="services-list__sublist-item-title">Операции + костный материал</span>
-						</li>
-						<li className = "services-list__sublist-item">
-							<span className="services-list__sublist-item-title">Установка импланта MIS</span>
-						</li>
-						<li className = "services-list__sublist-item">
-							<span className="services-list__sublist-item-title">Установка ипланта Nobel</span>
-						</li>
-					</ul>
+					<div className="services-list__item-title-group">
+						<IconFolder width="13" height="11" />
+						<a href="" className="services-list__item-title">Детство</a>
+					</div>
 				</li>
 				<li className="services-list__item">
-					<span className="services-list__item-title">Несъемное протезирование</span>
-				</li>
-				<li className="services-list__item">
-					<span className="services-list__item-title">Съемное протезирование</span>
-				</li>
-				<li className="services-list__item">
-					<span className="services-list__item-title">Детство</span>
-				</li>
-				<li className="services-list__item">
-					<span className="services-list__item-title">Ортодонтия</span>
+					<div className="services-list__item-title-group services-list__item-title-group--full">
+						<IconFolder width="13" height="11" />
+						<a href="" className="services-list__item-title">Ортодонтия</a>
+					</div>
 				</li>
 			</ul>
 		)

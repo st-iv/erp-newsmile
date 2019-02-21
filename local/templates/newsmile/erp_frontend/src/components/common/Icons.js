@@ -24,4 +24,12 @@ class IconArrow extends React.Component {
     }
 }
 
-export {IconCheck, IconPrint, IconArrow}
+class IconFolder extends React.Component {
+    render() {
+        return (
+            <svg className="icon-folder" width={this.props.width} height={this.props.height} data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18.57 15.43"><path stroke-miterlimit="10" stroke-width="1.1" d="M18.02 14.88H.55V.55h8.04l2.21 3.26h7.22v11.07z"/></svg>
+        )
+    }
+}
+
+export {IconCheck, IconPrint, IconArrow, IconFolder}
