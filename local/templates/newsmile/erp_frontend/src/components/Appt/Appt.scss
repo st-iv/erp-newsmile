@@ -1,0 +1,36 @@
+@import './../../../styles/variables';
+
+.check-group {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+}
+
+.check-group__title-group{
+	font-size: 0.824rem;
+	display: flex;
+	align-items: center;
+	margin-bottom: 10px;
+
+	.icon-check {
+		stroke: $color-success;
+		margin-right: 9px;
+	}
+}
+
+.check-group__btns {
+	width: 250px;
+	min-width: 170px;
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: center;
+	margin-bottom: 10px;
+	
+	.btn {
+		margin-bottom: 7px;
+		&:not(:last-of-type) {
+			margin-right: 10px;
+		}
+
+	}
+}

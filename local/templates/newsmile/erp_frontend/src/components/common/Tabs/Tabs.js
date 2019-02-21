@@ -10,7 +10,7 @@ const tabNames = [
     {
         id: 2,
         text: 'Ребенок'
-	}
+    }
 ]
 
 class Tabs extends React.Component {
