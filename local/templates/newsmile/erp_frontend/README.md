@@ -7,6 +7,8 @@ common - Вспомогательные функции для взаимодей
 
 [Блок-схема ERP React](https://drive.google.com/file/d/1Gl5e6vOiNV7Aj54t6CqQ2aasVtM42s3k/view?usp=sharing)
 
+[Система svg-иконок](https://css-tricks.com/creating-svg-icon-system-react/)
+
 ## Стилизация
 
 .indent-default - задает базовый внутренний отступ в блоках

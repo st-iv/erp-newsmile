@@ -1,17 +1,21 @@
 @import './../../../../styles/variables';
 
 .checkup {
-  padding: 20px 48px;
+  padding: 20px 0;
 }
+
 .checkup-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  padding: 20px 47px;
+  border-bottom: 1px solid $color-secondary;
 }
 
 .checkup-header__desc {
   font-size: 0.813rem;
 }
+
 .checkup-steps {
   display: flex;
   border-radius: 4px;
@@ -19,16 +23,20 @@
 }
 
 .checkup-steps__item {
+  padding: 15px 30px;
   padding: 10px 30px 10px 50px;
   font-size: 0.813rem;
   position: relative;
   display: inline-flex;
+
   &:first-child {
     padding: 10px 30px;
   }
+
   &:last-child {
     padding: 10px 30px 10px 45px;
   }
+
   &:after,
   &:before {
     content: '';
@@ -60,12 +68,6 @@
     }
   }
 
-  .icon-print {
-    stroke: #000;
-    stroke-width: 2px;
-    padding-top: 3px;
-  }
-
   &--active {
     background-color: $color-success;
     color: #fff;
@@ -73,7 +75,7 @@
     &::after {
       border-color: transparent transparent transparent $color-success;
     }
-  
+
     &::before {
       border-color: transparent transparent transparent #fff;
     }
@@ -82,5 +84,15 @@
       stroke: #fff;
     }
   }
+}
 
+.checkup-content {
+  display: flex;
+  padding: 0 47px;
+}
+
+.icon-print {
+  stroke: #000;
+  stroke-width: 2px;
+  padding-top: 3px;
 }

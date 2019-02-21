@@ -43,7 +43,7 @@ export default class Notifications extends React.Component {
 						<div className="notify__item-content">
 							<div className="notify__signal"></div>
 							<span className="notify__doctor-name">Свешникова К.А.</span>
-							<span class="notify__time">13:00 - 14:00</span>
+							<span className="notify__time">13:00 - 14:00</span>
 						</div>
 					</div>
 					<button type="button" className="notify__write-btn">

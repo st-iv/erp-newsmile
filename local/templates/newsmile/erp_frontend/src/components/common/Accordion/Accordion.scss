@@ -1,0 +1,32 @@
+@import './../../../styles/variables';
+
+.accordion-item {
+  padding: 12px 20px;
+  border-radius: 4px;
+  cursor: pointer;
+  background: $color-secondary;
+  margin-bottom: 6px;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.accordion-item__text {
+  font-size: 0.8125rem;
+  color: #fff;
+
+  &:before {
+    content: "+";
+    font-size: 1rem;
+    margin-right: 12px;
+  }
+}
+
+.accordion-item--variant-success {
+  background: lighten($color-success, 50%);
+
+  .accordion-item__text {
+    color: darken($color-success, 5%);
+  }
+}

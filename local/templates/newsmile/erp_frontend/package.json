@@ -21,6 +21,7 @@
     "react-select": "2.1.2",
     "react-simple-animate": "2.6.2",
     "react-tooltip": "3.9.0",
+    "typescript": "^3.3.3",
     "tinycolor2": "^1.4.1"
   },
   "scripts": {
@@ -37,5 +38,8 @@
     "not dead",
     "not ie <= 11",
     "not op_mini all"
-  ]
+  ],
+  "devDependencies": {
+    "fork-ts-checker-webpack-plugin": "^0.5.2"
+  }
 }

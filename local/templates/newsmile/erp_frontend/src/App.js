@@ -4,6 +4,7 @@ import Sidebar from './components/Sidebar/Sidebar'
 import Header from './components/Header/Header'
 import Schedule from './components/Schedule/Schedule'
 import Appt from './components/Appt/Appt'
+import TextArea from './components/common/TextArea/TextArea'
 import Notifications from './components/common/Notifications/Notifications'
 import ServerCommand from './common/server/server-command'
 // import Test from './components/Test/Test'
@@ -28,7 +29,7 @@ class App extends Component {
     render() {
         return (
             <div className="App">
-                <Notifications />
+                {/*<Notifications />*/}
                 <Sidebar />
                 <div className="main-content">
                     <Header />

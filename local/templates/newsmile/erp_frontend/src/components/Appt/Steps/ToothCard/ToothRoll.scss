@@ -1,0 +1,58 @@
+@import './../../../../styles/variables';
+
+.tooth-roll {
+  position: relative;
+  width: 200px;
+  height: 200px;
+  padding: 15px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.24);
+
+  .row {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 5px;
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+
+    .icon-tooth {
+      margin-right: 5px;
+
+      &:last-child {
+        margin-right: 0;
+      }
+    }
+
+    .column {
+      display: flex;
+      flex-direction: column;
+
+      .icon-tooth {
+        margin-bottom: 5px;
+        margin-right: 0;
+
+        &:last-child {
+          margin-bottom: 0;
+        }
+      }
+    }
+  }
+
+  .row-md {
+    justify-content: space-evenly;
+  }
+}
+
+.tooth-roll__select {
+  padding: 15px;
+  border: 1px solid $color-secondary;
+  border-radius: 50%;
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.24);
+}

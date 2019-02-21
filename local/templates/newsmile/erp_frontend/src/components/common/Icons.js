@@ -1,5 +1,5 @@
 import React from 'react'
-
+import './Icons.scss'
 class IconCheck extends React.Component {
     render() {
         return (
@@ -32,4 +32,18 @@ class IconFolder extends React.Component {
     }
 }
 
-export {IconCheck, IconPrint, IconArrow, IconFolder}
+class IconTooth extends React.Component {
+    static defaultProps  = {
+        width: '35',
+        height: '35',
+        fill: '#e9e9e9'
+    }
+
+    render() {
+        return (
+        <svg className="icon-tooth" width={this.props.width} height={this.props.height} fill={this.props.fill} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 22.9 21.5"><defs><path id="a" d="M0 0h22.9v21.5H0z"/></defs><path class="st0" d="M11.5 14.1c2.5 0 2.3 7.4 4.5 7.4 2.4 0 4.6-5.1 4.6-5.1s3.4-6.7 2-12.6S13.2.7 11.6.7h-.1C9.9.7 1.9-2.1.5 3.8-1 9.7 2.4 16.5 2.4 16.5s2.3 5.1 4.6 5.1c2.2-.1 1.9-7.5 4.5-7.5z"/></svg>
+        )
+    }
+}
+
+export {IconCheck, IconPrint, IconArrow, IconFolder, IconTooth}
