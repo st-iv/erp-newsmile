@@ -23,6 +23,10 @@ export default class AccordionList extends React.Component {
 }
 
 class AccordionItem extends React.Component {
+    state = {
+        isOpen: false,
+    }
+
     static defaultProps = {
         variant: 'success',
     }
@@ -34,19 +38,27 @@ class AccordionItem extends React.Component {
         })
     }
 
+    handleReadMoreClick = (e) => { // добавили метод
+        e.preventDefault()
+        this.setState({
+            isOpen: !this.state.isOpen
+        })
+    }
+
     render() {
+        const {isOpen} = this.state
         const {text, content} = this.props.data
         const {variant} = this.props
         return (
             <React.Fragment>
-                <div className={`accordion-item accordion-item--variant-${variant}`}>
+                <div onClick={this.handleReadMoreClick} className={`accordion-item accordion-item--variant-${variant}`}>
                     <span className="accordion-item__text">
                         {text}
                     </span>
                 </div>
-                <p className="accordion-item__content">
-                    {content}
-                </p>
+                {
+                    isOpen && <p className="accordion-item__content">{content}</p>
+                }
             </React.Fragment>
         )
     }

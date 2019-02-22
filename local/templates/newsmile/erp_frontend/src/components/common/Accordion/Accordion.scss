@@ -30,3 +30,12 @@
     color: darken($color-success, 5%);
   }
 }
+
+.accordion-item__content {
+  animation: fadeIn 1s;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
