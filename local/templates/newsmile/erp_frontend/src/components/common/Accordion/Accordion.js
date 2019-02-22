@@ -1,20 +1,16 @@
 import React from 'react'
+import PropTypes from 'prop-types'
 import './Accordion.scss'
 
 export default class AccordionList extends React.Component {
-    static defaultProps = {
-        variant: 'success',
+    static propTypes = {
+        data: PropTypes.array.isRequired
     }
 
     render() {
-        const {variant, text} = this.props
         const accordionTemplate = this.props.data.map(function(item, index){
             return (
-                <div className={`accordion-item accordion-item--variant-${variant}`}>
-                    <span className="accordion-item__text">
-                    {item.text}
-                    </span>
-                </div>
+                <AccordionItem key={item.id} data={item}/>
             )
         })
 
@@ -26,11 +22,33 @@ export default class AccordionList extends React.Component {
     }
 }
 
-/*export default class AccordionWrap extends React.Component {
+class AccordionItem extends React.Component {
+    static defaultProps = {
+        variant: 'success',
+    }
+
+    static propTypes = {
+        data: PropTypes.shape({
+            text: PropTypes.string.isRequired,
+            content: PropTypes.string.isRequired
+        })
+    }
+
     render() {
+        const {text, content} = this.props.data
+        const {variant} = this.props
         return (
-            <AccordionList data={AccordionData}/>
+            <React.Fragment>
+                <div className={`accordion-item accordion-item--variant-${variant}`}>
+                    <span className="accordion-item__text">
+                        {text}
+                    </span>
+                </div>
+                <p className="accordion-item__content">
+                    {content}
+                </p>
+            </React.Fragment>
         )
     }
-}*/
+}
 
