@@ -30,7 +30,7 @@ export default class Appt extends React.Component {
                         <Button variant="outline--secondary" text="в.ч." size="sm"/>
                         <Button variant="outline--secondary" text="н.ч." size="sm"/>
                     </div>
-                    <Button variant="outline--secondary" text="Сбросить" size="sm"/>
+                    <Button variant="outline--secondary" text="Сбросить" action="reset" size="sm"/>
                 </div>
                 <ServicesList />
             </div>

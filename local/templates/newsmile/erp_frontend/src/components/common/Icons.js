@@ -46,4 +46,18 @@ class IconTooth extends React.Component {
     }
 }
 
-export {IconCheck, IconPrint, IconArrow, IconFolder, IconTooth}
+class IconClose extends React.Component {
+    static defaultProps  = {
+        width: '8',
+        height: '8',
+        stroke: '#000000'
+    }
+
+    render() {
+        return (
+            <svg className="icon-close" width={this.props.width} height={this.props.height} fill={this.props.fill} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 27.42 27.42"><path stroke-linecap="round" stroke-miterlimit="10" stroke-width="4" d="M2 2l23.42 23.42M25.42 2L2 25.42"/></svg>
+        )
+    }
+}
+
+export {IconCheck, IconPrint, IconArrow, IconFolder, IconTooth, IconClose}
