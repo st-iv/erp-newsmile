@@ -33,6 +33,10 @@
   text-decoration: none;
   color: #000;
 
+  &:hover {
+    color: #000;
+    text-decoration: none;
+  }
   &:focus,
   &:active {
     outline: none;
@@ -77,7 +81,7 @@
     }
   }
 
-  &--active {
+  &.active {
     background-color: $color-success;
     color: #fff;
 
