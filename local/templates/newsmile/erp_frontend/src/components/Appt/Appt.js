@@ -3,8 +3,6 @@ import './Appt.scss'
 import HeaderAppt from './HeaderAppt/HeaderAppt'
 import NavAppt from './NavAppt/NavAppt'
 import Checkup from "./Steps/Checkup/Checkup"
-import ToothCard from "./Steps/ToothCard/ToothCard"
-import ToothRoll from "./Steps/ToothCard/ToothRoll"
 import Tabs from '../common/Tabs/Tabs'
 import ServicesList from '../common/ServicesList/ServicesList';
 import Button from '../common/Button/Button';
@@ -17,8 +15,6 @@ export default class Appt extends React.Component {
                 <HeaderAppt />
                 <NavAppt />
                 <Checkup />
-                <ToothCard />
-                <ToothRoll />
                 <Tabs />
                 <div className="check-group">
                     <div className="check-group__title-group">

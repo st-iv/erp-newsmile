@@ -3,13 +3,14 @@ import './Checkup.scss'
 import Button from "../../../common/Button/Button"
 import {IconPrint} from "./../../../common/Icons"
 import CheckupForm from './CheckupForm'
+import ToothCard from './ToothCard'
+import {Route} from 'react-router-dom'
 
 export default class Checkup extends React.Component {
     render() {
         return (
             <div className="checkup">
                 <CheckupHeader />
-                <CheckupForm />
             </div>
         )
     }
@@ -27,6 +28,7 @@ class CheckupHeader extends React.Component {
                         <a href="/tooth-card" className="checkup-steps__item">
                            Зубная карта
                         </a>
+                        {/*<Route component={CheckupForm}/>*/}
                         <a href="/checkup-form" className="checkup-steps__item">
                             Осмотр
                         </a>
