@@ -29,6 +29,14 @@
   font-size: 0.813rem;
   position: relative;
   display: inline-flex;
+  outline: none;
+  text-decoration: none;
+  color: #000;
+
+  &:focus,
+  &:active {
+    outline: none;
+  }
 
   &:first-child {
     padding: 10px 30px;

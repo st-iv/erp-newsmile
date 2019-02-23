@@ -24,15 +24,15 @@ class CheckupHeader extends React.Component {
                         Детально опишите осмотр пациента
                     </div>
                     <div className="checkup-steps">
-                        <div className="checkup-steps__item">
-                            Зубная карта
-                        </div>
-                        <div className="checkup-steps__item">
+                        <a href="/tooth-card" className="checkup-steps__item">
+                           Зубная карта
+                        </a>
+                        <a href="/checkup-form" className="checkup-steps__item">
                             Осмотр
-                        </div>
-                        <div className="checkup-steps__item">
+                        </a>
+                        <a href="/print" className="checkup-steps__item">
                             <IconPrint width="15" height="18"/>
-                        </div>
+                        </a>
                     </div>
                     <Button variant="success" text="Сохранить и продолжить" action="next"/>
                 </div>
