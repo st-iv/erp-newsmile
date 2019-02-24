@@ -137,7 +137,7 @@ class ToothList extends React.Component {
 export default class ToothWrap extends React.Component {
     render() {
         return (
-            <div>
+            <div className="tooth-wrap">
                 <Tabs />
                 <ToothList data={toothData}/>
                 <ToothRoll />
