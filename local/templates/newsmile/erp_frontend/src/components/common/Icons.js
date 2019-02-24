@@ -24,6 +24,14 @@ class IconArrow extends React.Component {
     }
 }
 
+class IconFolder extends React.Component {
+    render() {
+        return (
+            <svg className="icon-folder" width={this.props.width} height={this.props.height} data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18.57 15.43"><path stroke-miterlimit="10" stroke-width="1.1" d="M18.02 14.88H.55V.55h8.04l2.21 3.26h7.22v11.07z"/></svg>
+        )
+    }
+}
+
 class IconTooth extends React.Component {
     static defaultProps  = {
         width: '35',
@@ -38,4 +46,18 @@ class IconTooth extends React.Component {
     }
 }
 
-export {IconCheck, IconPrint, IconArrow, IconTooth}
+class IconClose extends React.Component {
+    static defaultProps  = {
+        width: '8',
+        height: '8',
+        stroke: '#000000'
+    }
+
+    render() {
+        return (
+            <svg className="icon-close" width={this.props.width} height={this.props.height} fill={this.props.fill} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 27.42 27.42"><path stroke-linecap="round" stroke-miterlimit="10" stroke-width="4" d="M2 2l23.42 23.42M25.42 2L2 25.42"/></svg>
+        )
+    }
+}
+
+export {IconCheck, IconPrint, IconArrow, IconFolder, IconTooth, IconClose}

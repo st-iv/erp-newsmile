@@ -23,6 +23,11 @@
 	display: flex;
 	flex-direction: column;
 	align-items: center;
+
+	.icon-close {
+		stroke: $black;
+		margin-right: 10px;
+	}
 }
 
 .check-group__title-group{

@@ -1,84 +1,110 @@
 import React from 'react'
 import PropTypes from 'prop-types'
+import './ServicesLists.scss'
+import { IconFolder } from './../Icons';
+
+const ServicesItems = [
+    {
+        id: 1,
+		name: 'Терапия',
+		filling: 'full',
+    },
+    {
+        id: 2,
+		name: 'Хирургия',
+		filling: 'empty',
+    },
+    {
+        id: 3,
+		name: 'Парадонтология',
+		filling: 'empty',
+    },
+    {
+        id: 4,
+		name: 'Имплантология',
+		filling: 'full',
+		values: [
+			{
+				id: 1,
+				name: 'Еще одна подпапка',
+				filling: 'full',
+			},
+			{
+				id: 2,
+				name: 'Установка ипланта ADIN',
+				filling: 'empty',
+			},
+			{
+				id: 3,
+				name: 'Операции + костный материал',
+				filling: 'empty',
+			},
+			{
+				id: 4,
+				name: 'Установка импланта MIS',
+				filling: 'empty',
+			},
+			{
+				id: 5,
+				name: 'Установка ипланта Nobel',
+				filling: 'empty',
+			},
+		]
+    },
+    {
+        id: 5,
+		name: 'Несъемное протезирование',
+		filling: 'full',
+	},
+    {
+        id: 6,
+        name: 'Съемное протезирование',
+		filling: 'full',
+    },
+    {
+        id: 7,
+		name: 'Детство',
+		filling: 'empty'
+	},
+	{
+        id: 8,
+		name: 'Ортодонтия',
+		filling: 'full',
+    }
+
+]
+
+function ListItem({ item }) {
+	let children = null;
+	if (item.values && item.values.length) {
+		children = (
+			<ul className="services-list">
+				{item.values.map(i => (
+					<ListItem className="services-list__item" item={i} key={i.id} />
+				))}
+			</ul>
+		);
+	}
+
+	return (
+		<li className="services-list__item">
+			<div className={`services-list__item-title-group services-list__item-title-group--${item.filling}`}>
+				<IconFolder width="13" height="11" />
+				<a href="" className="services-list__item-title">{item.name}</a>
+			</div>
+			{children}
+		</li>
+	);
+}
 
 export default class ServicesList extends React.Component {
-    render() {
-        return (
+	render() {
+		return (
 			<ul className="services-list">
-				<li className="services-list__item">
-					<span className="services-list__item-title">Терапия</span>
-					<ul className="services-list__sublist">
-						<li className = "services-list__sublist-item">
-							<span className="services-list__sublist-item-title">Подпапка 1</span>
-						</li>
-						<li className = "services-list__sublist-item">
-							<span className="services-list__sublist-item-title">Подпапка 2</span>
-						</li>
-					</ul>
-				</li>
-				<li className="services-list__item">
-					<span className="services-list__item-title">Хирургия</span>
-					<ul className="services-list__sublist">
-						<li className = "services-list__sublist-item">
-							<span className="services-list__sublist-item-title">Подпапка 1</span>
-						</li>
-						<li className = "services-list__sublist-item">
-							<span className="services-list__sublist-item-title">Подпапка 2</span>
-						</li>
-					</ul>
-				</li>
-				<li className="services-list__item">
-					<span className="services-list__item-title">Парадонтология</span>
-					<ul className="services-list__sublist">
-						<li className = "services-list__sublist-item">
-							<span className="services-list__sublist-item-title">Подпапка 1</span>
-						</li>
-						<li className = "services-list__sublist-item">
-							<span className="services-list__sublist-item-title">Подпапка 1</span>
-						</li>
-					</ul>
-				</li>
-				<li className="services-list__item">
-					<span className="services-list__item-title">Имплантология</span>
-					<ul className="services-list__sublist">
-						<li className = "services-list__sublist-item">
-							<span className="services-list__sublist-item-title">Еще одна подпапка</span>
-							<ul className="services-list__sublist">
-								<li className="services-list__sublist-item">
-									<span className="services-list__sublist-item-title">Подпапка 1 внутри еще одной подпапки</span>
-								</li>
-								<li className="services-list__sublist-item">
-									<span className="services-list__sublist-item-title">Подпапка 2 внутри еще одной подпапки</span>
-								</li>
-							</ul>
-						</li>
-						<li className = "services-list__sublist-item">
-							<span className="services-list__sublist-item-title">Установка ипланта ADIN</span>
-						</li>
-						<li className = "services-list__sublist-item">
-							<span className="services-list__sublist-item-title">Операции + костный материал</span>
-						</li>
-						<li className = "services-list__sublist-item">
-							<span className="services-list__sublist-item-title">Установка импланта MIS</span>
-						</li>
-						<li className = "services-list__sublist-item">
-							<span className="services-list__sublist-item-title">Установка ипланта Nobel</span>
-						</li>
-					</ul>
-				</li>
-				<li className="services-list__item">
-					<span className="services-list__item-title">Несъемное протезирование</span>
-				</li>
-				<li className="services-list__item">
-					<span className="services-list__item-title">Съемное протезирование</span>
-				</li>
-				<li className="services-list__item">
-					<span className="services-list__item-title">Детство</span>
-				</li>
-				<li className="services-list__item">
-					<span className="services-list__item-title">Ортодонтия</span>
-				</li>
+			  {ServicesItems.map(i => (
+				<ListItem item={i} key={i.id} />
+			  ))}
 			</ul>
-		)
+		);
 	}
 }

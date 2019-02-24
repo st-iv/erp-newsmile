@@ -1,18 +1,18 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import './Button.scss'
-import {IconArrow, IconPrint} from '../Icons'
+import {IconArrow, IconClose} from '../Icons'
 
 export default class Button extends React.Component {
     render() {
         const {size, variant, action, text, children} = this.props;
         return (
             <div className={`btn btn-size-${size} btn-variant-${variant}`}>
+                {action=='reset' && <IconClose />}
                         <span className="btn-text">
                             {text || children}
                         </span>
                 {action=='next' && <IconArrow />}
-                {action=='reset' && <IconPrint />}
             </div>
         )
     }
