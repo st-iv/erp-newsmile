@@ -32,7 +32,6 @@ class App extends Component {
                 {/*<Notifications />*/}
                 <Sidebar />
                 <div className="main-content">
-                    <Test />
                     <Header />
                     <Appt />
                     {this.state.schedule && (
