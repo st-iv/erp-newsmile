@@ -2,6 +2,7 @@ import React from 'react'
 import './ToothCard.scss'
 import {IconTooth} from "../../../common/Icons";
 import Tabs from '../../../common/Tabs/Tabs'
+import ToothRoll from "./ToothRoll";
 
 const toothData = [
     //1row topleft
@@ -139,6 +140,7 @@ export default class ToothWrap extends React.Component {
             <div>
                 <Tabs />
                 <ToothList data={toothData}/>
+                <ToothRoll />
             </div>
         )
     }
