@@ -33,6 +33,7 @@ class App extends Component {
                 <Sidebar />
                 <div className="main-content">
                     <Header />
+                    <Test />
                     <Appt />
                     {this.state.schedule && (
                         <Schedule calendar={this.state.calendar} doctors={this.state.doctors} initialDate={this.state.initialDate} schedule={this.state.schedule} />

@@ -13,12 +13,36 @@ Star.propTypes = {
     selected: PropTypes.bool,
     onClick: PropTypes.func,
 }
+
+class StarRating extends React.Component {
+    constructor(props) {
+        super(props)
+        this.state = {
+            starsSelected: 0
+        }
+        this.change = this.change.bind(this)
+    }
+
+    change(starsSelected) {
+        this.setState({starsSelected})
+    }
+
+    render() {
+        const {totalStars} = this.props
+        const {starSelected} = this.state
+        return (
+            <div className="star-rating">
+
+            </div>
+        )
+    }
+}
 export default class Test extends React.Component {
 
     render() {
         return (
             <div>
-                <p>test</p>
+                <span>rating</span>
                 <Star></Star>
             </div>
         )
