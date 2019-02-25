@@ -106,9 +106,23 @@ const toothData = [
         id: 38,
     },
 ]
+
+class ToothItem extends React.Component {
+    render() {
+        const {id} = this.props.data;
+
+        return (
+            <React.Fragment>
+                <IconTooth/>
+                <span>{id}</span>
+            </React.Fragment>
+        )
+    }
+}
 class ToothList extends React.Component {
     render() {
         const { data } = this.props;
+
         const rows = data.reduce(
             (prev, el, i) => {
                 const subIdx = Math.floor(i / 8);
@@ -117,14 +131,14 @@ class ToothList extends React.Component {
             },
             []
         );
+
         return (
             <div className="tooth-list">
                 {rows.map((row, i) => (
                     <div key={`row-${i}`} className="tooth-row">
                         {row.map((item, k) => (
                             <div className="tooth-item" key={`row-item-${k}`}>
-                                 <IconTooth/>
-                                <span>{item.id}</span>
+                                <ToothItem key={item.id} data={item}/>
                             </div>
                         ))}
                     </div>
