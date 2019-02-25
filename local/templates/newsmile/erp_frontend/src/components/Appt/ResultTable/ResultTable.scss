@@ -1,0 +1,83 @@
+@import 'styles/variables';
+
+.result-table {
+	border: 1px solid $color-secondary;
+	font-size: 0.75rem;
+	max-width: 1205px;
+	margin: 0 auto;
+	margin-bottom: 130px;
+	margin-top: 130px;
+}
+
+.result-table__cell  {
+	padding: 9px 10px 7px 21px;
+
+	&:first-of-type {
+		padding-left: 43px;
+	}
+
+	&:not(:last-child) {
+		border-right: 1px solid $color-secondary;
+	}
+
+	&--title {
+		width: 55%;
+	}
+
+	&--teeth {
+		width: 9.8%;
+	}
+	&--price {
+		width: 10.4%;
+	}
+	&--quantity {
+		width: 9.8%;
+	}
+	&--cost {
+		width: 15%;
+	}
+}
+
+.result-table__row {
+	display: flex;
+	width: 100%;
+	justify-content: space-between;
+	&:not(:last-of-type) {
+		border-bottom: 1px solid $color-secondary;
+	}
+	&--total {
+		@extend %font-accent;
+		.result-table__cell {
+			border: none;
+		}
+	}
+	&--service {
+		color: $color-success;
+		@extend %font-accent;
+		.result-table__cell {
+			border: none;
+		}
+	}
+}
+
+.result-table__tooth-num {
+	background-color: $color-secondary;
+	border-radius: 2px;
+	margin-right: 3px;
+    padding: 0 3px;
+	margin-left: 2px;
+	min-width: 21px;
+	display: inline-block;
+	line-height: 0.9rem;
+	text-align: center;
+}
+
+.result-table__service-num {
+	background-color: rgba($color-success, 0.3);
+	border-radius: 2px;
+	padding: 1px 3px 0px 3px;
+	min-width: 20px;
+	display: inline-block;
+	line-height: 1.2rem;
+	text-align: center;
+}
