@@ -108,13 +108,30 @@ const toothData = [
 ]
 
 class ToothItem extends React.Component {
+    state = {
+        isOpen: false,
+    }
+
+    handleReadMoreClick = (e) => {
+        e.preventDefault()
+        this.setState({
+            isOpen: !this.state.isOpen
+        })
+    }
+
     render() {
+        const {isOpen} = this.state
         const {id} = this.props.data;
 
         return (
             <React.Fragment>
-                <IconTooth/>
-                <span>{id}</span>
+                <div onClick={this.handleReadMoreClick} className="tooth-item">
+                    <IconTooth/>
+                    <span>{id}</span>
+                </div>
+                {
+                    isOpen && <div className="tooth-roll__wrap"><ToothRoll/></div>
+                }
             </React.Fragment>
         )
     }
@@ -137,7 +154,7 @@ class ToothList extends React.Component {
                 {rows.map((row, i) => (
                     <div key={`row-${i}`} className="tooth-row">
                         {row.map((item, k) => (
-                            <div className="tooth-item" key={`row-item-${k}`}>
+                            <div className="tooth-item__wrap" key={`row-item-${k}`}>
                                 <ToothItem key={item.id} data={item}/>
                             </div>
                         ))}
@@ -154,7 +171,6 @@ export default class ToothWrap extends React.Component {
             <div className="tooth-wrap">
                 <Tabs />
                 <ToothList data={toothData}/>
-                <ToothRoll />
             </div>
         )
     }

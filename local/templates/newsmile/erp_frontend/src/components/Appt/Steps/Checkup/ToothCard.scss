@@ -36,3 +36,21 @@
   }
 
 }
+
+.tooth-item__wrap {
+  position: relative;
+  cursor: pointer;
+}
+
+.tooth-roll__wrap {
+  position: absolute;
+  z-index: 2;
+  top: -135%;
+  left: -170%;
+  animation: fadeIn .2s, rotateIn .5s;
+}
+
+@keyframes rotateIn {
+  from { transform: rotate(-360deg); }
+  to   { transform: rotate(0deg); }
+}
