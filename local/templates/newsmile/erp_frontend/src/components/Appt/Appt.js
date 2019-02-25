@@ -15,19 +15,6 @@ export default class Appt extends React.Component {
                 <HeaderAppt />
                 <NavAppt />
                 <Checkup />
-                <Tabs />
-                <div className="check-group">
-                    <div className="check-group__title-group">
-                        <IconCheck width="10" height="7"/>
-                        <span className="check-group__title">Отметить здоровыми</span>
-                    </div>
-                    <div className="check-group__btns">
-                        <Button variant="outline--secondary" text="все" size="sm"/>
-                        <Button variant="outline--secondary" text="в.ч." size="sm"/>
-                        <Button variant="outline--secondary" text="н.ч." size="sm"/>
-                    </div>
-                    <Button variant="outline--secondary" text="Сбросить" action="reset" size="sm"/>
-                </div>
                 <ServicesList />
             </div>
         )

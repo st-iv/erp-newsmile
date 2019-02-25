@@ -1,8 +1,9 @@
 import React from 'react'
 import './ToothCard.scss'
-import {IconTooth} from "../../../common/Icons";
+import {IconCheck, IconTooth} from "../../../common/Icons";
 import Tabs from '../../../common/Tabs/Tabs'
 import ToothRoll from "./ToothRoll";
+import Button from "../../../common/Button/Button";
 
 const toothData = [
     //1row topleft
@@ -171,6 +172,18 @@ export default class ToothWrap extends React.Component {
             <div className="tooth-wrap">
                 <Tabs />
                 <ToothList data={toothData}/>
+                <div className="check-group">
+                    <div className="check-group__title-group">
+                        <IconCheck width="10" height="7"/>
+                        <span className="check-group__title">Отметить здоровыми</span>
+                    </div>
+                    <div className="check-group__btns">
+                        <Button variant="outline--secondary" text="все" size="sm"/>
+                        <Button variant="outline--secondary" text="в.ч." size="sm"/>
+                        <Button variant="outline--secondary" text="н.ч." size="sm"/>
+                    </div>
+                    <Button variant="outline--secondary" text="Сбросить" action="reset" size="sm"/>
+                </div>
             </div>
         )
     }
