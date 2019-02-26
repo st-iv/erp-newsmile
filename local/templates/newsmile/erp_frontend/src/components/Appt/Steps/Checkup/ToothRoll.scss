@@ -55,3 +55,114 @@
   border-radius: 50%;
   @extend %shadow-main;
 }
+
+.tooth-roll__item {
+  position: relative;
+  text-align: center;
+}
+
+// tooth roll item colors
+
+.tooth-roll__item--r {
+  .icon-tooth {
+    fill: $color-danger;
+  }
+
+  &::after {
+    @extend %abs-center;
+    content: "R";
+    color: #fff;
+  }
+}
+
+.tooth-roll__item--none {
+  .icon-tooth {
+    fill: transparent;
+    stroke: $color-secondary;
+    stroke-dasharray: 1px;
+  }
+}
+
+.tooth-roll__item--good {
+  .icon-tooth {
+    fill: $color-success;
+  }
+
+  &::after {
+    @extend %abs-center;
+    content: "\2713";
+    color: #fff;
+  }
+}
+
+.tooth-roll__item--rt {
+  .icon-tooth {
+    fill: $color-danger;
+  }
+
+  &::after {
+    @extend %abs-center;
+    content: "Rt";
+    color: #fff;
+  }
+}
+
+.tooth-roll__item--p {
+  .icon-tooth {
+    fill: $color-danger;
+  }
+
+  &::after {
+    @extend %abs-center;
+    content: "P";
+    color: #fff;
+  }
+}
+
+.tooth-roll__item--tst1 {
+  .icon-tooth {
+    fill: $lemon;
+  }
+
+  &::after {
+    @extend %abs-center;
+    content: "П";
+    color: #000;
+  }
+}
+
+.tooth-roll__item--tst2 {
+  .icon-tooth {
+    fill: $lemon;
+  }
+
+  &::after {
+    @extend %abs-center;
+    content: "К";
+    color: #000;
+  }
+}
+
+.tooth-roll__item--implant {
+  .icon-tooth {
+    fill: $lemon;
+  }
+
+  &::after {
+    @extend %abs-center;
+    content: "И";
+    color: #000;
+  }
+}
+
+.tooth-roll__item--c {
+  .icon-tooth {
+    fill: $color-danger;
+  }
+
+  &::after {
+    @extend %abs-center;
+    content: "C";
+    color: #fff;
+  }
+}

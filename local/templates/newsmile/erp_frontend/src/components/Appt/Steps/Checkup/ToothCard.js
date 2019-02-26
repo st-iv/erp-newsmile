@@ -111,6 +111,8 @@ const toothData = [
 class ToothItem extends React.Component {
     state = {
         isOpen: false,
+        // tooth states
+        r: false,
     }
 
     handleReadMoreClick = (e) => {
@@ -120,26 +122,73 @@ class ToothItem extends React.Component {
         })
     }
 
-    render() {
-        const {isOpen} = this.state
-        const {id} = this.props.data;
+    // tooth functions
+    rSet = () => {
+        console.log('clickkk')
+        this.setState({
+            r: true
+        })
+    }
 
+    render() {
+        const {isOpen, r} = this.state
+        const {id} = this.props.data
+        let classNames = 'tooth-item'
+
+        // add class on click
+
+        if (r) {
+            classNames += ' '+classNames+'--r'
+        }
         return (
             <React.Fragment>
-                <div onClick={this.handleReadMoreClick} className="tooth-item">
+                <div onClick={this.handleReadMoreClick} className={classNames}>
                     <IconTooth/>
                     <span>{id}</span>
                 </div>
                 {
-                    isOpen && <div className="tooth-roll__wrap"><ToothRoll/></div>
+                    isOpen &&
+                    /*<div className="tooth-roll__wrap">
+                        <div className="tooth-roll">
+                            <div className="row">
+                                <div className="" onClick={this.rSet}>
+                                <IconTooth fill="#ff4261" />
+                                </div>
+                                <IconTooth fill="#f4f4f4"/>
+                                <IconTooth fill="#8fca00"/>
+                            </div>
+                            <div className="row row-md">
+                                <div className="column">
+                                    <IconTooth fill="#ff4261"/>
+                                    <IconTooth fill="#ff4261"/>
+                                </div>
+                                <div className="tooth-roll__select">
+                                    <IconTooth/>
+                                </div>
+                                <div className="column">
+                                    <IconTooth fill="#f9d905"/>
+                                    <IconTooth fill="#f9d905"/>
+                                </div>
+
+                            </div>
+                            <div className="row">
+                                <IconTooth fill="#ff4261"/>
+                                <IconTooth fill="#f9d905"/>
+                            </div>
+                        </div>
+                    </div>*/
+                    <div className="tooth-roll__wrap">
+                    <ToothRoll />
+                    </div>
                 }
             </React.Fragment>
         )
     }
 }
+
 class ToothList extends React.Component {
     render() {
-        const { data } = this.props;
+        const {data} = this.props;
 
         const rows = data.reduce(
             (prev, el, i) => {
@@ -170,7 +219,8 @@ export default class ToothWrap extends React.Component {
     render() {
         return (
             <div className="tooth-wrap">
-                <Tabs />
+                <Tabs/>
+                <ToothRoll />
                 <ToothList data={toothData}/>
                 <div className="check-group">
                     <div className="check-group__title-group">
