@@ -7,7 +7,7 @@ export default class ToothRoll extends React.Component {
         return (
             <div className="tooth-roll">
                 <div className="row">
-                    <div className="tooth-roll__item tooth-roll__item--r">
+                    <div className="tooth-roll__item tooth-roll__item--variant-danger tooth-roll__item--action-r">
                         <IconTooth/>
                     </div>
                     <div className="tooth-roll__item tooth-roll__item--none">
@@ -19,10 +19,10 @@ export default class ToothRoll extends React.Component {
                 </div>
                 <div className="row row-md">
                     <div className="column">
-                        <div className="tooth-roll__item tooth-roll__item--rt">
+                        <div className="tooth-roll__item tooth-roll__item--variant-danger tooth-roll__item--action-rt">
                             <IconTooth fill="#ff4261"/>
                         </div>
-                        <div className="tooth-roll__item tooth-roll__item--p">
+                        <div className="tooth-roll__item tooth-roll__item--variant-danger tooth-roll__item--action-p">
                             <IconTooth fill="#ff4261"/>
                         </div>
                     </div>
@@ -30,20 +30,20 @@ export default class ToothRoll extends React.Component {
                         <IconTooth/>
                     </div>
                     <div className="column">
-                        <div className="tooth-roll__item tooth-roll__item--tst1">
+                        <div className="tooth-roll__item tooth-roll__item--variant-cured tooth-roll__item--prosthesis">
                             <IconTooth/>
                         </div>
-                        <div className="tooth-roll__item tooth-roll__item--tst2">
+                        <div className="tooth-roll__item tooth-roll__item--variant-cured tooth-roll__item--crown">
                             <IconTooth/>
                         </div>
                     </div>
 
                 </div>
                 <div className="row">
-                    <div className="tooth-roll__item tooth-roll__item--c">
+                    <div className="tooth-roll__item tooth-roll__item--variant-danger tooth-roll__item--action-c">
                         <IconTooth />
                     </div>
-                    <div className="tooth-roll__item tooth-roll__item--implant">
+                    <div className="tooth-roll__item tooth-roll__item--variant-cured tooth-roll__item--action-implant">
                         <IconTooth />
                     </div>
                 </div>

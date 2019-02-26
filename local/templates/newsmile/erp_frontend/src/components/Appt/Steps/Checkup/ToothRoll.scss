@@ -61,16 +61,17 @@
   text-align: center;
 }
 
-// tooth roll item colors
+// tooth roll item
 
-.tooth-roll__item--r {
+// colors
+
+.tooth-roll__item--variant-danger {
   .icon-tooth {
     fill: $color-danger;
   }
 
   &::after {
     @extend %abs-center;
-    content: "R";
     color: #fff;
   }
 }
@@ -95,74 +96,57 @@
   }
 }
 
-.tooth-roll__item--rt {
+.tooth-roll__item--variant-cured {
   .icon-tooth {
-    fill: $color-danger;
+    fill: $lemon;
   }
 
   &::after {
     @extend %abs-center;
+    color: #000;
+  }
+}
+//variants
+
+.tooth-roll__item--action-r {
+  &::after {
+    content: "R";
+  }
+}
+
+.tooth-roll__item--action-rt {
+  &::after {
     content: "Rt";
-    color: #fff;
   }
 }
 
-.tooth-roll__item--p {
-  .icon-tooth {
-    fill: $color-danger;
-  }
-
+.tooth-roll__item--action-p {
   &::after {
-    @extend %abs-center;
     content: "P";
-    color: #fff;
   }
 }
 
-.tooth-roll__item--tst1 {
-  .icon-tooth {
-    fill: $lemon;
-  }
+.tooth-roll__item--prosthesis {
 
   &::after {
-    @extend %abs-center;
     content: "П";
-    color: #000;
   }
 }
 
-.tooth-roll__item--tst2 {
-  .icon-tooth {
-    fill: $lemon;
-  }
-
+.tooth-roll__item--crown {
   &::after {
-    @extend %abs-center;
     content: "К";
-    color: #000;
   }
 }
 
-.tooth-roll__item--implant {
-  .icon-tooth {
-    fill: $lemon;
-  }
-
+.tooth-roll__item--action-implant {
   &::after {
-    @extend %abs-center;
     content: "И";
-    color: #000;
   }
 }
 
-.tooth-roll__item--c {
-  .icon-tooth {
-    fill: $color-danger;
-  }
-
+.tooth-roll__item--action-c {
   &::after {
-    @extend %abs-center;
     content: "C";
-    color: #fff;
   }
 }
