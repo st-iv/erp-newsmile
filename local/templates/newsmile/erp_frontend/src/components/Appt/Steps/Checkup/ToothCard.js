@@ -113,33 +113,131 @@ class ToothItem extends React.Component {
         isOpen: false,
         // tooth states
         r: false,
+        none: false,
+        good: false,
+        rt: false,
+        p: false,
+        prosthesis: false,
+        crown: false,
+        c: false,
+        implant: false,
     }
 
     handleReadMoreClick = (e) => {
         e.preventDefault()
         this.setState({
-            isOpen: !this.state.isOpen
+            isOpen: true
         })
     }
 
     // tooth functions
+
     rSet = () => {
-        console.log('clickkk')
         this.setState({
-            r: true
+            r: true,
+            isOpen: false,
+        })
+    }
+
+    noneSet = () => {
+        this.setState({
+            none: true,
+            isOpen: false,
+        })
+    }
+
+    goodSet = () => {
+        this.setState({
+            good: true,
+            isOpen: false,
+        })
+    }
+
+    rtSet = () => {
+        this.setState({
+            rt: true,
+            isOpen: false,
+        })
+    }
+
+    pSet = () => {
+        this.setState({
+            p: true,
+            isOpen: false,
+        })
+    }
+
+    prosthesisSet = () => {
+        this.setState({
+            prosthesis: true,
+            isOpen: false,
+        })
+    }
+
+    crownSet = () => {
+        this.setState({
+            crown: true,
+            isOpen: false,
+        })
+    }
+
+    cSet = () => {
+        this.setState({
+            c: true,
+            isOpen: false,
+        })
+    }
+
+    implantSet = () => {
+        this.setState({
+            implant: true,
+            isOpen: false,
         })
     }
 
     render() {
-        const {isOpen, r} = this.state
+        const {isOpen, r, none, good, rt, p, prosthesis, crown, c, implant} = this.state
         const {id} = this.props.data
         let classNames = 'tooth-item'
 
         // add class on click
 
         if (r) {
-            classNames += ' '+classNames+'--r'
+            classNames += ' ' + classNames + ' tooth-roll__item--variant-danger tooth-roll__item--action-r'
         }
+
+        if (none) {
+            classNames += ' ' + classNames + ' tooth-roll__item--none'
+        }
+
+        if (good) {
+            classNames += ' ' + classNames + ' tooth-roll__item--good'
+        }
+
+        if (rt) {
+            classNames += ' ' + classNames + ' tooth-roll__item--variant-danger tooth-roll__item--action-rt'
+        }
+
+        if (p) {
+            classNames += ' ' + classNames + ' tooth-roll__item--variant-danger tooth-roll__item--action-p'
+        }
+
+        if (prosthesis) {
+            classNames += ' ' + classNames + ' tooth-roll__item--variant-cured tooth-roll__item--prosthesis'
+        }
+
+        if (crown) {
+            classNames += ' ' + classNames + ' tooth-roll__item--variant-cured tooth-roll__item--crown'
+        }
+
+        if (c) {
+            classNames += ' ' + classNames + ' tooth-roll__item--variant-danger tooth-roll__item--action-c'
+        }
+
+        if (implant) {
+            classNames += ' ' + classNames + ' tooth-roll__item--variant-cured tooth-roll__item--action-implant'
+        }
+
         return (
             <React.Fragment>
                 <div onClick={this.handleReadMoreClick} className={classNames}>
@@ -148,37 +246,58 @@ class ToothItem extends React.Component {
                 </div>
                 {
                     isOpen &&
-                    /*<div className="tooth-roll__wrap">
+                    <div className="tooth-roll__wrap">
                         <div className="tooth-roll">
                             <div className="row">
-                                <div className="" onClick={this.rSet}>
-                                <IconTooth fill="#ff4261" />
+                                <div
+                                    className="tooth-roll__item tooth-roll__item--variant-danger tooth-roll__item--action-r"
+                                    onClick={this.rSet}>
+                                    <IconTooth/>
                                 </div>
-                                <IconTooth fill="#f4f4f4"/>
-                                <IconTooth fill="#8fca00"/>
+                                <div className="tooth-roll__item tooth-roll__item--none" onClick={this.noneSet}>
+                                    <IconTooth/>
+                                </div>
+                                <div className="tooth-roll__item tooth-roll__item--good" onClick={this.goodSet}>
+                                    <IconTooth/>
+                                </div>
                             </div>
                             <div className="row row-md">
                                 <div className="column">
-                                    <IconTooth fill="#ff4261"/>
-                                    <IconTooth fill="#ff4261"/>
+                                    <div
+                                        className="tooth-roll__item tooth-roll__item--variant-danger tooth-roll__item--action-rt" onClick={this.rtSet}>
+                                        <IconTooth fill="#ff4261"/>
+                                    </div>
+                                    <div
+                                        className="tooth-roll__item tooth-roll__item--variant-danger tooth-roll__item--action-p" onClick={this.pSet}>
+                                        <IconTooth fill="#ff4261"/>
+                                    </div>
                                 </div>
                                 <div className="tooth-roll__select">
                                     <IconTooth/>
                                 </div>
                                 <div className="column">
-                                    <IconTooth fill="#f9d905"/>
-                                    <IconTooth fill="#f9d905"/>
+                                    <div
+                                        className="tooth-roll__item tooth-roll__item--variant-cured tooth-roll__item--prosthesis" onClick={this.prosthesisSet}>
+                                        <IconTooth/>
+                                    </div>
+                                    <div
+                                        className="tooth-roll__item tooth-roll__item--variant-cured tooth-roll__item--crown" onClick={this.crownSet}>
+                                        <IconTooth/>
+                                    </div>
                                 </div>
 
                             </div>
                             <div className="row">
-                                <IconTooth fill="#ff4261"/>
-                                <IconTooth fill="#f9d905"/>
+                                <div
+                                    className="tooth-roll__item tooth-roll__item--variant-danger tooth-roll__item--action-c" onClick={this.cSet}>
+                                    <IconTooth/>
+                                </div>
+                                <div
+                                    className="tooth-roll__item tooth-roll__item--variant-cured tooth-roll__item--action-implant" onClick={this.implantSet}>
+                                    <IconTooth/>
+                                </div>
                             </div>
                         </div>
-                    </div>*/
-                    <div className="tooth-roll__wrap">
-                    <ToothRoll />
                     </div>
                 }
             </React.Fragment>
@@ -220,7 +339,7 @@ export default class ToothWrap extends React.Component {
         return (
             <div className="tooth-wrap">
                 <Tabs/>
-                <ToothRoll />
+                <ToothRoll/>
                 <ToothList data={toothData}/>
                 <div className="check-group">
                     <div className="check-group__title-group">

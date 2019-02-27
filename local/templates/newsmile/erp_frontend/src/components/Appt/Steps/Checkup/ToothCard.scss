@@ -25,19 +25,16 @@
   .icon-tooth {
     margin-bottom: 5px;
   }
+
+  &::after {
+    display: flex;
+    justify-content: center;
+  }
 }
 
 .tooth-row {
   display: flex;
   margin-bottom: 37px;
-
-  &:nth-child(3),
-  &:nth-child(4) {
-    .tooth-item {
-      flex-direction: column-reverse;
-    }
-  }
-
 }
 
 .tooth-item__wrap {
@@ -50,11 +47,11 @@
   z-index: 2;
   top: -135%;
   left: -170%;
-  animation: fadeIn .2s, rotateIn .5s;
+  animation: fadeIn .2s;
 }
 
 @keyframes rotateIn {
-  from { transform: rotate(-360deg); }
+  from { transform: rotate(-45deg); }
   to   { transform: rotate(0deg); }
 }
 
