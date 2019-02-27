@@ -1,0 +1,29 @@
+@import 'styles/variables';
+
+@mixin tag-states($outline) {
+	border: 1px solid $outline;
+	color: $outline;
+}
+
+.tag {
+	border-radius: 2px;
+	font-size: 0.813rem;
+	padding: 1px 15px;
+    margin-right: 4px;
+}
+
+.tag-variant-default {
+	@include tag-states($color-secondary);
+}
+
+.tag-variant-outline--mango {
+	@include tag-states($mango);
+}
+
+.tag-variant-outline--grape {
+	@include tag-states($grape);
+}
+
+.tag-variant-outline--success {
+	@include tag-states($color-success);
+}

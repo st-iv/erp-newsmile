@@ -1,0 +1,70 @@
+@import 'styles/variables';
+
+.print {
+	display: flex;
+	width: 1300px;
+	margin: 0 auto;
+	padding-top: 70px;
+}
+
+.print__img {
+	width: 275px;
+
+	.print-img {
+		display: block;
+		margin: 0 auto;
+	}
+}
+
+.print__header {
+	font-size: 1.25rem;
+	margin-bottom: 66px;
+}
+
+.print__content {
+	padding-top: 13px;
+	width: 74%;
+}
+
+.print__list {
+	list-style: none;
+	margin: 0;
+	margin-bottom: 53px;
+	padding: 0;
+}
+
+.print__item {
+	display: flex;
+	font-size: 0.813rem;
+	margin-bottom: 20px;
+}
+
+.print__item-title {
+	display: block;
+	width: 32%;
+}
+
+.print__item-num {
+	margin-right: 29px;
+}
+
+.print__warning {
+	font-size: 0.813rem;
+	color: rgba($black, 0.7);
+}
+
+.print__finish {
+	display: flex;
+	align-items: flex-start;
+}
+
+.print__btns {
+	display: flex;
+	justify-content: space-between;
+	align-items: flex-start;
+}
+
+.print__warning {
+	margin-left: 30px;
+	max-width: 200px;
+}
