@@ -29,12 +29,12 @@ class App extends Component {
     render() {
         return (
             <div className="App">
-                {/*<Notifications />*/}
+                <Notifications />
                 <Sidebar />
                 <div className="main-content">
                     <Header />
-                    <Test />
-                    <Appt />
+                    {/* <Test /> */}
+                    {/* <Appt /> */}
                     {this.state.schedule && (
                         <Schedule calendar={this.state.calendar} doctors={this.state.doctors} initialDate={this.state.initialDate} schedule={this.state.schedule} />
                     )}
