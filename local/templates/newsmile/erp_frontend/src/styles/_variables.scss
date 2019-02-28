@@ -7,6 +7,8 @@ $smoke: #d5d5d5;
 $lemon: #f9d905;
 $black: #000000;
 $white: #ffffff;
+$mango: #ffae00;
+$grape: #8a00ff;
 
 // DEFAULT THEME
 
@@ -14,7 +16,7 @@ $color-accent: $sea;
 $color-success: $apple;
 $color-danger: $pink-red;
 $color-secondary: $smoke;
-$color-secondary-light: ($smoke, 12%);
+$color-secondary-light: lighten($smoke, 12%);
 
 // FONTS
 

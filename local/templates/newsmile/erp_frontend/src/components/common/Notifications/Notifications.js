@@ -1,6 +1,8 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import './Notifications.scss'
+import Appt from '../../Appt/Appt'
+import PopupManager from './../../popup-manager'
 
 export default class Notifications extends React.Component {
     render() {
@@ -46,11 +48,17 @@ export default class Notifications extends React.Component {
 							<span className="notify__time">13:00 - 14:00</span>
 						</div>
 					</div>
-					<button type="button" className="notify__write-btn">
+					<button type="button" className="notify__write-btn" onClick={this.showAppt}>
 						Принять пациента
 					</button>
 				</div>
 			</div>
         )
-    }
+	}
+	
+	showAppt() {
+		PopupManager.showPopup(
+			<Appt/>
+		);
+	}
 }

@@ -8,6 +8,7 @@ import TextArea from './components/common/TextArea/TextArea'
 import Notifications from './components/common/Notifications/Notifications'
 import ServerCommand from './common/server/server-command'
 import Test from './components/Test/Test'
+import ToothCard from "./components/Appt/Steps/Checkup/ToothCard";
 
 
 class App extends Component {
@@ -29,15 +30,16 @@ class App extends Component {
     render() {
         return (
             <div className="App">
-                {/*<Notifications />*/}
+                <Notifications />
                 <Sidebar />
                 <div className="main-content">
                     <Header />
-                    <Test />
-                    <Appt />
+                    {/* <Test /> */}
+                    {/* <Appt /> */}
                     {this.state.schedule && (
                         <Schedule calendar={this.state.calendar} doctors={this.state.doctors} initialDate={this.state.initialDate} schedule={this.state.schedule} />
                     )}
+                    <ToothCard />
                 </div>
             </div>
         );

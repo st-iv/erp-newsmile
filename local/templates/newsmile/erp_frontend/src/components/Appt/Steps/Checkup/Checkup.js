@@ -4,6 +4,7 @@ import Button from "../../../common/Button/Button"
 import {IconPrint} from "./../../../common/Icons"
 import CheckupForm from './CheckupForm'
 import ToothCard from './ToothCard'
+import Print from './Print'
 import {BrowserRouter, Route, NavLink} from 'react-router-dom'
 
 export default class Checkup extends React.Component {
@@ -32,6 +33,7 @@ export default class Checkup extends React.Component {
                     </React.Fragment>
                         <Route path="/tooth-card" component={ToothCard}/>
                         <Route path="/checkup-form" component={CheckupForm}/>
+                        <Route path="/print" component={Print}/>
                     </div>
                 </BrowserRouter>
         )

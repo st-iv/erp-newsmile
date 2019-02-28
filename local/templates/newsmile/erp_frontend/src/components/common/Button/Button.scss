@@ -1,4 +1,4 @@
-@import './../../../styles/variables';
+@import 'styles/variables';
 
 @mixin button-states($bg) {
   background: $bg;
@@ -52,6 +52,14 @@
     stroke: #fff;
   }
 }
+
+.btn-variant-disabled {
+  @include button-states($color-secondary-light);
+  color: $color-secondary;
+  .icon-arrow {
+    stroke: $color-secondary;
+  }
+} 
 
 .btn-variant-outline--secondary {
   border: 1px solid $color-secondary;

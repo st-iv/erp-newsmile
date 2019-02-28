@@ -2,6 +2,20 @@ import React from 'react'
 import './ToothRoll.scss'
 import {IconCheck, IconTooth} from '../../../common/Icons'
 
+const toothLook = {
+
+}
+
+class ToothItem extends  React.Component {
+    render() {
+        const {variant} = this.props
+        return (
+            <div className={`tooth-roll__item tooth-roll__item--variant-danger tooth-roll__item--action-r`}>
+                <IconTooth/>
+            </div>
+        )
+    }
+}
 export default class ToothRoll extends React.Component {
     render() {
         return (

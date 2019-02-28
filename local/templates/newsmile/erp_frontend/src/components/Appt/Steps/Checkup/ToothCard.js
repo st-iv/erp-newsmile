@@ -123,6 +123,8 @@ class ToothItem extends React.Component {
         implant: false,
     }
 
+    props
+
     handleReadMoreClick = (e) => {
         e.preventDefault()
         this.setState({

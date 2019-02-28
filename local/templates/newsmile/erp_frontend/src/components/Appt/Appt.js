@@ -7,6 +7,7 @@ import Tabs from '../common/Tabs/Tabs'
 import ServicesList from '../common/ServicesList/ServicesList';
 import Button from '../common/Button/Button';
 import { IconCheck } from '../common/Icons';
+import ResultTable from './ResultTable/ResultTable';
 
 export default class Appt extends React.Component {
     render() {
@@ -16,6 +17,9 @@ export default class Appt extends React.Component {
                 <NavAppt />
                 <Checkup />
                 <ServicesList />
+                <Button variant="outline--secondary" text="Верхняя челюсть"/>
+                <Button variant="outline--secondary" text="Нижняя челюсть"/>
+                <ResultTable />
             </div>
         )
     }
