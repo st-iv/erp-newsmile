@@ -1,29 +1,60 @@
 import React from 'react'
+import PropTypes from 'prop-types'
 import './ToothRoll.scss'
 import {IconCheck, IconTooth} from '../../../common/Icons'
 
-const toothLook = {
+const statusList = [
+    {"id": 1, "code": "G", "decode": "Здоров"},
+    {"id": 2, "code": "S", "decode": "Пломба"},
+    {
+        "id": 3,
+        "code": "C",
+        "decode": "Коронка"
+    },
+    {"id": 4, "code": "I", "decode": "Искусственный зуб"}, {"id": 5, "code": "R", "decode": "Радикс"},
+    {
+        "id": 6,
+        "code": "Pt",
+        "decode": "Периодонтит"
+    },
+    {"id": 7, "code": "P", "decode": "Пульпит"},
+    {"id": 8, "code": "K", "decode": "Кариес"},
+    {
+        "id": 9,
+        "code": "E",
+        "decode": "Отсутствует"
+    },
+    {"id": 10, "code": "N", "decode": "Не определен"}
+]
 
-}
+class ToothItem extends React.Component {
+    static propTypes = {
+        variant: PropTypes.oneOf(["default", "missing", "sick", "cured", "healthy"]),
+        code: PropTypes.oneOf(["r", "pt", "sick", "p", "c"]),
+    }
+    static defaultProps = {
+        code: "default"
+    }
 
-class ToothItem extends  React.Component {
     render() {
-        const {variant} = this.props
+        const {code} = this.props
         return (
-            <div className={`tooth-roll__item tooth-roll__item--variant-danger tooth-roll__item--action-r`}>
+            <div className={`tooth-roll__item tooth-roll__item--variant-${code} tooth-roll__item--action-r`}>
                 <IconTooth/>
             </div>
         )
     }
 }
+
 export default class ToothRoll extends React.Component {
     render() {
         return (
             <div className="tooth-roll">
                 <div className="row">
-                    <div className="tooth-roll__item tooth-roll__item--variant-danger tooth-roll__item--action-r">
+                    {/*<div className="tooth-roll__item tooth-roll__item--variant-danger tooth-roll__item--action-r">
                         <IconTooth/>
-                    </div>
+                    </div>*/}
+                    <ToothItem/>
                     <div className="tooth-roll__item tooth-roll__item--none">
                         <IconTooth/>
                     </div>
@@ -55,10 +86,10 @@ export default class ToothRoll extends React.Component {
                 </div>
                 <div className="row">
                     <div className="tooth-roll__item tooth-roll__item--variant-danger tooth-roll__item--action-c">
-                        <IconTooth />
+                        <IconTooth/>
                     </div>
                     <div className="tooth-roll__item tooth-roll__item--variant-cured tooth-roll__item--action-implant">
-                        <IconTooth />
+                        <IconTooth/>
                     </div>
                 </div>
             </div>
