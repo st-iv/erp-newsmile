@@ -30,7 +30,7 @@ const statusList = [
 class ToothItem extends React.Component {
     static propTypes = {
         variant: PropTypes.oneOf(["default", "missing", "sick", "cured", "healthy"]),
-        code: PropTypes.oneOf(["r", "pt", "sick", "p", "c"]),
+        code: PropTypes.oneOf(["r", "pt", "sick", "p", "c","implant"]),
     }
     static defaultProps = {
         code: "default"
